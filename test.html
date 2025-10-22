@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Tomos · Admin — Settings</title>
+  <title>Tomos · Admin</title>
 
   <!-- Firebase (compat) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
@@ -22,7 +22,7 @@
     :root{ --tile-radius: 18px; }
     body{ font-family: 'Manrope', system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
     .card{ background:white; border-radius: var(--tile-radius); box-shadow: 0 10px 30px rgba(0,0,0,.06); }
-    .toggle{--w:54px;--h:30px;--p:3px;appearance:none;-webkit-appearance:none;outline:none;cursor:pointer;width:var(--w);height:var(--h);border-radius:999px;border:2px solid #111;background:#fff;position:relative;box-sizing:border-box;transition:background .2s,border-color .2s}
+    .toggle{--w:52px;--h:28px;--p:3px;appearance:none;-webkit-appearance:none;outline:none;cursor:pointer;width:var(--w);height:var(--h);border-radius:999px;border:2px solid #111;background:#fff;position:relative;box-sizing:border-box;transition:background .2s,border-color .2s}
     .toggle::after{content:"";position:absolute;top:50%;left:var(--p);width:calc(var(--h) - 2*var(--p));height:calc(var(--h) - 2*var(--p));border-radius:50%;background:#111;transform:translateY(-50%);transition:left .2s,background .2s}
     .toggle:checked{background:#111;border-color:#111}
     .toggle:checked::after{background:#fff;left:calc(var(--w) - var(--h) + var(--p))}
@@ -32,6 +32,10 @@
     .iphone{ position:relative; width:320px; height:640px; border-radius:34px; background:#000; padding:12px; box-shadow:0 30px 60px rgba(0,0,0,.25)}
     .iphone-in{ width:100%; height:100%; border-radius:26px; overflow:hidden; background:white}
     .notch{ position:absolute;left:50%;top:0;transform:translateX(-50%); width:160px;height:22px;background:#000;border-bottom-left-radius:16px;border-bottom-right-radius:16px}
+    .chip{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:10px 14px;border:1px solid #e5e7eb;background:#fff;cursor:pointer;font-size:14px}
+    .chip.active{border-color:#111;background:#111;color:#fff}
+    .sidebar-btn{display:flex;gap:10px;align-items:center;width:100%;padding:.65rem .8rem;border-radius:12px}
+    .sidebar-btn.active{background:#111;color:#fff}
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -41,128 +45,191 @@
     <p class="mt-4 text-gray-600 text-sm">Cargando…</p>
   </div>
 
-  <!-- Login -->
-  <div id="login" class="max-w-sm mx-auto mt-16 card p-6">
-    <div class="flex items-center justify-center mb-4 gap-2">
-      <i data-lucide="lock" class="w-5 h-5"></i>
-      <h1 class="text-xl font-bold">Acceso administrador</h1>
-    </div>
-    <label class="block text-sm text-gray-600 mb-1">Email</label>
-    <input id="emailInput" type="email" class="w-full border rounded-xl px-3 py-2 mb-3" placeholder="admin@hotel.com">
-    <label class="block text-sm text-gray-600 mb-1">Contraseña</label>
-    <input id="passwordInput" type="password" class="w-full border rounded-xl px-3 py-2 mb-4" placeholder="••••••••">
-    <button id="btnLogin" class="w-full py-2.5 rounded-xl bg-black text-white">Entrar</button>
-    <p id="loginError" class="text-red-600 text-sm mt-3 hidden text-center">❌ Credenciales incorrectas</p>
-    <p class="text-[11px] text-gray-500 mt-3 text-center">Empresa detectada: <span id="empresaText" class="font-medium">—</span></p>
-  </div>
-
-  <!-- Panel -->
-  <div id="panel" class="hidden">
-    <header class="sticky top-0 bg-gray-50/80 backdrop-blur border-b">
-      <div class="max-w-6xl mx-auto px-5 py-3 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <i data-lucide="settings-2" class="w-5 h-5"></i>
-          <h2 class="text-lg font-semibold">Settings</h2>
-          <span id="empresaBadge" class="ml-2 text-xs bg-black text-white px-2 py-0.5 rounded">—</span>
-        </div>
-        <div class="flex items-center gap-3">
-          <span id="authEmail" class="text-xs text-gray-500"></span>
-          <button id="btnLogout" class="px-3 py-1.5 bg-red-600 text-white rounded-md">Cerrar sesión</button>
-        </div>
+  <!-- Header minimal -->
+  <header class="sticky top-0 bg-gray-50/80 backdrop-blur border-b z-40">
+    <div class="max-w-7xl mx-auto px-5 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <i data-lucide="settings-2" class="w-5 h-5"></i>
+        <h1 class="text-lg font-semibold">Tomos · Admin</h1>
+        <span id="empresaBadge" class="ml-2 text-xs bg-black text-white px-2 py-0.5 rounded">—</span>
       </div>
-    </header>
+      <div class="flex items-center gap-3">
+        <span id="authEmail" class="text-xs text-gray-500"></span>
+        <button id="btnLogout" class="px-3 py-1.5 bg-red-600 text-white rounded-md hidden">Cerrar sesión</button>
+      </div>
+    </div>
+  </header>
 
-    <main class="max-w-6xl mx-auto p-5 grid grid-cols-1 lg:grid-cols-[1.25fr_1fr] gap-6">
-      <!-- Columna izquierda: ajustes -->
-      <section class="space-y-6">
-        <!-- Banner permisos -->
-        <div id="permBanner" class="hidden card p-4 border border-amber-300/60 bg-amber-50">
-          <div class="flex gap-2 items-start">
-            <i data-lucide="shield-alert" class="w-5 h-5 text-amber-600"></i>
-            <div class="text-sm text-amber-800">
-              <b>Sin permisos de escritura.</b> Debes iniciar sesión con el mismo email guardado en <code>config/adminEmail</code> o ser <code>globalAdmin</code>.
-              <div class="text-[12px] mt-1">Pide a un administrador que establezca <code>config/adminEmail</code> = tu email, o que te agregue en <code>globalAdmins/{uid}</code>.</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Chat Primary Color -->
-        <div class="card p-5">
-          <h3 class="font-semibold mb-3 flex items-center gap-2"><i data-lucide="palette" class="w-5 h-5"></i> Chat Primary Color</h3>
-          <div class="flex items-center gap-3">
-            <input id="chatPrimaryColor" type="color">
-            <button id="saveChatPrimaryColor" class="px-3 py-1.5 bg-black text-white rounded">Guardar</button>
-          </div>
-          <p id="msgPrimary" class="text-green-600 text-sm mt-2 hidden">✔ Guardado</p>
-        </div>
-
-        <!-- Chat Button Color -->
-        <div class="card p-5">
-          <h3 class="font-semibold mb-3 flex items-center gap-2"><i data-lucide="circle" class="w-5 h-5"></i> Chat Button Color</h3>
-          <div class="flex items-center gap-3">
-            <input id="chatButtonColor" type="color">
-            <button id="saveChatButtonColor" class="px-3 py-1.5 bg-black text-white rounded">Guardar</button>
-          </div>
-          <p id="msgButton" class="text-green-600 text-sm mt-2 hidden">✔ Guardado</p>
-        </div>
-
-        <!-- Logo -->
-        <div class="card p-5">
-          <h3 class="font-semibold mb-3 flex items-center gap-2"><i data-lucide="image" class="w-5 h-5"></i> Logo</h3>
-          <div class="flex items-center gap-3 mb-2">
-            <input id="logoFile" type="file" accept="image/*">
-            <button id="uploadLogo" class="px-3 py-1.5 bg-black text-white rounded">Subir logo</button>
-            <button id="deleteLogo" class="px-3 py-1.5 bg-gray-200 rounded hidden">Eliminar</button>
-          </div>
-          <div class="w-full bg-gray-200 rounded-full h-2 mb-2 hidden" id="logoProgressWrap">
-            <div id="logoBar" class="h-2 rounded-full" style="width:0%"></div>
-          </div>
-          <img id="logoPreview" class="max-h-24 rounded shadow hidden" alt="Logo" />
-          <p id="msgLogo" class="text-green-600 text-sm mt-2 hidden">✔ Logo actualizado</p>
-        </div>
-
-        <!-- Avatar asistente -->
-        <div class="card p-5">
-          <h3 class="font-semibold mb-3 flex items-center gap-2"><i data-lucide="smile" class="w-5 h-5"></i> Avatar del asistente</h3>
-          <div class="flex items-center gap-3 mb-2">
-            <input id="avatarFile" type="file" accept="image/*">
-            <button id="uploadAvatar" class="px-3 py-1.5 bg-black text-white rounded">Subir avatar</button>
-            <button id="deleteAvatar" class="px-3 py-1.5 bg-gray-200 rounded hidden">Eliminar</button>
-          </div>
-          <div class="w-full bg-gray-200 rounded-full h-2 mb-2 hidden" id="avatarProgressWrap">
-            <div id="avatarBar" class="h-2 rounded-full" style="width:0%"></div>
-          </div>
-          <img id="avatarPreview" class="w-24 h-24 rounded-full object-cover border shadow hidden" alt="Avatar" />
-          <p id="msgAvatar" class="text-green-600 text-sm mt-2 hidden">✔ Avatar actualizado</p>
-        </div>
-
-        <!-- Tipografía -->
-        <div class="card p-5">
-          <h3 class="font-semibold mb-3 flex items-center gap-2"><i data-lucide="type" class="w-5 h-5"></i> Tipografía</h3>
-          <select id="fontSelect" class="border rounded px-3 py-2 w-full"></select>
-          <p id="msgFont" class="text-green-600 text-sm mt-2 hidden">✔ Fuente guardada</p>
-        </div>
-      </section>
-
-      <!-- Columna derecha: mockup iPhone -->
-      <aside class="hidden lg:block">
-        <div class="sticky top-4">
-          <div class="iphone">
-            <div class="notch"></div>
-            <div class="iphone-in">
-              <div class="p-4 border-b flex items-center gap-3">
-                <img id="previewLogo" class="h-7 w-7 rounded hidden"/>
-                <div class="font-medium">Chat Preview</div>
-              </div>
-              <div class="p-4 space-y-3">
-                <button id="previewBtn" class="px-4 py-2 rounded text-white">Botón</button>
-                <div id="previewBubble" class="p-3 rounded text-white inline-block">Mensaje</div>
-              </div>
-            </div>
-          </div>
+  <div class="max-w-7xl mx-auto">
+    <div class="grid grid-cols-1 lg:grid-cols-[260px_1fr] min-h-[80vh]">
+      <!-- Sidebar -->
+      <aside class="border-r bg-white p-4 hidden lg:block">
+        <nav class="space-y-2">
+          <button class="sidebar-btn active" data-tab="apariencia"><i data-lucide="palette" class="w-4 h-4"></i><span>Apariencia</span></button>
+          <button class="sidebar-btn" data-tab="settings"><i data-lucide="sliders" class="w-4 h-4"></i><span>Settings</span></button>
+        </nav>
+        <div class="mt-6 text-xs text-gray-500">
+          Empresa: <b id="empresaText">—</b>
         </div>
       </aside>
-    </main>
+
+      <!-- Content -->
+      <main class="p-5">
+        <!-- Login card -->
+        <div id="login" class="max-w-sm mx-auto mt-10 card p-6">
+          <div class="flex items-center justify-center mb-4 gap-2">
+            <i data-lucide="lock" class="w-5 h-5"></i>
+            <h2 class="text-xl font-bold">Acceso administrador</h2>
+          </div>
+          <label class="block text-sm text-gray-600 mb-1">Email</label>
+          <input id="emailInput" type="email" class="w-full border rounded-xl px-3 py-2 mb-3" placeholder="admin@hotel.com">
+          <label class="block text-sm text-gray-600 mb-1">Contraseña</label>
+          <input id="passwordInput" type="password" class="w-full border rounded-xl px-3 py-2 mb-4" placeholder="••••••••">
+          <button id="btnLogin" class="w-full py-2.5 rounded-xl bg-black text-white">Entrar</button>
+          <p id="loginError" class="text-red-600 text-sm mt-3 hidden text-center">❌ Credenciales incorrectas</p>
+          <p class="text-[11px] text-gray-500 mt-3 text-center">Empresa detectada: <span id="empresaText2" class="font-medium">—</span></p>
+        </div>
+
+        <!-- Tabs container -->
+        <div id="tabs" class="hidden">
+          <div class="grid grid-cols-1 lg:grid-cols-[1.25fr_1fr] gap-6">
+            <!-- Apariencia -->
+            <section id="tab-apariencia" class="space-y-6">
+              <div id="permBannerA" class="hidden card p-4 border border-amber-300/60 bg-amber-50">
+                <div class="flex gap-2 items-start">
+                  <i data-lucide="shield-alert" class="w-5 h-5 text-amber-600"></i>
+                  <div class="text-sm text-amber-800">
+                    <b>Sin permisos de escritura.</b> Debes iniciar sesión con el email guardado en <code>config/adminEmail</code> o ser <code>globalAdmin</code>.
+                  </div>
+                </div>
+              </div>
+
+              <div class="card p-5">
+                <h3 class="font-semibold mb-3 flex items-center gap-2"><i data-lucide="palette" class="w-5 h-5"></i> Chat Primary Color</h3>
+                <div class="flex items-center gap-3">
+                  <input id="chatPrimaryColor" type="color">
+                  <button id="saveChatPrimaryColor" class="px-3 py-1.5 bg-black text-white rounded">Guardar</button>
+                </div>
+                <p id="msgPrimary" class="text-green-600 text-sm mt-2 hidden">✔ Guardado</p>
+              </div>
+
+              <div class="card p-5">
+                <h3 class="font-semibold mb-3 flex items-center gap-2"><i data-lucide="circle" class="w-5 h-5"></i> Chat Button Color</h3>
+                <div class="flex items-center gap-3">
+                  <input id="chatButtonColor" type="color">
+                  <button id="saveChatButtonColor" class="px-3 py-1.5 bg-black text-white rounded">Guardar</button>
+                </div>
+                <p id="msgButton" class="text-green-600 text-sm mt-2 hidden">✔ Guardado</p>
+              </div>
+
+              <div class="card p-5">
+                <h3 class="font-semibold mb-3 flex items-center gap-2"><i data-lucide="image" class="w-5 h-5"></i> Logo</h3>
+                <div class="flex items-center gap-3 mb-2">
+                  <input id="logoFile" type="file" accept="image/*">
+                  <button id="uploadLogo" class="px-3 py-1.5 bg-black text-white rounded">Subir logo</button>
+                  <button id="deleteLogo" class="px-3 py-1.5 bg-gray-200 rounded hidden">Eliminar</button>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2 mb-2 hidden" id="logoProgressWrap">
+                  <div id="logoBar" class="h-2 rounded-full" style="width:0%"></div>
+                </div>
+                <img id="logoPreview" class="max-h-24 rounded shadow hidden" alt="Logo" />
+                <p id="msgLogo" class="text-green-600 text-sm mt-2 hidden">✔ Logo actualizado</p>
+              </div>
+
+              <div class="card p-5">
+                <h3 class="font-semibold mb-3 flex items-center gap-2"><i data-lucide="smile" class="w-5 h-5"></i> Avatar del asistente</h3>
+                <div class="flex items-center gap-3 mb-2">
+                  <input id="avatarFile" type="file" accept="image/*">
+                  <button id="uploadAvatar" class="px-3 py-1.5 bg-black text-white rounded">Subir avatar</button>
+                  <button id="deleteAvatar" class="px-3 py-1.5 bg-gray-200 rounded hidden">Eliminar</button>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2 mb-2 hidden" id="avatarProgressWrap">
+                  <div id="avatarBar" class="h-2 rounded-full" style="width:0%"></div>
+                </div>
+                <img id="avatarPreview" class="w-24 h-24 rounded-full object-cover border shadow hidden" alt="Avatar" />
+                <p id="msgAvatar" class="text-green-600 text-sm mt-2 hidden">✔ Avatar actualizado</p>
+              </div>
+            </section>
+
+            <!-- Preview iPhone -->
+            <aside class="hidden lg:block">
+              <div class="sticky top-4">
+                <div class="iphone">
+                  <div class="notch"></div>
+                  <div class="iphone-in">
+                    <div class="p-4 border-b flex items-center gap-3">
+                      <img id="previewLogo" class="h-7 w-7 rounded hidden"/>
+                      <div class="font-medium">Chat Preview</div>
+                    </div>
+                    <div class="p-4 space-y-3">
+                      <button id="previewBtn" class="px-4 py-2 rounded text-white">Botón</button>
+                      <div id="previewBubble" class="p-3 rounded text-white inline-block">Mensaje</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </aside>
+          </div>
+
+          <!-- SETTINGS TAB -->
+          <section id="tab-settings" class="hidden space-y-6 max-w-3xl">
+            <div id="permBannerS" class="hidden card p-4 border border-amber-300/60 bg-amber-50">
+              <div class="flex gap-2 items-start">
+                <i data-lucide="shield-alert" class="w-5 h-5 text-amber-600"></i>
+                <div class="text-sm text-amber-800">
+                  <b>Sin permisos de escritura.</b> Debes iniciar sesión con el email guardado en <code>config/adminEmail</code> o ser <code>globalAdmin</code>.
+                </div>
+              </div>
+            </div>
+
+            <!-- Show Button -->
+            <div class="card p-5">
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="font-semibold flex items-center gap-2"><i data-lucide="message-circle" class="w-5 h-5"></i> Show Button</div>
+                  <p class="text-sm text-gray-500">Show the chat button on the website</p>
+                </div>
+                <input id="tgChatVisible" type="checkbox" class="toggle" />
+              </div>
+            </div>
+
+            <!-- General Information -->
+            <div class="card p-5">
+              <div class="font-semibold flex items-center gap-2 mb-3"><i data-lucide="building-2" class="w-5 h-5"></i> General Information</div>
+              <label class="block text-sm text-gray-600 mb-1">Name</label>
+              <input id="hotelName" class="w-full border rounded-xl px-3 py-2 mb-3" placeholder="Boletum"/>
+              <label class="block text-sm text-gray-600 mb-1">Time Zone</label>
+              <select id="timeZone" class="w-full border rounded-xl px-3 py-2 mb-4"></select>
+              <button id="saveGeneral" class="px-4 py-2 bg-black text-white rounded-md">Save</button>
+              <p id="msgGeneral" class="text-green-600 text-sm mt-2 hidden">✔ Saved</p>
+            </div>
+
+            <!-- Assistant Personality -->
+            <div class="card p-5">
+              <div class="font-semibold flex items-center gap-2 mb-4"><i data-lucide="sparkles" class="w-5 h-5"></i> Assistant Personality</div>
+              <div id="personalityChips" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <button data-val="formal" class="chip">Formal & Polite</button>
+                <button data-val="relaxed" class="chip">Relaxed & Friendly</button>
+                <button data-val="warm" class="chip">Warm & Welcoming</button>
+                <button data-val="efficient" class="chip">Efficient & Direct</button>
+                <button data-val="young" class="chip">Young & Playful</button>
+              </div>
+            </div>
+
+            <!-- Link para probar el chat -->
+            <div class="card p-5">
+              <div class="font-semibold flex items-center gap-2 mb-3"><i data-lucide="link-2" class="w-5 h-5"></i> Link para probar el chat</div>
+              <div class="flex items-center gap-3">
+                <input id="chatTestLink" type="text" readonly class="flex-1 border rounded-lg px-3 py-2 text-sm bg-gray-50 select-all"/>
+                <button id="copyChatLink" class="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-sm rounded-lg">Copiar</button>
+                <button id="openChatLink" class="px-3 py-2 bg-black text-white text-sm rounded-lg">Abrir</button>
+              </div>
+              <p class="text-xs text-gray-500 mt-2">El enlace se genera automáticamente con el nombre de tu empresa actual.</p>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
   </div>
 
   <!-- Toast -->
@@ -186,6 +253,7 @@ const storage = firebase.storage();
 
 // ====== Helpers ======
 const $ = (id) => document.getElementById(id);
+const $$ = (sel) => Array.from(document.querySelectorAll(sel));
 function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.remove('opacity-0'); setTimeout(()=>t.classList.add('opacity-0'),1400); }
 function getEmpresa(){
   const url = new URL(window.location.href);
@@ -194,203 +262,155 @@ function getEmpresa(){
   return p;
 }
 let EMPRESA = getEmpresa();
-$('empresaText').textContent = EMPRESA;
+$('empresaBadge').textContent = EMPRESA; $('empresaText').textContent = EMPRESA; $('empresaText2').textContent = EMPRESA;
 function eref(path){ return db.ref(`${EMPRESA}/${path}`); }
 
-let canWriteFlag = false; // se activa si email actual == config/adminEmail o si es globalAdmin
-
-// ====== Permisos según tus reglas ======
+let canWriteFlag = false;
 async function refreshPermissions(){
-  const user = auth.currentUser;
-  if (!user){ canWriteFlag = false; setWriteEnabled(false); return; }
+  const user = auth.currentUser; if(!user){ canWriteFlag=false; setWriteEnabled(false); return; }
   $('authEmail').textContent = user.email || '';
-
   const adminEmailSnap = await eref('config/adminEmail').once('value');
   const adminEmail = adminEmailSnap.val();
   const globalAdminSnap = await db.ref('globalAdmins/' + user.uid).once('value');
   const isGlobal = !!globalAdminSnap.val();
-
   canWriteFlag = isGlobal || (adminEmail && user.email && adminEmail === user.email);
   setWriteEnabled(canWriteFlag);
-
-  // Banner
-  if (canWriteFlag) {
-    document.getElementById('permBanner').classList.add('hidden');
-  } else {
-    document.getElementById('permBanner').classList.remove('hidden');
-  }
+  document.getElementById('permBannerA').classList.toggle('hidden', canWriteFlag);
+  document.getElementById('permBannerS').classList.toggle('hidden', canWriteFlag);
 }
-
 function setWriteEnabled(enabled){
-  const controls = [
-    'saveChatPrimaryColor','saveChatButtonColor','uploadLogo','deleteLogo','uploadAvatar','deleteAvatar','fontSelect'
-  ];
-  controls.forEach(id=>{
-    const el = $(id);
-    if (!el) return;
-    if (el.tagName === 'SELECT') el.disabled = !enabled; else el.disabled = !enabled;
-    el.classList.toggle('opacity-60', !enabled);
-    el.classList.toggle('cursor-not-allowed', !enabled);
-  });
+  const ids = ['saveChatPrimaryColor','saveChatButtonColor','uploadLogo','deleteLogo','uploadAvatar','deleteAvatar','fontSelect','tgChatVisible','hotelName','timeZone','saveGeneral'];
+  ids.forEach(id=>{ const el=$(id); if(!el) return; el.disabled=!enabled; el.classList.toggle('opacity-60', !enabled); el.classList.toggle('cursor-not-allowed', !enabled); });
+  $$('#personalityChips .chip').forEach(ch=>{ ch.disabled=!enabled; ch.classList.toggle('opacity-60', !enabled); });
 }
+async function canWrite(fn){ await refreshPermissions(); if(!canWriteFlag){ alert('No tienes permiso para modificar la configuración.'); return; } await fn(); }
 
-async function canWrite(fn){
-  await refreshPermissions();
-  if (!canWriteFlag){
-    alert('No tienes permiso para modificar la configuración.');
-    return;
-  }
-  await fn();
-}
-
-// ====== Auth flow ======
+// ====== Auth ======
 $('btnLogin').addEventListener('click', async ()=>{
-  const email = $('emailInput').value.trim();
-  const pass  = $('passwordInput').value.trim();
-  if(!email || !pass){ return alert('Ingresa tus credenciales.'); }
-  try { await auth.signInWithEmailAndPassword(email, pass); }
-  catch (e){ console.error(e); $('loginError').classList.remove('hidden'); }
+  const email = $('emailInput').value.trim(); const pass = $('passwordInput').value.trim();
+  if(!email||!pass) return alert('Ingresa tus credenciales.');
+  try{ await auth.signInWithEmailAndPassword(email,pass); }catch(e){ console.error(e); $('loginError').classList.remove('hidden'); }
 });
 $('btnLogout').addEventListener('click', ()=>auth.signOut());
 
 auth.onAuthStateChanged(async (u)=>{
-  if (u) {
-    $('login').classList.add('hidden');
-    $('panel').classList.remove('hidden');
-    $('empresaBadge').textContent = EMPRESA;
-    await initSettings();
-  } else {
-    $('panel').classList.add('hidden');
-    $('login').classList.remove('hidden');
-  }
-  document.getElementById('pageLoader').style.display = 'none';
+  if(u){ $('login').classList.add('hidden'); $('tabs').classList.remove('hidden'); $('btnLogout').classList.remove('hidden'); await initAll(); }
+  else { $('login').classList.remove('hidden'); $('tabs').classList.add('hidden'); $('btnLogout').classList.add('hidden'); }
+  $('pageLoader').style.display='none';
 });
 
-// ====== Settings ======
-const FONTS = ['Manrope','Inter','Poppins','Nunito','Rubik','Raleway','Montserrat','Work Sans','Open Sans','Lato'];
-async function initSettings(){
-  lucide.createIcons();
-  applyPreview();
-  await refreshPermissions();
-  initColors();
-  initLogo();
-  initAvatar();
-  initFonts();
-}
-
-function initColors(){
-  // Primary
-  const prRef = eref('config/chatPrimaryColor');
-  prRef.once('value', s=> $('chatPrimaryColor').value = s.val() || '#111111');
-  $('saveChatPrimaryColor').onclick = ()=> canWrite(async ()=>{
-    const color = $('chatPrimaryColor').value || '#111111';
-    await prRef.set(color);
-    $('msgPrimary').classList.remove('hidden'); setTimeout(()=>$('msgPrimary').classList.add('hidden'), 1200);
-    applyPreview();
-  });
-  // Button
-  const btRef = eref('config/chatButtonColor');
-  btRef.once('value', s=> $('chatButtonColor').value = s.val() || '#111111');
-  $('saveChatButtonColor').onclick = ()=> canWrite(async ()=>{
-    const color = $('chatButtonColor').value || '#111111';
-    await btRef.set(color);
-    $('msgButton').classList.remove('hidden'); setTimeout(()=>$('msgButton').classList.add('hidden'), 1200);
-    applyPreview();
+// ====== Tabs ======
+function initTabs(){
+  $$('.sidebar-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      $$('.sidebar-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      const tab = btn.getAttribute('data-tab');
+      $('tab-apariencia').classList.toggle('hidden', tab!=='apariencia');
+      $('tab-settings').classList.toggle('hidden', tab!=='settings');
+    });
   });
 }
 
-function initLogo(){
-  const urlRef = eref('config/logoUrl');
-  urlRef.once('value', s=>{
-    const url=s.val(); if(url){ $('logoPreview').src=url; $('logoPreview').classList.remove('hidden'); $('deleteLogo').classList.remove('hidden'); $('previewLogo').src=url; $('previewLogo').classList.remove('hidden'); }
-  });
+// ====== Timezones ======
+function getTimeZones(){
+  if (Intl.supportedValuesOf) { try { return Intl.supportedValuesOf('timeZone'); } catch(e){} }
+  return [
+    'Europe/Madrid','Europe/Lisbon','Europe/Paris','Europe/Berlin','Europe/Rome','Europe/Warsaw','Europe/London',
+    'America/Santiago','America/Sao_Paulo','America/Mexico_City','America/Bogota','America/Lima','America/Argentina/Buenos_Aires',
+    'America/New_York','America/Los_Angeles','America/Chicago',
+    'Africa/Mauritius','Indian/Mauritius',
+    'Asia/Dubai','Asia/Singapore','Asia/Tokyo','Asia/Kolkata','Australia/Sydney'
+  ];
+}
+
+// ====== Init All ======
+async function initAll(){
+  lucide.createIcons(); initTabs(); applyPreview(); await refreshPermissions();
+  initApariencia(); initSettingsTab();
+}
+
+// ====== Apariencia ======
+function initApariencia(){
+  // Colors
+  const prRef = eref('config/chatPrimaryColor'); prRef.once('value', s=> $('chatPrimaryColor').value = s.val() || '#111111');
+  $('saveChatPrimaryColor').onclick = ()=> canWrite(async ()=>{ const v=$('chatPrimaryColor').value||'#111'; await prRef.set(v); $('msgPrimary').classList.remove('hidden'); setTimeout(()=>$('msgPrimary').classList.add('hidden'),1200); applyPreview(); });
+  const btRef = eref('config/chatButtonColor'); btRef.once('value', s=> $('chatButtonColor').value = s.val() || '#111111');
+  $('saveChatButtonColor').onclick = ()=> canWrite(async ()=>{ const v=$('chatButtonColor').value||'#111'; await btRef.set(v); $('msgButton').classList.remove('hidden'); setTimeout(()=>$('msgButton').classList.add('hidden'),1200); applyPreview(); });
+
+  // Logo
+  const logoRef = eref('config/logoUrl');
+  logoRef.once('value', s=>{ const url=s.val(); if(url){ $('logoPreview').src=url; $('logoPreview').classList.remove('hidden'); $('deleteLogo').classList.remove('hidden'); $('previewLogo').src=url; $('previewLogo').classList.remove('hidden'); } });
   $('uploadLogo').onclick = ()=> canWrite(()=>{
-    const f = $('logoFile').files[0];
-    if(!f) { alert('Selecciona una imagen'); return; }
-    const path = `logos/${EMPRESA}_${Date.now()}_${f.name.replace(/[^a-z0-9_.-]/gi,'_')}`;
-    const ref  = storage.ref(path);
-    const task = ref.put(f);
+    const f=$('logoFile').files[0]; if(!f) return alert('Selecciona una imagen');
+    const path=`logos/${EMPRESA}_${Date.now()}_${f.name.replace(/[^a-z0-9_.-]/gi,'_')}`; const ref=storage.ref(path); const task=ref.put(f);
     $('logoProgressWrap').classList.remove('hidden');
-    task.on('state_changed', (snap)=>{
-      const p = Math.round((snap.bytesTransferred / snap.totalBytes) * 100);
-      $('logoBar').style.width = p+'%';
-      $('logoBar').style.background = $('chatPrimaryColor').value || '#111111';
-    }, console.error, async ()=>{
-      const url = await ref.getDownloadURL();
-      await urlRef.set(url);
-      $('logoPreview').src = url; $('logoPreview').classList.remove('hidden');
-      $('deleteLogo').classList.remove('hidden');
-      $('previewLogo').src=url; $('previewLogo').classList.remove('hidden');
-      $('logoProgressWrap').classList.add('hidden');
-      $('msgLogo').classList.remove('hidden'); setTimeout(()=>$('msgLogo').classList.add('hidden'), 1200);
-    });
+    task.on('state_changed', s=>{ const p=Math.round((s.bytesTransferred/s.totalBytes)*100); $('logoBar').style.width=p+'%'; $('logoBar').style.background=$('chatPrimaryColor').value||'#111'; }, console.error, async()=>{ const url=await ref.getDownloadURL(); await logoRef.set(url); $('logoPreview').src=url; $('logoPreview').classList.remove('hidden'); $('deleteLogo').classList.remove('hidden'); $('previewLogo').src=url; $('previewLogo').classList.remove('hidden'); $('logoProgressWrap').classList.add('hidden'); $('msgLogo').classList.remove('hidden'); setTimeout(()=>$('msgLogo').classList.add('hidden'),1200); });
   });
-  $('deleteLogo').onclick = ()=> canWrite(async ()=>{
-    await urlRef.set('');
-    $('logoPreview').classList.add('hidden'); $('deleteLogo').classList.add('hidden');
-    $('previewLogo').classList.add('hidden');
-    toast('Logo eliminado');
-  });
-}
+  $('deleteLogo').onclick = ()=> canWrite(async ()=>{ await logoRef.set(''); $('logoPreview').classList.add('hidden'); $('deleteLogo').classList.add('hidden'); $('previewLogo').classList.add('hidden'); toast('Logo eliminado'); });
 
-function initAvatar(){
-  const urlRef = eref('config/avatarUrl');
-  urlRef.once('value', s=>{ const url=s.val(); if(url){ $('avatarPreview').src=url; $('avatarPreview').classList.remove('hidden'); $('deleteAvatar').classList.remove('hidden'); }});
+  // Avatar
+  const avRef = eref('config/avatarUrl'); avRef.once('value', s=>{ const url=s.val(); if(url){ $('avatarPreview').src=url; $('avatarPreview').classList.remove('hidden'); $('deleteAvatar').classList.remove('hidden'); } });
   $('uploadAvatar').onclick = ()=> canWrite(()=>{
-    const f = $('avatarFile').files[0];
-    if(!f) { alert('Selecciona una imagen'); return; }
-    const path = `avatars/${EMPRESA}_${Date.now()}_${f.name.replace(/[^a-z0-9_.-]/gi,'_')}`;
-    const ref  = storage.ref(path);
-    const task = ref.put(f);
+    const f=$('avatarFile').files[0]; if(!f) return alert('Selecciona una imagen');
+    const path=`avatars/${EMPRESA}_${Date.now()}_${f.name.replace(/[^a-z0-9_.-]/gi,'_')}`; const ref=storage.ref(path); const task=ref.put(f);
     $('avatarProgressWrap').classList.remove('hidden');
-    task.on('state_changed', (snap)=>{
-      const p = Math.round((snap.bytesTransferred / snap.totalBytes) * 100);
-      $('avatarBar').style.width = p+'%';
-      $('avatarBar').style.background = $('chatPrimaryColor').value || '#111111';
-    }, console.error, async ()=>{
-      const url = await ref.getDownloadURL();
-      await urlRef.set(url);
-      $('avatarPreview').src=url; $('avatarPreview').classList.remove('hidden');
-      $('deleteAvatar').classList.remove('hidden');
-      $('avatarProgressWrap').classList.add('hidden');
-      $('msgAvatar').classList.remove('hidden'); setTimeout(()=>$('msgAvatar').classList.add('hidden'), 1200);
-    });
+    task.on('state_changed', s=>{ const p=Math.round((s.bytesTransferred/s.totalBytes)*100); $('avatarBar').style.width=p+'%'; $('avatarBar').style.background=$('chatPrimaryColor').value||'#111'; }, console.error, async()=>{ const url=await ref.getDownloadURL(); await avRef.set(url); $('avatarPreview').src=url; $('avatarPreview').classList.remove('hidden'); $('deleteAvatar').classList.remove('hidden'); $('avatarProgressWrap').classList.add('hidden'); $('msgAvatar').classList.remove('hidden'); setTimeout(()=>$('msgAvatar').classList.add('hidden'),1200); });
   });
-  $('deleteAvatar').onclick = ()=> canWrite(async ()=>{
-    await urlRef.set('');
-    $('avatarPreview').classList.add('hidden'); $('deleteAvatar').classList.add('hidden');
-    toast('Avatar eliminado');
-  });
-}
-
-function initFonts(){
-  const sel = $('fontSelect');
-  sel.innerHTML = FONTS.map(f=>`<option value="${f}">${f}</option>`).join('');
-  const ref = eref('config/fontFamily');
-  ref.once('value', s=>{ const v=s.val()||'Manrope'; sel.value=v; applyFont(v); });
-  sel.onchange = ()=> canWrite(async ()=>{ const v=sel.value; await ref.set(v); applyFont(v); $('msgFont').classList.remove('hidden'); setTimeout(()=>$('msgFont').classList.add('hidden'), 1200); });
-}
-
-function applyFont(font){
-  const id='dyn-font-link';
-  const href=`https://fonts.googleapis.com/css2?family=${encodeURIComponent(font)}:wght@400;500;600;700&display=swap`;
-  let link=document.getElementById(id); if(!link){ link=document.createElement('link'); link.id=id; link.rel='stylesheet'; document.head.appendChild(link); }
-  link.href=href; document.body.style.fontFamily=`'${font}', sans-serif`;
+  $('deleteAvatar').onclick = ()=> canWrite(async ()=>{ await avRef.set(''); $('avatarPreview').classList.add('hidden'); $('deleteAvatar').classList.add('hidden'); toast('Avatar eliminado'); });
 }
 
 function applyPreview(){
-  const p = document.getElementById('chatPrimaryColor')?.value || '#111111';
-  const b = document.getElementById('chatButtonColor')?.value || p;
-  const previewBtn   = document.getElementById('previewBtn');
-  const previewBubble= document.getElementById('previewBubble');
-  if (previewBtn) previewBtn.style.background = b;
-  if (previewBubble) previewBubble.style.background = p;
+  const p = $('chatPrimaryColor')?.value || '#111111'; const b = $('chatButtonColor')?.value || p; $('previewBtn').style.background=b; $('previewBubble').style.background=p;
 }
 
-window.addEventListener('load', ()=>{
-  document.getElementById('pageLoader').style.display='none';
-  applyPreview();
-});
+// ====== Settings Tab ======
+function initSettingsTab(){
+  // Toggle show button
+  const visRef = eref('config/chatVisible');
+  visRef.once('value', s=> $('tgChatVisible').checked = !!s.val());
+  $('tgChatVisible').addEventListener('change', ()=> canWrite(async ()=>{ await visRef.set(!!$('tgChatVisible').checked); }));
+
+  // General Information
+  const nameRef = eref('config/hotelName');
+  nameRef.once('value', s=> $('hotelName').value = s.val() || '');
+
+  const tzRef = eref('config/timeZone');
+  const zones = getTimeZones();
+  $('timeZone').innerHTML = zones.map(z=>`<option value="${z}">${z.replace('_',' ')}</option>`).join('');
+  tzRef.once('value', s=>{ const v=s.val()||Intl.DateTimeFormat().resolvedOptions().timeZone||'Europe/Madrid'; $('timeZone').value = zones.includes(v)?v:'Europe/Madrid'; });
+
+  $('saveGeneral').onclick = ()=> canWrite(async ()=>{
+    await nameRef.set(($('hotelName').value||'').trim());
+    await tzRef.set($('timeZone').value);
+    $('msgGeneral').classList.remove('hidden'); setTimeout(()=>$('msgGeneral').classList.add('hidden'),1200);
+  });
+
+  // Personality chips
+  const chips = $$('#personalityChips .chip');
+  const persRef = eref('config/personality');
+  persRef.once('value', s=>{
+    const v=(s.val()||'warm');
+    chips.forEach(c=>c.classList.toggle('active', c.dataset.val===v));
+  });
+  chips.forEach(ch=>{
+    ch.addEventListener('click', ()=> canWrite(async ()=>{
+      chips.forEach(c=>c.classList.remove('active'));
+      ch.classList.add('active');
+      await persRef.set(ch.dataset.val);
+    }));
+  });
+
+  // Chat test link
+  const link = `https://tomos.chat/chat.html?empresa=${encodeURIComponent(EMPRESA)}`;
+  $('chatTestLink').value = link;
+  $('copyChatLink').onclick = ()=>{ navigator.clipboard.writeText(link); toast('Copiado'); };
+  $('openChatLink').onclick = ()=> window.open(link, '_blank');
+}
+
+// First paint
+window.addEventListener('load', ()=>{ $('pageLoader').style.display='none'; });
 </script>
 </body>
 </html>
+
