@@ -433,9 +433,15 @@ function initSettingsTab(){
       await persRef.set(ch.dataset.val);
     }));
   });
-  
-  
-  function autoResize(t){
+
+  // Chat test link
+  const link = `https://tomos.chat/chat.html?empresa=${encodeURIComponent(EMPRESA)}`;
+  $('chatTestLink').value = link;
+  $('copyChatLink').onclick = ()=>{ navigator.clipboard.writeText(link); toast('Copiado'); };
+  $('openChatLink').onclick = ()=> window.open(link, '_blank');
+}
+
+function autoResize(t){
   t.style.height='auto';
   t.style.height=t.scrollHeight+'px';
 }
@@ -475,14 +481,6 @@ function initKnowledge(){
     $('msgContext').classList.remove('hidden');
     setTimeout(() => $('msgContext').classList.add('hidden'), 1200);
   });
-}
-
-
-  // Chat test link
-  const link = `https://tomos.chat/chat.html?empresa=${encodeURIComponent(EMPRESA)}`;
-  $('chatTestLink').value = link;
-  $('copyChatLink').onclick = ()=>{ navigator.clipboard.writeText(link); toast('Copiado'); };
-  $('openChatLink').onclick = ()=> window.open(link, '_blank');
 }
 
 // First paint
