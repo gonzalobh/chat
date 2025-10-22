@@ -36,6 +36,8 @@
     .chip.active{border-color:#111;background:#111;color:#fff}
     .sidebar-btn{display:flex;gap:10px;align-items:center;width:100%;padding:.65rem .8rem;border-radius:12px}
     .sidebar-btn.active{background:#111;color:#fff}
+    textarea{resize:none;overflow:hidden;min-height:400px;}
+
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -67,6 +69,7 @@
         <nav class="space-y-2">
           <button class="sidebar-btn active" data-tab="apariencia"><i data-lucide="palette" class="w-4 h-4"></i><span>Apariencia</span></button>
           <button class="sidebar-btn" data-tab="settings"><i data-lucide="sliders" class="w-4 h-4"></i><span>Settings</span></button>
+          <button class="sidebar-btn" data-tab="knowledge"> <i data-lucide="book-open" class="w-4 h-4"></i> <span>Knowledge</span> </button>
         </nav>
         <div class="mt-6 text-xs text-gray-500">
           Empresa: <b id="empresaText">—</b>
@@ -227,6 +230,31 @@
               <p class="text-xs text-gray-500 mt-2">El enlace se genera automáticamente con el nombre de tu empresa actual.</p>
             </div>
           </section>
+          <!-- KNOWLEDGE TAB -->
+<section id="tab-knowledge" class="hidden space-y-6 max-w-3xl">
+  <div class="card p-5">
+    <div class="font-semibold flex items-center gap-2 mb-3">
+      <i data-lucide="book-open" class="w-5 h-5"></i>
+      Knowledge
+    </div>
+    <p class="text-sm text-gray-500 mb-3">
+      Write here the contextual information that helps the assistant
+      understand your business, products, and brand tone.
+    </p>
+
+    <textarea id="contextText"
+      class="w-full border rounded-xl p-3 text-sm focus:outline-none"
+      placeholder="Add your knowledge here... (max 10,000 characters)"></textarea>
+
+    <div class="flex items-center justify-between mt-2 text-xs">
+      <span id="ctxCounter" class="text-gray-500">0 / 10000 characters</span>
+    </div>
+
+    <button id="saveContext" class="mt-3 px-4 py-2 bg-black text-white rounded-md">Save</button>
+    <p id="msgContext" class="text-green-600 text-sm mt-2 hidden">✔ Saved</p>
+  </div>
+</section>
+
         </div>
       </main>
     </div>
@@ -279,7 +307,11 @@ async function refreshPermissions(){
   document.getElementById('permBannerS').classList.toggle('hidden', canWriteFlag);
 }
 function setWriteEnabled(enabled){
-  const ids = ['saveChatPrimaryColor','saveChatButtonColor','uploadLogo','deleteLogo','uploadAvatar','deleteAvatar','fontSelect','tgChatVisible','hotelName','timeZone','saveGeneral'];
+const ids = [
+  'saveChatPrimaryColor','saveChatButtonColor','uploadLogo','deleteLogo',
+  'uploadAvatar','deleteAvatar','fontSelect','tgChatVisible','hotelName',
+  'timeZone','saveGeneral','saveContext','contextText' // 👈 nuevos
+];
   ids.forEach(id=>{ const el=$(id); if(!el) return; el.disabled=!enabled; el.classList.toggle('opacity-60', !enabled); el.classList.toggle('cursor-not-allowed', !enabled); });
   $$('#personalityChips .chip').forEach(ch=>{ ch.disabled=!enabled; ch.classList.toggle('opacity-60', !enabled); });
 }
@@ -308,6 +340,7 @@ function initTabs(){
       const tab = btn.getAttribute('data-tab');
       $('tab-apariencia').classList.toggle('hidden', tab!=='apariencia');
       $('tab-settings').classList.toggle('hidden', tab!=='settings');
+      $('tab-knowledge').classList.toggle('hidden', tab!=='knowledge'); // 👈 nuevo
     });
   });
 }
@@ -327,7 +360,7 @@ function getTimeZones(){
 // ====== Init All ======
 async function initAll(){
   lucide.createIcons(); initTabs(); applyPreview(); await refreshPermissions();
-  initApariencia(); initSettingsTab();
+  initApariencia(); initSettingsTab(); initKnowledge(); // 👈 añadido
 }
 
 // ====== Apariencia ======
@@ -400,6 +433,50 @@ function initSettingsTab(){
       await persRef.set(ch.dataset.val);
     }));
   });
+  
+  
+  function autoResize(t){
+  t.style.height='auto';
+  t.style.height=t.scrollHeight+'px';
+}
+
+function initKnowledge(){
+  const ref = eref('config/contextInfo');
+  const txt = $('contextText');
+  const btn = $('saveContext');
+  const counter = $('ctxCounter');
+  const LIMIT = 10000;
+
+  function updateCounter(){
+    const len = (txt.value || '').length;
+    if (counter){
+      counter.textContent = `${len} / ${LIMIT} characters`;
+      counter.classList.toggle('text-red-600', len > LIMIT);
+      counter.classList.toggle('text-gray-500', len <= LIMIT);
+    }
+    const over = len > LIMIT;
+    btn.disabled = over || !canWriteFlag;
+    btn.classList.toggle('opacity-60', btn.disabled);
+    btn.classList.toggle('cursor-not-allowed', btn.disabled);
+  }
+
+  ref.once('value', s => {
+    txt.value = s.val() || '';
+    autoResize(txt);
+    updateCounter();
+  });
+
+  txt.addEventListener('input', e => { autoResize(e.target); updateCounter(); });
+
+  btn.onclick = () => canWrite(async () => {
+    updateCounter();
+    if (btn.disabled) return;
+    await ref.set(txt.value.trim());
+    $('msgContext').classList.remove('hidden');
+    setTimeout(() => $('msgContext').classList.add('hidden'), 1200);
+  });
+}
+
 
   // Chat test link
   const link = `https://tomos.chat/chat.html?empresa=${encodeURIComponent(EMPRESA)}`;
@@ -413,4 +490,3 @@ window.addEventListener('load', ()=>{ $('pageLoader').style.display='none'; });
 </script>
 </body>
 </html>
-
