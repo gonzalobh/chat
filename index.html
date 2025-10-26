@@ -2050,6 +2050,28 @@ function initWelcome() {
 window.addEventListener('load', ()=>{ $('pageLoader').style.display='none'; });
 </script>
 
+<!-- 🧑‍🎨 Modal de recorte de Avatar -->
+<div id="cropperModalAvatar"
+  class="fixed inset-0 bg-black/70 hidden items-center justify-center z-[9998]">
+  <div class="bg-white rounded-2xl p-6 shadow-xl max-w-sm w-full text-center">
+    <h3 class="font-semibold mb-4">Recortar Avatar</h3>
+    <div class="w-full aspect-square bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
+      <img id="cropperImageAvatar" class="max-w-full max-h-[300px]" />
+    </div>
+
+    <!-- Progreso -->
+    <div id="avatarProgressWrap" class="mt-4 hidden w-full bg-gray-200 rounded-full overflow-hidden h-2">
+      <div id="avatarBar" class="h-2 w-0 bg-black transition-all duration-200"></div>
+    </div>
+
+    <div class="flex justify-center gap-3 mt-5">
+      <button id="cancelCropAvatar"
+        class="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 text-sm">Cancelar</button>
+      <button id="confirmCropAvatar"
+        class="px-4 py-2 rounded-lg bg-black text-white hover:bg-gray-800 text-sm">Guardar</button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
