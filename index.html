@@ -394,7 +394,6 @@ header {
 </div>
 
 
-        <p id="msgAvatar" class="text-green-600 text-sm mt-2 hidden">✔ Avatar updated</p>
       </div>
 
 <!-- 🧭 WIDGET -->
@@ -1424,13 +1423,6 @@ if (iframe?.contentWindow?.document) {
     });
   };
 
-  const showAvatarMessage = () => {
-    const msg = $('msgAvatar');
-    if (!msg) return;
-    msg.classList.remove('hidden');
-    clearTimeout(avatarMsgTimeout);
-    avatarMsgTimeout = setTimeout(() => msg.classList.add('hidden'), 1200);
-  };
 
   applyAvatarSelection(DEFAULT_AVATAR);
 
@@ -1447,7 +1439,7 @@ if (iframe?.contentWindow?.document) {
       canWrite(async () => {
         await avRef.set(selected);
         applyAvatarSelection(selected);
-        showAvatarMessage();
+toast('✔ Avatar updated');
       });
     });
   });
@@ -1528,7 +1520,7 @@ if (iframe?.contentWindow?.document) {
           await avRef.set(url);
           applyAvatarSelection(url);
           $('avatarProgressWrap').classList.add('hidden');
-          showAvatarMessage();
+toast('✔ Avatar updated');
           e.target.value = '';
           lucide.createIcons();
         });
