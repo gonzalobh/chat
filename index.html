@@ -1,0 +1,1966 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tomos · Admin</title>
+
+  <!-- Firebase (compat) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-storage-compat.js"></script>
+  
+  <!-- Cropper.js -->
+<link href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.1/dist/cropper.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.1/dist/cropper.min.js"></script>
+
+
+  <!-- UI -->
+  <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@0.292.0/dist/umd/lucide.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Manrope:wght@400;600&family=Merriweather:wght@400;700&family=Poppins:wght@400;600&family=Playfair+Display:wght@400;700&family=Roboto:wght@400;600&display=swap" rel="stylesheet">
+
+
+  <style>
+  body {
+  font-family: 'Manrope', system-ui, sans-serif !important;
+}
+
+    :root{ --tile-radius: 18px; }
+    body{ font-family: 'Manrope', system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+    .card{ background:white; border-radius: var(--tile-radius); box-shadow: 0 10px 30px rgba(0,0,0,.06); }
+    .toggle{--w:52px;--h:28px;--p:3px;appearance:none;-webkit-appearance:none;outline:none;cursor:pointer;width:var(--w);height:var(--h);border-radius:999px;border:2px solid #111;background:#fff;position:relative;box-sizing:border-box;transition:background .2s,border-color .2s}
+    .toggle::after{content:"";position:absolute;top:50%;left:var(--p);width:calc(var(--h) - 2*var(--p));height:calc(var(--h) - 2*var(--p));border-radius:50%;background:#111;transform:translateY(-50%);transition:left .2s,background .2s}
+    .toggle:checked{background:#111;border-color:#111}
+    .toggle:checked::after{background:#fff;left:calc(var(--w) - var(--h) + var(--p))}
+    input[type="color"]{-webkit-appearance:none;border:none;width:34px;height:34px;border:1px solid #c9c9c9;border-radius:999px;padding:0;cursor:pointer;overflow:hidden}
+    input[type="color"]::-webkit-color-swatch-wrapper{padding:0}
+    input[type="color"]::-webkit-color-swatch{border:none;border-radius:999px}
+    .iphone{ position:relative; width:320px; height:640px; border-radius:34px; background:#000; padding:0px; box-shadow:0 30px 60px rgba(0,0,0,.25)}
+    .iphone-in{ width:100%; height:100%; border-radius:26px; overflow:hidden; background:white}
+    .notch{ position:absolute;left:50%;top:0;transform:translateX(-50%); width:160px;height:22px;background:#000;border-bottom-left-radius:16px;border-bottom-right-radius:16px}
+    .chip{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:10px 14px;border:1px solid #e5e7eb;background:#fff;cursor:pointer;font-size:14px}
+    .chip.active{border-color:#111;background:#111;color:#fff}
+    .sidebar-btn{display:flex;gap:10px;align-items:center;width:100%;padding:.65rem .8rem;border-radius:12px}
+    .sidebar-btn.active{background:#111;color:#fff}
+    textarea{resize:none;overflow:hidden;min-height:400px;}
+aside {
+  scrollbar-width: thin;
+  scrollbar-color: #ccc transparent;
+}
+aside::-webkit-scrollbar {
+  width: 6px;
+}
+aside::-webkit-scrollbar-thumb {
+  background: #bbb;
+  border-radius: 10px;
+}
+
+#fontFamily option {
+  font-size: 14px;
+  padding: 6px 8px;
+}
+
+#fontFamily option[value="Manrope"] { font-family: 'Manrope', system-ui, sans-serif; }
+#fontFamily option[value="Inter"] { font-family: 'Inter', system-ui, sans-serif; }
+#fontFamily option[value="Poppins"] { font-family: 'Poppins', system-ui, sans-serif; }
+#fontFamily option[value="Roboto"] { font-family: 'Roboto', system-ui, sans-serif; }
+#fontFamily option[value="Playfair Display"] { font-family: 'Playfair Display', serif; }
+#fontFamily option[value="Merriweather"] { font-family: 'Merriweather', serif; }
+
+button.bg-black {
+  background: linear-gradient(to bottom, #f7f7f7, #eaeaea) !important; /* degradado suave */
+  color: #111 !important;               
+  border: none !important;               /* 🔹 sin borde */
+  border-radius: 12px !important;       
+  box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+  transition: all 0.2s ease;
+  font-weight: 400; /* sin negrita */
+}
+
+button.bg-black:hover {
+  background: linear-gradient(to bottom, #ececec, #dddddd) !important;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+}
+
+/* === Sidebar buttons === */
+.sidebar-btn {
+  color: #777 !important; /* gris suave para las no activas */
+  transition: all 0.2s ease;
+}
+
+.sidebar-btn i {
+  color: #777 !important;
+  transition: color 0.2s ease;
+}
+
+/* Activa */
+.sidebar-btn.active {
+  background: none !important;
+  color: #000 !important; /* texto negro */
+  font-weight: 500;
+}
+
+.sidebar-btn.active i {
+  color: #000 !important; /* ícono negro */
+}
+
+/* Hover */
+.sidebar-btn:hover {
+  background: #f5f5f5 !important;
+  color: #111 !important;
+}
+
+.sidebar-btn:hover i {
+  color: #111 !important;
+}
+
+/* === Botón Cerrar Sesión (mismo estilo que Save) === */
+#btnLogout {
+  background: linear-gradient(to bottom, #f7f7f7, #eaeaea) !important;
+  color: #111 !important;
+  border: none !important;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+  transition: all 0.2s ease;
+  font-weight: 400;
+}
+
+#btnLogout:hover {
+  background: linear-gradient(to bottom, #ececec, #dddddd) !important;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+}
+
+/* === Logo fijo y estable en el header === */
+header img[alt="Tomos Logo"] {
+  position: absolute;          /* fija su posición dentro del header */
+  left: 14px;                  /* ajusta la distancia desde el borde izquierdo */
+  top: 50%;                    /* lo centra verticalmente */
+  transform: translateY(-50%); /* centra perfectamente en altura */
+  height: 48px;
+  width: auto;
+  border-radius: 10px;
+  object-fit: contain;
+  pointer-events: none;        /* evita clics accidentales */
+}
+header {
+  position: relative; /* necesario para que el logo se posicione dentro */
+}
+
+#embedScriptBox {
+  resize: none;
+  overflow: hidden;
+  min-height: 40px;  /* altura mínima decente */
+  height: auto;
+  line-height: 1.4;
+}
+
+/* === Corrección: botones de días seleccionados === */
+.day.bg-black {
+  background: #000 !important;   /* fondo negro sólido */
+  color: #fff !important;        /* texto blanco */
+  border: none !important;       /* sin borde */
+  box-shadow: none !important;   /* sin sombra */
+}
+.day.bg-black:hover {
+  background: #000 !important;   /* mantiene negro al pasar el mouse */
+  color: #fff !important;
+}
+
+/* === Centrar todas las pestañas excepto Appearance === */
+#tab-settings,
+#tab-knowledge,
+#tab-integration,
+#tab-schedule,
+#tab-respuestas {
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  max-width: 800px; /* puedes ajustar a 900 o 1000 si quieres más ancho */
+}
+#logoRadiusVal {
+  display: inline-block;
+  min-width: 2ch; /* reserva espacio suficiente para dos caracteres */
+  text-align: right;
+}
+
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <!-- Loader -->
+  <div id="pageLoader" class="fixed inset-0 bg-white/95 flex flex-col items-center justify-center z-[9999]">
+    <div class="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-black"></div>
+    <p class="mt-4 text-gray-600 text-sm">Cargando…</p>
+  </div>
+
+  <!-- Header minimal -->
+<header class="fixed top-0 left-0 w-full bg-white backdrop-blur border-b z-50 shadow-sm">
+  <div class="max-w-7xl mx-auto px-5 py-3 flex items-center justify-between">
+
+    <!-- Logo -->
+    <div class="flex items-center gap-3">
+      <img src="logo.png" alt="Tomos Logo" class="h-8 w-auto rounded-lg " />
+    </div>
+
+    <!-- Empresa + Email + Logout -->
+    <div class="flex items-center gap-4">
+      <div class="flex flex-col items-end text-right leading-tight">
+        <span id="empresaBadge" class="text-[8px] bg-black text-white px-1 py-[1px] rounded mb-[2px]">
+          —
+        </span>
+        <span id="authEmail" class="text-xs text-gray-500">—</span>
+      </div>
+      <button id="btnLogout" class="px-3 py-1.5 bg-red-600 text-white rounded-md hidden">
+        Cerrar sesión
+      </button>
+    </div>
+
+  </div>
+</header>
+
+
+<div class="h-[57px]"></div>
+<div class="flex min-h-screen">
+      <!-- Sidebar -->
+<aside class="group fixed top-[57px] left-0 h-[calc(100vh-57px)] bg-white border-r overflow-y-auto transition-all duration-300 w-[72px] hover:w-[260px]">
+  <nav class="space-y-2 mt-4 px-2">
+    <button class="sidebar-btn active flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="apariencia">
+      <i data-lucide="palette" class="w-5 h-5 shrink-0"></i>
+      <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Appearance</span>
+    </button>
+    <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="settings">
+      <i data-lucide="sliders" class="w-5 h-5 shrink-0"></i>
+      <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Settings</span>
+    </button>
+    <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="knowledge">
+      <i data-lucide="book-open" class="w-5 h-5 shrink-0"></i>
+      <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Knowledge</span>
+    </button>
+    <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="integration">
+      <i data-lucide="code-2" class="w-5 h-5 shrink-0"></i>
+      <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Integration</span>
+    </button>
+    <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="respuestas">
+      <i data-lucide="bot" class="w-5 h-5 shrink-0"></i>
+      <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Auto Responses</span>
+    </button>
+    <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="schedule">
+  <i data-lucide="clock" class="w-5 h-5 shrink-0"></i>
+  <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Schedule</span>
+</button>
+
+  </nav>
+
+  <div class="mt-6 text-xs text-gray-500 px-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+    Empresa: <b id="empresaText">—</b>
+  </div>
+</aside>
+
+
+      <!-- Content -->
+<main class="flex-1 ml-[72px] transition-all duration-300 group-hover:ml-[260px] flex justify-center">
+<div class="w-full max-w-6xl pt-16 px-8 pb-8">
+              <!-- Login card -->
+<div id="login" class="max-w-sm mx-auto mt-10 card p-6 text-center">
+<img src="logo.png" alt="Tomos Logo" class="w-32 h-auto mx-auto mb-4 rounded-lg" />
+  
+  <div class="flex items-center justify-center mb-4 gap-2">
+    <h2 class="text-xl font-bold">Admin Access</h2>
+  </div>
+
+  <label class="block text-sm text-gray-600 mb-1 text-left">Email</label>
+  <input id="emailInput" type="email" class="w-full border rounded-xl px-3 py-2 mb-3" placeholder="admin@company.com">
+  <label class="block text-sm text-gray-600 mb-1 text-left">Password</label>
+  <input id="passwordInput" type="password" class="w-full border rounded-xl px-3 py-2 mb-4" placeholder="••••••••">
+  <button id="btnLogin" class="w-full py-2.5 rounded-xl bg-black text-white">Login</button>
+  <p id="loginError" class="text-red-600 text-sm mt-3 hidden text-center">❌ Incorrect credentials</p>
+</div>
+
+
+
+        <!-- Tabs container -->
+        <div id="tabs" class="hidden">
+<!-- Apariencia -->
+<!-- 🧩 APPEARANCE TAB -->
+<section id="tab-apariencia" class="space-y-6">
+
+  <div id="permBannerA" class="hidden card p-4 border border-amber-300/60 bg-amber-50">
+    <div class="flex gap-2 items-start">
+      <i data-lucide="shield-alert" class="w-5 h-5 text-amber-600"></i>
+      <div class="text-sm text-amber-800">
+        <b>Sin permisos de escritura.</b> Debes iniciar sesión con el email guardado en <code>config/adminEmail</code> o ser <code>globalAdmin</code>.
+      </div>
+    </div>
+  </div>
+
+  <!-- 🧱 3 COLUMNAS -->
+<div class="grid grid-cols-1 xl:grid-cols-[2.2fr_320px_2.2fr] gap-12 items-start">
+
+    <!-- 🧩 COLUMNA 1 -->
+    <div class="space-y-6">
+
+      <!-- 🖼️ HEADER FAVICON -->
+      <div class="card p-5">
+        <h3 class="font-semibold mb-3 flex items-center gap-2">
+          <i data-lucide="image" class="w-5 h-5"></i>
+          Header Image
+        </h3>
+
+        <div id="logoControls" class="mb-2">
+          <label class="inline-block px-4 py-2 bg-black text-white rounded cursor-pointer text-sm hover:bg-gray-800 transition">
+            Select file
+            <input id="logoFile" type="file" accept="image/*" class="hidden" />
+          </label>
+        </div>
+
+<div class="relative hidden flex justify-center" id="logoPreviewWrap">
+          <div class="relative w-24 h-24 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center shadow">
+            <img id="logoPreview" class="w-full h-full object-cover" alt="Logo" />
+            <button id="deleteLogo" class="absolute bottom-1 right-1 bg-red-600 text-white p-1.5 rounded-full shadow hover:bg-red-700 transition">
+              <i data-lucide="trash" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+        
+
+
+<!-- Radio + slider -->
+<div class="flex items-center justify-center gap-3 mt-4">
+  <input type="checkbox" id="headerRounded" />
+  <input type="range" id="logoRadius" min="0" max="50" value="23" class="w-1/2 accent-blue-500">
+  <span id="logoRadiusVal" class="text-sm text-gray-600">23</span>
+</div>
+
+        
+
+
+        <p id="msgLogo" class="text-green-600 text-sm mt-2 hidden">✔ Header image updated</p>
+      </div>
+
+      <!-- 🧑‍💻 CHATBOT AVATAR -->
+      <div class="card p-5">
+        <h3 class="font-semibold mb-3 flex items-center gap-2">
+          <i data-lucide="smile" class="w-5 h-5"></i>
+           Avatar
+        </h3>
+
+        <div id="avatarControls" class="mb-2">
+          <label class="inline-block px-4 py-2 bg-black text-white rounded cursor-pointer text-sm hover:bg-gray-800 transition">
+            Select file
+            <input id="avatarFile" type="file" accept="image/*" class="hidden" />
+          </label>
+        </div>
+
+      <div class="relative hidden flex justify-center" id="avatarPreviewWrap">
+  <div class="relative w-24 h-24 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center shadow">
+    <img id="avatarPreview" class="w-full h-full object-cover" alt="Avatar" />
+    <button id="deleteAvatar" class="absolute bottom-1 right-1 bg-red-600 text-white p-1.5 rounded-full shadow hover:bg-red-700 transition">
+      <i data-lucide="trash" class="w-4 h-4"></i>
+    </button>
+  </div>
+</div>
+
+
+        <p id="msgAvatar" class="text-green-600 text-sm mt-2 hidden">✔ Avatar updated</p>
+      </div>
+
+<!-- 🧭 WIDGET -->
+<div class="card p-5">
+  <h3 class="font-semibold mb-3 flex items-center gap-2">
+    <i data-lucide="mouse-pointer" class="w-5 h-5"></i>
+    Widget
+  </h3>
+
+  <!-- Widget Color -->
+  <div class="flex items-center gap-4 mb-4">
+    <input id="chatButtonColor" type="color" class="w-10 h-10 cursor-pointer">
+    <span class="text-sm font-medium text-gray-600 select-none">Widget Color</span>
+  </div>
+
+  <!-- Widget Border Radius -->
+  <div class="flex items-center justify-center gap-3 mt-4">
+    <input type="checkbox" id="widgetRounded" />
+    <input type="range" id="widgetRadius" min="0" max="50" value="20" class="w-1/2 accent-blue-500">
+    <span id="widgetRadiusVal" class="text-sm text-gray-600">20</span>
+  </div>
+</div>
+
+
+
+    </div>
+
+    <!-- 📱 COLUMNA 2 (MOCKUP) -->
+    <aside class="hidden lg:block">
+      <div class="sticky top-4">
+        <div class="iphone mx-auto">
+          <div class="notch"></div>
+          <div class="iphone-in relative">
+            <iframe id="liveChatFrame"
+              class="absolute inset-0 w-full h-full border-0 rounded-[26px]"
+              sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
+              referrerpolicy="no-referrer-when-downgrade"></iframe>
+
+            <!-- Elementos ocultos necesarios para el preview -->
+            <div class="p-4 border-b flex items-center gap-3 hidden">
+              <img id="previewLogo" class="h-7 w-7 rounded hidden" />
+              <div class="font-medium">Chat Preview</div>
+            </div>
+            <div class="p-4 space-y-3 hidden" id="previewHolder">
+              <button id="previewBtn" class="px-4 py-2 rounded text-white">Botón</button>
+              <div id="previewBubble" class="p-3 rounded text-white inline-block">Mensaje</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 🎨 COLUMNA 3 -->
+    <div class="space-y-6">
+
+  <!-- 🎨 COLORS -->
+<!-- 🎨 COLORS -->
+<div class="card p-5">
+  <h3 class="font-semibold mb-4 flex items-center gap-2">
+    <i data-lucide="palette" class="w-5 h-5"></i>
+    Colors
+  </h3>
+
+  <div class="space-y-5">
+
+<!-- Header Background -->
+<div class="flex items-center gap-4">
+  <input id="chatHeaderColor" type="color" class="w-10 h-10 cursor-pointer">
+  <span class="text-sm font-medium text-gray-600 select-none">Header Background</span>
+</div>
+
+
+    <!-- Chat Background -->
+    <div class="flex items-center gap-4">
+      <input id="chatBackgroundColor" type="color" class="w-10 h-10 cursor-pointer">
+      <span class="text-sm font-medium text-gray-600 select-none">Chat Background</span>
+    </div>
+
+
+    <!-- Chat Primary Color -->
+    <div class="flex items-center gap-4">
+      <input id="chatPrimaryColor" type="color" class="w-10 h-10 cursor-pointer">
+      <span class="text-sm font-medium text-gray-600 select-none">Primary</span>
+    </div>
+
+  </div>
+</div>
+
+
+      <!-- Font -->
+      <div class="card p-5">
+        <h3 class="font-semibold mb-3 flex items-center gap-2">
+          <i data-lucide="type" class="w-5 h-5"></i>
+          Font
+        </h3>
+        <select id="fontFamily" class="border rounded px-3 py-2 w-full text-sm bg-white">
+          <option value="Manrope">Manrope</option>
+          <option value="Inter">Inter</option>
+          <option value="Poppins">Poppins</option>
+          <option value="Roboto">Roboto</option>
+          <option value="Playfair Display">Playfair Display</option>
+          <option value="Merriweather">Merriweather</option>
+        </select>
+        
+         <!-- 🆕 Assistant Text Color -->
+<div class="flex items-center gap-4 mt-4">
+  <input id="chatAssistantTextColor" type="color" class="w-10 h-10 cursor-pointer">
+  <span class="text-sm font-medium text-gray-600 select-none">Text Color</span>
+</div>
+
+  
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+      
+          </div>
+
+          <!-- SETTINGS TAB -->
+          <section id="tab-settings" class="hidden space-y-6 max-w-3xl">
+            <div id="permBannerS" class="hidden card p-4 border border-amber-300/60 bg-amber-50">
+              <div class="flex gap-2 items-start">
+                <i data-lucide="shield-alert" class="w-5 h-5 text-amber-600"></i>
+                <div class="text-sm text-amber-800">
+                  <b>Sin permisos de escritura.</b> Debes iniciar sesión con el email guardado en <code>config/adminEmail</code> o ser <code>globalAdmin</code>.
+                </div>
+              </div>
+            </div>
+
+            <!-- Show Button -->
+            <div class="card p-5">
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="font-semibold flex items-center gap-2"><i data-lucide="message-circle" class="w-5 h-5"></i> Show Button</div>
+                  <p class="text-sm text-gray-500">Show the chat button on the website</p>
+                </div>
+                <input id="tgChatVisible" type="checkbox" class="toggle" />
+              </div>
+            </div>
+
+            <!-- General Information -->
+            <div class="card p-5">
+              <div class="font-semibold flex items-center gap-2 mb-3"><i data-lucide="building-2" class="w-5 h-5"></i> General Information</div>
+              <label class="block text-sm text-gray-600 mb-1">Name</label>
+              <input id="hotelName" class="w-full border rounded-xl px-3 py-2 mb-3" placeholder="Boletum"/>
+              <label class="block text-sm text-gray-600 mb-1">Time Zone</label>
+              <select id="timeZone" class="w-full border rounded-xl px-3 py-2 mb-4"></select>
+              <button id="saveGeneral" class="px-4 py-2 bg-black text-white rounded-md">Save</button>
+              <p id="msgGeneral" class="text-green-600 text-sm mt-2 hidden">✔ Saved</p>
+            </div>
+
+            <!-- Assistant Personality -->
+            <div class="card p-5">
+              <div class="font-semibold flex items-center gap-2 mb-4"><i data-lucide="sparkles" class="w-5 h-5"></i> Assistant Personality</div>
+              <div id="personalityChips" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <button data-val="formal" class="chip">Formal & Polite</button>
+                <button data-val="relaxed" class="chip">Relaxed & Friendly</button>
+                <button data-val="warm" class="chip">Warm & Welcoming</button>
+                <button data-val="efficient" class="chip">Efficient & Direct</button>
+                <button data-val="young" class="chip">Young & Playful</button>
+              </div>
+            </div>
+            
+            <!-- 📨 Welcome Message -->
+<div class="card p-5 space-y-4">
+  <div class="font-semibold flex items-center gap-2 mb-2">
+    <i data-lucide="smile" class="w-5 h-5"></i>
+    Welcome Message
+  </div>
+
+  <label class="flex items-center justify-between cursor-pointer">
+    <span class="text-sm text-gray-600">Enable welcome message</span>
+    <input type="checkbox" id="welcomeEnabled" class="toggle">
+  </label>
+
+  <div>
+    <textarea id="welcomeText" class="w-full border rounded-lg px-3 py-2 text-sm"
+              rows="2" placeholder="Enter welcome message..."></textarea>
+  </div>
+
+  <div>
+    <label class="block text-sm text-gray-600 mb-1">Delay (seconds)</label>
+    <input id="welcomeDelay" type="number" min="0" class="border rounded px-2 py-1 text-sm w-24" value="2">
+  </div>
+
+  <div>
+    <label class="block text-sm text-gray-600 mb-1">Welcome image (optional)</label>
+    <input id="welcomeImageFile" type="file" accept="image/*">
+    <img id="welcomePreview" class="mt-3 rounded-lg w-56 hidden" />
+  </div>
+
+  <button id="saveWelcome" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md text-sm">
+    Save
+  </button>
+
+  <p id="msgWelcome" class="text-green-600 text-sm mt-2 hidden">✔ Saved</p>
+</div>
+
+
+            <!-- Link para probar el chat -->
+            <div class="card p-5">
+              <div class="font-semibold flex items-center gap-2 mb-3"><i data-lucide="link-2" class="w-5 h-5"></i> Link para probar el chat</div>
+              <div class="flex items-center gap-3">
+                <input id="chatTestLink" type="text" readonly class="flex-1 border rounded-lg px-3 py-2 text-sm bg-gray-50 select-all"/>
+                <button id="copyChatLink" class="px-3 py-2 bg-black text-white text-sm rounded-lg">Copiar</button>
+                <button id="openChatLink" class="px-3 py-2 bg-black text-white text-sm rounded-lg">Abrir</button>
+              </div>
+              <p class="text-xs text-gray-500 mt-2">El enlace se genera automáticamente con el nombre de tu empresa actual.</p>
+            </div>
+          </section>
+          <!-- KNOWLEDGE TAB -->
+<section id="tab-knowledge" class="hidden space-y-6 max-w-3xl">
+  <div class="card p-5">
+    <div class="font-semibold flex items-center gap-2 mb-3">
+      <i data-lucide="book-open" class="w-5 h-5"></i>
+      Knowledge
+    </div>
+    <p class="text-sm text-gray-500 mb-3">
+      Write here the contextual information that helps the assistant
+      understand your business, products, and brand tone.
+    </p>
+
+    <textarea id="contextText"
+      class="w-full border rounded-xl p-3 text-sm focus:outline-none"
+      placeholder="Add your knowledge here... (max 10,000 characters)"></textarea>
+
+    <div class="flex items-center justify-between mt-2 text-xs">
+      <span id="ctxCounter" class="text-gray-500">0 / 10000 characters</span>
+    </div>
+
+    <button id="saveContext" class="mt-3 px-4 py-2 bg-black text-white rounded-md">Save</button>
+    <p id="msgContext" class="text-green-600 text-sm mt-2 hidden">✔ Saved</p>
+  </div>
+</section>
+
+
+<!-- SCHEDULE TAB -->
+<section id="tab-schedule" class="hidden space-y-6 max-w-3xl">
+  <div class="card p-5">
+    <div class="font-semibold flex items-center gap-2 mb-3">
+      <i data-lucide="clock" class="w-5 h-5"></i>
+      Schedule
+    </div>
+    <p class="text-sm text-gray-500 mb-4">
+      Define the periods when the chat widget should be active.
+    </p>
+
+    <div id="scheduleList" class="space-y-3"></div>
+
+
+
+    <p id="msgSchedule" class="text-green-600 text-sm mt-3 hidden">✔ Saved</p>
+  </div>
+</section>
+
+
+
+
+<!-- INTEGRATION TAB -->
+<section id="tab-integration" class="hidden space-y-6 max-w-3xl">
+  <div class="card p-5">
+    <div class="font-semibold flex items-center gap-2 mb-3">
+      <i data-lucide="code-2" class="w-5 h-5"></i>
+      Integration Script
+    </div>
+    <p class="text-sm text-gray-500 mb-3">
+      Copy and paste this code into your website just before the <code>&lt;/body&gt;</code> tag.
+      The chat will automatically appear with your hotel's configuration.
+    </p>
+
+    <div class="relative">
+      <textarea id="embedScriptBox" readonly
+        class="w-full text-sm font-mono bg-gray-50 border rounded-lg p-3 pr-16 focus:outline-none select-all resize-none"
+        rows="2"></textarea>
+      <button id="copyEmbedScript"
+        class="absolute top-2 right-2 px-3 py-1 text-xs bg-black text-white rounded-md hover:bg-gray-800">
+        Copy
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- RESPUESTAS TAB -->
+<section id="tab-respuestas" class="hidden space-y-6 max-w-3xl">
+  <div class="card p-5">
+    <div class="font-semibold flex items-center gap-2 mb-3">
+      <i data-lucide="bot" class="w-5 h-5"></i>
+      Auto Responses
+    </div>
+    <p class="text-sm text-gray-500 mb-3">
+      Add responses that the chat will automatically send based on keywords.
+      You can create normal text or groups of cards (if there are several, they will appear in a carousel).
+    </p>
+
+    <div class="flex gap-3 mb-4">
+      <button id="addAutoResponse" class="px-4 py-2 bg-black text-white rounded-md flex items-center gap-2 text-sm">
+        <i data-lucide="plus"></i> New Response
+      </button>
+      <button id="saveAutoResponses" class="px-4 py-2 bg-black text-white rounded-md flex items-center gap-2 text-sm">
+        <i data-lucide="save"></i> Save Changes
+      </button>
+    </div>
+
+    <div id="autoResponsesList" class="space-y-3"></div>
+    <p id="msgAutoResponses" class="text-green-600 text-sm mt-3 hidden">✔ Saved</p>
+  </div>
+</section>
+
+
+</div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Toast -->
+<div id="toast"
+  class="fixed top-[70px] left-1/2 -translate-x-1/2 bg-green-600 text-white px-4 py-2 rounded-lg opacity-0 text-sm shadow-lg transition-opacity z-[9999]">
+</div>
+
+
+<script>
+// ====== Firebase config ======
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyC2c3S_NtouIjHPrk5LM5c0DQoTWyBrzH4",
+  authDomain: "timbre-c9547.firebaseapp.com",
+  databaseURL: "https://timbre-c9547-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "timbre-c9547",
+  storageBucket: "timbre-c9547.firebasestorage.app",
+  messagingSenderId: "127064655657",
+  appId: "1:127064655657:web:a4e99dcbc6ab33f32c1938"
+};
+if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+const db = firebase.database();
+const auth = firebase.auth();
+const storage = firebase.storage();
+
+// ====== Helpers ======
+const $ = (id) => document.getElementById(id);
+const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+function toast(msg){
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.remove('opacity-0');
+  setTimeout(() => t.classList.add('opacity-0'), 2500);
+}
+
+function getEmpresa() {
+  const url = new URL(window.location.href);
+  const p = (url.searchParams.get('empresa') || localStorage.getItem('empresa') || '').trim();
+  if (p) localStorage.setItem('empresa', p);
+  return p || 'default';
+}
+
+let EMPRESA = getEmpresa();
+$('empresaBadge').textContent = EMPRESA;
+$('empresaText').textContent = EMPRESA;
+function eref(path) { return db.ref(`${EMPRESA}/${path}`); }
+
+let canWriteFlag = false;
+async function refreshPermissions() {
+  const user = auth.currentUser;
+  if (!user) { canWriteFlag = false; setWriteEnabled(false); return; }
+
+  $('authEmail').textContent = user.email || '';
+  const adminEmailSnap = await eref('config/adminEmail').once('value');
+  const adminEmail = adminEmailSnap.val();
+  const globalAdminSnap = await db.ref('globalAdmins/' + user.uid).once('value');
+  const isGlobal = !!globalAdminSnap.val();
+
+  canWriteFlag = isGlobal || (adminEmail && user.email && adminEmail === user.email);
+  setWriteEnabled(canWriteFlag);
+  document.getElementById('permBannerA').classList.toggle('hidden', canWriteFlag);
+  document.getElementById('permBannerS').classList.toggle('hidden', canWriteFlag);
+}
+
+function setWriteEnabled(enabled) {
+  const ids = [
+    'saveChatPrimaryColor','saveChatButtonColor','uploadLogo','deleteLogo',
+    'uploadAvatar','deleteAvatar','fontSelect','tgChatVisible','hotelName',
+    'timeZone','saveGeneral','saveContext','contextText'
+  ];
+  ids.forEach(id => {
+    const el = $(id);
+    if (!el) return;
+    el.disabled = !enabled;
+    el.classList.toggle('opacity-60', !enabled);
+    el.classList.toggle('cursor-not-allowed', !enabled);
+  });
+  $$('#personalityChips .chip').forEach(ch => {
+    ch.disabled = !enabled;
+    ch.classList.toggle('opacity-60', !enabled);
+  });
+}
+
+async function canWrite(fn) {
+  await refreshPermissions();
+  if (!canWriteFlag) {
+    alert('You do not have permission to modify the configuration.');
+    return;
+  }
+  await fn();
+}
+
+// ====== Auth ======
+$('btnLogin').addEventListener('click', async () => {
+  const email = $('emailInput').value.trim();
+  const pass = $('passwordInput').value.trim();
+  if (!email || !pass) return alert('Please enter your credentials.');
+  try {
+    await auth.signInWithEmailAndPassword(email, pass);
+  } catch (e) {
+    console.error(e);
+    $('loginError').classList.remove('hidden');
+  }
+});
+
+$('btnLogout').addEventListener('click', () => auth.signOut());
+
+auth.onAuthStateChanged(async (u) => {
+  const header = document.querySelector('header');
+  const sidebar = document.querySelector('aside');
+
+  if (u) {
+    // 🔍 Detect company automatically by user email
+    let empresaDetectada = null;
+    try {
+      const snapshot = await db.ref().once('value');
+      const data = snapshot.val() || {};
+      for (const emp in data) {
+        const adminEmail = data[emp]?.config?.adminEmail;
+        if (adminEmail && adminEmail.toLowerCase() === u.email.toLowerCase()) {
+          empresaDetectada = emp;
+          break;
+        }
+      }
+    } catch (err) {
+      console.error('Error finding company:', err);
+    }
+
+    if (empresaDetectada) {
+      EMPRESA = empresaDetectada;
+      localStorage.setItem('empresa', EMPRESA);
+      $('empresaBadge').textContent = EMPRESA;
+      $('empresaText').textContent = EMPRESA;
+      console.log('✅ Company detected automatically:', EMPRESA);
+    } else {
+      console.warn('⚠ No company found for this email, using previous value:', EMPRESA);
+    }
+
+    // Show header and sidebar
+    header?.classList.remove('hidden');
+    sidebar?.classList.remove('hidden');
+
+    $('login').classList.add('hidden');
+    $('tabs').classList.remove('hidden');
+    $('btnLogout').classList.remove('hidden');
+
+    await initAll();
+
+    // ✅ Mostrar chat en vivo dentro del mockup
+    const live = document.getElementById('liveChatFrame');
+    if (live && EMPRESA) {
+      live.src = `https://tomos.bot/chat.html?empresa=${encodeURIComponent(EMPRESA)}`;
+      console.log('💬 Live chat loaded for', EMPRESA);
+    }
+
+  } else {
+    // Hide header and sidebar
+    header?.classList.add('hidden');
+    sidebar?.classList.add('hidden');
+
+    $('login').classList.remove('hidden');
+    $('tabs').classList.add('hidden');
+    $('btnLogout').classList.add('hidden');
+  }
+
+  $('pageLoader').style.display = 'none';
+});
+
+
+// ====== Tabs ======
+function initTabs() {
+  // 👇 Aquí seleccionamos el mockup interior, no el sidebar completo
+  const mockup = document.querySelector("#tab-apariencia aside");
+
+  $$(".sidebar-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      // Activar botón
+      $$(".sidebar-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      // Mostrar/ocultar secciones
+      const tab = btn.getAttribute("data-tab");
+      $("tab-apariencia").classList.toggle("hidden", tab !== "apariencia");
+      $("tab-settings").classList.toggle("hidden", tab !== "settings");
+      $("tab-knowledge").classList.toggle("hidden", tab !== "knowledge");
+      $("tab-integration").classList.toggle("hidden", tab !== "integration");
+      $("tab-respuestas")?.classList.toggle("hidden", tab !== "respuestas");
+      $("tab-schedule").classList.toggle("hidden", tab !== "schedule");
+
+
+      // 👇 Ocultar solo el iPhone de vista previa, no el sidebar fijo
+      if (mockup) {
+        mockup.classList.toggle("hidden", tab !== "apariencia");
+      }
+    });
+  });
+}
+
+// ====== Timezones ======
+function getTimeZones(){
+  if (Intl.supportedValuesOf) { try { return Intl.supportedValuesOf('timeZone'); } catch(e){} }
+  return [
+    'Europe/Madrid','Europe/Lisbon','Europe/Paris','Europe/Berlin','Europe/Rome','Europe/Warsaw','Eurris','Europe/Berlin','Europe/Rome','Europe/Warsaw','Europe/London',
+    'America/Santiago','America/Sao_Paulo','America/Mexico_City','America/Bogota','America/Lima','America/Argentina/Buenos_Aires',
+    'America/New_York','America/Los_Angeles','America/Chicago',
+    'Africa/Mauritius','Indian/Mauritius',
+    'Asia/Dubai','Asia/Singapore','Asia/Tokyo','Asia/Kolkata','Australia/Sydney'
+  ];
+}
+
+// ====== Init All ======
+async function initAll(){
+  lucide.createIcons(); 
+  initTabs(); 
+  applyPreview(); 
+  await refreshPermissions();
+  initApariencia(); 
+  initSettingsTab(); 
+  initKnowledge();
+  initIntegration();
+  initRespuestas();
+  initWelcome();
+  initSchedule();
+
+
+
+
+}
+
+
+// ====== Apariencia ======
+function initApariencia() {
+
+// 🔹 Chat Primary Color (auto-save with toast)
+const prRef = eref('config/chatPrimaryColor');
+prRef.once('value', s => {
+  $('chatPrimaryColor').value = s.val() || '#111111';
+  applyPreview();
+});
+
+$('chatPrimaryColor').addEventListener('input', (e) => {
+  const v = e.target.value || '#111111';
+  canWrite(async () => {
+    await prRef.set(v);
+    applyPreview();
+    toast('✔ Primary color saved');
+  });
+});
+
+// 🔹 Chat Button Color (auto-save with toast)
+const btRef = eref('config/chatButtonColor');
+btRef.once('value', s => {
+  $('chatButtonColor').value = s.val() || '#111111';
+  applyPreview();
+});
+
+$('chatButtonColor').addEventListener('input', (e) => {
+  const v = e.target.value || '#111111';
+  canWrite(async () => {
+    await btRef.set(v);
+    applyPreview();
+    toast('✔ Button color saved');
+  });
+});
+
+
+// === Widget Border Radius ===
+const widgetRadiusRef = eref('config/widgetRadius');
+
+widgetRadiusRef.once('value', s => {
+  const v = s.val() || 20;
+  $('widgetRadius').value = v;
+  $('widgetRadiusVal').textContent = v;
+});
+
+$('widgetRadius').addEventListener('input', (e) => {
+  const val = parseInt(e.target.value);
+  $('widgetRadiusVal').textContent = val;
+  canWrite(async () => {
+    await widgetRadiusRef.set(val);
+    toast('✔ Widget border updated');
+  });
+});
+
+
+// 🔹 Chat Background Color (auto-save with toast)
+const bgRef = eref('config/chatBackgroundColor');
+bgRef.once('value', s => {
+  $('chatBackgroundColor').value = s.val() || '#ffffff';
+  applyPreview();
+});
+
+$('chatBackgroundColor').addEventListener('input', (e) => {
+  const v = e.target.value || '#ffffff';
+  canWrite(async () => {
+    await bgRef.set(v);
+    applyPreview();
+    toast('✔ Background color saved');
+  });
+});
+
+
+// 🆕 Assistant Text Color (auto-save with toast)
+const atRef = eref('config/chatAssistantTextColor');
+atRef.once('value', s => {
+  $('chatAssistantTextColor').value = s.val() || '#000000';
+  applyPreview();
+});
+
+$('chatAssistantTextColor').addEventListener('input', (e) => {
+  const v = e.target.value || '#000000';
+  canWrite(async () => {
+    await atRef.set(v);
+    applyPreview();
+    toast('✔ Assistant text color saved');
+  });
+});
+
+
+
+// 🔹 Header Background Color (auto-save with toast)
+const headerRef = eref('config/chatHeaderColor');
+headerRef.once('value', s => {
+  $('chatHeaderColor').value = s.val() || '#ffffff';
+  applyPreview();
+});
+
+$('chatHeaderColor').addEventListener('input', (e) => {
+  const v = e.target.value || '#ffffff';
+  canWrite(async () => {
+    await headerRef.set(v);
+    applyPreview();
+    toast('✔ Header color saved');
+  });
+});
+
+
+
+
+// === Logo ===
+const logoRef = eref('config/logoUrl');
+logoRef.once('value', s => {
+  const url = s.val();
+  if (url) {
+    $('logoPreview').src = url;
+    $('logoPreviewWrap').classList.remove('hidden');
+    $('logoControls').classList.add('hidden');
+    $('previewLogo').src = url;
+    $('previewLogo').classList.remove('hidden');
+    lucide.createIcons();
+  }
+});
+
+// 🆙 Subir logo automáticamente al seleccionar archivo
+$('logoFile').addEventListener('change', e => canWrite(() => {
+  const f = e.target.files[0];
+  if (!f) return;
+
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    // Mostrar modal con Cropper
+    $('cropperImage').src = ev.target.result;
+    $('cropperModal').classList.remove('hidden');
+    $('cropperModal').classList.add('flex');
+
+    let cropper;
+    $('cropperImage').onload = () => {
+      cropper = new Cropper($('cropperImage'), {
+        aspectRatio: 1,
+        viewMode: 1,
+        background: false,
+        movable: false,
+        zoomable: true,
+        rotatable: false,
+        scalable: false
+      });
+    };
+
+    $('cancelCrop').onclick = () => {
+      cropper.destroy();
+      $('cropperModal').classList.add('hidden');
+      e.target.value = ''; // limpiar input
+    };
+
+    $('confirmCrop').onclick = async () => {
+      const canvas = cropper.getCroppedCanvas({ width: 400, height: 400 });
+      $('cropperModal').classList.add('hidden');
+      cropper.destroy();
+
+      const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.9));
+      const path = `logos/${EMPRESA}_${Date.now()}.jpg`;
+      const ref = storage.ref(path);
+      const task = ref.put(blob);
+
+      $('logoProgressWrap').classList.remove('hidden');
+      task.on('state_changed', s => {
+        const p = Math.round((s.bytesTransferred / s.totalBytes) * 100);
+        $('logoBar').style.width = p + '%';
+        $('logoBar').style.background = $('chatPrimaryColor').value || '#111';
+      }, console.error, async () => {
+        const url = await ref.getDownloadURL();
+        await logoRef.set(url);
+        $('logoPreview').src = url;
+        $('logoPreviewWrap').classList.remove('hidden');
+        $('logoControls').classList.add('hidden');
+        $('previewLogo').src = url;
+        $('previewLogo').classList.remove('hidden');
+        $('logoProgressWrap').classList.add('hidden');
+        $('msgLogo').classList.remove('hidden');
+        setTimeout(() => $('msgLogo').classList.add('hidden'), 1200);
+        e.target.value = ''; // limpiar input
+        lucide.createIcons();
+      });
+    };
+  };
+  reader.readAsDataURL(f);
+}));
+
+// 🗑️ Eliminar logo
+$('deleteLogo').onclick = () => canWrite(async () => {
+  await logoRef.set('');
+  $('logoPreviewWrap').classList.add('hidden');
+  $('logoControls').classList.remove('hidden');
+  $('previewLogo').classList.add('hidden');
+  toast('Logo eliminado');
+});
+
+// === Logo Border Radius ===
+const radiusRef = eref('config/logoRadius');
+
+// Cargar valor inicial
+radiusRef.once('value', s => {
+  const v = s.val() || 0;
+  if ($('logoRadius')) {
+    $('logoRadius').value = v;
+    $('logoRadiusVal').textContent = v;
+  }
+  $('logoPreview').style.borderRadius = `${v}%`;
+  $('previewLogo').style.borderRadius = `${v}%`;
+});
+
+// 🔥 Guardar automáticamente al mover el deslizador
+if ($('logoRadius')) {
+  $('logoRadius').addEventListener('input', (e) => {
+    const val = parseInt(e.target.value);
+    $('logoRadiusVal').textContent = val;
+    $('logoPreview').style.borderRadius = `${val}%`;
+    $('previewLogo').style.borderRadius = `${val}%`;
+
+    // Guardar en Firebase solo si se tienen permisos
+    canWrite(async () => {
+      await radiusRef.set(val);
+      toast('✔ Borders updated');
+    });
+  });
+}
+
+
+
+// === Typography (picker visual) ===
+const fontRef = eref('config/fontFamily');
+const fonts = ["Manrope","Inter","Poppins","Roboto","Playfair Display","Merriweather"];
+
+fontRef.once('value', s => {
+  const f = s.val() || 'Manrope';
+
+  // ✅ Mostrar fuente guardada en el <select>
+  const select = $('fontFamily');
+  if (select) select.value = f;
+
+  // ✅ Si el picker visual ya existe, actualizar el texto y la vista previa
+  const span = document.getElementById('fontSelected');
+  if (span) {
+    span.textContent = f;
+    span.style.fontFamily = `'${f}', system-ui, sans-serif`;
+  }
+
+  // ✅ Aplicar solo al mockup, no al panel
+  $('previewBubble').style.fontFamily = `'${f}', system-ui, sans-serif`;
+  $('previewBtn').style.fontFamily = `'${f}', system-ui, sans-serif`;
+});
+
+const select = $('fontFamily');
+if (select) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "relative";
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "w-full border rounded px-3 py-2 text-left bg-white flex justify-between items-center";
+  button.innerHTML = `<span id="fontSelected" style="font-family: '${select.value}', system-ui;">${select.value}</span>
+                      <svg xmlns='http://www.w3.org/2000/svg' class='w-4 h-4 ml-2' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/>
+                      </svg>`;
+  const list = document.createElement("div");
+  list.className = "absolute mt-1 w-full bg-white border rounded-lg shadow z-50 hidden";
+
+  fonts.forEach(font => {
+    const item = document.createElement("div");
+    item.className = "px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm";
+    item.style.fontFamily = `'${font}', system-ui, sans-serif`;
+    item.textContent = font;
+    item.onclick = async () => {
+      select.value = font;
+      $('fontSelected').textContent = font;
+      $('fontSelected').style.fontFamily = `'${font}', system-ui, sans-serif`;
+      list.classList.add("hidden");
+
+      await canWrite(async () => {
+        await fontRef.set(font);
+        $('previewBubble').style.fontFamily = `'${font}', system-ui, sans-serif`;
+        $('previewBtn').style.fontFamily = `'${font}', system-ui, sans-serif`;
+        toast('✔ Font saved');
+
+        // 🔄 Refrescar mockup
+// ✨ Actualizar fuente sin recargar el iframe
+const iframe = document.getElementById('liveChatFrame');
+if (iframe?.contentWindow?.document) {
+  try {
+    const doc = iframe.contentWindow.document;
+    const chatRoot = doc.body || doc.documentElement;
+    if (chatRoot) {
+      chatRoot.style.fontFamily = `'${font}', system-ui, sans-serif`;
+    }
+  } catch (err) {
+    console.warn("⚠️ No se pudo acceder al iframe directamente (dominio cruzado), se omite actualización en vivo.");
+  }
+}
+
+      });
+    };
+    list.appendChild(item);
+  });
+
+  wrapper.appendChild(button);
+  wrapper.appendChild(list);
+  select.insertAdjacentElement("afterend", wrapper);
+  select.style.display = "none";
+
+  button.onclick = () => list.classList.toggle("hidden");
+  document.addEventListener("click", e => {
+    if (!wrapper.contains(e.target)) list.classList.add("hidden");
+  });
+}
+
+
+
+
+  // === Avatar ===
+  const avRef = eref('config/avatarUrl');
+  avRef.once('value', s => {
+    const url = s.val();
+    if (url) {
+      $('avatarPreview').src = url;
+      $('avatarPreviewWrap').classList.remove('hidden');
+      $('avatarControls').classList.add('hidden');
+      lucide.createIcons();
+    }
+  });
+
+  // 🆙 Subir avatar con recorte cuadrado (1:1)
+// 🆙 Subir avatar automáticamente al seleccionar archivo
+$('avatarFile').addEventListener('change', e => canWrite(() => {
+  const f = e.target.files[0];
+  if (!f) return;
+
+  const reader = new FileReader();
+  reader.onload = ev => {
+    $('cropperImageAvatar').src = ev.target.result;
+    $('cropperModalAvatar').classList.remove('hidden');
+    $('cropperModalAvatar').classList.add('flex');
+
+    let cropper;
+    $('cropperImageAvatar').onload = () => {
+      cropper = new Cropper($('cropperImageAvatar'), {
+        aspectRatio: 1,
+        viewMode: 1,
+        background: false,
+        movable: false,
+        zoomable: true,
+        rotatable: false,
+        scalable: false
+      });
+    };
+
+    $('cancelCropAvatar').onclick = () => {
+      cropper.destroy();
+      $('cropperModalAvatar').classList.add('hidden');
+      e.target.value = ''; // limpia el input
+    };
+
+    $('confirmCropAvatar').onclick = async () => {
+      const canvas = cropper.getCroppedCanvas({ width: 400, height: 400 });
+      $('cropperModalAvatar').classList.add('hidden');
+      cropper.destroy();
+
+      const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.9));
+      const path = `avatars/${EMPRESA}_${Date.now()}.jpg`;
+      const ref = storage.ref(path);
+      const task = ref.put(blob);
+
+      $('avatarProgressWrap').classList.remove('hidden');
+      task.on('state_changed', s => {
+        const p = Math.round((s.bytesTransferred / s.totalBytes) * 100);
+        $('avatarBar').style.width = p + '%';
+        $('avatarBar').style.background = $('chatPrimaryColor').value || '#111';
+      }, console.error, async () => {
+        const url = await ref.getDownloadURL();
+        await avRef.set(url);
+        $('avatarPreview').src = url;
+        $('avatarPreviewWrap').classList.remove('hidden');
+        $('avatarControls').classList.add('hidden');
+        $('avatarProgressWrap').classList.add('hidden');
+        $('msgAvatar').classList.remove('hidden');
+        setTimeout(() => $('msgAvatar').classList.add('hidden'), 1200);
+        e.target.value = ''; // limpia el input
+        lucide.createIcons();
+      });
+    };
+  };
+  reader.readAsDataURL(f);
+}));
+
+  // 🗑️ Eliminar avatar
+  $('deleteAvatar').onclick = () => canWrite(async () => {
+    await avRef.set('');
+    $('avatarPreviewWrap').classList.add('hidden');
+    $('avatarControls').classList.remove('hidden');
+    toast('Avatar eliminado');
+  });
+}
+
+function applyPreview() {
+  const p = $('chatPrimaryColor')?.value || '#111111';
+  const b = $('chatButtonColor')?.value || p;
+  const bg = $('chatBackgroundColor')?.value || '#ffffff';
+  const at = $('chatAssistantTextColor')?.value || '#000000';
+
+  $('previewBtn').style.background = b;
+  $('previewBubble').style.background = p;
+
+  // 🪄 Fondo del chat
+  const iframe = document.getElementById('liveChatFrame');
+  if (iframe?.contentWindow?.document) {
+    try {
+      const doc = iframe.contentWindow.document;
+      const chatRoot = doc.querySelector('#chatWindow');
+      if (chatRoot) chatRoot.style.background = bg;
+
+      // 🆕 Color del texto de los mensajes del asistente
+      const msgs = doc.querySelectorAll('.chat-assistant .msg');
+      msgs.forEach(m => m.style.color = at);
+    } catch (err) {
+      console.warn("⚠️ No se pudo aplicar colores en el iframe (dominio cruzado).");
+    }
+  }
+}
+
+// ====== Settings Tab ======
+function initSettingsTab(){
+  // Toggle show button
+  const visRef = eref('config/chatVisible');
+  visRef.once('value', s=> $('tgChatVisible').checked = !!s.val());
+  $('tgChatVisible').addEventListener('change', ()=> canWrite(async ()=>{ await visRef.set(!!$('tgChatVisible').checked); }));
+
+  // General Information
+  const nameRef = eref('config/hotelName');
+  nameRef.once('value', s=> $('hotelName').value = s.val() || '');
+
+  const tzRef = eref('config/timeZone');
+  const zones = getTimeZones();
+  $('timeZone').innerHTML = zones.map(z=>`<option value="${z}">${z.replace('_',' ')}</option>`).join('');
+  tzRef.once('value', s=>{ const v=s.val()||Intl.DateTimeFormat().resolvedOptions().timeZone||'Europe/Madrid'; $('timeZone').value = zones.includes(v)?v:'Europe/Madrid'; });
+
+  $('saveGeneral').onclick = ()=> canWrite(async ()=>{
+    await nameRef.set(($('hotelName').value||'').trim());
+    await tzRef.set($('timeZone').value);
+    $('msgGeneral').classList.remove('hidden'); setTimeout(()=>$('msgGeneral').classList.add('hidden'),1200);
+  });
+
+  // Personality chips
+  const chips = $$('#personalityChips .chip');
+  const persRef = eref('config/personality');
+  persRef.once('value', s=>{
+    const v=(s.val()||'warm');
+    chips.forEach(c=>c.classList.toggle('active', c.dataset.val===v));
+  });
+  chips.forEach(ch=>{
+    ch.addEventListener('click', ()=> canWrite(async ()=>{
+      chips.forEach(c=>c.classList.remove('active'));
+      ch.classList.add('active');
+      await persRef.set(ch.dataset.val);
+    }));
+  });
+  
+  
+  function autoResize(t){
+  t.style.height='auto';
+  t.style.height=t.scrollHeight+'px';
+}
+
+
+
+  // Chat test link
+  const link = `https://tomos.bot/chat.html?empresa=${encodeURIComponent(EMPRESA)}`;
+  $('chatTestLink').value = link;
+  $('copyChatLink').onclick = ()=>{ navigator.clipboard.writeText(link); toast('Copiado'); };
+  $('openChatLink').onclick = ()=> window.open(link, '_blank');
+}
+
+
+
+function initKnowledge(){
+  const ref = eref('config/contextInfo');
+  const txt = $('contextText');
+  const btn = $('saveContext');
+  const counter = $('ctxCounter');
+  const LIMIT = 10000;
+
+  function updateCounter(){
+    const len = (txt.value || '').length;
+    counter.textContent = `${len} / ${LIMIT} characters`;
+    counter.classList.toggle('text-red-600', len > LIMIT);
+    counter.classList.toggle('text-gray-500', len <= LIMIT);
+    btn.disabled = len > LIMIT || !canWriteFlag;
+    btn.classList.toggle('opacity-60', btn.disabled);
+  }
+
+  ref.once('value', s => {
+    txt.value = s.val() || '';
+    txt.style.height = txt.scrollHeight + 'px';
+    updateCounter();
+  });
+
+  txt.addEventListener('input', e => {
+    e.target.style.height = 'auto';
+    e.target.style.height = e.target.scrollHeight + 'px';
+    updateCounter();
+  });
+
+  btn.onclick = () => canWrite(async () => {
+    if (btn.disabled) return;
+    await ref.set(txt.value.trim());
+    $('msgContext').classList.remove('hidden');
+    setTimeout(() => $('msgContext').classList.add('hidden'), 1200);
+  });
+}
+
+
+function initSchedule() {
+  const ref = eref('config/schedule');
+  const list = $('scheduleList');
+  const btnSave = $('saveSchedule');
+  const msg = $('msgSchedule');
+
+  // 🧩 Crear fila de horario
+  function makeRow(id, start = "00:00", end = "23:59", days = []) {
+    const div = document.createElement('div');
+    div.className = "flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border rounded-xl bg-gray-50 p-4 shadow-sm";
+    div.dataset.id = id;
+
+    div.innerHTML = `
+      <div class="flex items-center gap-2">
+        <div class="flex items-center gap-1 border rounded-lg bg-white px-2 py-1">
+          <i data-lucide="clock" class="w-4 h-4 text-gray-500"></i>
+          <input type="text" pattern="^([01]?[0-9]|2[0-3]):[0-5][0-9]$" maxlength="5"
+            placeholder="00:00" class="start text-sm border-none outline-none bg-transparent w-16 text-center" value="${start}">
+        </div>
+        <span class="text-gray-400">→</span>
+        <div class="flex items-center gap-1 border rounded-lg bg-white px-2 py-1">
+          <i data-lucide="clock" class="w-4 h-4 text-gray-500"></i>
+          <input type="text" pattern="^([01]?[0-9]|2[0-3]):[0-5][0-9]$" maxlength="5"
+            placeholder="23:59" class="end text-sm border-none outline-none bg-transparent w-16 text-center" value="${end}">
+        </div>
+      </div>
+
+      <div class="flex items-center gap-1 ml-auto">
+        ${["S","M","T","W","T","F","S"].map((d,i)=>
+          `<button data-day="${i}" class="day w-8 h-8 rounded-full text-xs font-medium transition-all duration-150 ${
+            days.includes(i)
+              ? 'bg-black text-white shadow-sm'
+              : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-100'
+          }">${d}</button>`
+        ).join('')}
+        <button class="delete ml-3 text-gray-400 hover:text-red-600 transition" title="Delete">
+          <i data-lucide="trash" class="w-4 h-4"></i>
+        </button>
+      </div>
+    `;
+
+    // 🔸 Validar formato HH:mm (24h)
+    div.querySelectorAll('input.start, input.end').forEach(inp => {
+      inp.addEventListener('blur', e => {
+        let val = e.target.value.trim();
+        if (!/^\d{1,2}:\d{2}$/.test(val)) {
+          e.target.value = "00:00";
+          return;
+        }
+        let [h, m] = val.split(":").map(Number);
+        if (h > 23) h = 23;
+        if (m > 59) m = 59;
+        e.target.value = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+      });
+    });
+
+    // 🔸 Toggle de días activos
+    div.querySelectorAll('.day').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const active = btn.classList.contains('bg-black');
+        if (active) {
+          btn.classList.remove('bg-black','text-white','shadow-sm');
+          btn.classList.add('bg-white','text-gray-600','border','border-gray-300','hover:bg-gray-100');
+        } else {
+          btn.classList.add('bg-black','text-white','shadow-sm');
+          btn.classList.remove('bg-white','text-gray-600','border','border-gray-300','hover:bg-gray-100');
+        }
+      });
+    });
+
+    // 🗑️ Eliminar fila
+    div.querySelector('.delete').onclick = () => {
+      div.remove();
+      renderActionRow(); // reubica el "+" y "Save"
+    };
+
+    lucide.createIcons();
+    return div;
+  }
+
+  // 🧩 Renderizar botones "+" y "Save" en la misma fila
+  function renderActionRow() {
+    let actions = document.getElementById('scheduleActions');
+    if (actions) actions.remove();
+
+    actions = document.createElement('div');
+    actions.id = 'scheduleActions';
+    actions.className = "flex justify-end items-center gap-3 mt-4";
+
+    const addBtn = document.createElement('button');
+    addBtn.innerHTML = '<i data-lucide="plus" class="w-5 h-5"></i>';
+    addBtn.className = "bg-black text-white w-9 h-9 rounded-full flex items-center justify-center hover:bg-gray-800 shadow-sm transition";
+    addBtn.onclick = () => {
+      const newRow = makeRow('r' + Date.now());
+      list.appendChild(newRow);
+      renderActionRow();
+    };
+
+    const saveBtn = document.createElement('button');
+    saveBtn.textContent = "Save";
+    saveBtn.className = "px-5 py-2 bg-gray-100 rounded-md text-sm hover:bg-gray-200 transition font-medium";
+    saveBtn.onclick = saveSchedule;
+
+    actions.appendChild(addBtn);
+    actions.appendChild(saveBtn);
+
+    list.insertAdjacentElement('afterend', actions);
+    lucide.createIcons();
+  }
+
+  // 💾 Guardar configuración
+  async function saveSchedule() {
+    await canWrite(async () => {
+      const rows = list.querySelectorAll('[data-id]');
+      const out = {};
+      rows.forEach(r => {
+        const id = r.dataset.id;
+        const start = r.querySelector('.start').value;
+        const end = r.querySelector('.end').value;
+        const days = [...r.querySelectorAll('.day.bg-black')].map(d => parseInt(d.dataset.day));
+        out[id] = { start, end, days };
+      });
+      await ref.set(out);
+      msg.classList.remove('hidden');
+      setTimeout(() => msg.classList.add('hidden'), 1200);
+    });
+  }
+
+  // 🧩 Cargar desde Firebase
+  ref.once('value', s => {
+    const data = s.val() || {};
+    list.innerHTML = '';
+    for (const id in data) {
+      const r = data[id];
+      list.appendChild(makeRow(id, r.start, r.end, r.days || []));
+    }
+    renderActionRow();
+  });
+}
+
+
+// === Function to initialize Integration tab ===
+function initIntegration(){
+  const code = `<script src="https://tomos.bot/embed.js" data-empresa="${EMPRESA}"><\\/script>`;
+  const box = $('embedScriptBox');
+  box.value = code;
+
+  // 🔹 Ajuste automático de altura
+  box.style.height = 'auto';
+  box.style.height = box.scrollHeight + 'px';
+
+  $('copyEmbedScript').onclick = () => {
+    navigator.clipboard.writeText(code);
+    toast('Copied');
+  };
+}
+
+
+
+// === Function to initialize Auto Responses tab ===
+function initRespuestas() {
+  // Esperar a que Firebase esté listo
+  if (typeof firebase === "undefined" || typeof eref !== "function") {
+    console.warn("⏳ Esperando Firebase...");
+    setTimeout(initRespuestas, 400);
+    return;
+  }
+
+  const list = $("autoResponsesList");
+  const btnAdd = $("addAutoResponse");
+  const btnSave = $("saveAutoResponses");
+  const msg = $("msgAutoResponses");
+
+  if (!list || !btnAdd || !btnSave) {
+    console.warn("⏳ Esperando elementos del DOM...");
+    setTimeout(initRespuestas, 400);
+    return;
+  }
+
+  const ref = eref("config/autoResponses");
+  console.log("✅ Auto Responses inicializadas correctamente");
+
+  // === Crear fila de respuesta ===
+  function makeRow(id, trigger = "", type = "text", text = "", cards = [], extras = {}) {
+    const div = document.createElement("div");
+    div.className = "bg-gray-50 border rounded-xl p-4 space-y-3";
+    div.dataset.id = id;
+
+    div.innerHTML = `
+      <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+        <div class="flex-1">
+          <label class="block text-xs font-medium text-gray-600 mb-1">Keyword</label>
+          <input type="text" class="w-full border rounded px-3 py-2 text-sm trigger"
+                 placeholder="(e.g. breakfast)" value="${trigger}">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-600 mb-1">Type</label>
+          <select class="type w-full sm:w-40 border rounded px-3 py-2 text-sm">
+            <option value="text" ${type === "text" ? "selected" : ""}>Text</option>
+            <option value="cards" ${type === "cards" ? "selected" : ""}>Cards</option>
+            <option value="menu" ${type === "menu" ? "selected" : ""}>Bottom Menu</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 🔸 TEXT -->
+      <div class="textBlock ${type === "text" ? "" : "hidden"} space-y-3 border rounded-lg p-3 bg-white">
+        <label class="block text-xs font-medium text-gray-600 mb-1">Response</label>
+        <textarea class="replyText w-full border rounded px-3 py-2 text-sm"
+                  placeholder="Write the response...">${text}</textarea>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">Title</label>
+            <input type="text" class="title w-full border rounded px-2 py-1 text-sm"
+                   value="${extras.title || ""}">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">Subtitle</label>
+            <input type="text" class="subtitle w-full border rounded px-2 py-1 text-sm"
+                   value="${extras.subtitle || ""}">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-gray-600 mb-1">Image URL (optional)</label>
+          <input type="text" class="image w-full border rounded px-2 py-1 text-sm"
+                 value="${extras.image || ""}">
+        </div>
+
+        <div class="buttons space-y-2">
+          ${(extras.buttons || []).map(makeButtonForm).join("")}
+        </div>
+        <button class="addButton px-3 py-1.5 bg-gray-200 rounded-lg text-sm hover:bg-gray-300">
+          + Add Button
+        </button>
+
+        <div class="preview bg-gray-50 border rounded-lg mt-3 p-2 text-center overflow-hidden"></div>
+      </div>
+
+      <!-- 🔹 CARDS -->
+      <div class="cardsBlock ${type === "cards" ? "" : "hidden"} space-y-3">
+        <div class="cardsList space-y-3">
+          ${cards.map(makeCardForm).join("")}
+        </div>
+        <button class="addCard px-3 py-1.5 bg-gray-200 rounded-lg text-sm hover:bg-gray-300">
+          + Add Card
+        </button>
+      </div>
+
+      <!-- 🟢 MENU -->
+      <div class="menuBlock ${type === "menu" ? "" : "hidden"} border rounded-lg p-3 bg-white space-y-3">
+        <label class="block text-xs font-medium text-gray-600 mb-1">Text above menu (optional)</label>
+        <input type="text" class="menuText w-full border rounded px-3 py-2 text-sm"
+               placeholder="(e.g. Choose an option)" value="${text}">
+
+        <div class="menuButtons space-y-2">
+          ${(extras.buttons || []).map(makeMenuRow).join("")}
+        </div>
+        <button class="addMenuBtn mt-2 px-3 py-1 bg-gray-200 rounded-lg text-sm hover:bg-gray-300">
+          + Add Button
+        </button>
+      </div>
+
+      <div class="flex justify-end">
+        <button class="deleteReply text-xs text-red-600 hover:underline">Delete</button>
+      </div>
+    `;
+
+    // === Lógica de comportamiento ===
+    const sel = div.querySelector(".type");
+    const textBlock = div.querySelector(".textBlock");
+    const cardsBlock = div.querySelector(".cardsBlock");
+    const menuBlock = div.querySelector(".menuBlock");
+
+    sel.addEventListener("change", () => {
+      textBlock.classList.toggle("hidden", sel.value !== "text");
+      cardsBlock.classList.toggle("hidden", sel.value !== "cards");
+      menuBlock.classList.toggle("hidden", sel.value !== "menu");
+    });
+
+    // Añadir botones y tarjetas
+    div.querySelector(".addButton").addEventListener("click", () => {
+      div.querySelector(".buttons").insertAdjacentHTML("beforeend", makeButtonForm());
+      updateTextPreview(div);
+    });
+    div.querySelector(".addCard").addEventListener("click", () => {
+      div.querySelector(".cardsList").insertAdjacentHTML("beforeend", makeCardForm());
+    });
+    div.querySelector(".addMenuBtn").addEventListener("click", () => {
+      div.querySelector(".menuButtons").insertAdjacentHTML("beforeend", makeMenuRow());
+    });
+
+    div.addEventListener("click", e => {
+      if (e.target.classList.contains("delMenuBtn")) e.target.closest(".menuRow").remove();
+    });
+
+    div.querySelector(".deleteReply").addEventListener("click", () => div.remove());
+    updateTextPreview(div);
+    return div;
+  }
+
+  // === Subcomponentes ===
+  function makeCardForm(c = {}) {
+    return `
+      <div class="cardItem bg-white border rounded-lg p-3 space-y-2">
+        <label class="block text-xs font-medium text-gray-600">Title</label>
+        <input type="text" class="title w-full border rounded px-2 py-1 text-sm" value="${c.title || ""}">
+        <label class="block text-xs font-medium text-gray-600">Subtitle</label>
+        <input type="text" class="subtitle w-full border rounded px-2 py-1 text-sm" value="${c.subtitle || ""}">
+        <label class="block text-xs font-medium text-gray-600">Image URL</label>
+        <input type="text" class="image w-full border rounded px-2 py-1 text-sm" value="${c.image || ""}">
+        <label class="block text-xs font-medium text-gray-600">Link</label>
+        <input type="text" class="link w-full border rounded px-2 py-1 text-sm" value="${c.link || ""}">
+        <label class="block text-xs font-medium text-gray-600">Button Text</label>
+        <input type="text" class="buttonText w-full border rounded px-2 py-1 text-sm" value="${c.buttonText || "View"}">
+      </div>
+    `;
+  }
+
+  function makeButtonForm(b = {}) {
+    return `
+      <div class="buttonItem flex flex-col sm:flex-row gap-2 items-center border rounded-lg p-2 bg-gray-50">
+        <input type="text" class="label flex-1 border rounded px-2 py-1 text-sm"
+               placeholder="Button text (e.g. Book now)" value="${b.label || ""}">
+        <input type="text" class="link flex-1 border rounded px-2 py-1 text-sm"
+               placeholder="Link or trigger" value="${b.link || ""}">
+        <button class="delButton text-xs text-red-600 hover:underline">Remove</button>
+      </div>
+    `;
+  }
+
+  function makeMenuRow(b = {}) {
+    return `
+      <div class="menuRow flex items-center gap-2">
+        <input type="text" class="menuLabel flex-1 border rounded px-2 py-1 text-sm"
+               placeholder="Label" value="${b.label || ""}">
+        <input type="text" class="menuAction flex-1 border rounded px-2 py-1 text-sm"
+               placeholder="Trigger or link" value="${b.trigger || b.link || ""}">
+        <button class="delMenuBtn px-2 py-1 bg-red-100 text-red-700 rounded text-xs">✕</button>
+      </div>
+    `;
+  }
+
+  // === Vista previa ===
+  function updateTextPreview(row) {
+    const block = row.querySelector(".textBlock");
+    if (!block) return;
+    const image = block.querySelector(".image")?.value?.trim() || "";
+    const title = block.querySelector(".title")?.value?.trim() || "";
+    const subtitle = block.querySelector(".subtitle")?.value?.trim() || "";
+    const body = block.querySelector(".replyText")?.value?.trim() || "";
+    const buttons = [...block.querySelectorAll(".buttonItem")].map(b => ({
+      label: b.querySelector(".label")?.value?.trim() || "",
+      link: b.querySelector(".link")?.value?.trim() || ""
+    }));
+    const preview = block.querySelector(".preview");
+    preview.innerHTML = `
+      <div class="inline-block bg-white rounded-2xl shadow border w-72 text-left text-gray-800">
+        ${image ? `<img src="${image}" class="w-full h-36 object-cover rounded-t-2xl">` : ""}
+        <div class="p-3 space-y-2">
+          ${title ? `<h3 class="font-semibold text-base">${title}</h3>` : ""}
+          ${subtitle ? `<p class="text-sm text-gray-500">${subtitle}</p>` : ""}
+          ${body ? `<p class="text-sm text-gray-700">${body}</p>` : ""}
+          <div class="flex flex-wrap gap-2 mt-2">
+            ${buttons.filter(b => b.label).map(b => 
+              `<a href="${b.link || "#"}" target="_blank"
+                 class="border border-black rounded-full px-3 py-1 text-xs hover:bg-black hover:text-white transition">${b.label}</a>`
+            ).join("")}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  document.addEventListener("input", e => {
+    const row = e.target.closest("[data-id]");
+    if (row) updateTextPreview(row);
+  });
+
+  document.addEventListener("click", e => {
+    if (e.target.classList.contains("delButton")) {
+      const row = e.target.closest("[data-id]");
+      e.target.closest(".buttonItem").remove();
+      updateTextPreview(row);
+    }
+  });
+
+  // === Cargar desde Firebase ===
+  ref.once("value").then(snap => {
+    const data = snap.val();
+    list.innerHTML = "";
+    if (!data || Object.keys(data).length === 0) return;
+    for (const id in data) {
+      const r = data[id];
+      const row = makeRow(id, r.trigger, r.type, r.text, r.cards || [], r.extras || {});
+      list.appendChild(row);
+    }
+  });
+
+  // === Nuevo y Guardar ===
+  btnAdd.addEventListener("click", () => list.appendChild(makeRow("r" + Date.now())));
+  btnSave.addEventListener("click", async () => {
+    const rows = list.querySelectorAll("[data-id]");
+    const saveData = {};
+    rows.forEach(div => {
+      const id = div.dataset.id;
+      const trigger = div.querySelector(".trigger")?.value?.trim() || "";
+      const type = div.querySelector(".type")?.value || "text";
+      let text = "";
+      let cards = [];
+      let extras = {};
+
+      if (type === "text") {
+        const block = div.querySelector(".textBlock");
+        text = block.querySelector(".replyText")?.value?.trim() || "";
+        extras = {
+          title: block.querySelector(".title")?.value?.trim() || "",
+          subtitle: block.querySelector(".subtitle")?.value?.trim() || "",
+          image: block.querySelector(".image")?.value?.trim() || "",
+          buttons: [...block.querySelectorAll(".buttonItem")].map(b => ({
+            label: b.querySelector(".label")?.value?.trim() || "",
+            link: b.querySelector(".link")?.value?.trim() || ""
+          }))
+        };
+      }
+
+      if (type === "cards") {
+        const block = div.querySelector(".cardsBlock");
+        cards = [...block.querySelectorAll(".cardItem")].map(c => ({
+          title: c.querySelector(".title")?.value?.trim() || "",
+          subtitle: c.querySelector(".subtitle")?.value?.trim() || "",
+          image: c.querySelector(".image")?.value?.trim() || "",
+          link: c.querySelector(".link")?.value?.trim() || "",
+          buttonText: c.querySelector(".buttonText")?.value?.trim() || "View"
+        }));
+      }
+
+      if (type === "menu") {
+        const block = div.querySelector(".menuBlock");
+        text = block.querySelector(".menuText")?.value?.trim() || "";
+        extras = {
+          buttons: [...block.querySelectorAll(".menuRow")].map(r => {
+            const label = r.querySelector(".menuLabel")?.value?.trim() || "";
+            const action = r.querySelector(".menuAction")?.value?.trim() || "";
+            if (!label || !action) return null;
+            return action.startsWith("http")
+              ? { label, link: action }
+              : { label, trigger: action };
+          }).filter(Boolean)
+        };
+      }
+
+      if (trigger) saveData[id] = { trigger, type, text, cards, extras };
+    });
+
+    await ref.set(saveData);
+    msg.classList.remove("hidden");
+    setTimeout(() => msg.classList.add("hidden"), 1500);
+  });
+}
+
+
+
+
+// === Function: Welcome Message ===
+function initWelcome() {
+  const ref = eref("config/chatWelcome");
+  const enabled = $("welcomeEnabled");
+  const text = $("welcomeText");
+  const delay = $("welcomeDelay");
+  const file = $("welcomeImageFile");
+  const preview = $("welcomePreview");
+  const saveBtn = $("saveWelcome");
+  const msg = $("msgWelcome");
+
+  if (!ref) return console.warn("❌ No se encontró la referencia de chatWelcome");
+
+  // Cargar desde Firebase
+  ref.once("value", snap => {
+    const val = snap.val() || {};
+    enabled.checked = !!val.enabled;
+    text.value = val.text || "";
+    delay.value = val.delay || 2;
+    if (val.image) {
+      preview.src = val.image;
+      preview.classList.remove("hidden");
+    }
+  });
+
+  // Mostrar preview al elegir imagen
+  file.addEventListener("change", e => {
+    const f = e.target.files[0];
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      preview.src = ev.target.result;
+      preview.classList.remove("hidden");
+    };
+    reader.readAsDataURL(f);
+  });
+
+  // Guardar en Firebase
+  saveBtn.onclick = async () => canWrite(async () => {
+    let imageUrl = preview.src || "";
+    // Si el usuario cargó un nuevo archivo, subir a Storage
+    if (file.files.length) {
+      const storageRef = firebase.storage().ref(`${EMPRESA}/welcome.jpg`);
+      await storageRef.put(file.files[0]);
+      imageUrl = await storageRef.getDownloadURL();
+    }
+
+    await ref.set({
+      enabled: enabled.checked,
+      text: text.value.trim(),
+      delay: parseInt(delay.value) || 0,
+      image: imageUrl
+    });
+
+    msg.classList.remove("hidden");
+    setTimeout(() => msg.classList.add("hidden"), 1500);
+  });
+}
+
+
+
+
+// First paint
+window.addEventListener('load', ()=>{ $('pageLoader').style.display='none'; });
+</script>
+
+
+</body>
+</html>
