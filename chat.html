@@ -34,6 +34,7 @@
 :root {
   --chat-primary:#111111;
   --assistant-text:#000000; /* 🆕 color del texto del asistente */
+  --avatar-radius:50%;
 }
     html,body { height:100%; background:#ececec; }
     body { font-family: Manrope, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -68,7 +69,7 @@
     /* Color dinámico aplicado también al nombre del hotel */
     #chatHotelName { color: var(--chat-primary) !important; }
     /* Avatar asistente dentro de mensaje */
-    .avatar-icon { width:36px; height:36px; border-radius:50%; object-fit:cover; margin-top:2px; flex-shrink:0; box-shadow:0 1px 3px rgba(0,0,0,.1); }
+    .avatar-icon { width:36px; height:36px; border-radius:var(--avatar-radius, 50%); object-fit:cover; margin-top:2px; flex-shrink:0; box-shadow:0 1px 3px rgba(0,0,0,.1); }
     /* Cards (autoResponses tipo cards) */
     .cards { display:flex; gap:12px; overflow-x:auto; padding:2px; }
     .card {
@@ -459,6 +460,17 @@ eref('config/chatAssistantTextColor').on('value', s => {
   // Avatar
   eref('config/avatarUrl').on('value', s => {
     CURRENT.avatarUrl = s.val() || "";
+  });
+
+  const applyAvatarRadius = (value) => {
+    const numeric = typeof value === 'number' ? value : parseInt(value, 10);
+    const radius = Number.isFinite(numeric) ? Math.min(50, Math.max(0, numeric)) : 50;
+    document.documentElement.style.setProperty('--avatar-radius', `${radius}%`);
+  };
+
+  applyAvatarRadius(50);
+  eref('config/avatarRadius').on('value', s => {
+    applyAvatarRadius(s.val());
   });
 
   // 🆕 Tipografía dinámica completa
