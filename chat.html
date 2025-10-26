@@ -432,6 +432,16 @@ eref('config/chatAssistantTextColor').on('value', s => {
 });
 
 
+// 🟡 Avatar en tiempo real
+eref('config/avatarUrl').on('value', s => {
+  const url = s.val() || '';
+  CURRENT.avatarUrl = url;
+  // Actualiza avatares visibles
+  document.querySelectorAll('.avatar-icon').forEach(img => {
+    if (url) img.src = url;
+  });
+});
+
 
   // Header hotel name
   eref('config/hotelName').on('value', s => {
@@ -458,22 +468,8 @@ eref('config/chatAssistantTextColor').on('value', s => {
   radiusRef.on('value', s => { logoRadius = s.val() || 0; applyLogo(); });
 
   // Avatar
-  const refreshAssistantAvatars = (url) => {
-    const imgs = document.querySelectorAll('.avatar-icon');
-    imgs.forEach(img => {
-      if (url) {
-        img.src = url;
-        img.style.display = '';
-      } else {
-        img.removeAttribute('src');
-        img.style.display = 'none';
-      }
-    });
-  };
-
   eref('config/avatarUrl').on('value', s => {
     CURRENT.avatarUrl = s.val() || "";
-    refreshAssistantAvatars(CURRENT.avatarUrl);
   });
 
   const applyAvatarRadius = (value) => {
