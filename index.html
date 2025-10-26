@@ -50,8 +50,6 @@
     .avatar-option.active{border-color:#2563eb;background:#eff6ff;box-shadow:0 0 0 4px rgba(37,99,235,.12)}
     .avatar-option.avatar-upload{background:#f9fafb}
     .avatar-option.avatar-upload:hover{background:#f3f4f6}
-    .avatar-preview-frame{border-radius:var(--avatar-radius)}
-    #avatarPreview{border-radius:var(--avatar-radius)}
     .chip.active{border-color:#111;background:#111;color:#fff}
     .sidebar-btn{display:flex;gap:10px;align-items:center;width:100%;padding:.65rem .8rem;border-radius:12px}
     .sidebar-btn.active{background:#111;color:#fff}
@@ -376,10 +374,16 @@ header {
             <button type="button" class="avatar-option" data-avatar-option="avatars/3.png">
               <img src="avatars/3.png" alt="Avatar 3" />
             </button>
-            <label class="avatar-option avatar-upload cursor-pointer">
-              <i data-lucide="plus" class="w-5 h-5 text-gray-500"></i>
-              <input id="avatarFile" type="file" accept="image/*" class="hidden" />
-            </label>
+            <div class="relative">
+              <label id="customAvatarOption" class="avatar-option avatar-upload cursor-pointer" data-avatar-option="">
+                <i id="customAvatarPlus" data-lucide="plus" class="w-5 h-5 text-gray-500"></i>
+                <img id="customAvatarImage" src="" alt="Avatar personalizado" class="hidden" />
+                <input id="avatarFile" type="file" accept="image/*" class="hidden" />
+              </label>
+              <button type="button" id="deleteAvatar" class="hidden absolute -right-1 -bottom-1 bg-red-600 text-white p-1 rounded-full shadow hover:bg-red-700 transition">
+                <i data-lucide="trash" class="w-4 h-4"></i>
+              </button>
+            </div>
           </div>
 
 <div class="flex items-center justify-center gap-3 mt-2 w-48 mx-auto">
@@ -387,16 +391,6 @@ header {
   <input type="range" id="avatarRadius" min="0" max="50" value="50" class="flex-none w-28 accent-blue-500">
   <span id="avatarRadiusVal" class="text-sm text-gray-600 min-w-[2ch] text-right">50</span>
 </div>
-</div>
-
-
-      <div class="relative flex justify-center mt-4" id="avatarPreviewWrap">
-  <div class="relative w-24 h-24 overflow-hidden bg-gray-100 flex items-center justify-center shadow avatar-preview-frame">
-    <img id="avatarPreview" class="w-full h-full object-cover" alt="Avatar" src="avatars/1.png" />
-    <button id="deleteAvatar" class="absolute bottom-1 right-1 bg-red-600 text-white p-1.5 rounded-full shadow hover:bg-red-700 transition hidden">
-      <i data-lucide="trash" class="w-4 h-4"></i>
-    </button>
-  </div>
 </div>
 
 
@@ -1375,28 +1369,59 @@ if (iframe?.contentWindow?.document) {
   const DEFAULT_AVATAR = 'avatars/1.png';
   const avatarButtons = Array.from(document.querySelectorAll('[data-avatar-option]'));
   const avRef = eref('config/avatarUrl');
+  const customAvatarOption = $('customAvatarOption');
+  const customAvatarImage = $('customAvatarImage');
+  const customAvatarPlus = $('customAvatarPlus');
+  const deleteAvatarBtn = $('deleteAvatar');
+  const presetAvatarUrls = avatarButtons
+    .filter(btn => !btn.classList.contains('avatar-upload'))
+    .map(btn => (btn.dataset.avatarOption || '').trim())
+    .filter(Boolean);
   let currentAvatar = DEFAULT_AVATAR;
   let avatarMsgTimeout;
+
+  const updateCustomAvatarUI = (url) => {
+    if (!customAvatarOption || !customAvatarImage || !customAvatarPlus) return;
+    const finalUrl = (typeof url === 'string' ? url.trim() : '');
+
+    if (finalUrl) {
+      customAvatarOption.dataset.avatarOption = finalUrl;
+      customAvatarImage.src = finalUrl;
+      customAvatarImage.classList.remove('hidden');
+      customAvatarPlus.classList.add('hidden');
+      if (deleteAvatarBtn) deleteAvatarBtn.classList.remove('hidden');
+    } else {
+      customAvatarOption.dataset.avatarOption = '';
+      customAvatarImage.removeAttribute('src');
+      customAvatarImage.classList.add('hidden');
+      customAvatarPlus.classList.remove('hidden');
+      if (deleteAvatarBtn) deleteAvatarBtn.classList.add('hidden');
+    }
+  };
+
+  updateCustomAvatarUI('');
+
+  if (customAvatarOption) {
+    customAvatarOption.addEventListener('click', e => {
+      if ((customAvatarOption.dataset.avatarOption || '').trim()) {
+        e.preventDefault();
+      }
+    });
+  }
 
   const applyAvatarSelection = (value) => {
     const finalUrl = (typeof value === 'string' ? value.trim() : '') || DEFAULT_AVATAR;
     currentAvatar = finalUrl;
 
-    const preview = $('avatarPreview');
-    if (preview) preview.src = finalUrl;
+    if (!presetAvatarUrls.includes(finalUrl)) {
+      updateCustomAvatarUI(finalUrl);
+    }
 
-    const wrap = $('avatarPreviewWrap');
-    if (wrap) wrap.classList.remove('hidden');
-
-    let matchedPreset = false;
     avatarButtons.forEach(btn => {
-      const isMatch = (btn.dataset.avatarOption || '').trim() === finalUrl;
+      const data = (btn.dataset.avatarOption || '').trim();
+      const isMatch = data && data === finalUrl;
       btn.classList.toggle('active', isMatch);
-      if (isMatch) matchedPreset = true;
     });
-
-    const deleteBtn = $('deleteAvatar');
-    if (deleteBtn) deleteBtn.classList.toggle('hidden', matchedPreset);
   };
 
   const showAvatarMessage = () => {
@@ -1513,11 +1538,21 @@ if (iframe?.contentWindow?.document) {
   }));
 
   // 🗑️ Eliminar avatar
-  $('deleteAvatar').onclick = () => canWrite(async () => {
-    await avRef.set(DEFAULT_AVATAR);
-    applyAvatarSelection(DEFAULT_AVATAR);
-    toast('Avatar restablecido');
-  });
+  if (deleteAvatarBtn) {
+    deleteAvatarBtn.addEventListener('click', e => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (!customAvatarOption || !(customAvatarOption.dataset.avatarOption || '').trim()) return;
+
+      canWrite(async () => {
+        await avRef.set(DEFAULT_AVATAR);
+        updateCustomAvatarUI('');
+        applyAvatarSelection(DEFAULT_AVATAR);
+        toast('Avatar restablecido');
+      });
+    });
+  }
 }
 
 function applyPreview() {
