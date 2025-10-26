@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Chat del Hotel</title>
+
+  <!-- Firebase (compat) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-storage-compat.js"></script>
+
+  <!-- UI libs -->
+  <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@0.292.0/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Manrope','system-ui','-apple-system','Segoe UI','Roboto','sans-serif'] },
+          boxShadow: { soft: '0 6px 22px rgba(0,0,0,.08)' }
+        }
+      }
+    }
+  </script>
+
+  <style>
+:root {
+  --chat-primary:#111111;
+  --assistant-text:#000000; /* 🆕 color del texto del asistente */
+}
+    html,body { height:100%; background:#ececec; }
+    body { font-family: Manrope, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+    /* Contenedor principal del chat (ocupando todo el iframe/página) */
+    #chatWindow {
+      position: fixed; inset: 0; background:#ececec;
+      display:flex; flex-direction:column; z-index: 9999;
+      height: 100dvh; opacity:1; transform:none;
+    }
+    /* Header fijo */
+    #chatHeader { position: sticky; top:0; z-index:10; }
+    /* Scroll mensajes */
+    #chatBox { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:12px 16px 16px; }
+    /* Footer input fijo */
+    #chatFooter { position: sticky; bottom:0; z-index:10; background:#ececec; padding:12px 16px calc(12px + env(safe-area-inset-bottom)); }
+    /* Burbujas */
+    .chat-bubble { max-width: 86%; font-size:15px; line-height:1.45; }
+    .chat-assistant { display:flex; align-items:flex-start; gap:10px; background:transparent; }
+.chat-assistant .msg {
+  background:#fff;
+  border-radius:14px;
+  padding:10px 14px;
+  box-shadow:0 1px 3px rgba(0,0,0,.08);
+  color: var(--assistant-text);
+}
+    .chat-user { margin-left:auto; color:#fff; background:var(--chat-primary); border-radius:14px; padding:10px 14px; }
+    /* Enlaces dentro de mensajes */
+    .chat-bubble a { color:#0a66ff; text-decoration:underline; }
+    .chat-bubble a:hover { text-decoration:none; }
+    /* Botón enviar */
+    #sendChatBtn { flex-shrink:0; width:40px; height:40px; border-radius:9999px; display:flex; align-items:center; justify-content:center; background:#000; color:#fff; }
+    /* Color dinámico aplicado también al nombre del hotel */
+    #chatHotelName { color: var(--chat-primary) !important; }
+    /* Avatar asistente dentro de mensaje */
+    .avatar-icon { width:36px; height:36px; border-radius:50%; object-fit:cover; margin-top:2px; flex-shrink:0; box-shadow:0 1px 3px rgba(0,0,0,.1); }
+    /* Cards (autoResponses tipo cards) */
+    .cards { display:flex; gap:12px; overflow-x:auto; padding:2px; }
+    .card {
+      flex:0 0 260px; background:#fff; border-radius:14px; box-shadow:0 1px 3px rgba(0,0,0,.08);
+      border:1px solid #eaeaea; overflow:hidden;
+    }
+    .card img { width:100%; height:140px; object-fit:cover; display:block; }
+    .card .in { padding:10px 12px; }
+    .card .title { font-weight:700; font-size:15px; }
+    .card .sub { font-size:13px; color:#555; margin-top:2px; }
+    .pill-btn {
+      display:inline-block; margin-top:8px; border:1.5px solid var(--chat-primary);
+      color:var(--chat-primary); border-radius:9999px; padding:6px 10px; font-size:12px;
+    }
+    .pill-btn:hover { background:var(--chat-primary); color:#fff; }
+    /* Input */
+    #chatInput {
+      flex:1; background:#fff; border:1px solid #ddd; border-radius:10px; padding:10px 14px; font-size:16px;
+      outline:none; box-shadow:0 0 4px 1px #02243114; transition: box-shadow .2s;
+    }
+    #chatInput:focus { box-shadow:0 0 6px 1px #02243126; }
+
+    .dot {
+  width: 6px;
+  height: 6px;
+  background-color: #888; /* puedes cambiar el color */
+  border-radius: 50%;
+  display: inline-block;
+  animation: blink 1.2s infinite;
+}
+
+.dot:nth-child(2) { animation-delay: 0.2s; }
+.dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes blink {
+  0%, 80%, 100% { opacity: 0.3; }
+  40% { opacity: 1; }
+}
+
+  </style>
+</head>
+<body>
+  <!-- VISTA DEL CHAT (siempre visible, sin hero ni menús) -->
+  <div id="chatWindow">
+    <!-- Header -->
+    <div id="chatHeader" class="bg-white border-b flex items-center justify-between px-4 py-4">
+      <div class="flex items-center gap-3">
+        <img id="chatLogo" class="w-9 h-9 rounded-full shadow hidden" alt="Logo">
+        <span id="chatHotelName" class="font-semibold text-[17px] text-gray-800">Asistente del hotel</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <div id="chatMenuBtn" class="text-gray-500 select-none cursor-pointer" title="Menú">•••</div>
+        <button id="closeChat" class="text-gray-400 hover:text-gray-600" title="Cerrar">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mensajes -->
+    <div id="chatBox" class="flex flex-col gap-3"></div>
+
+    <!-- Footer -->
+    <div id="chatFooter" class="flex items-center gap-3">
+      <input id="chatInput" type="text" placeholder="Escribe un mensaje…" />
+      <button id="sendChatBtn"><i data-lucide="send" class="w-5 h-5"></i></button>
+    </div>
+  </div>
+
+  <script>
+/* =========================
+   FIREBASE + HELPERS
+========================= */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyC2c3S_NtouIjHPrk5LM5c0DQoTWyBrzH4",
+  authDomain: "timbre-c9547.firebaseapp.com",
+  databaseURL: "https://timbre-c9547-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "timbre-c9547",
+  storageBucket: "timbre-c9547.firebasestorage.app",
+  messagingSenderId: "127064655657",
+  appId: "1:127064655657:web:a4e99dcbc6ab33f32c1938"
+};
+if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+const db = firebase.database();
+
+function getEmpresa(){
+  const url = new URL(window.location.href);
+  const p = (url.searchParams.get('empresa') || localStorage.getItem('empresa') || 'Boletum').trim();
+  localStorage.setItem('empresa', p);
+  return p;
+}
+let EMPRESA = getEmpresa();
+function eref(path){ return db.ref(`${EMPRESA}/${path}`); }
+
+/* =========================
+   IA PROXY
+   - Cambia PROXY_URL a tu endpoint (Vercel, etc.)
+   - También puedes pasar ?proxy=https://tu-endpoint
+========================= */
+const urlParams = new URLSearchParams(location.search);
+let PROXY_URL = urlParams.get('proxy') || "https://hotel-chat-proxy.vercel.app/api/chat";
+// Espera respuesta JSON: { choices: [ { message: { content: "…" } } ] } (OpenAI-style)
+
+/* =========================
+   UI ELEMENTS
+========================= */
+const chatBox = document.getElementById('chatBox');
+const input   = document.getElementById('chatInput');
+const sendBtn = document.getElementById('sendChatBtn');
+const hotelNameEl = document.getElementById('chatHotelName');
+const chatLogo = document.getElementById('chatLogo');
+const chatAvatarHead = document.getElementById('chatAvatarHead');
+
+function linkify(text){
+  if (!text) return "";
+  const urlRegex=/((https?:\/\/|www\.)[^\s]+|[a-zA-Z0-9-]+\.[a-z]{2,}(\/\S*)?)/gi;
+  return text.replace(urlRegex, m=>{
+    let u=m; if(!/^https?:\/\//i.test(u)) u="https://"+u;
+    return `<a href="${u}" target="_blank" rel="noopener noreferrer">${m}</a>`;
+  });
+}
+
+/* =========================
+   RENDER MENSAJES
+========================= */
+function addAssistantMessageHTML(html, {avatarUrl}={}){
+  const wrap = document.createElement('div');
+  wrap.className = 'chat-bubble chat-assistant';
+  const avatar = document.createElement('img');
+  avatar.className = 'avatar-icon';
+  if (avatarUrl) { avatar.src = avatarUrl; } else { avatar.style.display='none'; }
+  const msg = document.createElement('div');
+msg.className = 'msg';
+msg.style.color = getComputedStyle(document.documentElement)
+  .getPropertyValue('--assistant-text') || '#000000';
+  msg.innerHTML = html;
+  wrap.appendChild(avatar);
+  wrap.appendChild(msg);
+  chatBox.appendChild(wrap);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+function addAssistantMessage(text, opts={}){
+  const md = marked.parse(text || "");
+  addAssistantMessageHTML(md, opts);
+}
+function addUserMessage(text){
+  const bubble = document.createElement('div');
+  bubble.className = 'chat-bubble chat-user';
+  bubble.textContent = text;
+  chatBox.appendChild(bubble);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+function addTyping(){
+  const el = document.createElement('div');
+  el.className = 'chat-bubble chat-assistant';
+  el.dataset.typing = '1';
+  el.innerHTML = `
+    <img class="avatar-icon" id="__typAva" />
+    <div class="msg flex items-center gap-1">
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+    </div>
+  `;
+  chatBox.appendChild(el);
+  chatBox.scrollTop = chatBox.scrollHeight;
+  return el;
+}
+
+function removeTyping(el){ if(el && el.parentNode) el.parentNode.removeChild(el); }
+
+/* =========================
+   AUTO RESPONSES (desde Admin beta3)
+========================= */
+let AUTO = {}; // { id: {trigger, type, text, cards, extras} }
+function tryAutoResponse(userText){
+  if (!userText || !AUTO) return false;
+  const t = userText.toLowerCase();
+  // Encuentra la primera coincidencia simple por "includes"
+  const hit = Object.values(AUTO).find(r => (r.trigger||"").toLowerCase().trim() && t.includes(r.trigger.toLowerCase().trim()));
+  if (!hit) return false;
+
+  if (hit.type === 'text') {
+    const parts = [];
+    if (hit.extras?.image) parts.push(`<img src="${hit.extras.image}" class="w-full max-w-xs rounded-lg mb-2">`);
+    if (hit.extras?.title) parts.push(`<div class="font-semibold">${hit.extras.title}</div>`);
+    if (hit.extras?.subtitle) parts.push(`<div class="text-sm text-gray-600">${hit.extras.subtitle}</div>`);
+    if (hit.text) parts.push(`<div class="mt-1">${linkify(marked.parseInline(hit.text))}</div>`);
+    if (Array.isArray(hit.extras?.buttons) && hit.extras.buttons.length){
+      parts.push(`<div class="mt-2 flex flex-wrap gap-2">` +
+        hit.extras.buttons.filter(b=>b?.label).map(b=>{
+          const href = b.link || "#";
+          return `<a href="${href}" target="_blank" class="pill-btn">${b.label}</a>`;
+        }).join("") + `</div>`);
+    }
+    addAssistantMessageHTML(parts.join(""), { avatarUrl: CURRENT.avatarUrl });
+    return true;
+  }
+
+  if (hit.type === 'cards') {
+    const cards = (hit.cards||[]).map(c=>`
+      <div class="card">
+        ${c.image ? `<img src="${c.image}" alt="">` : ``}
+        <div class="in">
+          ${c.title? `<div class="title">${c.title}</div>`:``}
+          ${c.subtitle? `<div class="sub">${c.subtitle}</div>`:``}
+          ${c.link ? `<a href="${c.link}" target="_blank" class="pill-btn">${c.buttonText||'Ver'}</a>` : ``}
+        </div>
+      </div>
+    `).join("");
+    addAssistantMessageHTML(`<div class="cards">${cards}</div>`, { avatarUrl: CURRENT.avatarUrl });
+    return true;
+  }
+
+  if (hit.type === 'menu') {
+    const label = hit.text ? `<div class="mb-2">${hit.text}</div>` : '';
+    const btns = (hit.extras?.buttons||[]).map(b=>{
+      if (!b?.label) return '';
+      const action = b.trigger || b.link || '';
+      if (/^https?:\/\//i.test(action)) {
+        return `<a href="${action}" target="_blank" class="pill-btn">${b.label}</a>`;
+      }
+      // botón que simula un "trigger" (envía el texto)
+      return `<button class="pill-btn chat-option" data-trigger="${action}">${b.label}</button>`;
+    }).join("");
+    const html = `${label}<div class="flex flex-wrap gap-2">${btns}</div>`;
+    addAssistantMessageHTML(html, { avatarUrl: CURRENT.avatarUrl });
+    return true;
+  }
+
+  return false;
+}
+
+/* Delegación para botones de menú (menu->trigger) */
+document.addEventListener('click', (e)=>{
+  const b = e.target.closest('.chat-option');
+  if (!b) return;
+  const trig = (b.dataset.trigger||'').trim();
+  if (!trig) return;
+  // Muestra como si el usuario hubiera escrito
+  addUserMessage(trig);
+  handleUserMessage(trig);
+});
+
+/* =========================
+   WELCOME (desde config/chatWelcome)
+========================= */
+function scheduleWelcome(){
+  const key = `welcomeOnce_${EMPRESA}`;
+  if (sessionStorage.getItem(key)) return;
+  const ref = eref('config/chatWelcome');
+  ref.once('value').then(s=>{
+    const val = s.val() || {};
+    if (!val.enabled) return;
+    const delay = Math.max(0, parseInt(val.delay||2));
+    setTimeout(()=>{
+      const parts=[];
+      if (val.image) parts.push(`<img src="${val.image}" class="w-full max-w-xs rounded-lg mb-2" />`);
+      if (val.text) parts.push(marked.parse(val.text));
+      addAssistantMessageHTML(parts.join(""), { avatarUrl: CURRENT.avatarUrl });
+      sessionStorage.setItem(key, '1');
+    }, delay*1000);
+  });
+}
+
+/* =========================
+   IA: MENSAJERÍA
+========================= */
+const MESSAGES = []; // {role:'system'|'user'|'assistant', content:string}
+const CURRENT = { avatarUrl: "", hotelName: "", contextInfo: "", personality:"warm" };
+
+
+async function askAI(userText){
+  const body = {
+    // 🔹 Solo enviamos mensajes e información de contexto general
+    messages: MESSAGES,
+    system: CURRENT.contextInfo || "" // El proxy añade su propio prompt
+  };
+
+  const res = await fetch(PROXY_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  });
+
+  if (!res.ok) throw new Error("IA request failed: " + res.status);
+  const data = await res.json();
+
+  return data?.choices?.[0]?.message?.content || "";
+}
+
+async function handleUserMessage(text){
+  // 1) AutoResponses (si hay match, responde y no llama IA)
+  if (tryAutoResponse(text)) return;
+
+  // 2) IA
+  const typing = addTyping();
+  const avatarImg = typing.querySelector('#__typAva');
+  if (avatarImg && CURRENT.avatarUrl) { avatarImg.src = CURRENT.avatarUrl; } else if (avatarImg) { avatarImg.style.display='none'; }
+
+  try{
+    const reply = await askAI(text);
+    MESSAGES.push({ role:'assistant', content: reply });
+    removeTyping(typing);
+    addAssistantMessage(reply, { avatarUrl: CURRENT.avatarUrl });
+  }catch(err){
+    console.error(err);
+    removeTyping(typing);
+    addAssistantMessage("Lo siento, hubo un problema al responder. ¿Puedes intentar nuevamente?");
+  }
+}
+
+/* =========================
+   SEND (botón y Enter)
+========================= */
+function sendNow(){
+  const t = (input.value || "").trim();
+  if (!t) return;
+  addUserMessage(t);
+  MESSAGES.push({ role:'user', content:t });
+  input.value = "";
+  handleUserMessage(t);
+}
+sendBtn.addEventListener('click', sendNow);
+input.addEventListener('keydown', e=>{ if(e.key === 'Enter'){ e.preventDefault(); sendNow(); }});
+
+/* =========================
+   CARGA DESDE FIREBASE (colores, logo, avatar, nombre, contexto, personality, autoResponses)
+========================= */
+function applyPrimaryColor(color){
+  document.documentElement.style.setProperty('--chat-primary', color || '#111111');
+}
+function initFirebaseBindings() {
+  // Colores
+  eref('config/chatPrimaryColor').on('value', s => applyPrimaryColor(s.val() || '#111111'));
+
+  // 🆕 Fondo del chat
+  eref('config/chatBackgroundColor').on('value', s => {
+    const bg = s.val() || '#ececec';
+    const chatWin = document.getElementById('chatWindow');
+    if (chatWin) chatWin.style.background = bg;
+
+    // Opcional: también el body si el chat ocupa toda la pantalla
+    document.body.style.background = bg;
+  });
+  
+  // 🟣 Header Background Color
+eref('config/chatHeaderColor').on('value', s => {
+  const h = s.val() || '#ffffff';
+  const chatHeader = document.getElementById('chatHeader');
+  if (chatHeader) chatHeader.style.background = h;
+});
+
+// 🟢 Assistant Text Color
+eref('config/chatAssistantTextColor').on('value', s => {
+  const c = s.val() || '#000000';
+  const msgs = document.querySelectorAll('.chat-assistant .msg');
+  msgs.forEach(m => m.style.color = c);
+  // Guarda el color actual para los nuevos mensajes
+  document.documentElement.style.setProperty('--assistant-text', c);
+});
+
+
+
+  // Header hotel name
+  eref('config/hotelName').on('value', s => {
+    CURRENT.hotelName = s.val() || '';
+    if (CURRENT.hotelName) hotelNameEl.textContent = CURRENT.hotelName;
+  });
+
+  // Logo + radio
+  const logoRef = eref('config/logoUrl');
+  const radiusRef = eref('config/logoRadius');
+  let logoUrl = "";
+  let logoRadius = 50;
+  const applyLogo = () => {
+    if (logoUrl) {
+      chatLogo.src = logoUrl;
+      chatLogo.style.borderRadius = `${logoRadius}%`;
+      chatLogo.classList.remove('hidden');
+    } else {
+      chatLogo.classList.add('hidden');
+      chatLogo.removeAttribute('src');
+    }
+  };
+  logoRef.on('value', s => { logoUrl = s.val() || ""; applyLogo(); });
+  radiusRef.on('value', s => { logoRadius = s.val() || 0; applyLogo(); });
+
+  // Avatar
+  eref('config/avatarUrl').on('value', s => {
+    CURRENT.avatarUrl = s.val() || "";
+  });
+
+  // 🆕 Tipografía dinámica completa
+  eref('config/fontFamily').on('value', s => {
+    const f = s.val() || 'Manrope';
+
+    // Lista de fuentes soportadas en Google Fonts
+    const available = [
+      "Manrope", "Inter", "Poppins", "Roboto", "Playfair Display", "Merriweather"
+    ];
+
+    // Solo intentar cargar si está en la lista
+    if (available.includes(f)) {
+      const id = `font_${f.replace(/\s+/g, '')}`;
+      if (!document.getElementById(id)) {
+        const link = document.createElement('link');
+        link.id = id;
+        link.rel = 'stylesheet';
+        link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(f)}:wght@400;500;600;700&display=swap`;
+        document.head.appendChild(link);
+      }
+    }
+
+    // Aplica siempre el font-family (aunque no se haya cargado)
+    document.body.style.fontFamily = `'${f}', system-ui, -apple-system, Segoe UI, Roboto, sans-serif`;
+  });
+
+  // 🧠 Context info + personality (con actualización del system prompt)
+  eref('config/contextInfo').on('value', s => {
+    CURRENT.contextInfo = s.val() || "";
+
+    // 🧩 Si ya existe el mensaje del sistema, actualízalo
+    if (MESSAGES.length > 0 && MESSAGES[0].role === 'system') {
+      MESSAGES[0].content = buildSystemPrompt();
+    }
+  });
+
+  eref('config/personality').on('value', s => {
+    CURRENT.personality = s.val() || "warm";
+
+    // 🧩 Actualizar también el prompt si cambia la personalidad
+    if (MESSAGES.length > 0 && MESSAGES[0].role === 'system') {
+      MESSAGES[0].content = buildSystemPrompt();
+    }
+  });
+
+  // AutoResponses
+  eref('config/autoResponses').on('value', s => { AUTO = s.val() || {}; });
+
+  // Welcome
+  scheduleWelcome();
+}
+
+
+// 🆕 Cargar tipografía dinámica desde Firebase
+eref('config/fontFamily').on('value', s => {
+  const f = s.val() || 'Manrope';
+
+  // Cargar la fuente desde Google Fonts si no está ya añadida
+  if (!document.querySelector(`#font_${f.replace(/\s+/g, '')}`)) {
+    const link = document.createElement('link');
+    link.id = `font_${f.replace(/\s+/g, '')}`;
+    link.rel = 'stylesheet';
+    link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(f)}:wght@400;500;600;700&display=swap`;
+    document.head.appendChild(link);
+  }
+
+  // Aplicar al body
+  document.body.style.fontFamily = `'${f}', system-ui, -apple-system, Segoe UI, Roboto, sans-serif`;
+});
+
+
+/* =========================
+   INICIO
+========================= */
+document.addEventListener('DOMContentLoaded', ()=>{
+  lucide.createIcons();
+  initFirebaseBindings();
+
+
+  // Cerrar: notificar al parent (embed)
+  document.getElementById('closeChat').addEventListener('click', ()=>{
+    try { if (window.parent !== window) window.parent.postMessage({ action:'closeChatWindow' }, '*'); } catch(e){}
+    // opcional: ocultar si se usa standalone
+    // document.getElementById('chatWindow').style.display='none';
+  });
+});
+  </script>
+
+</body>
+</html>
