@@ -30,7 +30,7 @@
   font-family: 'Manrope', system-ui, sans-serif !important;
 }
 
-    :root{ --tile-radius: 18px; }
+    :root{ --tile-radius: 18px; --avatar-radius: 50%; }
     body{ font-family: 'Manrope', system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
     .card{ background:white; border-radius: var(--tile-radius); box-shadow: 0 10px 30px rgba(0,0,0,.06); }
     .toggle{--w:52px;--h:28px;--p:3px;appearance:none;-webkit-appearance:none;outline:none;cursor:pointer;width:var(--w);height:var(--h);border-radius:999px;border:2px solid #111;background:#fff;position:relative;box-sizing:border-box;transition:background .2s,border-color .2s}
@@ -44,6 +44,14 @@
     .iphone-in{ width:100%; height:100%; border-radius:26px; overflow:hidden; background:white}
     .notch{ position:absolute;left:50%;top:0;transform:translateX(-50%); width:160px;height:22px;background:#000;border-bottom-left-radius:16px;border-bottom-right-radius:16px}
     .chip{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:10px 14px;border:1px solid #e5e7eb;background:#fff;cursor:pointer;font-size:14px}
+    .avatar-option{width:56px;height:56px;border-radius:var(--avatar-radius);border:2px solid transparent;background:#f3f4f6;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s ease;position:relative}
+    .avatar-option img{width:44px;height:44px;object-fit:cover;border-radius:var(--avatar-radius)}
+    .avatar-option:hover{border-color:#93c5fd}
+    .avatar-option.active{border-color:#2563eb;background:#eff6ff;box-shadow:0 0 0 4px rgba(37,99,235,.12)}
+    .avatar-option.avatar-upload{background:#f9fafb}
+    .avatar-option.avatar-upload:hover{background:#f3f4f6}
+    .avatar-preview-frame{border-radius:var(--avatar-radius)}
+    #avatarPreview{border-radius:var(--avatar-radius)}
     .chip.active{border-color:#111;background:#111;color:#fff}
     .sidebar-btn{display:flex;gap:10px;align-items:center;width:100%;padding:.65rem .8rem;border-radius:12px}
     .sidebar-btn.active{background:#111;color:#fff}
@@ -317,6 +325,12 @@ header {
           </label>
         </div>
 
+        <div id="logoProgressWrap" class="hidden mt-3">
+          <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+            <div id="logoBar" class="h-full w-0 bg-blue-500 transition-all"></div>
+          </div>
+        </div>
+
 <div class="relative hidden flex justify-center" id="logoPreviewWrap">
           <div class="relative w-24 h-24 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center shadow">
             <img id="logoPreview" class="w-full h-full object-cover" alt="Logo" />
@@ -348,17 +362,39 @@ header {
            Avatar
         </h3>
 
-        <div id="avatarControls" class="mb-2">
-          <label class="inline-block px-4 py-2 bg-black text-white rounded cursor-pointer text-sm hover:bg-gray-800 transition">
-            Select file
-            <input id="avatarFile" type="file" accept="image/*" class="hidden" />
-          </label>
+        <div id="avatarControls" class="space-y-4">
+          <div class="flex items-center gap-3 flex-wrap">
+            <button type="button" class="avatar-option active" data-avatar-option="avatars/1.png">
+              <img src="avatars/1.png" alt="Avatar 1" />
+            </button>
+            <button type="button" class="avatar-option" data-avatar-option="avatars/2.png">
+              <img src="avatars/2.png" alt="Avatar 2" />
+            </button>
+            <button type="button" class="avatar-option" data-avatar-option="avatars/3.png">
+              <img src="avatars/3.png" alt="Avatar 3" />
+            </button>
+            <label class="avatar-option avatar-upload cursor-pointer">
+              <i data-lucide="plus" class="w-5 h-5 text-gray-500"></i>
+              <input id="avatarFile" type="file" accept="image/*" class="hidden" />
+            </label>
+          </div>
+
+          <div id="avatarProgressWrap" class="hidden w-full">
+            <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div id="avatarBar" class="h-full w-0 bg-blue-500 transition-all"></div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <input type="range" id="avatarRadius" min="0" max="50" value="50" class="flex-1 accent-blue-500">
+            <span id="avatarRadiusVal" class="text-sm text-gray-600 min-w-[2ch] text-right">50</span>
+          </div>
         </div>
 
-      <div class="relative hidden flex justify-center" id="avatarPreviewWrap">
-  <div class="relative w-24 h-24 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center shadow">
-    <img id="avatarPreview" class="w-full h-full object-cover" alt="Avatar" />
-    <button id="deleteAvatar" class="absolute bottom-1 right-1 bg-red-600 text-white p-1.5 rounded-full shadow hover:bg-red-700 transition">
+      <div class="relative flex justify-center mt-4" id="avatarPreviewWrap">
+  <div class="relative w-24 h-24 overflow-hidden bg-gray-100 flex items-center justify-center shadow avatar-preview-frame">
+    <img id="avatarPreview" class="w-full h-full object-cover" alt="Avatar" src="avatars/1.png" />
+    <button id="deleteAvatar" class="absolute bottom-1 right-1 bg-red-600 text-white p-1.5 rounded-full shadow hover:bg-red-700 transition hidden">
       <i data-lucide="trash" class="w-4 h-4"></i>
     </button>
   </div>
@@ -1230,86 +1266,151 @@ if (iframe?.contentWindow?.document) {
 
 
   // === Avatar ===
+  const DEFAULT_AVATAR = 'avatars/1.png';
+  const avatarButtons = Array.from(document.querySelectorAll('[data-avatar-option]'));
   const avRef = eref('config/avatarUrl');
+  let currentAvatar = DEFAULT_AVATAR;
+  let avatarMsgTimeout;
+
+  const applyAvatarSelection = (value) => {
+    const finalUrl = (typeof value === 'string' ? value.trim() : '') || DEFAULT_AVATAR;
+    currentAvatar = finalUrl;
+
+    const preview = $('avatarPreview');
+    if (preview) preview.src = finalUrl;
+
+    const wrap = $('avatarPreviewWrap');
+    if (wrap) wrap.classList.remove('hidden');
+
+    let matchedPreset = false;
+    avatarButtons.forEach(btn => {
+      const isMatch = (btn.dataset.avatarOption || '').trim() === finalUrl;
+      btn.classList.toggle('active', isMatch);
+      if (isMatch) matchedPreset = true;
+    });
+
+    const deleteBtn = $('deleteAvatar');
+    if (deleteBtn) deleteBtn.classList.toggle('hidden', matchedPreset);
+  };
+
+  const showAvatarMessage = () => {
+    const msg = $('msgAvatar');
+    if (!msg) return;
+    msg.classList.remove('hidden');
+    clearTimeout(avatarMsgTimeout);
+    avatarMsgTimeout = setTimeout(() => msg.classList.add('hidden'), 1200);
+  };
+
+  applyAvatarSelection(DEFAULT_AVATAR);
+
   avRef.once('value', s => {
     const url = s.val();
-    if (url) {
-      $('avatarPreview').src = url;
-      $('avatarPreviewWrap').classList.remove('hidden');
-      $('avatarControls').classList.add('hidden');
-      lucide.createIcons();
-    }
+    applyAvatarSelection(url || DEFAULT_AVATAR);
+  });
+
+  avatarButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const selected = (btn.dataset.avatarOption || '').trim();
+      if (!selected || currentAvatar === selected) return;
+
+      canWrite(async () => {
+        await avRef.set(selected);
+        applyAvatarSelection(selected);
+        showAvatarMessage();
+      });
+    });
+  });
+
+  const updateAvatarRadius = (value) => {
+    document.documentElement.style.setProperty('--avatar-radius', `${value}%`);
+  };
+
+  const avatarRadiusRef = eref('config/avatarRadius');
+  avatarRadiusRef.once('value', s => {
+    const stored = s.val();
+    const parsed = typeof stored === 'number' ? stored : parseInt(stored, 10);
+    const radius = Number.isFinite(parsed) ? parsed : 50;
+    $('avatarRadius').value = radius;
+    $('avatarRadiusVal').textContent = radius;
+    updateAvatarRadius(radius);
+  });
+
+  $('avatarRadius').addEventListener('input', e => {
+    const val = parseInt(e.target.value, 10);
+    if (!Number.isFinite(val)) return;
+    $('avatarRadiusVal').textContent = val;
+    updateAvatarRadius(val);
+
+    canWrite(async () => {
+      await avatarRadiusRef.set(val);
+      toast('✔ Avatar border updated');
+    });
   });
 
   // 🆙 Subir avatar con recorte cuadrado (1:1)
-// 🆙 Subir avatar automáticamente al seleccionar archivo
-$('avatarFile').addEventListener('change', e => canWrite(() => {
-  const f = e.target.files[0];
-  if (!f) return;
+  $('avatarFile').addEventListener('change', e => canWrite(() => {
+    const f = e.target.files[0];
+    if (!f) return;
 
-  const reader = new FileReader();
-  reader.onload = ev => {
-    $('cropperImageAvatar').src = ev.target.result;
-    $('cropperModalAvatar').classList.remove('hidden');
-    $('cropperModalAvatar').classList.add('flex');
+    const reader = new FileReader();
+    reader.onload = ev => {
+      $('cropperImageAvatar').src = ev.target.result;
+      $('cropperModalAvatar').classList.remove('hidden');
+      $('cropperModalAvatar').classList.add('flex');
 
-    let cropper;
-    $('cropperImageAvatar').onload = () => {
-      cropper = new Cropper($('cropperImageAvatar'), {
-        aspectRatio: 1,
-        viewMode: 1,
-        background: false,
-        movable: false,
-        zoomable: true,
-        rotatable: false,
-        scalable: false
-      });
+      let cropper;
+      $('cropperImageAvatar').onload = () => {
+        cropper = new Cropper($('cropperImageAvatar'), {
+          aspectRatio: 1,
+          viewMode: 1,
+          background: false,
+          movable: false,
+          zoomable: true,
+          rotatable: false,
+          scalable: false
+        });
+      };
+
+      $('cancelCropAvatar').onclick = () => {
+        cropper.destroy();
+        $('cropperModalAvatar').classList.add('hidden');
+        e.target.value = '';
+      };
+
+      $('confirmCropAvatar').onclick = async () => {
+        const canvas = cropper.getCroppedCanvas({ width: 400, height: 400 });
+        $('cropperModalAvatar').classList.add('hidden');
+        cropper.destroy();
+
+        const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.9));
+        const path = `avatars/${EMPRESA}_${Date.now()}.jpg`;
+        const ref = storage.ref(path);
+        const task = ref.put(blob);
+
+        $('avatarProgressWrap').classList.remove('hidden');
+        task.on('state_changed', s => {
+          const p = Math.round((s.bytesTransferred / s.totalBytes) * 100);
+          $('avatarBar').style.width = p + '%';
+          $('avatarBar').style.background = $('chatPrimaryColor').value || '#111';
+        }, console.error, async () => {
+          const url = await ref.getDownloadURL();
+          await avRef.set(url);
+          applyAvatarSelection(url);
+          $('avatarProgressWrap').classList.add('hidden');
+          showAvatarMessage();
+          e.target.value = '';
+          lucide.createIcons();
+        });
+      };
     };
-
-    $('cancelCropAvatar').onclick = () => {
-      cropper.destroy();
-      $('cropperModalAvatar').classList.add('hidden');
-      e.target.value = ''; // limpia el input
-    };
-
-    $('confirmCropAvatar').onclick = async () => {
-      const canvas = cropper.getCroppedCanvas({ width: 400, height: 400 });
-      $('cropperModalAvatar').classList.add('hidden');
-      cropper.destroy();
-
-      const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.9));
-      const path = `avatars/${EMPRESA}_${Date.now()}.jpg`;
-      const ref = storage.ref(path);
-      const task = ref.put(blob);
-
-      $('avatarProgressWrap').classList.remove('hidden');
-      task.on('state_changed', s => {
-        const p = Math.round((s.bytesTransferred / s.totalBytes) * 100);
-        $('avatarBar').style.width = p + '%';
-        $('avatarBar').style.background = $('chatPrimaryColor').value || '#111';
-      }, console.error, async () => {
-        const url = await ref.getDownloadURL();
-        await avRef.set(url);
-        $('avatarPreview').src = url;
-        $('avatarPreviewWrap').classList.remove('hidden');
-        $('avatarControls').classList.add('hidden');
-        $('avatarProgressWrap').classList.add('hidden');
-        $('msgAvatar').classList.remove('hidden');
-        setTimeout(() => $('msgAvatar').classList.add('hidden'), 1200);
-        e.target.value = ''; // limpia el input
-        lucide.createIcons();
-      });
-    };
-  };
-  reader.readAsDataURL(f);
-}));
+    reader.readAsDataURL(f);
+  }));
 
   // 🗑️ Eliminar avatar
   $('deleteAvatar').onclick = () => canWrite(async () => {
-    await avRef.set('');
-    $('avatarPreviewWrap').classList.add('hidden');
-    $('avatarControls').classList.remove('hidden');
-    toast('Avatar eliminado');
+    await avRef.set(DEFAULT_AVATAR);
+    applyAvatarSelection(DEFAULT_AVATAR);
+    toast('Avatar restablecido');
   });
 }
 
@@ -1960,6 +2061,44 @@ function initWelcome() {
 // First paint
 window.addEventListener('load', ()=>{ $('pageLoader').style.display='none'; });
 </script>
+
+<!-- 🪟 Modal recorte Header -->
+<div id="cropperModal" class="fixed inset-0 hidden items-center justify-center bg-black/60 z-50 px-4">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-xl overflow-hidden">
+    <div class="p-4 border-b">
+      <h3 class="text-lg font-semibold">Ajustar header</h3>
+      <p class="text-sm text-gray-500">Recorta la imagen para que encaje perfectamente.</p>
+    </div>
+    <div class="p-4">
+      <div class="w-full aspect-square bg-gray-100 rounded-xl overflow-hidden flex items-center justify-center">
+        <img id="cropperImage" alt="Previsualización header" class="max-h-[70vh]" />
+      </div>
+    </div>
+    <div class="flex justify-end gap-3 p-4 border-t bg-gray-50">
+      <button id="cancelCrop" class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100">Cancelar</button>
+      <button id="confirmCrop" class="px-4 py-2 rounded-lg bg-black text-white hover:bg-gray-900">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- 🪟 Modal recorte Avatar -->
+<div id="cropperModalAvatar" class="fixed inset-0 hidden items-center justify-center bg-black/60 z-50 px-4">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-xl overflow-hidden">
+    <div class="p-4 border-b">
+      <h3 class="text-lg font-semibold">Ajustar avatar</h3>
+      <p class="text-sm text-gray-500">Recorta la imagen para que se vea perfecta en el chat.</p>
+    </div>
+    <div class="p-4">
+      <div class="w-full aspect-square bg-gray-100 rounded-xl overflow-hidden flex items-center justify-center">
+        <img id="cropperImageAvatar" alt="Previsualización avatar" class="max-h-[70vh]" />
+      </div>
+    </div>
+    <div class="flex justify-end gap-3 p-4 border-t bg-gray-50">
+      <button id="cancelCropAvatar" class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100">Cancelar</button>
+      <button id="confirmCropAvatar" class="px-4 py-2 rounded-lg bg-black text-white hover:bg-gray-900">Guardar</button>
+    </div>
+  </div>
+</div>
 
 
 </body>
