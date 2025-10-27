@@ -321,7 +321,7 @@ header {
         <button type="button" class="chip appearance-chip" data-appearance-target="widget">Widget</button>
       </div>
 
-      <div class="mt-6">
+      <div class="mt-6 flex flex-col xl:flex-row gap-6 items-start justify-center">
         <aside class="w-full xl:w-auto">
           <div class="space-y-6">
             <div class="iphone mx-auto">
@@ -349,11 +349,10 @@ header {
 
           </div>
         </aside>
-      </div>
 
-      <div id="appearanceCards" class="relative mt-6 min-h-[24px]">
+        <div id="appearanceCards" class="relative w-full xl:w-auto min-h-[24px]">
 
-        <div class="appearance-card hidden card p-5 w-full max-w-md ml-auto" data-appearance-card="header">
+        <div class="appearance-card hidden card p-5 w-full max-w-md" data-appearance-card="header">
           <div class="flex items-center justify-between mb-5">
             <div class="flex items-center gap-2 font-semibold text-gray-800">
               <i data-lucide="panel-top" class="w-5 h-5"></i>
@@ -404,7 +403,7 @@ header {
           </div>
         </div>
 
-        <div class="appearance-card hidden card p-5 w-full max-w-md ml-auto" data-appearance-card="chat">
+        <div class="appearance-card hidden card p-5 w-full max-w-md" data-appearance-card="chat">
           <div class="flex items-center justify-between mb-5">
             <div class="flex items-center gap-2 font-semibold text-gray-800">
               <i data-lucide="messages-square" class="w-5 h-5"></i>
@@ -483,7 +482,7 @@ header {
           </div>
         </div>
 
-        <div class="appearance-card hidden card p-5 w-full max-w-md ml-auto" data-appearance-card="widget">
+        <div class="appearance-card hidden card p-5 w-full max-w-md" data-appearance-card="widget">
           <div class="flex items-center justify-between mb-5">
             <div class="flex items-center gap-2 font-semibold text-gray-800">
               <i data-lucide="mouse-pointer" class="w-5 h-5"></i>
