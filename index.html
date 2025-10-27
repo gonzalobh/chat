@@ -314,41 +314,42 @@ header {
   </div>
 
   <div class="flex flex-col xl:flex-row gap-8 items-start">
-
-    <aside class="w-full xl:w-auto">
-      <div class="xl:sticky top-4 space-y-6">
-        <div class="iphone mx-auto">
-          <div class="notch"></div>
-          <div class="iphone-in relative">
-            <iframe id="liveChatFrame"
-              class="absolute inset-0 w-full h-full border-0 rounded-[26px]"
-              sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
-              referrerpolicy="no-referrer-when-downgrade"></iframe>
-
-            <div class="p-4 border-b flex items-center gap-3 hidden">
-              <img id="previewLogo" class="h-7 w-7 rounded hidden" />
-              <div class="font-medium">Chat Preview</div>
-            </div>
-            <div class="p-4 space-y-3 hidden" id="previewHolder">
-              <button id="previewBtn" class="px-4 py-2 rounded text-white">Botón</button>
-              <div id="previewBubble" class="p-3 rounded text-white inline-block">Mensaje</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="flex justify-end pr-0">
-          <div id="widgetExampleClone" class="widget-mockup shadow-lg">
-            <img id="widgetExampleIconClone" src="widgets/1.png" alt="Widget preview icon" />
-          </div>
-        </div>
-      </div>
-    </aside>
-
     <div class="flex-1 w-full">
       <div class="flex flex-wrap gap-3">
         <button type="button" class="chip appearance-chip" data-appearance-target="header">Header</button>
         <button type="button" class="chip appearance-chip" data-appearance-target="chat">Chat</button>
         <button type="button" class="chip appearance-chip" data-appearance-target="widget">Widget</button>
+      </div>
+
+      <div class="mt-6">
+        <aside class="w-full xl:w-auto">
+          <div class="space-y-6">
+            <div class="iphone mx-auto">
+              <div class="notch"></div>
+              <div class="iphone-in relative">
+                <iframe id="liveChatFrame"
+                  class="absolute inset-0 w-full h-full border-0 rounded-[26px]"
+                  sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
+                  referrerpolicy="no-referrer-when-downgrade"></iframe>
+
+                <div class="p-4 border-b flex items-center gap-3 hidden">
+                  <img id="previewLogo" class="h-7 w-7 rounded hidden" />
+                  <div class="font-medium">Chat Preview</div>
+                </div>
+                <div class="p-4 space-y-3 hidden" id="previewHolder">
+                  <button id="previewBtn" class="px-4 py-2 rounded text-white">Botón</button>
+                  <div id="previewBubble" class="p-3 rounded text-white inline-block">Mensaje</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex justify-end pr-0">
+              <div id="widgetExampleClone" class="widget-mockup shadow-lg">
+                <img id="widgetExampleIconClone" src="widgets/1.png" alt="Widget preview icon" />
+              </div>
+            </div>
+          </div>
+        </aside>
       </div>
 
       <div id="appearanceCards" class="relative mt-6 min-h-[24px]">
