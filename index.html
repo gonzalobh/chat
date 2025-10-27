@@ -63,6 +63,7 @@
     .widget-icon-option img{width:44px;height:44px;object-fit:contain}
     .widget-icon-option:hover{border-color:#93c5fd;background:#eff6ff}
     .widget-icon-option.active{border-color:#2563eb;background:#eff6ff;box-shadow:0 0 0 4px rgba(37,99,235,.12)}
+    .appearance-chip{min-width:94px;justify-content:center;font-weight:500}
 aside {
   scrollbar-width: thin;
   scrollbar-color: #ccc transparent;
@@ -312,228 +313,219 @@ header {
     </div>
   </div>
 
-  <!-- 🧱 3 COLUMNAS -->
-<div class="grid grid-cols-1 xl:grid-cols-[2.2fr_320px_2.2fr] gap-12 items-start">
+  <div class="flex flex-col xl:flex-row gap-8 items-start">
 
-    <!-- 🧩 COLUMNA 1 -->
-    <div class="space-y-6">
+    <aside class="w-full xl:w-auto">
+      <div class="xl:sticky top-4 space-y-6">
+        <div class="iphone mx-auto">
+          <div class="notch"></div>
+          <div class="iphone-in relative">
+            <iframe id="liveChatFrame"
+              class="absolute inset-0 w-full h-full border-0 rounded-[26px]"
+              sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
+              referrerpolicy="no-referrer-when-downgrade"></iframe>
 
-      <!-- 🖼️ HEADER FAVICON -->
-      <div class="card p-5">
-        <h3 class="font-semibold mb-3 flex items-center gap-2">
-          <i data-lucide="image" class="w-5 h-5"></i>
-          Header Image
-        </h3>
-
-        <div id="logoControls" class="mb-2">
-          <label class="inline-block px-4 py-2 bg-black text-white rounded cursor-pointer text-sm hover:bg-gray-800 transition">
-            Select file
-            <input id="logoFile" type="file" accept="image/*" class="hidden" />
-          </label>
-        </div>
-
-<div class="relative hidden flex justify-center" id="logoPreviewWrap">
-          <div class="relative w-24 h-24 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center shadow">
-            <img id="logoPreview" class="w-full h-full object-cover" alt="Logo" />
-            <button id="deleteLogo" class="absolute bottom-1 right-1 bg-red-600 text-white p-1.5 rounded-full shadow hover:bg-red-700 transition">
-              <i data-lucide="trash" class="w-4 h-4"></i>
-            </button>
-          </div>
-        </div>
-        
-
-
-<!-- Radio + slider -->
-<div class="flex items-center justify-center gap-3 mt-4">
-  <input type="checkbox" id="headerRounded" />
-  <input type="range" id="logoRadius" min="0" max="50" value="23" class="w-1/2 accent-blue-500">
-  <span id="logoRadiusVal" class="text-sm text-gray-600">23</span>
-</div>
-
-        
-
-
-        <p id="msgLogo" class="text-green-600 text-sm mt-2 hidden">✔ Header image updated</p>
-      </div>
-
-      <!-- 🧑‍💻 CHATBOT AVATAR -->
-      <div class="card p-5">
-        <h3 class="font-semibold mb-3 flex items-center gap-2">
-          <i data-lucide="smile" class="w-5 h-5"></i>
-           Avatar
-        </h3>
-
-        <div id="avatarControls" class="space-y-4">
-          <div class="flex items-center gap-3 flex-wrap">
-            <button type="button" class="avatar-option active" data-avatar-option="avatars/1.png">
-              <img src="avatars/1.png" alt="Avatar 1" />
-            </button>
-            <button type="button" class="avatar-option" data-avatar-option="avatars/2.png">
-              <img src="avatars/2.png" alt="Avatar 2" />
-            </button>
-            <button type="button" class="avatar-option" data-avatar-option="avatars/3.png">
-              <img src="avatars/3.png" alt="Avatar 3" />
-            </button>
-            <div class="relative">
-              <label id="customAvatarOption" class="avatar-option avatar-upload cursor-pointer" data-avatar-option="">
-                <i id="customAvatarPlus" data-lucide="plus" class="w-5 h-5 text-gray-500"></i>
-                <img id="customAvatarImage" src="" alt="Avatar personalizado" class="hidden" />
-                <input id="avatarFile" type="file" accept="image/*" class="hidden" />
-              </label>
-              <button type="button" id="deleteAvatar" class="hidden absolute -right-1 -bottom-1 bg-red-600 text-white p-1 rounded-full shadow hover:bg-red-700 transition">
-                <i data-lucide="trash" class="w-4 h-4"></i>
-              </button>
+            <div class="p-4 border-b flex items-center gap-3 hidden">
+              <img id="previewLogo" class="h-7 w-7 rounded hidden" />
+              <div class="font-medium">Chat Preview</div>
+            </div>
+            <div class="p-4 space-y-3 hidden" id="previewHolder">
+              <button id="previewBtn" class="px-4 py-2 rounded text-white">Botón</button>
+              <div id="previewBubble" class="p-3 rounded text-white inline-block">Mensaje</div>
             </div>
           </div>
-
-<div class="flex items-center justify-center gap-3 mt-2 w-48 mx-auto">
-  <input type="checkbox" id="avatarRounded" />
-  <input type="range" id="avatarRadius" min="0" max="50" value="50" class="flex-none w-28 accent-blue-500">
-  <span id="avatarRadiusVal" class="text-sm text-gray-600 min-w-[2ch] text-right">50</span>
-</div>
-</div>
-
-
-      </div>
-
-<!-- 🧭 WIDGET -->
-<div class="card p-5">
-  <h3 class="font-semibold mb-3 flex items-center gap-2">
-    <i data-lucide="mouse-pointer" class="w-5 h-5"></i>
-    Widget
-  </h3>
-
-<!-- 🧭 WIDGET -->
-<div class="p-5">
-  <div class="grid grid-cols-3 gap-6 items-center justify-items-center">
-
-    <!-- 🎨 Selector de color -->
-    <input id="chatButtonColor" type="color"
-      class="w-10 h-10 rounded-full cursor-pointer border border-gray-300 shadow-sm" />
-
-    <!-- 💬 Mockup del botón -->
-    <div id="widgetExample" class="widget-mockup">
-      <img id="widgetExampleIcon" src="widgets/1.png" alt="Widget preview icon" />
-    </div>
-
-    <!-- 🔘 Selección de icono -->
-    <button type="button" id="widgetIconTrigger" class="widget-icon-trigger" title="Elegir icono">
-      <img id="widgetIconTriggerImg" src="widgets/1.png" alt="Icono del widget" />
-    </button>
-
-  </div>
-
-  <!-- 🔹 Slider debajo -->
-<div class="flex items-center justify-center gap-3 mt-5">
-  <input type="checkbox" id="widgetRounded" />
-  <input type="range" id="widgetRadius" min="0" max="50" value="20" class="w-1/2 accent-blue-500">
-  <span id="widgetRadiusVal" class="text-sm text-gray-600 inline-block text-right min-w-[2ch]">20</span>
-</div>
-
-</div>
-
-</div>
-
-
-
-    </div>
-
-    <!-- 📱 COLUMNA 2 (MOCKUP) -->
-<aside class="hidden lg:block">
-  <div class="sticky top-4">
-    <!-- 📱 Mockup del chat -->
-    <div class="iphone mx-auto">
-      <div class="notch"></div>
-      <div class="iphone-in relative">
-        <iframe id="liveChatFrame"
-          class="absolute inset-0 w-full h-full border-0 rounded-[26px]"
-          sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
-          referrerpolicy="no-referrer-when-downgrade"></iframe>
-
-        <!-- Elementos ocultos necesarios para el preview -->
-        <div class="p-4 border-b flex items-center gap-3 hidden">
-          <img id="previewLogo" class="h-7 w-7 rounded hidden" />
-          <div class="font-medium">Chat Preview</div>
         </div>
-        <div class="p-4 space-y-3 hidden" id="previewHolder">
-          <button id="previewBtn" class="px-4 py-2 rounded text-white">Botón</button>
-          <div id="previewBubble" class="p-3 rounded text-white inline-block">Mensaje</div>
+
+        <div class="flex justify-end pr-0">
+          <div id="widgetExampleClone" class="widget-mockup shadow-lg">
+            <img id="widgetExampleIconClone" src="widgets/1.png" alt="Widget preview icon" />
+          </div>
         </div>
       </div>
-    </div>
+    </aside>
 
-<!-- 🧩 CLON DEL WIDGET (alineado más a la derecha) -->
-<div class="flex justify-end mt-6 pr-0">
-  <div id="widgetExampleClone" class="widget-mockup shadow-lg">
-    <img id="widgetExampleIconClone" src="widgets/1.png" alt="Widget preview icon" />
-  </div>
-</div>
-
-  </div>
-</aside>
-
-
-    <!-- 🎨 COLUMNA 3 -->
-    <div class="space-y-6">
-
-  <!-- 🎨 COLORS -->
-<!-- 🎨 COLORS -->
-<div class="card p-5">
-  <h3 class="font-semibold mb-4 flex items-center gap-2">
-    <i data-lucide="palette" class="w-5 h-5"></i>
-    Colors
-  </h3>
-
-  <div class="space-y-5">
-
-<!-- Header Background -->
-<div class="flex items-center gap-4">
-  <input id="chatHeaderColor" type="color" class="w-10 h-10 cursor-pointer">
-  <span class="text-sm font-medium text-gray-600 select-none">Header Background</span>
-</div>
-
-
-    <!-- Chat Background -->
-    <div class="flex items-center gap-4">
-      <input id="chatBackgroundColor" type="color" class="w-10 h-10 cursor-pointer">
-      <span class="text-sm font-medium text-gray-600 select-none">Chat Background</span>
-    </div>
-
-
-    <!-- Chat Primary Color -->
-    <div class="flex items-center gap-4">
-      <input id="chatPrimaryColor" type="color" class="w-10 h-10 cursor-pointer">
-      <span class="text-sm font-medium text-gray-600 select-none">Primary</span>
-    </div>
-
-  </div>
-</div>
-
-
-      <!-- Font -->
-      <div class="card p-5">
-        <h3 class="font-semibold mb-3 flex items-center gap-2">
-          <i data-lucide="type" class="w-5 h-5"></i>
-          Font
-        </h3>
-        <select id="fontFamily" class="border rounded px-3 py-2 w-full text-sm bg-white">
-          <option value="Manrope">Manrope</option>
-          <option value="Inter">Inter</option>
-          <option value="Poppins">Poppins</option>
-          <option value="Roboto">Roboto</option>
-          <option value="Playfair Display">Playfair Display</option>
-          <option value="Merriweather">Merriweather</option>
-        </select>
-        
-         <!-- 🆕 Assistant Text Color -->
-<div class="flex items-center gap-4 mt-4">
-  <input id="chatAssistantTextColor" type="color" class="w-10 h-10 cursor-pointer">
-  <span class="text-sm font-medium text-gray-600 select-none">Text Color</span>
-</div>
-
-  
+    <div class="flex-1 w-full">
+      <div class="flex flex-wrap gap-3">
+        <button type="button" class="chip appearance-chip" data-appearance-target="header">Header</button>
+        <button type="button" class="chip appearance-chip" data-appearance-target="chat">Chat</button>
+        <button type="button" class="chip appearance-chip" data-appearance-target="widget">Widget</button>
       </div>
 
+      <div id="appearanceCards" class="relative mt-6 min-h-[24px]">
+
+        <div class="appearance-card hidden card p-5 w-full max-w-md ml-auto" data-appearance-card="header">
+          <div class="flex items-center justify-between mb-5">
+            <div class="flex items-center gap-2 font-semibold text-gray-800">
+              <i data-lucide="panel-top" class="w-5 h-5"></i>
+              Header
+            </div>
+            <button type="button" class="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition" data-close-card>
+              <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <div class="space-y-6">
+            <div class="space-y-4">
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Image</p>
+              <div class="space-y-4">
+                <div id="logoControls" class="flex flex-wrap gap-3 justify-center">
+                  <label class="inline-flex items-center justify-center px-4 py-2 bg-black text-white rounded cursor-pointer text-sm hover:bg-gray-800 transition">
+                    Select file
+                    <input id="logoFile" type="file" accept="image/*" class="hidden" />
+                  </label>
+                </div>
+                <div id="logoPreviewWrap" class="hidden">
+                  <div class="relative w-24 h-24 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center shadow mx-auto">
+                    <img id="logoPreview" class="w-full h-full object-cover" alt="Logo" />
+                    <button id="deleteLogo" class="absolute bottom-1 right-1 bg-red-600 text-white p-1.5 rounded-full shadow hover:bg-red-700 transition">
+                      <i data-lucide="trash" class="w-4 h-4"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <label class="flex items-center gap-2 text-sm text-gray-600 select-none">
+                    <input type="checkbox" id="headerRounded" class="rounded border-gray-300" />
+                    Rounded
+                  </label>
+                  <input type="range" id="logoRadius" min="0" max="50" value="23" class="flex-1 accent-blue-500">
+                  <span id="logoRadiusVal" class="text-sm text-gray-600 w-8 text-right">23</span>
+                </div>
+                <p id="msgLogo" class="text-green-600 text-sm hidden">✔ Header image updated</p>
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Colors</p>
+              <div class="flex items-center gap-4">
+                <input id="chatHeaderColor" type="color" class="w-10 h-10 cursor-pointer">
+                <span class="text-sm font-medium text-gray-600 select-none">Header Background</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="appearance-card hidden card p-5 w-full max-w-md ml-auto" data-appearance-card="chat">
+          <div class="flex items-center justify-between mb-5">
+            <div class="flex items-center gap-2 font-semibold text-gray-800">
+              <i data-lucide="messages-square" class="w-5 h-5"></i>
+              Chat
+            </div>
+            <button type="button" class="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition" data-close-card>
+              <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <div class="space-y-6">
+            <div class="space-y-4">
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Avatar</p>
+              <div id="avatarControls" class="space-y-4">
+                <div class="flex items-center gap-3 flex-wrap">
+                  <button type="button" class="avatar-option active" data-avatar-option="avatars/1.png">
+                    <img src="avatars/1.png" alt="Avatar 1" />
+                  </button>
+                  <button type="button" class="avatar-option" data-avatar-option="avatars/2.png">
+                    <img src="avatars/2.png" alt="Avatar 2" />
+                  </button>
+                  <button type="button" class="avatar-option" data-avatar-option="avatars/3.png">
+                    <img src="avatars/3.png" alt="Avatar 3" />
+                  </button>
+                  <div class="relative">
+                    <label id="customAvatarOption" class="avatar-option avatar-upload cursor-pointer" data-avatar-option="">
+                      <i id="customAvatarPlus" data-lucide="plus" class="w-5 h-5 text-gray-500"></i>
+                      <img id="customAvatarImage" src="" alt="Avatar personalizado" class="hidden" />
+                      <input id="avatarFile" type="file" accept="image/*" class="hidden" />
+                    </label>
+                    <button type="button" id="deleteAvatar" class="hidden absolute -right-1 -bottom-1 bg-red-600 text-white p-1 rounded-full shadow hover:bg-red-700 transition">
+                      <i data-lucide="trash" class="w-4 h-4"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <label class="flex items-center gap-2 text-sm text-gray-600 select-none">
+                    <input type="checkbox" id="avatarRounded" class="rounded border-gray-300" />
+                    Rounded
+                  </label>
+                  <input type="range" id="avatarRadius" min="0" max="50" value="50" class="flex-none w-28 accent-blue-500">
+                  <span id="avatarRadiusVal" class="text-sm text-gray-600 min-w-[2ch] text-right">50</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Font</p>
+              <select id="fontFamily" class="border rounded px-3 py-2 w-full text-sm bg-white">
+                <option value="Manrope">Manrope</option>
+                <option value="Inter">Inter</option>
+                <option value="Poppins">Poppins</option>
+                <option value="Roboto">Roboto</option>
+                <option value="Playfair Display">Playfair Display</option>
+                <option value="Merriweather">Merriweather</option>
+              </select>
+            </div>
+
+            <div class="space-y-4">
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Colors</p>
+              <div class="space-y-3">
+                <div class="flex items-center gap-4">
+                  <input id="chatBackgroundColor" type="color" class="w-10 h-10 cursor-pointer">
+                  <span class="text-sm font-medium text-gray-600 select-none">Chat Background</span>
+                </div>
+                <div class="flex items-center gap-4">
+                  <input id="chatAssistantTextColor" type="color" class="w-10 h-10 cursor-pointer">
+                  <span class="text-sm font-medium text-gray-600 select-none">Text</span>
+                </div>
+                <div class="flex items-center gap-4">
+                  <input id="chatPrimaryColor" type="color" class="w-10 h-10 cursor-pointer">
+                  <span class="text-sm font-medium text-gray-600 select-none">Client Background</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="appearance-card hidden card p-5 w-full max-w-md ml-auto" data-appearance-card="widget">
+          <div class="flex items-center justify-between mb-5">
+            <div class="flex items-center gap-2 font-semibold text-gray-800">
+              <i data-lucide="mouse-pointer" class="w-5 h-5"></i>
+              Widget
+            </div>
+            <button type="button" class="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition" data-close-card>
+              <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <div class="space-y-6">
+            <div class="space-y-4">
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Icon</p>
+              <div class="flex items-center gap-4">
+                <div id="widgetExample" class="widget-mockup">
+                  <img id="widgetExampleIcon" src="widgets/1.png" alt="Widget preview icon" />
+                </div>
+                <button type="button" id="widgetIconTrigger" class="widget-icon-trigger" title="Elegir icono">
+                  <img id="widgetIconTriggerImg" src="widgets/1.png" alt="Icono del widget" />
+                </button>
+              </div>
+              <div class="flex items-center gap-3">
+                <label class="flex items-center gap-2 text-sm text-gray-600 select-none">
+                  <input type="checkbox" id="widgetRounded" class="rounded border-gray-300" />
+                  Rounded
+                </label>
+                <input type="range" id="widgetRadius" min="0" max="50" value="20" class="flex-1 accent-blue-500">
+                <span id="widgetRadiusVal" class="text-sm text-gray-600 inline-block text-right min-w-[2ch]">20</span>
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Colors</p>
+              <div class="flex items-center gap-4">
+                <input id="chatButtonColor" type="color" class="w-10 h-10 rounded-full cursor-pointer border border-gray-300 shadow-sm" />
+                <span class="text-sm font-medium text-gray-600 select-none">Widget Background</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
 
   </div>
@@ -972,6 +964,36 @@ async function initAll(){
 
 // ====== Apariencia ======
 function initApariencia() {
+
+  const chips = Array.from(document.querySelectorAll('[data-appearance-target]'));
+  const cards = Array.from(document.querySelectorAll('[data-appearance-card]'));
+
+  const clearAppearanceCards = () => {
+    chips.forEach(chip => chip.classList.remove('active'));
+    cards.forEach(card => card.classList.add('hidden'));
+  };
+
+  const openAppearanceCard = (name) => {
+    chips.forEach(chip => chip.classList.toggle('active', chip.dataset.appearanceTarget === name));
+    cards.forEach(card => card.classList.toggle('hidden', card.dataset.appearanceCard !== name));
+  };
+
+  chips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      const target = chip.dataset.appearanceTarget;
+      const isActive = chip.classList.contains('active');
+      clearAppearanceCards();
+      if (!isActive) {
+        openAppearanceCard(target);
+      }
+    });
+  });
+
+  document.querySelectorAll('[data-close-card]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      clearAppearanceCards();
+    });
+  });
 
 // 🔹 Chat Primary Color (auto-save with toast)
 const prRef = eref('config/chatPrimaryColor');
