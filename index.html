@@ -315,7 +315,7 @@ header {
 
   <div class="flex flex-col xl:flex-row gap-8 items-start">
     <div class="flex-1 w-full">
-      <div class="flex flex-wrap gap-3">
+      <div class="flex flex-wrap gap-3 justify-center">
         <button type="button" class="chip appearance-chip" data-appearance-target="header">Header</button>
         <button type="button" class="chip appearance-chip" data-appearance-target="chat">Chat</button>
         <button type="button" class="chip appearance-chip" data-appearance-target="widget">Widget</button>
@@ -340,14 +340,13 @@ header {
                   <button id="previewBtn" class="px-4 py-2 rounded text-white">Botón</button>
                   <div id="previewBubble" class="p-3 rounded text-white inline-block">Mensaje</div>
                 </div>
+
+                <div id="widgetExampleClone" class="widget-mockup shadow-lg absolute bottom-5 right-5 z-10">
+                  <img id="widgetExampleIconClone" src="widgets/1.png" alt="Widget preview icon" />
+                </div>
               </div>
             </div>
 
-            <div class="flex justify-end pr-0">
-              <div id="widgetExampleClone" class="widget-mockup shadow-lg">
-                <img id="widgetExampleIconClone" src="widgets/1.png" alt="Widget preview icon" />
-              </div>
-            </div>
           </div>
         </aside>
       </div>
