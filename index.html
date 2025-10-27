@@ -64,6 +64,16 @@
     .widget-icon-option:hover{border-color:#93c5fd;background:#eff6ff}
     .widget-icon-option.active{border-color:#2563eb;background:#eff6ff;box-shadow:0 0 0 4px rgba(37,99,235,.12)}
     .appearance-chip{min-width:94px;justify-content:center;font-weight:500}
+    .appearance-layout{display:flex;flex-direction:column;align-items:center;gap:1.5rem}
+    .appearance-balance{display:none}
+    .appearance-mockup{width:100%}
+    .appearance-cards{width:100%;position:relative}
+    @media (min-width:1280px){
+      .appearance-layout{display:grid;grid-template-columns:auto auto auto;align-items:start;justify-content:center;gap:1.5rem}
+      .appearance-balance{display:block;width:28rem}
+      .appearance-mockup{grid-column:2}
+      .appearance-cards{grid-column:3;width:28rem}
+    }
 aside {
   scrollbar-width: thin;
   scrollbar-color: #ccc transparent;
@@ -321,8 +331,9 @@ header {
         <button type="button" class="chip appearance-chip" data-appearance-target="widget">Widget</button>
       </div>
 
-      <div class="mt-6 flex flex-col xl:flex-row gap-6 items-start justify-center">
-        <aside class="w-full xl:w-auto">
+      <div class="mt-6 appearance-layout">
+        <div class="appearance-balance" aria-hidden="true"></div>
+        <aside class="w-full xl:w-auto appearance-mockup">
           <div class="space-y-6">
             <div class="iphone mx-auto">
               <div class="notch"></div>
@@ -350,7 +361,7 @@ header {
           </div>
         </aside>
 
-        <div id="appearanceCards" class="relative w-full xl:w-auto min-h-[24px]">
+        <div id="appearanceCards" class="relative w-full appearance-cards min-h-[24px]">
 
         <div class="appearance-card hidden card p-5 w-full max-w-md" data-appearance-card="header">
           <div class="flex items-center justify-between mb-5">
