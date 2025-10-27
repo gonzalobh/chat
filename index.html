@@ -627,27 +627,41 @@ header {
             </div>
           </section>
           <!-- KNOWLEDGE TAB -->
-<section id="tab-knowledge" class="hidden space-y-6 max-w-3xl">
-  <div class="card p-5">
-    <div class="font-semibold flex items-center gap-2 mb-3">
+          <section id="tab-knowledge" class="hidden space-y-6 max-w-3xl">
+  <div class="card p-5 space-y-4">
+    <div class="font-semibold flex items-center gap-2">
       <i data-lucide="book-open" class="w-5 h-5"></i>
       Knowledge
     </div>
-    <p class="text-sm text-gray-500 mb-3">
-      Write here the contextual information that helps the assistant
-      understand your business, products, and brand tone.
+    <p class="text-sm text-gray-500">
+      Add the contextual information that helps the assistant understand your business, products, and brand tone. You can import pages from a URL and edit them here.
     </p>
 
-    <textarea id="contextText"
-      class="w-full border rounded-xl p-3 text-sm focus:outline-none"
-      placeholder="Add your knowledge here... (max 10,000 characters)"></textarea>
-
-    <div class="flex items-center justify-between mt-2 text-xs">
-      <span id="ctxCounter" class="text-gray-500">0 / 10000 characters</span>
+    <div class="flex flex-wrap items-center gap-2">
+      <div id="knowledgeTabs" class="flex flex-wrap items-center gap-2"></div>
+      <button id="addKnowledgePage" class="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-black text-white rounded-lg shadow-sm hover:bg-gray-900 transition">
+        <i data-lucide="plus" class="w-4 h-4"></i>
+        Add
+      </button>
     </div>
 
-    <button id="saveContext" class="mt-3 px-4 py-2 bg-black text-white rounded-md">Save</button>
-    <p id="msgContext" class="text-green-600 text-sm mt-2 hidden">✔ Saved</p>
+    <div id="knowledgeUrlMeta" class="text-xs text-gray-500 hidden">
+      <span class="font-medium">Source:</span>
+      <span id="knowledgeCurrentUrl" class="truncate"></span>
+    </div>
+
+    <textarea id="contextText"
+      class="w-full border rounded-xl p-3 text-sm focus:outline-none resize-none"
+      placeholder="Add your knowledge here... (max 10,000 characters)"></textarea>
+
+    <div class="flex items-center justify-between text-xs">
+      <span id="ctxCounter" class="text-gray-500">0 / 10000 characters</span>
+      <div class="flex items-center gap-2">
+        <button id="saveContext" class="px-4 py-2 bg-black text-white rounded-md text-sm">Save</button>
+      </div>
+    </div>
+
+    <p id="msgContext" class="text-green-600 text-sm hidden">✔ Saved</p>
   </div>
 </section>
 
@@ -736,6 +750,31 @@ header {
   class="fixed top-[70px] left-1/2 -translate-x-1/2 bg-green-600 text-white px-4 py-2 rounded-lg opacity-0 text-sm shadow-lg transition-opacity z-[9999]">
 </div>
 
+<!-- Modal: Add knowledge page -->
+<div id="knowledgeModal" class="fixed inset-0 hidden items-center justify-center bg-black/40 backdrop-blur-sm z-[1200] px-4">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-xl p-6 space-y-4 relative">
+    <button id="closeKnowledgeModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+      <i data-lucide="x" class="w-5 h-5"></i>
+    </button>
+    <div class="space-y-1">
+      <h3 class="text-lg font-semibold">Add Page Knowledge</h3>
+      <p class="text-sm text-gray-500">Paste the URL of the page you want to import. We will crawl it and organize the information automatically.</p>
+    </div>
+    <div class="space-y-2">
+      <label for="knowledgeUrlInput" class="text-xs font-medium text-gray-600 uppercase tracking-wide">Page URL</label>
+      <input id="knowledgeUrlInput" type="url" placeholder="https://example.com/page" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black" />
+    </div>
+    <p id="knowledgeModalError" class="text-sm text-red-600 hidden"></p>
+    <p id="knowledgeModalStatus" class="text-sm text-gray-500 hidden"></p>
+    <div class="flex items-center justify-end gap-2 pt-2">
+      <button id="cancelKnowledgeModal" class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">Cancel</button>
+      <button id="confirmAddKnowledge" class="px-4 py-2 bg-black text-white rounded-lg text-sm flex items-center gap-2">
+        <span>Add</span>
+      </button>
+    </div>
+  </div>
+</div>
+
 
 <script>
 // ====== Firebase config ======
@@ -799,7 +838,8 @@ function setWriteEnabled(enabled) {
   const ids = [
     'saveChatPrimaryColor','saveChatButtonColor','uploadLogo','deleteLogo',
     'uploadAvatar','deleteAvatar','fontSelect','tgChatVisible','hotelName',
-    'timeZone','saveGeneral','saveContext','contextText','widgetIconTrigger'
+    'timeZone','saveGeneral','saveContext','contextText','widgetIconTrigger',
+    'addKnowledgePage','knowledgeUrlInput','confirmAddKnowledge'
   ];
   ids.forEach(id => {
     const el = $(id);
@@ -812,6 +852,10 @@ function setWriteEnabled(enabled) {
     ch.disabled = !enabled;
     ch.classList.toggle('opacity-60', !enabled);
   });
+
+  if (typeof window.__applyKnowledgeWriteState === 'function') {
+    window.__applyKnowledgeWriteState();
+  }
 }
 
 async function canWrite(fn) {
@@ -1675,39 +1719,376 @@ function initSettingsTab(){
 
 
 function initKnowledge(){
-  const ref = eref('config/contextInfo');
+  const pagesRef = eref('config/contextPages');
+  const legacyRef = eref('config/contextInfo');
+
   const txt = $('contextText');
   const btn = $('saveContext');
   const counter = $('ctxCounter');
+  const tabsWrap = $('knowledgeTabs');
+  const addBtn = $('addKnowledgePage');
+  const urlMeta = $('knowledgeUrlMeta');
+  const urlLabel = $('knowledgeCurrentUrl');
+
+  const modal = $('knowledgeModal');
+  const modalClose = $('closeKnowledgeModal');
+  const modalCancel = $('cancelKnowledgeModal');
+  const modalConfirm = $('confirmAddKnowledge');
+  const modalInput = $('knowledgeUrlInput');
+  const modalError = $('knowledgeModalError');
+  const modalStatus = $('knowledgeModalStatus');
+
   const LIMIT = 10000;
+  const AI_PROXY_URL = new URL(window.location.href).searchParams.get('proxy') || 'https://hotel-chat-proxy.vercel.app/api/chat';
+
+  let pages = [];
+  let currentPageId = '';
+  let isSaving = false;
+
+  const generatePageId = () => `pg_${Math.random().toString(36).slice(2,8)}${Date.now().toString(36)}`;
+
+  function sanitizeText(text = '') {
+    return (text || '')
+      .replace(/\r\n/g, '\n')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+  }
+
+  function extractScrapedContent(payload) {
+    if (!payload) return '';
+    if (typeof payload === 'string') return payload;
+    if (Array.isArray(payload)) {
+      for (const item of payload) {
+        const result = extractScrapedContent(item);
+        if (result) return result;
+      }
+      return '';
+    }
+    if (typeof payload === 'object') {
+      if (typeof payload.content === 'string') return payload.content;
+      if (Array.isArray(payload.content)) return payload.content.join('\n');
+      if (payload.text) return extractScrapedContent(payload.text);
+      if (payload.html) return extractScrapedContent(payload.html);
+      if (payload.page) return extractScrapedContent(payload.page);
+      if (payload.pages) return extractScrapedContent(payload.pages);
+      if (payload.data) return extractScrapedContent(payload.data);
+    }
+    return '';
+  }
+
+  function buildPage(data, index){
+    const fallbackIndex = typeof index === 'number' ? index : pages.length;
+    return {
+      id: data?.id || generatePageId(),
+      title: data?.title || `Page ${fallbackIndex + 1}`,
+      url: data?.url || '',
+      content: data?.content || '',
+      order: typeof data?.order === 'number' ? data.order : fallbackIndex
+    };
+  }
+
+  function parsePages(val){
+    if (!val) return [];
+    if (Array.isArray(val)) {
+      return val.map((item, idx) => buildPage({
+        id: item?.id,
+        title: item?.title,
+        url: item?.url,
+        content: item?.content,
+        order: typeof item?.order === 'number' ? item.order : idx
+      }, idx));
+    }
+    if (typeof val === 'object') {
+      const arr = Object.entries(val).map(([id, item]) => buildPage({
+        id,
+        title: item?.title,
+        url: item?.url,
+        content: item?.content,
+        order: typeof item?.order === 'number' ? item.order : 0
+      }));
+      return arr.sort((a,b) => (a.order ?? 0) - (b.order ?? 0));
+    }
+    return [];
+  }
 
   function updateCounter(){
     const len = (txt.value || '').length;
     counter.textContent = `${len} / ${LIMIT} characters`;
     counter.classList.toggle('text-red-600', len > LIMIT);
     counter.classList.toggle('text-gray-500', len <= LIMIT);
-    btn.disabled = len > LIMIT || !canWriteFlag;
+    const disabled = len > LIMIT || !canWriteFlag || !currentPageId;
+    btn.disabled = disabled;
     btn.classList.toggle('opacity-60', btn.disabled);
   }
 
-  ref.once('value', s => {
-    txt.value = s.val() || '';
-    txt.style.height = txt.scrollHeight + 'px';
+  function applyTextareaState(){
+    const disabled = !currentPageId || !canWriteFlag;
+    txt.disabled = disabled;
+    txt.classList.toggle('opacity-60', disabled);
     updateCounter();
+  }
+
+  function renderTabs(){
+    tabsWrap.innerHTML = '';
+    pages.forEach((page, idx) => {
+      const btnTab = document.createElement('button');
+      const isActive = page.id === currentPageId;
+      btnTab.dataset.id = page.id;
+      btnTab.className = `px-3 py-1.5 rounded-lg text-sm border transition ${isActive
+        ? 'bg-black text-white border-black shadow-sm'
+        : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-100'}`;
+      btnTab.textContent = page.title || `Page ${idx + 1}`;
+      btnTab.addEventListener('click', () => {
+        setActivePage(page.id);
+      });
+      tabsWrap.appendChild(btnTab);
+    });
+    tabsWrap.classList.toggle('hidden', pages.length === 0);
+  }
+
+  function setActivePage(id){
+    currentPageId = id || '';
+    const page = pages.find(p => p.id === currentPageId);
+    txt.value = page?.content || '';
+    txt.style.height = 'auto';
+    txt.style.height = (txt.scrollHeight || 120) + 'px';
+    if (page?.url) {
+      urlLabel.textContent = page.url;
+      urlLabel.setAttribute('title', page.url);
+      urlMeta.classList.remove('hidden');
+    } else {
+      urlLabel.textContent = '';
+      urlLabel.removeAttribute('title');
+      urlMeta.classList.add('hidden');
+    }
+    renderTabs();
+    applyTextareaState();
+  }
+
+  function ensurePageExists(){
+    if (pages.length === 0) {
+      const defaultPage = buildPage({ title: 'Page 1', content: '' }, 0);
+      pages.push(defaultPage);
+    }
+  }
+
+  function showSavedMessage(){
+    const msg = $('msgContext');
+    msg.classList.remove('hidden');
+    setTimeout(() => msg.classList.add('hidden'), 1200);
+  }
+
+  async function savePages(showToast = false){
+    isSaving = true;
+    try {
+      pages.forEach((page, idx) => {
+        if (!page.title || /^Page\s+\d+$/i.test(page.title)) {
+          page.title = `Page ${idx + 1}`;
+        }
+        page.order = idx;
+      });
+
+      const payload = {};
+      pages.forEach(page => {
+        payload[page.id] = {
+          title: page.title,
+          url: page.url || '',
+          content: page.content || '',
+          order: page.order || 0
+        };
+      });
+
+      await pagesRef.set(payload);
+      const aggregated = pages.map(p => p.content || '').filter(Boolean).join('\n\n');
+      await legacyRef.set(aggregated);
+      if (showToast) showSavedMessage();
+    } finally {
+      isSaving = false;
+    }
+  }
+
+  async function fetchPageContent(url){
+    const endpoint = `https://scraper-json.vercel.app/api/crawl?start=${encodeURIComponent(url)}&limit=1`;
+    const res = await fetch(endpoint);
+    if (!res.ok) {
+      throw new Error('Could not fetch the page content.');
+    }
+    let payload;
+    const rawResponse = await res.text();
+    try {
+      payload = JSON.parse(rawResponse);
+    } catch (err) {
+      payload = rawResponse;
+    }
+    let raw = sanitizeText(extractScrapedContent(payload));
+    if (!raw && typeof payload === 'string') {
+      raw = sanitizeText(payload);
+    }
+    if (!raw) {
+      throw new Error('The crawler returned no usable content.');
+    }
+    return raw.length > 16000 ? raw.slice(0, 16000) : raw;
+  }
+
+  async function formatWithAI(content, url){
+    const prompt = `Organiza la siguiente información del sitio web en secciones claras, títulos descriptivos y listas con viñetas cuando sea útil. No devuelvas JSON ni código, solo texto en Markdown simple y fácil de leer. Si faltan datos, omítelos. URL origen: ${url}`;
+    const body = {
+      system: 'Eres un experto en documentación hotelera. Entregas resúmenes estructurados, agradables de leer y sin formato JSON.',
+      messages: [
+        { role: 'user', content: `${prompt}\n\nContenido extraído:\n${content}` }
+      ]
+    };
+
+    const res = await fetch(AI_PROXY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) {
+      throw new Error('AI formatting failed.');
+    }
+    const data = await res.json();
+    const formatted = data?.choices?.[0]?.message?.content?.trim();
+    if (!formatted) {
+      throw new Error('AI response was empty.');
+    }
+    return formatted;
+  }
+
+  function openModal(){
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    modalInput.value = '';
+    modalError.classList.add('hidden');
+    modalStatus.classList.add('hidden');
+    setTimeout(() => modalInput.focus(), 50);
+  }
+
+  function closeModal(){
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    modalInput.value = '';
+    modalError.classList.add('hidden');
+    modalStatus.classList.add('hidden');
+  }
+
+  function setModalLoading(loading, message){
+    [modalInput, modalConfirm, modalCancel].forEach(el => {
+      if (el) {
+        el.disabled = loading || (!canWriteFlag && el === modalConfirm);
+        el.classList.toggle('opacity-60', loading && el === modalConfirm);
+      }
+    });
+    if (loading && message) {
+      modalStatus.textContent = message;
+      modalStatus.classList.remove('hidden');
+    } else {
+      modalStatus.classList.add('hidden');
+    }
+  }
+
+  addBtn?.addEventListener('click', () => {
+    if (!canWriteFlag) return;
+    openModal();
   });
+
+  modalClose?.addEventListener('click', closeModal);
+  modalCancel?.addEventListener('click', closeModal);
+  modal?.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+  modalConfirm?.addEventListener('click', () => canWrite(async () => {
+    const url = (modalInput.value || '').trim();
+    if (!url) {
+      modalError.textContent = 'Please provide a valid URL.';
+      modalError.classList.remove('hidden');
+      return;
+    }
+    modalError.classList.add('hidden');
+    try {
+      setModalLoading(true, 'Fetching page content...');
+      const raw = await fetchPageContent(url);
+      setModalLoading(true, 'Organizing information with AI...');
+      const formatted = await formatWithAI(raw, url);
+      const newPage = buildPage({
+        title: `Page ${pages.length + 1}`,
+        url,
+        content: formatted
+      }, pages.length);
+      pages.push(newPage);
+      await savePages(false);
+      setActivePage(newPage.id);
+      toast('✔ Knowledge page added');
+      closeModal();
+    } catch (err) {
+      console.error(err);
+      modalError.textContent = err.message || 'Unable to add the page. Please try again.';
+      modalError.classList.remove('hidden');
+    } finally {
+      setModalLoading(false);
+    }
+  }));
 
   txt.addEventListener('input', e => {
+    const page = pages.find(p => p.id === currentPageId);
+    if (!page) return;
+    page.content = e.target.value;
     e.target.style.height = 'auto';
-    e.target.style.height = e.target.scrollHeight + 'px';
+    e.target.style.height = (e.target.scrollHeight || 120) + 'px';
     updateCounter();
   });
 
-  btn.onclick = () => canWrite(async () => {
+  btn.addEventListener('click', () => canWrite(async () => {
     if (btn.disabled) return;
-    await ref.set(txt.value.trim());
-    $('msgContext').classList.remove('hidden');
-    setTimeout(() => $('msgContext').classList.add('hidden'), 1200);
-  });
+    const page = pages.find(p => p.id === currentPageId);
+    if (page) {
+      page.content = txt.value;
+    }
+    await savePages(true);
+  }));
+
+  window.__applyKnowledgeWriteState = () => {
+    const disabled = !canWriteFlag;
+    if (addBtn) {
+      addBtn.disabled = disabled;
+      addBtn.classList.toggle('opacity-60', disabled);
+    }
+    applyTextareaState();
+  };
+
+  (async () => {
+    const snap = await pagesRef.once('value');
+    pages = parsePages(snap.val());
+
+    if (!pages.length) {
+      const legacySnap = await legacyRef.once('value');
+      const legacyText = legacySnap.val();
+      if (legacyText) {
+        pages = [buildPage({ title: 'Page 1', content: legacyText }, 0)];
+      }
+    }
+
+    ensurePageExists();
+    renderTabs();
+    setActivePage(pages[0]?.id || '');
+
+    pagesRef.on('value', snap2 => {
+      if (isSaving) return;
+      const incoming = parsePages(snap2.val());
+      if (!incoming.length) {
+        pages = [];
+        ensurePageExists();
+      } else {
+        pages = incoming;
+      }
+      const keepId = pages.some(p => p.id === currentPageId) ? currentPageId : pages[0]?.id || '';
+      setActivePage(keepId);
+    });
+
+    updateCounter();
+    if (typeof window.__applyKnowledgeWriteState === 'function') {
+      window.__applyKnowledgeWriteState();
+    }
+  })();
 }
 
 
