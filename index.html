@@ -681,6 +681,14 @@ header {
     <div class="flex items-center justify-between text-xs">
       <span id="ctxCounter" class="text-gray-500">0 / 10000 characters</span>
       <div class="flex items-center gap-2">
+        <button
+          id="deleteKnowledgePage"
+          class="px-3 py-2 border border-gray-300 rounded-md text-sm flex items-center gap-1 text-gray-600 hover:text-red-600 hover:border-red-300 transition"
+          title="Delete page"
+          aria-label="Delete knowledge page"
+        >
+          <i data-lucide="trash" class="w-4 h-4"></i>
+        </button>
         <button id="saveContext" class="px-4 py-2 bg-black text-white rounded-md text-sm">Save</button>
       </div>
     </div>
@@ -825,6 +833,31 @@ header {
       <button id="confirmAddKnowledge" class="px-4 py-2 bg-black text-white rounded-lg text-sm flex items-center gap-2">
         <span>Add</span>
       </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Delete knowledge page -->
+<div id="knowledgeDeleteModal" class="fixed inset-0 hidden items-center justify-center bg-black/40 backdrop-blur-sm z-[1200] px-4">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 space-y-5 relative">
+    <button id="closeKnowledgeDeleteModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+      <i data-lucide="x" class="w-5 h-5"></i>
+    </button>
+    <div class="flex items-start gap-3">
+      <div class="flex h-10 w-10 items-center justify-center rounded-full bg-red-50 text-red-600">
+        <i data-lucide="trash-2" class="w-5 h-5"></i>
+      </div>
+      <div class="space-y-2">
+        <h3 class="text-lg font-semibold">Delete knowledge page</h3>
+        <p class="text-sm text-gray-600">
+          Are you sure you want to delete <span id="deleteKnowledgePageTitle" class="font-medium text-gray-900"></span>? This action
+          cannot be undone.
+        </p>
+      </div>
+    </div>
+    <div class="flex items-center justify-end gap-2 pt-2">
+      <button id="cancelDeleteKnowledge" class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">Cancel</button>
+      <button id="confirmDeleteKnowledge" class="px-4 py-2 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700">Delete</button>
     </div>
   </div>
 </div>
@@ -1780,6 +1813,7 @@ function initKnowledge() {
   const counter = $('ctxCounter');
   const tabsWrap = $('knowledgeTabs');
   const addBtn = $('addKnowledgePage');
+  const deleteBtn = $('deleteKnowledgePage');
   const urlMeta = $('knowledgeUrlMeta');
   const urlLabel = $('knowledgeCurrentUrl');
 
@@ -1791,11 +1825,18 @@ function initKnowledge() {
   const modalError = $('knowledgeModalError');
   const modalStatus = $('knowledgeModalStatus');
 
+  const deleteModal = $('knowledgeDeleteModal');
+  const deleteModalClose = $('closeKnowledgeDeleteModal');
+  const deleteModalCancel = $('cancelDeleteKnowledge');
+  const deleteModalConfirm = $('confirmDeleteKnowledge');
+  const deleteModalTitle = $('deleteKnowledgePageTitle');
+
   const LIMIT = 10000;
 
   let pages = [];
   let currentPageId = '';
   let isSaving = false;
+  let pageToDeleteId = '';
 
   const generatePageId = () =>
     `pg_${Math.random().toString(36).slice(2, 8)}${Date.now().toString(36)}`;
@@ -1886,6 +1927,14 @@ function initKnowledge() {
     return [];
   }
 
+  function updateDeleteButtonState() {
+    if (!deleteBtn) return;
+    const disabled = !canWriteFlag || !currentPageId || !pages.length;
+    deleteBtn.disabled = disabled;
+    deleteBtn.classList.toggle('opacity-60', disabled);
+    deleteBtn.classList.toggle('cursor-not-allowed', disabled);
+  }
+
   function updateCounter() {
     const len = (txt.value || '').length;
     counter.textContent = `${len} / ${LIMIT} characters`;
@@ -1894,6 +1943,7 @@ function initKnowledge() {
     const disabled = len > LIMIT || !canWriteFlag || !currentPageId;
     btn.disabled = disabled;
     btn.classList.toggle('opacity-60', btn.disabled);
+    updateDeleteButtonState();
   }
 
   function applyTextareaState() {
@@ -1938,6 +1988,7 @@ function initKnowledge() {
     }
     renderTabs();
     applyTextareaState();
+    updateDeleteButtonState();
   }
 
   function ensurePageExists() {
@@ -2080,6 +2131,66 @@ function initKnowledge() {
       })
   );
 
+  function openDeleteModal(page) {
+    if (!deleteModal || !deleteModalTitle) return;
+    deleteModalTitle.textContent = page?.title || 'this page';
+    deleteModal.classList.remove('hidden');
+    deleteModal.classList.add('flex');
+  }
+
+  function closeDeleteModal() {
+    if (!deleteModal) return;
+    deleteModal.classList.add('hidden');
+    deleteModal.classList.remove('flex');
+    pageToDeleteId = '';
+  }
+
+  deleteBtn?.addEventListener('click', () => {
+    if (deleteBtn.disabled) return;
+    const page = pages.find((p) => p.id === currentPageId);
+    if (!page) return;
+    pageToDeleteId = page.id;
+    openDeleteModal(page);
+  });
+
+  deleteModalClose?.addEventListener('click', closeDeleteModal);
+  deleteModalCancel?.addEventListener('click', closeDeleteModal);
+  deleteModal?.addEventListener('click', (e) => {
+    if (e.target === deleteModal) closeDeleteModal();
+  });
+
+  deleteModalConfirm?.addEventListener(
+    'click',
+    () =>
+      canWrite(async () => {
+        if (!pageToDeleteId) return;
+        const index = pages.findIndex((p) => p.id === pageToDeleteId);
+        if (index === -1) return;
+
+        const wasActive = currentPageId === pageToDeleteId;
+        pages.splice(index, 1);
+
+        if (!pages.length) {
+          pages.push(buildPage({ title: 'Page 1', content: '' }, 0));
+        }
+
+        let nextId = currentPageId;
+        if (wasActive) {
+          const fallbackIndex = Math.min(index, pages.length - 1);
+          nextId = pages[fallbackIndex]?.id || pages[0]?.id || '';
+        }
+
+        if (!pages.some((p) => p.id === nextId)) {
+          nextId = pages[0]?.id || '';
+        }
+
+        setActivePage(nextId);
+        await savePages(false);
+        toast('✔ Knowledge page deleted');
+        closeDeleteModal();
+      })
+  );
+
   txt.addEventListener('input', (e) => {
     const page = pages.find((p) => p.id === currentPageId);
     if (!page) return;
@@ -2106,6 +2217,7 @@ function initKnowledge() {
       addBtn.disabled = disabled;
       addBtn.classList.toggle('opacity-60', disabled);
     }
+    updateDeleteButtonState();
     applyTextareaState();
   };
 
