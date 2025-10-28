@@ -203,6 +203,27 @@ header {
   min-width: 2ch; /* reserva espacio suficiente para dos caracteres */
   text-align: right;
 }
+/* === Knowledge page buttons === */
+.page-btn {
+  background: #fff;
+  color: #111;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 14px;
+  transition: all 0.15s ease;
+}
+
+.page-btn:hover {
+  background: #f9f9f9;
+}
+
+.page-btn.active {
+  background: #000 !important;
+  color: #fff !important;
+  border-color: #000 !important;
+}
+
 
   </style>
 </head>
@@ -277,7 +298,7 @@ header {
 </aside>
 
 
-      <!-- Content -->
+<!-- Content -->
 <main class="flex-1 ml-[72px] transition-all duration-300 group-hover:ml-[260px] flex justify-center">
 <div class="w-full max-w-6xl pt-16 px-8 pb-8">
               <!-- Login card -->
@@ -341,9 +362,12 @@ header {
                   <div id="previewBubble" class="p-3 rounded text-white inline-block">Mensaje</div>
                 </div>
 
-                <div id="widgetExampleClone" class="widget-mockup shadow-lg absolute bottom-5 right-5 z-10">
-                  <img id="widgetExampleIconClone" src="widgets/1.png" alt="Widget preview icon" />
-                </div>
+                <!-- (el botón del widget YA NO va aquí) -->
+              </div>
+
+              <!-- ✅ Botón del widget fuera de .iphone-in, para que quede debajo del mockup -->
+              <div id="widgetExampleClone" class="widget-mockup shadow-lg absolute right-0 bottom-[-86px] z-10">
+                <img id="widgetExampleIconClone" src="widgets/1.png" alt="Widget preview icon" />
               </div>
             </div>
 
@@ -742,6 +766,7 @@ header {
 </div>
         </div>
       </main>
+
     </div>
   </div>
 
@@ -749,6 +774,35 @@ header {
 <div id="toast"
   class="fixed top-[70px] left-1/2 -translate-x-1/2 bg-green-600 text-white px-4 py-2 rounded-lg opacity-0 text-sm shadow-lg transition-opacity z-[9999]">
 </div>
+
+<!-- 🧩 Modal de recorte de Header -->
+<div id="cropperModal"
+  class="fixed inset-0 bg-black/70 hidden items-center justify-center z-[9998]">
+  <div class="bg-white rounded-2xl p-6 shadow-xl max-w-sm w-full text-center">
+    <h3 class="font-semibold mb-4">Crop Header Image</h3>
+    <div class="w-full aspect-square bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
+      <img id="cropperImage" class="max-w-full max-h-[300px]" />
+    </div>
+
+    <!-- Progress -->
+    <div id="logoProgressWrap" class="mt-4 hidden w-full bg-gray-200 rounded-full overflow-hidden h-2">
+      <div id="logoBar" class="h-2 w-0 bg-black transition-all duration-200"></div>
+    </div>
+
+    <div class="flex justify-center gap-3 mt-5">
+      <button id="cancelCrop"
+        class="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100">
+        Cancel
+      </button>
+      <button id="confirmCrop"
+        class="px-4 py-2 rounded-lg bg-black text-white hover:bg-gray-800">
+        Save
+      </button>
+    </div>
+  </div>
+</div>
+
+
 
 <!-- Modal: Add knowledge page -->
 <div id="knowledgeModal" class="fixed inset-0 hidden items-center justify-center bg-black/40 backdrop-blur-sm z-[1200] px-4">
@@ -1242,7 +1296,7 @@ $('logoFile').addEventListener('change', e => canWrite(() => {
 
   const reader = new FileReader();
   reader.onload = (ev) => {
-    // Mostrar modal con Cropper
+    // Show cropping modal
     $('cropperImage').src = ev.target.result;
     $('cropperModal').classList.remove('hidden');
     $('cropperModal').classList.add('flex');
@@ -1263,7 +1317,7 @@ $('logoFile').addEventListener('change', e => canWrite(() => {
     $('cancelCrop').onclick = () => {
       cropper.destroy();
       $('cropperModal').classList.add('hidden');
-      e.target.value = ''; // limpiar input
+      e.target.value = ''; // clear input
     };
 
     $('confirmCrop').onclick = async () => {
@@ -1290,9 +1344,8 @@ $('logoFile').addEventListener('change', e => canWrite(() => {
         $('previewLogo').src = url;
         $('previewLogo').classList.remove('hidden');
         $('logoProgressWrap').classList.add('hidden');
-        $('msgLogo').classList.remove('hidden');
-        setTimeout(() => $('msgLogo').classList.add('hidden'), 1200);
-        e.target.value = ''; // limpiar input
+        toast('✔ Header image updated'); // ✅ only toast
+        e.target.value = ''; // clear input
         lucide.createIcons();
       });
     };
@@ -1718,7 +1771,7 @@ function initSettingsTab(){
 
 
 
-function initKnowledge(){
+function initKnowledge() {
   const pagesRef = eref('config/contextPages');
   const legacyRef = eref('config/contextInfo');
 
@@ -1739,13 +1792,13 @@ function initKnowledge(){
   const modalStatus = $('knowledgeModalStatus');
 
   const LIMIT = 10000;
-  const AI_PROXY_URL = new URL(window.location.href).searchParams.get('proxy') || 'https://hotel-chat-proxy.vercel.app/api/chat';
 
   let pages = [];
   let currentPageId = '';
   let isSaving = false;
 
-  const generatePageId = () => `pg_${Math.random().toString(36).slice(2,8)}${Date.now().toString(36)}`;
+  const generatePageId = () =>
+    `pg_${Math.random().toString(36).slice(2, 8)}${Date.now().toString(36)}`;
 
   function sanitizeText(text = '') {
     return (text || '')
@@ -1756,7 +1809,9 @@ function initKnowledge(){
 
   function extractScrapedContent(payload) {
     if (!payload) return '';
+
     if (typeof payload === 'string') return payload;
+
     if (Array.isArray(payload)) {
       for (const item of payload) {
         const result = extractScrapedContent(item);
@@ -1764,6 +1819,7 @@ function initKnowledge(){
       }
       return '';
     }
+
     if (typeof payload === 'object') {
       if (typeof payload.content === 'string') return payload.content;
       if (Array.isArray(payload.content)) return payload.content.join('\n');
@@ -1772,46 +1828,65 @@ function initKnowledge(){
       if (payload.page) return extractScrapedContent(payload.page);
       if (payload.pages) return extractScrapedContent(payload.pages);
       if (payload.data) return extractScrapedContent(payload.data);
+      if (Array.isArray(payload.results)) {
+        const combined = payload.results
+          .map((r) => {
+            if (typeof r?.text === 'string') return r.text;
+            if (typeof r?.content === 'string') return r.content;
+            return extractScrapedContent(r);
+          })
+          .filter(Boolean)
+          .join('\n\n');
+        if (combined) return combined;
+      }
     }
+
     return '';
   }
 
-  function buildPage(data, index){
+  function buildPage(data, index) {
     const fallbackIndex = typeof index === 'number' ? index : pages.length;
     return {
       id: data?.id || generatePageId(),
       title: data?.title || `Page ${fallbackIndex + 1}`,
       url: data?.url || '',
       content: data?.content || '',
-      order: typeof data?.order === 'number' ? data.order : fallbackIndex
+      order: typeof data?.order === 'number' ? data.order : fallbackIndex,
     };
   }
 
-  function parsePages(val){
+  function parsePages(val) {
     if (!val) return [];
     if (Array.isArray(val)) {
-      return val.map((item, idx) => buildPage({
-        id: item?.id,
-        title: item?.title,
-        url: item?.url,
-        content: item?.content,
-        order: typeof item?.order === 'number' ? item.order : idx
-      }, idx));
+      return val.map((item, idx) =>
+        buildPage(
+          {
+            id: item?.id,
+            title: item?.title,
+            url: item?.url,
+            content: item?.content,
+            order: typeof item?.order === 'number' ? item.order : idx,
+          },
+          idx
+        )
+      );
     }
     if (typeof val === 'object') {
-      const arr = Object.entries(val).map(([id, item]) => buildPage({
-        id,
-        title: item?.title,
-        url: item?.url,
-        content: item?.content,
-        order: typeof item?.order === 'number' ? item.order : 0
-      }));
-      return arr.sort((a,b) => (a.order ?? 0) - (b.order ?? 0));
+      const arr = Object.entries(val).map(([id, item]) =>
+        buildPage({
+          id,
+          title: item?.title,
+          url: item?.url,
+          content: item?.content,
+          order: typeof item?.order === 'number' ? item.order : 0,
+        })
+      );
+      return arr.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     }
     return [];
   }
 
-  function updateCounter(){
+  function updateCounter() {
     const len = (txt.value || '').length;
     counter.textContent = `${len} / ${LIMIT} characters`;
     counter.classList.toggle('text-red-600', len > LIMIT);
@@ -1821,22 +1896,22 @@ function initKnowledge(){
     btn.classList.toggle('opacity-60', btn.disabled);
   }
 
-  function applyTextareaState(){
+  function applyTextareaState() {
     const disabled = !currentPageId || !canWriteFlag;
     txt.disabled = disabled;
     txt.classList.toggle('opacity-60', disabled);
     updateCounter();
   }
 
-  function renderTabs(){
+  function renderTabs() {
     tabsWrap.innerHTML = '';
     pages.forEach((page, idx) => {
       const btnTab = document.createElement('button');
       const isActive = page.id === currentPageId;
       btnTab.dataset.id = page.id;
-      btnTab.className = `px-3 py-1.5 rounded-lg text-sm border transition ${isActive
-        ? 'bg-black text-white border-black shadow-sm'
-        : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-100'}`;
+      btnTab.className = 'page-btn';
+      if (isActive) btnTab.classList.add('active');
+
       btnTab.textContent = page.title || `Page ${idx + 1}`;
       btnTab.addEventListener('click', () => {
         setActivePage(page.id);
@@ -1846,9 +1921,9 @@ function initKnowledge(){
     tabsWrap.classList.toggle('hidden', pages.length === 0);
   }
 
-  function setActivePage(id){
+  function setActivePage(id) {
     currentPageId = id || '';
-    const page = pages.find(p => p.id === currentPageId);
+    const page = pages.find((p) => p.id === currentPageId);
     txt.value = page?.content || '';
     txt.style.height = 'auto';
     txt.style.height = (txt.scrollHeight || 120) + 'px';
@@ -1865,20 +1940,20 @@ function initKnowledge(){
     applyTextareaState();
   }
 
-  function ensurePageExists(){
+  function ensurePageExists() {
     if (pages.length === 0) {
       const defaultPage = buildPage({ title: 'Page 1', content: '' }, 0);
       pages.push(defaultPage);
     }
   }
 
-  function showSavedMessage(){
+  function showSavedMessage() {
     const msg = $('msgContext');
     msg.classList.remove('hidden');
     setTimeout(() => msg.classList.add('hidden'), 1200);
   }
 
-  async function savePages(showToast = false){
+  async function savePages(showToast = false) {
     isSaving = true;
     try {
       pages.forEach((page, idx) => {
@@ -1889,17 +1964,17 @@ function initKnowledge(){
       });
 
       const payload = {};
-      pages.forEach(page => {
+      pages.forEach((page) => {
         payload[page.id] = {
           title: page.title,
           url: page.url || '',
           content: page.content || '',
-          order: page.order || 0
+          order: page.order || 0,
         };
       });
 
       await pagesRef.set(payload);
-      const aggregated = pages.map(p => p.content || '').filter(Boolean).join('\n\n');
+      const aggregated = pages.map((p) => p.content || '').filter(Boolean).join('\n\n');
       await legacyRef.set(aggregated);
       if (showToast) showSavedMessage();
     } finally {
@@ -1907,55 +1982,23 @@ function initKnowledge(){
     }
   }
 
-  async function fetchPageContent(url){
-    const endpoint = `https://scraper-json.vercel.app/api/crawl?start=${encodeURIComponent(url)}&limit=1`;
+  // ✅ SIN OpenAI – obtiene texto completo del crawler
+  async function fetchPageContent(url) {
+    const endpoint = `https://scraper-json.vercel.app/api/crawl?start=${encodeURIComponent(
+      url
+    )}&limit=5&raw=1`;
     const res = await fetch(endpoint);
     if (!res.ok) {
       throw new Error('Could not fetch the page content.');
     }
-    let payload;
-    const rawResponse = await res.text();
-    try {
-      payload = JSON.parse(rawResponse);
-    } catch (err) {
-      payload = rawResponse;
-    }
-    let raw = sanitizeText(extractScrapedContent(payload));
-    if (!raw && typeof payload === 'string') {
-      raw = sanitizeText(payload);
-    }
-    if (!raw) {
-      throw new Error('The crawler returned no usable content.');
-    }
-    return raw.length > 16000 ? raw.slice(0, 16000) : raw;
+    const text = await res.text();
+    const clean = sanitizeText(text);
+    return clean.length > 16000 ? clean.slice(0, 16000) : clean;
   }
 
-  async function formatWithAI(content, url){
-    const prompt = `Organiza la siguiente información del sitio web en secciones claras, títulos descriptivos y listas con viñetas cuando sea útil. No devuelvas JSON ni código, solo texto en Markdown simple y fácil de leer. Si faltan datos, omítelos. URL origen: ${url}`;
-    const body = {
-      system: 'Eres un experto en documentación hotelera. Entregas resúmenes estructurados, agradables de leer y sin formato JSON.',
-      messages: [
-        { role: 'user', content: `${prompt}\n\nContenido extraído:\n${content}` }
-      ]
-    };
+  // 🚫 función formatWithAI eliminada completamente
 
-    const res = await fetch(AI_PROXY_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-    if (!res.ok) {
-      throw new Error('AI formatting failed.');
-    }
-    const data = await res.json();
-    const formatted = data?.choices?.[0]?.message?.content?.trim();
-    if (!formatted) {
-      throw new Error('AI response was empty.');
-    }
-    return formatted;
-  }
-
-  function openModal(){
+  function openModal() {
     modal.classList.remove('hidden');
     modal.classList.add('flex');
     modalInput.value = '';
@@ -1964,7 +2007,7 @@ function initKnowledge(){
     setTimeout(() => modalInput.focus(), 50);
   }
 
-  function closeModal(){
+  function closeModal() {
     modal.classList.add('hidden');
     modal.classList.remove('flex');
     modalInput.value = '';
@@ -1972,8 +2015,8 @@ function initKnowledge(){
     modalStatus.classList.add('hidden');
   }
 
-  function setModalLoading(loading, message){
-    [modalInput, modalConfirm, modalCancel].forEach(el => {
+  function setModalLoading(loading, message) {
+    [modalInput, modalConfirm, modalCancel].forEach((el) => {
       if (el) {
         el.disabled = loading || (!canWriteFlag && el === modalConfirm);
         el.classList.toggle('opacity-60', loading && el === modalConfirm);
@@ -1994,42 +2037,51 @@ function initKnowledge(){
 
   modalClose?.addEventListener('click', closeModal);
   modalCancel?.addEventListener('click', closeModal);
-  modal?.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+  modal?.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
 
-  modalConfirm?.addEventListener('click', () => canWrite(async () => {
-    const url = (modalInput.value || '').trim();
-    if (!url) {
-      modalError.textContent = 'Please provide a valid URL.';
-      modalError.classList.remove('hidden');
-      return;
-    }
-    modalError.classList.add('hidden');
-    try {
-      setModalLoading(true, 'Fetching page content...');
-      const raw = await fetchPageContent(url);
-      setModalLoading(true, 'Organizing information with AI...');
-      const formatted = await formatWithAI(raw, url);
-      const newPage = buildPage({
-        title: `Page ${pages.length + 1}`,
-        url,
-        content: formatted
-      }, pages.length);
-      pages.push(newPage);
-      await savePages(false);
-      setActivePage(newPage.id);
-      toast('✔ Knowledge page added');
-      closeModal();
-    } catch (err) {
-      console.error(err);
-      modalError.textContent = err.message || 'Unable to add the page. Please try again.';
-      modalError.classList.remove('hidden');
-    } finally {
-      setModalLoading(false);
-    }
-  }));
+  modalConfirm?.addEventListener(
+    'click',
+    () =>
+      canWrite(async () => {
+        const url = (modalInput.value || '').trim();
+        if (!url) {
+          modalError.textContent = 'Please provide a valid URL.';
+          modalError.classList.remove('hidden');
+          return;
+        }
+        modalError.classList.add('hidden');
+        try {
+          setModalLoading(true, 'Fetching page content...');
+          const raw = await fetchPageContent(url);
+          // 🧩 Ahora no hay OpenAI: usamos el texto directamente
+          const newPage = buildPage(
+            {
+              title: `Page ${pages.length + 1}`,
+              url,
+              content: raw,
+            },
+            pages.length
+          );
+          pages.push(newPage);
+          await savePages(false);
+          setActivePage(newPage.id);
+          toast('✔ Knowledge page added');
+          closeModal();
+        } catch (err) {
+          console.error(err);
+          modalError.textContent =
+            err.message || 'Unable to add the page. Please try again.';
+          modalError.classList.remove('hidden');
+        } finally {
+          setModalLoading(false);
+        }
+      })
+  );
 
-  txt.addEventListener('input', e => {
-    const page = pages.find(p => p.id === currentPageId);
+  txt.addEventListener('input', (e) => {
+    const page = pages.find((p) => p.id === currentPageId);
     if (!page) return;
     page.content = e.target.value;
     e.target.style.height = 'auto';
@@ -2037,14 +2089,16 @@ function initKnowledge(){
     updateCounter();
   });
 
-  btn.addEventListener('click', () => canWrite(async () => {
-    if (btn.disabled) return;
-    const page = pages.find(p => p.id === currentPageId);
-    if (page) {
-      page.content = txt.value;
-    }
-    await savePages(true);
-  }));
+  btn.addEventListener('click', () =>
+    canWrite(async () => {
+      if (btn.disabled) return;
+      const page = pages.find((p) => p.id === currentPageId);
+      if (page) {
+        page.content = txt.value;
+      }
+      await savePages(true);
+    })
+  );
 
   window.__applyKnowledgeWriteState = () => {
     const disabled = !canWriteFlag;
@@ -2071,7 +2125,7 @@ function initKnowledge(){
     renderTabs();
     setActivePage(pages[0]?.id || '');
 
-    pagesRef.on('value', snap2 => {
+    pagesRef.on('value', (snap2) => {
       if (isSaving) return;
       const incoming = parsePages(snap2.val());
       if (!incoming.length) {
@@ -2080,7 +2134,9 @@ function initKnowledge(){
       } else {
         pages = incoming;
       }
-      const keepId = pages.some(p => p.id === currentPageId) ? currentPageId : pages[0]?.id || '';
+      const keepId = pages.some((p) => p.id === currentPageId)
+        ? currentPageId
+        : pages[0]?.id || '';
       setActivePage(keepId);
     });
 
@@ -2090,6 +2146,7 @@ function initKnowledge(){
     }
   })();
 }
+
 
 
 function initSchedule() {
