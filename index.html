@@ -764,7 +764,7 @@ header {
       </button>
     </div>
 
-    <div id="autoResponsesList" class="space-y-3"></div>
+    <div id="autoResponsesList" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3"></div>
     <p id="msgAutoResponses" class="text-green-600 text-sm mt-3 hidden">✔ Saved</p>
   </div>
 </section>
@@ -2440,92 +2440,112 @@ function initRespuestas() {
   }
 
   const ref = eref("config/autoResponses");
+  const TYPE_META = {
+    text: { label: "Text", icon: "message-circle" },
+    cards: { label: "Cards", icon: "images" },
+    menu: { label: "Menu", icon: "list" }
+  };
   console.log("✅ Auto Responses inicializadas correctamente");
 
   // === Crear fila de respuesta ===
   function makeRow(id, trigger = "", type = "text", text = "", cards = [], extras = {}) {
     const div = document.createElement("div");
-    div.className = "bg-gray-50 border rounded-xl p-4 space-y-3";
+    div.className = "autoResponseCard border border-gray-200 rounded-2xl bg-white p-4 shadow-sm flex flex-col gap-3 transition hover:shadow-md";
     div.dataset.id = id;
 
+    const meta = TYPE_META[type] || TYPE_META.text;
+    const previewText = buildSummaryPreview(type, text, cards, extras);
+
     div.innerHTML = `
-      <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
-        <div class="flex-1">
-          <label class="block text-xs font-medium text-gray-600 mb-1">Keyword</label>
-          <input type="text" class="w-full border rounded px-3 py-2 text-sm trigger"
-                 placeholder="(e.g. breakfast)" value="${trigger}">
+      <div class="cardSummary flex flex-col gap-2 cursor-pointer">
+        <div class="flex items-start justify-between gap-3">
+          <div class="flex items-center gap-2 text-gray-700 font-medium truncate w-full">
+            <span class="summaryIcon w-4 h-4 flex-shrink-0 text-gray-600"></span>
+            <span class="summaryKeyword text-sm truncate flex-1">${trigger || "(keyword)"}</span>
+          </div>
+          <span class="summaryType text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full whitespace-nowrap">${meta.label}</span>
         </div>
-        <div>
-          <label class="block text-xs font-medium text-gray-600 mb-1">Type</label>
-          <select class="type w-full sm:w-40 border rounded px-3 py-2 text-sm">
-            <option value="text" ${type === "text" ? "selected" : ""}>Text</option>
-            <option value="cards" ${type === "cards" ? "selected" : ""}>Cards</option>
-            <option value="menu" ${type === "menu" ? "selected" : ""}>Bottom Menu</option>
-          </select>
-        </div>
+        <p class="summaryPreview text-xs text-gray-500 leading-relaxed" style="-webkit-line-clamp:2; -webkit-box-orient:vertical; display:-webkit-box; overflow:hidden;">${previewText}</p>
       </div>
-
-      <!-- 🔸 TEXT -->
-      <div class="textBlock ${type === "text" ? "" : "hidden"} space-y-3 border rounded-lg p-3 bg-white">
-        <label class="block text-xs font-medium text-gray-600 mb-1">Response</label>
-        <textarea class="replyText w-full border rounded px-3 py-2 text-sm"
-                  placeholder="Write the response...">${text}</textarea>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          <div>
-            <label class="block text-xs font-medium text-gray-600 mb-1">Title</label>
-            <input type="text" class="title w-full border rounded px-2 py-1 text-sm"
-                   value="${extras.title || ""}">
+      <div class="flex justify-end gap-2 text-gray-400 text-sm">
+        <button type="button" class="editCard px-2 py-1 rounded hover:text-gray-700" title="Edit"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+        <button type="button" class="deleteReply px-2 py-1 rounded hover:text-red-600" title="Delete"><i data-lucide="trash" class="w-4 h-4"></i></button>
+      </div>
+      <div class="editor hidden border-t border-gray-100 pt-3 mt-2 space-y-3">
+        <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+          <div class="flex-1">
+            <label class="block text-xs font-medium text-gray-600 mb-1">Keyword</label>
+            <input type="text" class="w-full border rounded px-3 py-2 text-sm trigger"
+                   placeholder="(e.g. breakfast)" value="${trigger}">
           </div>
           <div>
-            <label class="block text-xs font-medium text-gray-600 mb-1">Subtitle</label>
-            <input type="text" class="subtitle w-full border rounded px-2 py-1 text-sm"
-                   value="${extras.subtitle || ""}">
+            <label class="block text-xs font-medium text-gray-600 mb-1">Type</label>
+            <select class="type w-full sm:w-40 border rounded px-3 py-2 text-sm">
+              <option value="text" ${type === "text" ? "selected" : ""}>Text</option>
+              <option value="cards" ${type === "cards" ? "selected" : ""}>Cards</option>
+              <option value="menu" ${type === "menu" ? "selected" : ""}>Bottom Menu</option>
+            </select>
           </div>
         </div>
 
-        <div>
-          <label class="block text-xs font-medium text-gray-600 mb-1">Image URL (optional)</label>
-          <input type="text" class="image w-full border rounded px-2 py-1 text-sm"
-                 value="${extras.image || ""}">
+        <!-- 🔸 TEXT -->
+        <div class="textBlock ${type === "text" ? "" : "hidden"} space-y-3 border rounded-lg p-3 bg-gray-50">
+          <label class="block text-xs font-medium text-gray-600 mb-1">Response</label>
+          <textarea class="replyText w-full border rounded px-3 py-2 text-sm"
+                    placeholder="Write the response...">${text}</textarea>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div>
+              <label class="block text-xs font-medium text-gray-600 mb-1">Title</label>
+              <input type="text" class="title w-full border rounded px-2 py-1 text-sm"
+                     value="${extras.title || ""}">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-600 mb-1">Subtitle</label>
+              <input type="text" class="subtitle w-full border rounded px-2 py-1 text-sm"
+                     value="${extras.subtitle || ""}">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">Image URL (optional)</label>
+            <input type="text" class="image w-full border rounded px-2 py-1 text-sm"
+                   value="${extras.image || ""}">
+          </div>
+
+          <div class="buttons space-y-2">
+            ${(extras.buttons || []).map(makeButtonForm).join("")}
+          </div>
+          <button class="addButton px-3 py-1.5 bg-gray-200 rounded-lg text-sm hover:bg-gray-300">
+            + Add Button
+          </button>
+
+          <div class="preview bg-white border rounded-lg mt-3 p-2 text-center overflow-hidden"></div>
         </div>
 
-        <div class="buttons space-y-2">
-          ${(extras.buttons || []).map(makeButtonForm).join("")}
+        <!-- 🔹 CARDS -->
+        <div class="cardsBlock ${type === "cards" ? "" : "hidden"} space-y-3">
+          <div class="cardsList space-y-3">
+            ${cards.map(makeCardForm).join("")}
+          </div>
+          <button class="addCard px-3 py-1.5 bg-gray-200 rounded-lg text-sm hover:bg-gray-300">
+            + Add Card
+          </button>
         </div>
-        <button class="addButton px-3 py-1.5 bg-gray-200 rounded-lg text-sm hover:bg-gray-300">
-          + Add Button
-        </button>
 
-        <div class="preview bg-gray-50 border rounded-lg mt-3 p-2 text-center overflow-hidden"></div>
-      </div>
+        <!-- 🟢 MENU -->
+        <div class="menuBlock ${type === "menu" ? "" : "hidden"} border rounded-lg p-3 bg-gray-50 space-y-3">
+          <label class="block text-xs font-medium text-gray-600 mb-1">Text above menu (optional)</label>
+          <input type="text" class="menuText w-full border rounded px-3 py-2 text-sm"
+                 placeholder="(e.g. Choose an option)" value="${text}">
 
-      <!-- 🔹 CARDS -->
-      <div class="cardsBlock ${type === "cards" ? "" : "hidden"} space-y-3">
-        <div class="cardsList space-y-3">
-          ${cards.map(makeCardForm).join("")}
+          <div class="menuButtons space-y-2">
+            ${(extras.buttons || []).map(makeMenuRow).join("")}
+          </div>
+          <button class="addMenuBtn mt-2 px-3 py-1 bg-gray-200 rounded-lg text-sm hover:bg-gray-300">
+            + Add Button
+          </button>
         </div>
-        <button class="addCard px-3 py-1.5 bg-gray-200 rounded-lg text-sm hover:bg-gray-300">
-          + Add Card
-        </button>
-      </div>
-
-      <!-- 🟢 MENU -->
-      <div class="menuBlock ${type === "menu" ? "" : "hidden"} border rounded-lg p-3 bg-white space-y-3">
-        <label class="block text-xs font-medium text-gray-600 mb-1">Text above menu (optional)</label>
-        <input type="text" class="menuText w-full border rounded px-3 py-2 text-sm"
-               placeholder="(e.g. Choose an option)" value="${text}">
-
-        <div class="menuButtons space-y-2">
-          ${(extras.buttons || []).map(makeMenuRow).join("")}
-        </div>
-        <button class="addMenuBtn mt-2 px-3 py-1 bg-gray-200 rounded-lg text-sm hover:bg-gray-300">
-          + Add Button
-        </button>
-      </div>
-
-      <div class="flex justify-end">
-        <button class="deleteReply text-xs text-red-600 hover:underline">Delete</button>
       </div>
     `;
 
@@ -2534,32 +2554,146 @@ function initRespuestas() {
     const textBlock = div.querySelector(".textBlock");
     const cardsBlock = div.querySelector(".cardsBlock");
     const menuBlock = div.querySelector(".menuBlock");
+    const editor = div.querySelector(".editor");
+    const editBtn = div.querySelector(".editCard");
+    const summary = div.querySelector(".cardSummary");
+    const deleteBtn = div.querySelector(".deleteReply");
 
     sel.addEventListener("change", () => {
       textBlock.classList.toggle("hidden", sel.value !== "text");
       cardsBlock.classList.toggle("hidden", sel.value !== "cards");
       menuBlock.classList.toggle("hidden", sel.value !== "menu");
+      updateCardSummary(div);
     });
 
     // Añadir botones y tarjetas
     div.querySelector(".addButton").addEventListener("click", () => {
       div.querySelector(".buttons").insertAdjacentHTML("beforeend", makeButtonForm());
       updateTextPreview(div);
+      updateCardSummary(div);
     });
     div.querySelector(".addCard").addEventListener("click", () => {
       div.querySelector(".cardsList").insertAdjacentHTML("beforeend", makeCardForm());
+      updateCardSummary(div);
     });
     div.querySelector(".addMenuBtn").addEventListener("click", () => {
       div.querySelector(".menuButtons").insertAdjacentHTML("beforeend", makeMenuRow());
+      updateCardSummary(div);
     });
 
     div.addEventListener("click", e => {
-      if (e.target.classList.contains("delMenuBtn")) e.target.closest(".menuRow").remove();
+      if (e.target.classList.contains("delMenuBtn")) {
+        e.target.closest(".menuRow").remove();
+        updateCardSummary(div);
+      }
     });
 
-    div.querySelector(".deleteReply").addEventListener("click", () => div.remove());
+    function toggleEditor(forceOpen) {
+      const shouldOpen = typeof forceOpen === "boolean" ? forceOpen : editor.classList.contains("hidden");
+      if (shouldOpen) {
+        editor.classList.remove("hidden");
+      } else {
+        editor.classList.add("hidden");
+      }
+    }
+
+    summary.addEventListener("click", () => toggleEditor(true));
+    editBtn.addEventListener("click", e => {
+      e.stopPropagation();
+      toggleEditor();
+    });
+
+    deleteBtn.addEventListener("click", e => {
+      e.stopPropagation();
+      div.remove();
+    });
+
     updateTextPreview(div);
+    updateCardSummary(div);
+    if (window.lucide) {
+      lucide.createIcons();
+    }
     return div;
+  }
+
+  function buildSummaryPreview(type, text, cards, extras = {}) {
+    if (type === "text") {
+      const pieces = [extras.title, extras.subtitle, text].filter(Boolean);
+      return pieces.join(" · ") || "Text response";
+    }
+    if (type === "cards") {
+      if (!cards || cards.length === 0) return "No cards yet";
+      const titles = cards.map(c => c.title).filter(Boolean);
+      return `${cards.length} card${cards.length > 1 ? "s" : ""}${titles.length ? ` · ${titles.slice(0, 2).join(", ")}${titles.length > 2 ? "…" : ""}` : ""}`;
+    }
+    if (type === "menu") {
+      const buttons = (extras.buttons || []).map(b => b.label).filter(Boolean);
+      const intro = (text || "").trim();
+      if (!buttons.length) return intro || "Empty menu";
+      const summary = `Menu: ${buttons.slice(0, 3).join(", ")}${buttons.length > 3 ? "…" : ""}`;
+      return intro ? `${intro} · ${summary}` : summary;
+    }
+    return "Auto response";
+  }
+
+  function setSummaryIcon(el, iconName) {
+    if (!el) return;
+    if (!window.lucide || !lucide.icons) {
+      setTimeout(() => setSummaryIcon(el, iconName), 200);
+      return;
+    }
+    const icon = lucide.icons[iconName] || lucide.icons[TYPE_META.text.icon];
+    el.innerHTML = icon ? icon.toSvg({ class: "w-4 h-4" }) : "";
+  }
+
+  function updateCardSummary(row) {
+    const trigger = row.querySelector(".trigger")?.value?.trim() || "(keyword)";
+    const type = row.querySelector(".type")?.value || "text";
+    const text = row.querySelector(".replyText")?.value?.trim() || "";
+    const cards = [...row.querySelectorAll(".cardsList .cardItem")].map(c => ({
+      title: c.querySelector(".title")?.value?.trim() || ""
+    }));
+    const menuLabels = [...row.querySelectorAll(".menuButtons .menuRow")].map(btn => btn.querySelector(".menuLabel")?.value?.trim() || "");
+    const menuIntro = row.querySelector(".menuText")?.value?.trim() || "";
+    const extras = {
+      title: row.querySelector(".textBlock .title")?.value?.trim() || "",
+      subtitle: row.querySelector(".textBlock .subtitle")?.value?.trim() || "",
+      buttons: [...row.querySelectorAll(".buttons .buttonItem")].map(b => ({
+        label: b.querySelector(".label")?.value?.trim() || ""
+      }))
+    };
+
+    const meta = TYPE_META[type] || TYPE_META.text;
+    const summaryKeyword = row.querySelector(".summaryKeyword");
+    const summaryType = row.querySelector(".summaryType");
+    const summaryIcon = row.querySelector(".summaryIcon");
+    const summaryPreview = row.querySelector(".summaryPreview");
+
+    if (summaryKeyword) summaryKeyword.textContent = trigger;
+    if (summaryType) summaryType.textContent = meta.label;
+    setSummaryIcon(summaryIcon, meta.icon);
+
+    let previewText = "";
+    if (type === "text") {
+      const parts = [extras.title, extras.subtitle, text, extras.buttons?.[0]?.label].filter(Boolean);
+      previewText = parts.join(" · ") || "Text response";
+    } else if (type === "cards") {
+      previewText = buildSummaryPreview(type, text, cards);
+    } else if (type === "menu") {
+      const labels = menuLabels.filter(Boolean);
+      const shortList = labels.slice(0, 3).join(", ");
+      const hasMore = labels.length > 3;
+      const baseSummary = labels.length ? `${shortList}${hasMore ? "…" : ""}` : "";
+      if (menuIntro) {
+        previewText = labels.length ? `${menuIntro} · ${baseSummary}` : menuIntro;
+      } else {
+        previewText = labels.length ? `Menu: ${baseSummary}` : "Empty menu";
+      }
+    } else {
+      previewText = "Auto response";
+    }
+
+    if (summaryPreview) summaryPreview.textContent = previewText;
   }
 
   // === Subcomponentes ===
@@ -2637,7 +2771,10 @@ function initRespuestas() {
 
   document.addEventListener("input", e => {
     const row = e.target.closest("[data-id]");
-    if (row) updateTextPreview(row);
+    if (row) {
+      updateTextPreview(row);
+      updateCardSummary(row);
+    }
   });
 
   document.addEventListener("click", e => {
@@ -2645,6 +2782,7 @@ function initRespuestas() {
       const row = e.target.closest("[data-id]");
       e.target.closest(".buttonItem").remove();
       updateTextPreview(row);
+      updateCardSummary(row);
     }
   });
 
