@@ -745,27 +745,118 @@ header {
 
 <!-- RESPUESTAS TAB -->
 <section id="tab-respuestas" class="hidden space-y-6 max-w-3xl">
-  <div class="card p-5">
-    <div class="font-semibold flex items-center gap-2 mb-3">
+  <div class="card p-6 space-y-5">
+    <div class="font-semibold flex items-center gap-2">
       <i data-lucide="bot" class="w-5 h-5"></i>
       Auto Responses
     </div>
-    <p class="text-sm text-gray-500 mb-3">
-      Add responses that the chat will automatically send based on keywords.
-      You can create normal text or groups of cards (if there are several, they will appear in a carousel).
+    <p class="text-sm text-gray-500">
+      Organize quick replies for frequent questions. Create as many tabs as you need, customise their content and preview how they will look in the chat widget.
     </p>
 
-    <div class="flex gap-3 mb-4">
-      <button id="addAutoResponse" class="px-4 py-2 bg-black text-white rounded-md flex items-center gap-2 text-sm">
-        <i data-lucide="plus"></i> New Response
-      </button>
-      <button id="saveAutoResponses" class="px-4 py-2 bg-black text-white rounded-md flex items-center gap-2 text-sm">
-        <i data-lucide="save"></i> Save Changes
-      </button>
+    <div class="flex flex-col gap-3">
+      <div class="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+        <div id="autoResponseTabs" class="flex items-center gap-2 overflow-x-auto pb-1"></div>
+        <div class="flex items-center gap-2">
+          <button id="addAutoResponse" class="px-4 py-2 bg-black text-white rounded-md flex items-center gap-2 text-sm">
+            <i data-lucide="plus"></i> New tab
+          </button>
+          <button id="saveAutoResponses" class="px-4 py-2 bg-black text-white rounded-md flex items-center gap-2 text-sm">
+            <i data-lucide="save"></i> Save changes
+          </button>
+        </div>
+      </div>
+
+      <div id="autoResponseEmpty" class="border border-dashed border-gray-300 rounded-2xl p-6 text-center text-gray-500 text-sm">
+        Start by creating your first tab to design an automated reply.
+      </div>
+
+      <div id="autoResponseEditor" class="hidden space-y-5">
+        <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-5 space-y-5">
+          <div class="grid gap-4 lg:grid-cols-[2fr,1fr] lg:items-end">
+            <div class="space-y-2">
+              <label class="text-xs font-medium text-gray-600 uppercase tracking-wide">Keyword</label>
+              <input id="autoResponseKeyword" type="text" placeholder="(e.g. spa, restaurant)"
+                     class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60">
+              <p class="text-[12px] text-gray-500">When the guest mentions this keyword, the auto response will be triggered.</p>
+            </div>
+            <div class="space-y-2">
+              <label class="text-xs font-medium text-gray-600 uppercase tracking-wide">Response type</label>
+              <div id="autoResponseType" class="grid grid-cols-3 bg-gray-100 rounded-xl p-1 text-sm font-medium">
+                <button data-type="text" class="typeOption px-3 py-2 rounded-lg transition">Text</button>
+                <button data-type="cards" class="typeOption px-3 py-2 rounded-lg transition">Cards</button>
+                <button data-type="menu" class="typeOption px-3 py-2 rounded-lg transition">Menu</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="textEditor" class="space-y-4">
+            <div>
+              <label class="block text-xs font-semibold text-gray-600 mb-1">Message</label>
+              <textarea id="autoResponseText" rows="4" placeholder="Write the automatic response..."
+                        class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60"></textarea>
+            </div>
+            <div class="grid gap-3 sm:grid-cols-2">
+              <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1">Title</label>
+                <input id="autoResponseTitle" type="text" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1">Subtitle</label>
+                <input id="autoResponseSubtitle" type="text" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60">
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-600 mb-1">Image URL (optional)</label>
+              <input id="autoResponseImage" type="text" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60" placeholder="https://...">
+            </div>
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-semibold text-gray-700">Buttons</span>
+                <button id="addTextButton" class="text-xs px-2 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 transition">+ Add button</button>
+              </div>
+              <div id="textButtonsList" class="mt-2 space-y-2"></div>
+            </div>
+            <div>
+              <span class="text-sm font-semibold text-gray-700">Live preview</span>
+              <div id="textPreview" class="mt-2 bg-gray-50 border border-gray-200 rounded-2xl p-4 flex justify-center"></div>
+            </div>
+          </div>
+
+          <div id="cardsEditor" class="space-y-3 hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-semibold text-gray-700">Cards</span>
+              <button id="addCardButton" class="text-xs px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 transition">+ Add card</button>
+            </div>
+            <div id="cardsList" class="space-y-3"></div>
+          </div>
+
+          <div id="menuEditor" class="space-y-3 hidden">
+            <div>
+              <label class="block text-xs font-semibold text-gray-600 mb-1">Intro text</label>
+              <input id="menuIntroText" type="text" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60" placeholder="Choose an option">
+            </div>
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-semibold text-gray-700">Buttons</span>
+                <button id="addMenuButton" class="text-xs px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 transition">+ Add button</button>
+              </div>
+              <div id="menuButtonsList" class="mt-2 space-y-2"></div>
+            </div>
+            <div>
+              <span class="text-sm font-semibold text-gray-700">Preview</span>
+              <div id="menuPreview" class="mt-2 bg-gray-50 border border-gray-200 rounded-2xl p-4 flex flex-wrap gap-2"></div>
+            </div>
+          </div>
+
+          <div class="flex justify-end">
+            <button id="deleteAutoResponse" class="text-xs text-red-600 hover:text-red-700">Delete this tab</button>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div id="autoResponsesList" class="space-y-3"></div>
-    <p id="msgAutoResponses" class="text-green-600 text-sm mt-3 hidden">✔ Saved</p>
+    <p id="msgAutoResponses" class="text-green-600 text-sm hidden">✔ Saved</p>
   </div>
 </section>
 
@@ -2421,304 +2512,667 @@ function initIntegration(){
 
 // === Function to initialize Auto Responses tab ===
 function initRespuestas() {
-  // Esperar a que Firebase esté listo
   if (typeof firebase === "undefined" || typeof eref !== "function") {
     console.warn("⏳ Esperando Firebase...");
     setTimeout(initRespuestas, 400);
     return;
   }
 
-  const list = $("autoResponsesList");
+  const tabsEl = $("autoResponseTabs");
   const btnAdd = $("addAutoResponse");
   const btnSave = $("saveAutoResponses");
   const msg = $("msgAutoResponses");
+  const editor = $("autoResponseEditor");
+  const emptyState = $("autoResponseEmpty");
 
-  if (!list || !btnAdd || !btnSave) {
+  const keywordInput = $("autoResponseKeyword");
+  const typeSelector = $("autoResponseType");
+  const typeButtons = Array.from(typeSelector?.querySelectorAll(".typeOption") || []);
+
+  const textEditor = $("textEditor");
+  const textMessage = $("autoResponseText");
+  const textTitle = $("autoResponseTitle");
+  const textSubtitle = $("autoResponseSubtitle");
+  const textImage = $("autoResponseImage");
+  const addTextButton = $("addTextButton");
+  const textButtonsList = $("textButtonsList");
+  const textPreview = $("textPreview");
+
+  const cardsEditor = $("cardsEditor");
+  const cardsList = $("cardsList");
+  const addCardButton = $("addCardButton");
+
+  const menuEditor = $("menuEditor");
+  const menuIntroText = $("menuIntroText");
+  const menuButtonsList = $("menuButtonsList");
+  const menuPreview = $("menuPreview");
+  const addMenuButton = $("addMenuButton");
+
+  const deleteBtn = $("deleteAutoResponse");
+
+  if (!tabsEl || !btnAdd || !btnSave || !editor || !emptyState) {
     console.warn("⏳ Esperando elementos del DOM...");
     setTimeout(initRespuestas, 400);
     return;
   }
 
   const ref = eref("config/autoResponses");
-  console.log("✅ Auto Responses inicializadas correctamente");
+  const escapeHtml = (str = "") => String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 
-  // === Crear fila de respuesta ===
-  function makeRow(id, trigger = "", type = "text", text = "", cards = [], extras = {}) {
-    const div = document.createElement("div");
-    div.className = "bg-gray-50 border rounded-xl p-4 space-y-3";
-    div.dataset.id = id;
+  let responses = [];
+  let activeIndex = -1;
 
-    div.innerHTML = `
-      <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
-        <div class="flex-1">
-          <label class="block text-xs font-medium text-gray-600 mb-1">Keyword</label>
-          <input type="text" class="w-full border rounded px-3 py-2 text-sm trigger"
-                 placeholder="(e.g. breakfast)" value="${trigger}">
-        </div>
-        <div>
-          <label class="block text-xs font-medium text-gray-600 mb-1">Type</label>
-          <select class="type w-full sm:w-40 border rounded px-3 py-2 text-sm">
-            <option value="text" ${type === "text" ? "selected" : ""}>Text</option>
-            <option value="cards" ${type === "cards" ? "selected" : ""}>Cards</option>
-            <option value="menu" ${type === "menu" ? "selected" : ""}>Bottom Menu</option>
-          </select>
-        </div>
-      </div>
+  const createEmptyResponse = () => ({
+    id: "r" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+    trigger: "",
+    type: "text",
+    text: "",
+    extras: { title: "", subtitle: "", image: "", buttons: [] },
+    cards: [],
+    menu: { text: "", buttons: [] }
+  });
 
-      <!-- 🔸 TEXT -->
-      <div class="textBlock ${type === "text" ? "" : "hidden"} space-y-3 border rounded-lg p-3 bg-white">
-        <label class="block text-xs font-medium text-gray-600 mb-1">Response</label>
-        <textarea class="replyText w-full border rounded px-3 py-2 text-sm"
-                  placeholder="Write the response...">${text}</textarea>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          <div>
-            <label class="block text-xs font-medium text-gray-600 mb-1">Title</label>
-            <input type="text" class="title w-full border rounded px-2 py-1 text-sm"
-                   value="${extras.title || ""}">
-          </div>
-          <div>
-            <label class="block text-xs font-medium text-gray-600 mb-1">Subtitle</label>
-            <input type="text" class="subtitle w-full border rounded px-2 py-1 text-sm"
-                   value="${extras.subtitle || ""}">
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-medium text-gray-600 mb-1">Image URL (optional)</label>
-          <input type="text" class="image w-full border rounded px-2 py-1 text-sm"
-                 value="${extras.image || ""}">
-        </div>
-
-        <div class="buttons space-y-2">
-          ${(extras.buttons || []).map(makeButtonForm).join("")}
-        </div>
-        <button class="addButton px-3 py-1.5 bg-gray-200 rounded-lg text-sm hover:bg-gray-300">
-          + Add Button
-        </button>
-
-        <div class="preview bg-gray-50 border rounded-lg mt-3 p-2 text-center overflow-hidden"></div>
-      </div>
-
-      <!-- 🔹 CARDS -->
-      <div class="cardsBlock ${type === "cards" ? "" : "hidden"} space-y-3">
-        <div class="cardsList space-y-3">
-          ${cards.map(makeCardForm).join("")}
-        </div>
-        <button class="addCard px-3 py-1.5 bg-gray-200 rounded-lg text-sm hover:bg-gray-300">
-          + Add Card
-        </button>
-      </div>
-
-      <!-- 🟢 MENU -->
-      <div class="menuBlock ${type === "menu" ? "" : "hidden"} border rounded-lg p-3 bg-white space-y-3">
-        <label class="block text-xs font-medium text-gray-600 mb-1">Text above menu (optional)</label>
-        <input type="text" class="menuText w-full border rounded px-3 py-2 text-sm"
-               placeholder="(e.g. Choose an option)" value="${text}">
-
-        <div class="menuButtons space-y-2">
-          ${(extras.buttons || []).map(makeMenuRow).join("")}
-        </div>
-        <button class="addMenuBtn mt-2 px-3 py-1 bg-gray-200 rounded-lg text-sm hover:bg-gray-300">
-          + Add Button
-        </button>
-      </div>
-
-      <div class="flex justify-end">
-        <button class="deleteReply text-xs text-red-600 hover:underline">Delete</button>
-      </div>
-    `;
-
-    // === Lógica de comportamiento ===
-    const sel = div.querySelector(".type");
-    const textBlock = div.querySelector(".textBlock");
-    const cardsBlock = div.querySelector(".cardsBlock");
-    const menuBlock = div.querySelector(".menuBlock");
-
-    sel.addEventListener("change", () => {
-      textBlock.classList.toggle("hidden", sel.value !== "text");
-      cardsBlock.classList.toggle("hidden", sel.value !== "cards");
-      menuBlock.classList.toggle("hidden", sel.value !== "menu");
-    });
-
-    // Añadir botones y tarjetas
-    div.querySelector(".addButton").addEventListener("click", () => {
-      div.querySelector(".buttons").insertAdjacentHTML("beforeend", makeButtonForm());
-      updateTextPreview(div);
-    });
-    div.querySelector(".addCard").addEventListener("click", () => {
-      div.querySelector(".cardsList").insertAdjacentHTML("beforeend", makeCardForm());
-    });
-    div.querySelector(".addMenuBtn").addEventListener("click", () => {
-      div.querySelector(".menuButtons").insertAdjacentHTML("beforeend", makeMenuRow());
-    });
-
-    div.addEventListener("click", e => {
-      if (e.target.classList.contains("delMenuBtn")) e.target.closest(".menuRow").remove();
-    });
-
-    div.querySelector(".deleteReply").addEventListener("click", () => div.remove());
-    updateTextPreview(div);
-    return div;
+  function setActive(index) {
+    if (index < 0 || index >= responses.length) {
+      activeIndex = responses.length ? 0 : -1;
+    } else {
+      activeIndex = index;
+    }
+    renderTabs();
+    renderEditor();
   }
 
-  // === Subcomponentes ===
-  function makeCardForm(c = {}) {
-    return `
-      <div class="cardItem bg-white border rounded-lg p-3 space-y-2">
-        <label class="block text-xs font-medium text-gray-600">Title</label>
-        <input type="text" class="title w-full border rounded px-2 py-1 text-sm" value="${c.title || ""}">
-        <label class="block text-xs font-medium text-gray-600">Subtitle</label>
-        <input type="text" class="subtitle w-full border rounded px-2 py-1 text-sm" value="${c.subtitle || ""}">
-        <label class="block text-xs font-medium text-gray-600">Image URL</label>
-        <input type="text" class="image w-full border rounded px-2 py-1 text-sm" value="${c.image || ""}">
-        <label class="block text-xs font-medium text-gray-600">Link</label>
-        <input type="text" class="link w-full border rounded px-2 py-1 text-sm" value="${c.link || ""}">
-        <label class="block text-xs font-medium text-gray-600">Button Text</label>
-        <input type="text" class="buttonText w-full border rounded px-2 py-1 text-sm" value="${c.buttonText || "View"}">
-      </div>
-    `;
+  function deleteResponse(index) {
+    if (index < 0 || index >= responses.length) return;
+    responses.splice(index, 1);
+    setActive(activeIndex >= responses.length ? responses.length - 1 : activeIndex);
   }
 
-  function makeButtonForm(b = {}) {
-    return `
-      <div class="buttonItem flex flex-col sm:flex-row gap-2 items-center border rounded-lg p-2 bg-gray-50">
-        <input type="text" class="label flex-1 border rounded px-2 py-1 text-sm"
-               placeholder="Button text (e.g. Book now)" value="${b.label || ""}">
-        <input type="text" class="link flex-1 border rounded px-2 py-1 text-sm"
-               placeholder="Link or trigger" value="${b.link || ""}">
-        <button class="delButton text-xs text-red-600 hover:underline">Remove</button>
-      </div>
-    `;
+  function renderTabs() {
+    tabsEl.innerHTML = "";
+    const typeStyles = {
+      text: "bg-blue-100 text-blue-700",
+      cards: "bg-purple-100 text-purple-700",
+      menu: "bg-emerald-100 text-emerald-700"
+    };
+
+    responses.forEach((item, idx) => {
+      const tab = document.createElement("button");
+      tab.type = "button";
+      const isActive = idx === activeIndex;
+      tab.className = `relative flex min-w-[160px] flex-col gap-1 rounded-2xl border px-3 py-2 text-left transition ${isActive ? "bg-black text-white border-black shadow-sm" : "bg-white border-gray-200 text-gray-700 hover:border-black/40"}`;
+
+      const topRow = document.createElement("div");
+      topRow.className = "flex items-center gap-2";
+      const number = document.createElement("span");
+      number.className = `flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-semibold ${isActive ? "bg-white text-black" : "bg-black/10 text-gray-700"}`;
+      number.textContent = idx + 1;
+      const badge = document.createElement("span");
+      badge.className = `px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide rounded-full ${typeStyles[item.type] || "bg-gray-100 text-gray-600"}`;
+      badge.textContent = (item.type || "text").toUpperCase();
+      topRow.append(number, badge);
+
+      const label = document.createElement("div");
+      label.className = `text-xs font-medium truncate ${isActive ? "text-white/90" : "text-gray-700"}`;
+      label.textContent = item.trigger || "Keyword";
+
+      tab.append(topRow, label);
+      tab.addEventListener("click", () => setActive(idx));
+
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.className = "absolute -top-1.5 -right-1.5 bg-white border border-gray-200 rounded-full w-5 h-5 flex items-center justify-center text-[10px] text-gray-500 hover:text-red-600 hover:border-red-300";
+      remove.innerHTML = "&times;";
+      remove.addEventListener("click", e => {
+        e.stopPropagation();
+        deleteResponse(idx);
+      });
+
+      tab.appendChild(remove);
+      tabsEl.appendChild(tab);
+    });
   }
 
-  function makeMenuRow(b = {}) {
-    return `
-      <div class="menuRow flex items-center gap-2">
-        <input type="text" class="menuLabel flex-1 border rounded px-2 py-1 text-sm"
-               placeholder="Label" value="${b.label || ""}">
-        <input type="text" class="menuAction flex-1 border rounded px-2 py-1 text-sm"
-               placeholder="Trigger or link" value="${b.trigger || b.link || ""}">
-        <button class="delMenuBtn px-2 py-1 bg-red-100 text-red-700 rounded text-xs">✕</button>
-      </div>
-    `;
+  function renderEditor() {
+    if (!responses.length || activeIndex < 0) {
+      editor.classList.add("hidden");
+      emptyState.classList.remove("hidden");
+      return;
+    }
+
+    const item = responses[activeIndex];
+    emptyState.classList.add("hidden");
+    editor.classList.remove("hidden");
+
+    keywordInput.value = item.trigger || "";
+
+    typeButtons.forEach(btn => {
+      const isActive = btn.dataset.type === item.type;
+      btn.classList.toggle("bg-white", isActive);
+      btn.classList.toggle("text-black", isActive);
+      btn.classList.toggle("shadow-sm", isActive);
+      btn.classList.toggle("bg-gray-100", !isActive);
+      btn.classList.toggle("text-gray-500", !isActive);
+    });
+
+    textEditor.classList.toggle("hidden", item.type !== "text");
+    cardsEditor.classList.toggle("hidden", item.type !== "cards");
+    menuEditor.classList.toggle("hidden", item.type !== "menu");
+
+    if (item.type === "text") {
+      textMessage.value = item.text || "";
+      textTitle.value = item.extras?.title || "";
+      textSubtitle.value = item.extras?.subtitle || "";
+      textImage.value = item.extras?.image || "";
+      if (!Array.isArray(item.extras.buttons)) item.extras.buttons = [];
+      renderTextButtons(item);
+      renderTextPreview(item);
+    }
+
+    if (item.type === "cards") {
+      if (!Array.isArray(item.cards)) item.cards = [];
+      renderCards(item);
+    }
+
+    if (item.type === "menu") {
+      if (!item.menu) item.menu = { text: "", buttons: [] };
+      if (!Array.isArray(item.menu.buttons)) item.menu.buttons = [];
+      menuIntroText.value = item.menu.text || "";
+      renderMenuButtons(item);
+      updateMenuPreview(item);
+    }
   }
 
-  // === Vista previa ===
-  function updateTextPreview(row) {
-    const block = row.querySelector(".textBlock");
-    if (!block) return;
-    const image = block.querySelector(".image")?.value?.trim() || "";
-    const title = block.querySelector(".title")?.value?.trim() || "";
-    const subtitle = block.querySelector(".subtitle")?.value?.trim() || "";
-    const body = block.querySelector(".replyText")?.value?.trim() || "";
-    const buttons = [...block.querySelectorAll(".buttonItem")].map(b => ({
-      label: b.querySelector(".label")?.value?.trim() || "",
-      link: b.querySelector(".link")?.value?.trim() || ""
-    }));
-    const preview = block.querySelector(".preview");
-    preview.innerHTML = `
-      <div class="inline-block bg-white rounded-2xl shadow border w-72 text-left text-gray-800">
-        ${image ? `<img src="${image}" class="w-full h-36 object-cover rounded-t-2xl">` : ""}
+  function renderTextButtons(item) {
+    const buttons = item.extras.buttons || (item.extras.buttons = []);
+    textButtonsList.innerHTML = "";
+    if (!buttons.length) {
+      const empty = document.createElement("p");
+      empty.className = "text-xs text-gray-400";
+      empty.textContent = "No buttons added yet.";
+      textButtonsList.appendChild(empty);
+      return;
+    }
+
+    buttons.forEach((btn, idx) => {
+      const row = document.createElement("div");
+      row.className = "flex flex-col sm:flex-row gap-2 items-start sm:items-center bg-gray-50 border border-gray-200 rounded-xl px-3 py-2";
+
+      const labelInput = document.createElement("input");
+      labelInput.type = "text";
+      labelInput.className = "flex-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60";
+      labelInput.placeholder = "Button text";
+      labelInput.value = btn.label || "";
+      labelInput.addEventListener("input", e => {
+        btn.label = e.target.value;
+        renderTextPreview(item);
+      });
+
+      const linkInput = document.createElement("input");
+      linkInput.type = "text";
+      linkInput.className = "flex-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60";
+      linkInput.placeholder = "Link or trigger";
+      linkInput.value = btn.link || "";
+      linkInput.addEventListener("input", e => {
+        btn.link = e.target.value;
+      });
+
+      const removeBtn = document.createElement("button");
+      removeBtn.type = "button";
+      removeBtn.className = "text-xs text-red-600 hover:text-red-700";
+      removeBtn.textContent = "Delete";
+      removeBtn.addEventListener("click", () => {
+        buttons.splice(idx, 1);
+        renderTextButtons(item);
+        renderTextPreview(item);
+      });
+
+      row.append(labelInput, linkInput, removeBtn);
+      textButtonsList.appendChild(row);
+    });
+  }
+
+  function renderTextPreview(item) {
+    const body = item.text || "";
+    const { title = "", subtitle = "", image = "", buttons = [] } = item.extras || {};
+    const actions = (buttons || []).filter(b => (b.label || "").trim());
+
+    if (!image && !title && !subtitle && !body && !actions.length) {
+      textPreview.innerHTML = `<p class="text-xs text-gray-400 text-center w-full">Start writing to see the live preview.</p>`;
+      return;
+    }
+
+    const buttonsHtml = actions.map(b => `<span class="inline-flex items-center justify-center border border-black rounded-full px-3 py-1 text-xs text-black">${escapeHtml(b.label)}</span>`).join(" ");
+
+    textPreview.innerHTML = `
+      <div class="inline-block bg-white rounded-2xl shadow-sm border border-gray-200 w-72 text-left text-gray-800 overflow-hidden">
+        ${image ? `<img src="${escapeHtml(image)}" class="w-full h-36 object-cover" alt="Preview image">` : ""}
         <div class="p-3 space-y-2">
-          ${title ? `<h3 class="font-semibold text-base">${title}</h3>` : ""}
-          ${subtitle ? `<p class="text-sm text-gray-500">${subtitle}</p>` : ""}
-          ${body ? `<p class="text-sm text-gray-700">${body}</p>` : ""}
-          <div class="flex flex-wrap gap-2 mt-2">
-            ${buttons.filter(b => b.label).map(b => 
-              `<a href="${b.link || "#"}" target="_blank"
-                 class="border border-black rounded-full px-3 py-1 text-xs hover:bg-black hover:text-white transition">${b.label}</a>`
-            ).join("")}
-          </div>
+          ${title ? `<h3 class="font-semibold text-base">${escapeHtml(title)}</h3>` : ""}
+          ${subtitle ? `<p class="text-sm text-gray-500">${escapeHtml(subtitle)}</p>` : ""}
+          ${body ? `<p class="text-sm text-gray-700">${escapeHtml(body)}</p>` : ""}
+          ${actions.length ? `<div class="flex flex-wrap gap-2 pt-2">${buttonsHtml}</div>` : ""}
         </div>
       </div>
     `;
   }
 
-  document.addEventListener("input", e => {
-    const row = e.target.closest("[data-id]");
-    if (row) updateTextPreview(row);
-  });
-
-  document.addEventListener("click", e => {
-    if (e.target.classList.contains("delButton")) {
-      const row = e.target.closest("[data-id]");
-      e.target.closest(".buttonItem").remove();
-      updateTextPreview(row);
+  function renderCards(item) {
+    cardsList.innerHTML = "";
+    if (!item.cards.length) {
+      const empty = document.createElement("p");
+      empty.className = "text-xs text-gray-400";
+      empty.textContent = "No cards yet. Add one to build a carousel.";
+      cardsList.appendChild(empty);
+      return;
     }
-  });
 
-  // === Cargar desde Firebase ===
-  ref.once("value").then(snap => {
-    const data = snap.val();
-    list.innerHTML = "";
-    if (!data || Object.keys(data).length === 0) return;
-    for (const id in data) {
-      const r = data[id];
-      const row = makeRow(id, r.trigger, r.type, r.text, r.cards || [], r.extras || {});
-      list.appendChild(row);
+    item.cards.forEach((card, idx) => {
+      const wrap = document.createElement("div");
+      wrap.className = "border border-gray-200 rounded-2xl bg-white p-4 shadow-sm space-y-4";
+
+      const header = document.createElement("div");
+      header.className = "flex items-center justify-between";
+      const title = document.createElement("span");
+      title.className = "text-sm font-semibold text-gray-700";
+      title.textContent = `Card ${idx + 1}`;
+      const removeBtn = document.createElement("button");
+      removeBtn.type = "button";
+      removeBtn.className = "text-xs text-red-600 hover:text-red-700";
+      removeBtn.textContent = "Delete";
+      removeBtn.addEventListener("click", () => {
+        item.cards.splice(idx, 1);
+        renderCards(item);
+      });
+      header.append(title, removeBtn);
+
+      const grid = document.createElement("div");
+      grid.className = "grid gap-3 sm:grid-cols-2";
+
+      const titleWrap = document.createElement("div");
+      titleWrap.className = "space-y-1";
+      const titleLabel = document.createElement("label");
+      titleLabel.className = "block text-xs font-semibold text-gray-600";
+      titleLabel.textContent = "Title";
+      const titleInput = document.createElement("input");
+      titleInput.type = "text";
+      titleInput.className = "w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60";
+      titleInput.placeholder = "Title";
+      titleInput.value = card.title || "";
+      titleInput.addEventListener("input", e => {
+        card.title = e.target.value;
+        updateCardPreview();
+      });
+      titleWrap.append(titleLabel, titleInput);
+
+      const subtitleWrap = document.createElement("div");
+      subtitleWrap.className = "space-y-1";
+      const subtitleLabel = document.createElement("label");
+      subtitleLabel.className = "block text-xs font-semibold text-gray-600";
+      subtitleLabel.textContent = "Subtitle";
+      const subtitleInput = document.createElement("input");
+      subtitleInput.type = "text";
+      subtitleInput.className = "w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60";
+      subtitleInput.placeholder = "Subtitle";
+      subtitleInput.value = card.subtitle || "";
+      subtitleInput.addEventListener("input", e => {
+        card.subtitle = e.target.value;
+        updateCardPreview();
+      });
+      subtitleWrap.append(subtitleLabel, subtitleInput);
+
+      grid.append(titleWrap, subtitleWrap);
+
+      const imageWrap = document.createElement("div");
+      imageWrap.className = "space-y-1";
+      const imageLabel = document.createElement("label");
+      imageLabel.className = "block text-xs font-semibold text-gray-600";
+      imageLabel.textContent = "Image URL";
+      const imageInput = document.createElement("input");
+      imageInput.type = "text";
+      imageInput.className = "w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60";
+      imageInput.placeholder = "https://...";
+      imageInput.value = card.image || "";
+      imageInput.addEventListener("input", e => {
+        card.image = e.target.value;
+        updateCardPreview();
+      });
+      imageWrap.append(imageLabel, imageInput);
+
+      const linkWrap = document.createElement("div");
+      linkWrap.className = "space-y-1";
+      const linkLabel = document.createElement("label");
+      linkLabel.className = "block text-xs font-semibold text-gray-600";
+      linkLabel.textContent = "Link";
+      const linkInput = document.createElement("input");
+      linkInput.type = "text";
+      linkInput.className = "w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60";
+      linkInput.placeholder = "https://...";
+      linkInput.value = card.link || "";
+      linkInput.addEventListener("input", e => {
+        card.link = e.target.value;
+      });
+      linkWrap.append(linkLabel, linkInput);
+
+      const buttonWrap = document.createElement("div");
+      buttonWrap.className = "space-y-1";
+      const buttonLabel = document.createElement("label");
+      buttonLabel.className = "block text-xs font-semibold text-gray-600";
+      buttonLabel.textContent = "Button text";
+      const buttonTextInput = document.createElement("input");
+      buttonTextInput.type = "text";
+      buttonTextInput.className = "w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60";
+      buttonTextInput.placeholder = "Reserve now";
+      buttonTextInput.value = card.buttonText || "View";
+      buttonTextInput.addEventListener("input", e => {
+        card.buttonText = e.target.value;
+        updateCardPreview();
+      });
+      buttonWrap.append(buttonLabel, buttonTextInput);
+
+      const preview = document.createElement("div");
+      preview.className = "bg-gray-50 border border-gray-200 rounded-xl p-3";
+
+      function updateCardPreview() {
+        preview.innerHTML = `
+          <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+            ${card.image ? `<img src="${escapeHtml(card.image)}" class="w-full h-32 object-cover" alt="">` : ""}
+            <div class="p-3 space-y-2">
+              ${card.title ? `<h4 class="text-sm font-semibold text-gray-800">${escapeHtml(card.title)}</h4>` : ""}
+              ${card.subtitle ? `<p class="text-xs text-gray-500">${escapeHtml(card.subtitle)}</p>` : ""}
+              ${(card.buttonText || "").trim() ? `<div class="pt-1"><span class="inline-flex text-xs border border-black rounded-full px-3 py-1">${escapeHtml(card.buttonText)}</span></div>` : ""}
+            </div>
+          </div>
+        `;
+      }
+
+      updateCardPreview();
+
+      wrap.append(header, grid, imageWrap, linkWrap, buttonWrap, preview);
+      cardsList.appendChild(wrap);
+    });
+  }
+
+  function renderMenuButtons(item) {
+    const buttons = item.menu.buttons || (item.menu.buttons = []);
+    menuButtonsList.innerHTML = "";
+    if (!buttons.length) {
+      const empty = document.createElement("p");
+      empty.className = "text-xs text-gray-400";
+      empty.textContent = "Add options so guests can tap them quickly.";
+      menuButtonsList.appendChild(empty);
+      return;
     }
+
+    buttons.forEach((btn, idx) => {
+      btn.action = btn.action || btn.link || btn.trigger || "";
+      const row = document.createElement("div");
+      row.className = "flex flex-col sm:flex-row gap-2 items-start sm:items-center bg-white border border-gray-200 rounded-xl px-3 py-2 shadow-sm";
+
+      const labelInput = document.createElement("input");
+      labelInput.type = "text";
+      labelInput.className = "flex-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60";
+      labelInput.placeholder = "Button label";
+      labelInput.value = btn.label || "";
+      labelInput.addEventListener("input", e => {
+        btn.label = e.target.value;
+        updateMenuPreview(item);
+      });
+
+      const actionInput = document.createElement("input");
+      actionInput.type = "text";
+      actionInput.className = "flex-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60";
+      actionInput.placeholder = "Trigger or link";
+      actionInput.value = btn.action;
+      actionInput.addEventListener("input", e => {
+        btn.action = e.target.value;
+        updateMenuPreview(item);
+      });
+
+      const removeBtn = document.createElement("button");
+      removeBtn.type = "button";
+      removeBtn.className = "text-xs text-red-600 hover:text-red-700";
+      removeBtn.textContent = "Delete";
+      removeBtn.addEventListener("click", () => {
+        buttons.splice(idx, 1);
+        renderMenuButtons(item);
+        updateMenuPreview(item);
+      });
+
+      row.append(labelInput, actionInput, removeBtn);
+      menuButtonsList.appendChild(row);
+    });
+  }
+
+  function updateMenuPreview(item) {
+    menuPreview.innerHTML = "";
+    const intro = item.menu.text || "";
+    if (intro) {
+      const introEl = document.createElement("p");
+      introEl.className = "w-full text-sm text-gray-600";
+      introEl.textContent = intro;
+      menuPreview.appendChild(introEl);
+    }
+
+    const wrap = document.createElement("div");
+    wrap.className = `flex flex-wrap gap-2${intro ? " mt-3" : ""}`;
+    (item.menu.buttons || []).forEach(btn => {
+      if (!(btn.label || "").trim()) return;
+      const pill = document.createElement("span");
+      pill.className = "inline-flex items-center border border-black rounded-full px-3 py-1 text-xs text-black";
+      pill.textContent = btn.label;
+      wrap.appendChild(pill);
+    });
+
+    if (!wrap.childElementCount) {
+      const placeholder = document.createElement("p");
+      placeholder.className = "text-xs text-gray-400";
+      placeholder.textContent = "Menu buttons will appear here.";
+      menuPreview.appendChild(placeholder);
+    } else {
+      menuPreview.appendChild(wrap);
+    }
+  }
+
+  btnAdd.addEventListener("click", () => {
+    responses.push(createEmptyResponse());
+    setActive(responses.length - 1);
   });
 
-  // === Nuevo y Guardar ===
-  btnAdd.addEventListener("click", () => list.appendChild(makeRow("r" + Date.now())));
   btnSave.addEventListener("click", async () => {
-    const rows = list.querySelectorAll("[data-id]");
     const saveData = {};
-    rows.forEach(div => {
-      const id = div.dataset.id;
-      const trigger = div.querySelector(".trigger")?.value?.trim() || "";
-      const type = div.querySelector(".type")?.value || "text";
-      let text = "";
-      let cards = [];
-      let extras = {};
+    responses.forEach(res => {
+      const trigger = (res.trigger || "").trim();
+      if (!trigger) return;
 
-      if (type === "text") {
-        const block = div.querySelector(".textBlock");
-        text = block.querySelector(".replyText")?.value?.trim() || "";
-        extras = {
-          title: block.querySelector(".title")?.value?.trim() || "",
-          subtitle: block.querySelector(".subtitle")?.value?.trim() || "",
-          image: block.querySelector(".image")?.value?.trim() || "",
-          buttons: [...block.querySelectorAll(".buttonItem")].map(b => ({
-            label: b.querySelector(".label")?.value?.trim() || "",
-            link: b.querySelector(".link")?.value?.trim() || ""
+      const out = {
+        trigger,
+        type: res.type || "text",
+        text: res.type === "menu" ? (res.menu?.text || "") : (res.type === "text" ? (res.text || "") : (res.text || "")),
+        cards: [],
+        extras: {}
+      };
+
+      if (res.type === "text") {
+        out.text = res.text || "";
+        out.extras = {
+          title: res.extras?.title || "",
+          subtitle: res.extras?.subtitle || "",
+          image: res.extras?.image || "",
+          buttons: (res.extras?.buttons || [])
+            .map(b => ({
+              label: (b.label || "").trim(),
+              link: (b.link || "").trim()
+            }))
+            .filter(b => b.label || b.link)
+        };
+      }
+
+      if (res.type === "cards") {
+        out.cards = (res.cards || [])
+          .map(c => ({
+            title: c.title || "",
+            subtitle: c.subtitle || "",
+            image: c.image || "",
+            link: c.link || "",
+            buttonText: c.buttonText || "View"
           }))
+          .filter(c => (c.title || c.subtitle || c.image || c.link));
+        out.extras = {};
+      }
+
+      if (res.type === "menu") {
+        out.text = res.menu?.text || "";
+        out.extras = {
+          buttons: (res.menu?.buttons || [])
+            .map(btn => {
+              const label = (btn.label || "").trim();
+              const action = (btn.action || btn.link || btn.trigger || "").trim();
+              if (!label || !action) return null;
+              return action.startsWith("http")
+                ? { label, link: action }
+                : { label, trigger: action };
+            })
+            .filter(Boolean)
         };
       }
 
-      if (type === "cards") {
-        const block = div.querySelector(".cardsBlock");
-        cards = [...block.querySelectorAll(".cardItem")].map(c => ({
-          title: c.querySelector(".title")?.value?.trim() || "",
-          subtitle: c.querySelector(".subtitle")?.value?.trim() || "",
-          image: c.querySelector(".image")?.value?.trim() || "",
-          link: c.querySelector(".link")?.value?.trim() || "",
-          buttonText: c.querySelector(".buttonText")?.value?.trim() || "View"
-        }));
-      }
-
-      if (type === "menu") {
-        const block = div.querySelector(".menuBlock");
-        text = block.querySelector(".menuText")?.value?.trim() || "";
-        extras = {
-          buttons: [...block.querySelectorAll(".menuRow")].map(r => {
-            const label = r.querySelector(".menuLabel")?.value?.trim() || "";
-            const action = r.querySelector(".menuAction")?.value?.trim() || "";
-            if (!label || !action) return null;
-            return action.startsWith("http")
-              ? { label, link: action }
-              : { label, trigger: action };
-          }).filter(Boolean)
-        };
-      }
-
-      if (trigger) saveData[id] = { trigger, type, text, cards, extras };
+      saveData[res.id] = out;
     });
 
     await ref.set(saveData);
     msg.classList.remove("hidden");
     setTimeout(() => msg.classList.add("hidden"), 1500);
+  });
+
+  keywordInput.addEventListener("input", e => {
+    if (!responses.length || activeIndex < 0) return;
+    responses[activeIndex].trigger = e.target.value;
+    renderTabs();
+  });
+
+  textMessage.addEventListener("input", e => {
+    if (!responses.length || activeIndex < 0) return;
+    responses[activeIndex].text = e.target.value;
+    renderTextPreview(responses[activeIndex]);
+  });
+
+  textTitle.addEventListener("input", e => {
+    if (!responses.length || activeIndex < 0) return;
+    responses[activeIndex].extras.title = e.target.value;
+    renderTextPreview(responses[activeIndex]);
+  });
+
+  textSubtitle.addEventListener("input", e => {
+    if (!responses.length || activeIndex < 0) return;
+    responses[activeIndex].extras.subtitle = e.target.value;
+    renderTextPreview(responses[activeIndex]);
+  });
+
+  textImage.addEventListener("input", e => {
+    if (!responses.length || activeIndex < 0) return;
+    responses[activeIndex].extras.image = e.target.value;
+    renderTextPreview(responses[activeIndex]);
+  });
+
+  addTextButton.addEventListener("click", () => {
+    if (!responses.length || activeIndex < 0) return;
+    const item = responses[activeIndex];
+    if (!Array.isArray(item.extras.buttons)) item.extras.buttons = [];
+    item.extras.buttons.push({ label: "", link: "" });
+    renderTextButtons(item);
+    renderTextPreview(item);
+  });
+
+  addCardButton.addEventListener("click", () => {
+    if (!responses.length || activeIndex < 0) return;
+    const item = responses[activeIndex];
+    if (!Array.isArray(item.cards)) item.cards = [];
+    item.cards.push({ title: "", subtitle: "", image: "", link: "", buttonText: "View" });
+    renderCards(item);
+  });
+
+  menuIntroText.addEventListener("input", e => {
+    if (!responses.length || activeIndex < 0) return;
+    responses[activeIndex].menu.text = e.target.value;
+    updateMenuPreview(responses[activeIndex]);
+  });
+
+  addMenuButton.addEventListener("click", () => {
+    if (!responses.length || activeIndex < 0) return;
+    const item = responses[activeIndex];
+    if (!Array.isArray(item.menu.buttons)) item.menu.buttons = [];
+    item.menu.buttons.push({ label: "", action: "" });
+    renderMenuButtons(item);
+    updateMenuPreview(item);
+  });
+
+  deleteBtn.addEventListener("click", () => {
+    if (!responses.length || activeIndex < 0) return;
+    deleteResponse(activeIndex);
+  });
+
+  typeButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (!responses.length || activeIndex < 0) return;
+      const item = responses[activeIndex];
+      item.type = btn.dataset.type;
+      if (item.type === "cards" && (!Array.isArray(item.cards) || !item.cards.length)) {
+        item.cards = [{ title: "", subtitle: "", image: "", link: "", buttonText: "View" }];
+      }
+      if (item.type === "menu") {
+        if (!item.menu) item.menu = { text: "", buttons: [] };
+        if (!Array.isArray(item.menu.buttons) || !item.menu.buttons.length) {
+          item.menu.buttons = [{ label: "", action: "" }];
+        }
+      }
+      renderTabs();
+      renderEditor();
+    });
+  });
+
+  ref.once("value").then(snap => {
+    const data = snap.val() || {};
+    responses = Object.entries(data).map(([id, val]) => ({
+      id,
+      trigger: val.trigger || "",
+      type: val.type || "text",
+      text: val.text || "",
+      extras: {
+        title: val.extras?.title || "",
+        subtitle: val.extras?.subtitle || "",
+        image: val.extras?.image || "",
+        buttons: Array.isArray(val.extras?.buttons) && val.type === "text"
+          ? val.extras.buttons.map(b => ({ label: b.label || "", link: b.link || "" }))
+          : []
+      },
+      cards: Array.isArray(val.cards) ? val.cards.map(c => ({
+        title: c.title || "",
+        subtitle: c.subtitle || "",
+        image: c.image || "",
+        link: c.link || "",
+        buttonText: c.buttonText || "View"
+      })) : [],
+      menu: {
+        text: val.type === "menu" ? (val.text || "") : "",
+        buttons: Array.isArray(val.extras?.buttons) && val.type === "menu"
+          ? val.extras.buttons.map(b => ({
+              label: b.label || "",
+              action: (b.link || b.trigger || "")
+            }))
+          : []
+      }
+    }));
+
+    if (!responses.length) {
+      responses.push(createEmptyResponse());
+    }
+    setActive(0);
   });
 }
 
