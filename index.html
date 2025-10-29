@@ -51,6 +51,10 @@
     .avatar-option.avatar-upload{background:#f9fafb}
     .avatar-option.avatar-upload:hover{background:#f3f4f6}
     .chip.active{border-color:#111;background:#111;color:#fff}
+    .chat-panel-tab{flex:1 1 auto;min-width:120px;text-align:center;padding:0.55rem 1rem;border-radius:14px;font-size:14px;font-weight:500;color:#4b5563;background:#f7f7f7;transition:all .2s ease;box-shadow:inset 0 0 0 1px rgba(15,23,42,.08)}
+    .chat-panel-tab:hover{color:#111;background:#f0f0f0}
+    .chat-panel-tab.active{background:#111;color:#fff;box-shadow:none}
+    .activity-score-active{background:#111 !important;color:#fff !important;border-color:#111 !important}
     .sidebar-btn{display:flex;gap:10px;align-items:center;width:100%;padding:.65rem .8rem;border-radius:12px}
     .sidebar-btn.active{background:#111;color:#fff}
     textarea{resize:none;overflow:hidden;min-height:400px;}
@@ -188,10 +192,7 @@ header {
 }
 
 /* === Centrar todas las pestañas excepto Appearance === */
-#tab-settings,
 #tab-knowledge,
-#tab-integration,
-#tab-schedule,
 #tab-respuestas {
   margin-left: auto;
   margin-right: auto;
@@ -302,31 +303,18 @@ body.login-view #appContainer {
       <!-- Sidebar -->
 <aside class="group fixed top-[57px] left-0 h-[calc(100vh-57px)] bg-white border-r overflow-y-auto transition-all duration-300 w-[72px] hover:w-[260px]">
   <nav class="space-y-2 mt-4 px-2">
-    <button class="sidebar-btn active flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="apariencia">
-      <i data-lucide="palette" class="w-5 h-5 shrink-0"></i>
-      <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Appearance</span>
-    </button>
-    <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="settings">
-      <i data-lucide="sliders" class="w-5 h-5 shrink-0"></i>
-      <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Settings</span>
+    <button class="sidebar-btn active flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="chat">
+      <i data-lucide="message-circle" class="w-5 h-5 shrink-0"></i>
+      <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Chat</span>
     </button>
     <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="knowledge">
       <i data-lucide="book-open" class="w-5 h-5 shrink-0"></i>
       <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Knowledge</span>
     </button>
-    <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="integration">
-      <i data-lucide="code-2" class="w-5 h-5 shrink-0"></i>
-      <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Integration</span>
-    </button>
     <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="respuestas">
       <i data-lucide="bot" class="w-5 h-5 shrink-0"></i>
       <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Auto Responses</span>
     </button>
-    <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="schedule">
-  <i data-lucide="clock" class="w-5 h-5 shrink-0"></i>
-  <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Schedule</span>
-</button>
-
   </nav>
 
   <div class="mt-6 text-xs text-gray-500 px-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
@@ -358,71 +346,322 @@ body.login-view #appContainer {
 
         <!-- Tabs container -->
         <div id="tabs" class="hidden">
-<!-- Apariencia -->
-<!-- 🧩 APPEARANCE TAB -->
-<section id="tab-apariencia" class="space-y-6">
+<!-- Chat -->
+<section id="tab-chat" class="space-y-8">
+  <div class="grid gap-8 xl:grid-cols-[360px,1fr] items-start">
+    <div class="relative flex justify-center">
+      <div class="space-y-6">
+        <div class="iphone mx-auto">
+          <div class="notch"></div>
+          <div class="iphone-in relative">
+            <iframe id="liveChatFrame"
+              class="absolute inset-0 w-full h-full border-0 rounded-[26px]"
+              sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
+              referrerpolicy="no-referrer-when-downgrade"></iframe>
 
-  <div id="permBannerA" class="hidden card p-4 border border-amber-300/60 bg-amber-50">
-    <div class="flex gap-2 items-start">
-      <i data-lucide="shield-alert" class="w-5 h-5 text-amber-600"></i>
-      <div class="text-sm text-amber-800">
-        <b>Sin permisos de escritura.</b> Debes iniciar sesión con el email guardado en <code>config/adminEmail</code> o ser <code>globalAdmin</code>.
-      </div>
-    </div>
-  </div>
-
-  <div class="flex flex-col xl:flex-row gap-8 items-start">
-    <div class="flex-1 w-full">
-      <div class="flex flex-wrap gap-3 justify-center">
-        <button type="button" class="chip appearance-chip" data-appearance-target="header">Header</button>
-        <button type="button" class="chip appearance-chip" data-appearance-target="chat">Chat</button>
-        <button type="button" class="chip appearance-chip" data-appearance-target="widget">Widget</button>
-      </div>
-
-      <div class="mt-6 flex justify-center">
-        <div class="relative flex flex-col items-center">
-          <div class="space-y-6">
-            <div class="iphone mx-auto">
-              <div class="notch"></div>
-              <div class="iphone-in relative">
-                <iframe id="liveChatFrame"
-                  class="absolute inset-0 w-full h-full border-0 rounded-[26px]"
-                  sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
-                  referrerpolicy="no-referrer-when-downgrade"></iframe>
-
-                <div class="p-4 border-b flex items-center gap-3 hidden">
-                  <img id="previewLogo" class="h-7 w-7 rounded hidden" />
-                  <div class="font-medium">Chat Preview</div>
-                </div>
-                <div class="p-4 space-y-3 hidden" id="previewHolder">
-                  <button id="previewBtn" class="px-4 py-2 rounded text-white">Botón</button>
-                  <div id="previewBubble" class="p-3 rounded text-white inline-block">Mensaje</div>
-                </div>
-
-                <!-- (el botón del widget YA NO va aquí) -->
-              </div>
-
-              <!-- ✅ Botón del widget fuera de .iphone-in, para que quede debajo del mockup -->
-              <div id="widgetExampleClone" class="widget-mockup shadow-lg absolute right-0 bottom-[-86px] z-10">
-                <img id="widgetExampleIconClone" src="widgets/1.png" alt="Widget preview icon" />
-              </div>
+            <div class="p-4 border-b flex items-center gap-3 hidden">
+              <img id="previewLogo" class="h-7 w-7 rounded hidden" />
+              <div class="font-medium">Chat Preview</div>
             </div>
-
+            <div class="p-4 space-y-3 hidden" id="previewHolder">
+              <button id="previewBtn" class="px-4 py-2 rounded text-white">Botón</button>
+              <div id="previewBubble" class="p-3 rounded text-white inline-block">Mensaje</div>
+            </div>
           </div>
 
-          <div id="appearanceCards" class="w-full max-w-md mt-6 xl:mt-0 xl:absolute xl:top-0 xl:left-full xl:ml-6">
+          <div id="widgetExampleClone" class="widget-mockup shadow-lg absolute right-0 bottom-[-86px] z-10">
+            <img id="widgetExampleIconClone" src="widgets/1.png" alt="Widget preview icon" />
+          </div>
+        </div>
+      </div>
+    </div>
 
-        <div class="appearance-card hidden card p-5 w-full max-w-md" data-appearance-card="header">
+    <div class="space-y-6 relative">
+      <div id="permBannerA" class="hidden card p-4 border border-amber-300/60 bg-amber-50">
+        <div class="flex gap-2 items-start">
+          <i data-lucide="shield-alert" class="w-5 h-5 text-amber-600"></i>
+          <div class="text-sm text-amber-800">
+            <b>Sin permisos de escritura.</b> Debes iniciar sesión con el email guardado en <code>config/adminEmail</code> o ser <code>globalAdmin</code>.
+          </div>
+        </div>
+      </div>
+      <div id="permBannerS" class="hidden card p-4 border border-amber-300/60 bg-amber-50">
+        <div class="flex gap-2 items-start">
+          <i data-lucide="shield-alert" class="w-5 h-5 text-amber-600"></i>
+          <div class="text-sm text-amber-800">
+            <b>Sin permisos de escritura.</b> Debes iniciar sesión con el email guardado en <code>config/adminEmail</code> o ser <code>globalAdmin</code>.
+          </div>
+        </div>
+      </div>
+
+      <div id="chatPanelTabs" class="flex flex-wrap items-center gap-2 bg-white border border-gray-200 rounded-2xl shadow-sm p-1">
+        <button class="chat-panel-tab active" data-chat-panel-tab="bot">Bot</button>
+        <button class="chat-panel-tab" data-chat-panel-tab="activity">Activity</button>
+        <button class="chat-panel-tab" data-chat-panel-tab="chat">Chat</button>
+        <button class="chat-panel-tab" data-chat-panel-tab="widget">Widget</button>
+        <button class="chat-panel-tab" data-chat-panel-tab="integration">Integration</button>
+      </div>
+
+      <div id="chatPanelContents" class="space-y-6">
+        <div data-chat-panel="bot" class="space-y-5">
+          <div class="card p-5 space-y-4">
+            <div class="flex items-center gap-2 font-semibold text-gray-800">
+              <i data-lucide="bot" class="w-5 h-5"></i>
+              Bot
+            </div>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wide">Bot name</label>
+                <input id="hotelName" class="w-full border rounded-xl px-3 py-2" placeholder="Asistente del hotel" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wide">Time Zone</label>
+                <select id="timeZone" class="w-full border rounded-xl px-3 py-2"></select>
+              </div>
+              <div class="flex justify-end">
+                <button id="saveGeneral" class="px-4 py-2 bg-black text-white rounded-md">Save</button>
+              </div>
+              <p id="msgGeneral" class="text-green-600 text-sm hidden">✔ Saved</p>
+            </div>
+          </div>
+
+          <div class="card p-5 flex items-center justify-between">
+            <div>
+              <div class="font-semibold flex items-center gap-2"><i data-lucide="message-circle" class="w-5 h-5"></i> Show Button</div>
+              <p class="text-sm text-gray-500">Show the chat button on the website</p>
+            </div>
+            <input id="tgChatVisible" type="checkbox" class="toggle" />
+          </div>
+
+          <div class="card p-5 space-y-4">
+            <div class="font-semibold flex items-center gap-2"><i data-lucide="sparkles" class="w-5 h-5"></i> Assistant Personality</div>
+            <p class="text-sm text-gray-500">Choose how your assistant communicates.</p>
+            <div id="personalityChips" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <button data-val="formal" class="chip">Formal &amp; Polite</button>
+              <button data-val="relaxed" class="chip">Relaxed &amp; Friendly</button>
+              <button data-val="warm" class="chip">Warm &amp; Welcoming</button>
+              <button data-val="efficient" class="chip">Efficient &amp; Direct</button>
+              <button data-val="young" class="chip">Young &amp; Playful</button>
+            </div>
+          </div>
+        </div>
+
+        <div data-chat-panel="activity" class="space-y-5 hidden">
+          <div class="card p-5 space-y-4">
+            <div class="font-semibold flex items-center gap-2"><i data-lucide="activity" class="w-5 h-5"></i> Activity</div>
+            <p class="text-sm text-gray-500">See the impact of your assistant and track guest engagement.</p>
+            <div class="flex items-center justify-between gap-2">
+                            <button class="w-10 h-10 rounded-full flex items-center justify-center border border-gray-300 bg-white text-sm font-medium text-gray-600 hover:border-black transition" data-activity-score="1">1</button>
+              <button class="w-10 h-10 rounded-full flex items-center justify-center border border-gray-300 bg-white text-sm font-medium text-gray-600 hover:border-black transition" data-activity-score="2">2</button>
+              <button class="w-10 h-10 rounded-full flex items-center justify-center border border-gray-300 bg-white text-sm font-medium text-gray-600 hover:border-black transition" data-activity-score="3">3</button>
+              <button class="w-10 h-10 rounded-full flex items-center justify-center border border-gray-300 bg-white text-sm font-medium text-gray-600 hover:border-black transition" data-activity-score="4">4</button>
+              <button class="w-10 h-10 rounded-full flex items-center justify-center border border-gray-300 bg-white text-sm font-medium text-gray-600 hover:border-black transition" data-activity-score="5">5</button>
+              <button class="w-10 h-10 rounded-full flex items-center justify-center border border-gray-300 bg-white text-sm font-medium text-gray-600 hover:border-black transition" data-activity-score="6">6</button>
+              <button class="w-10 h-10 rounded-full flex items-center justify-center border border-gray-300 bg-white text-sm font-medium text-gray-600 hover:border-black transition" data-activity-score="7">7</button>
+              <button class="w-10 h-10 rounded-full flex items-center justify-center border border-gray-300 bg-white text-sm font-medium text-gray-600 hover:border-black transition" data-activity-score="8">8</button>
+              <button class="w-10 h-10 rounded-full flex items-center justify-center border border-gray-300 bg-white text-sm font-medium text-gray-600 hover:border-black transition" data-activity-score="9">9</button>
+              <button class="w-10 h-10 rounded-full flex items-center justify-center border border-gray-300 bg-white text-sm font-medium text-gray-600 hover:border-black transition" data-activity-score="10">10</button>
+            </div>
+            <div class="flex justify-end">
+              <button class="px-4 py-2 bg-black text-white rounded-md">Save</button>
+            </div>
+          </div>
+
+          <div class="card p-5 space-y-4">
+            <div class="font-semibold flex items-center gap-2 mb-2">
+              <i data-lucide="smile" class="w-5 h-5"></i>
+              Welcome Message
+            </div>
+            <label class="flex items-center justify-between cursor-pointer">
+              <span class="text-sm text-gray-600">Enable welcome message</span>
+              <input type="checkbox" id="welcomeEnabled" class="toggle">
+            </label>
+            <div>
+              <textarea id="welcomeText" class="w-full border rounded-lg px-3 py-2 text-sm" rows="2" placeholder="Enter welcome message..."></textarea>
+            </div>
+            <div>
+              <label class="block text-sm text-gray-600 mb-1">Delay (seconds)</label>
+              <input id="welcomeDelay" type="number" min="0" class="border rounded px-2 py-1 text-sm w-24" value="2">
+            </div>
+            <div>
+              <label class="block text-sm text-gray-600 mb-1">Welcome image (optional)</label>
+              <input id="welcomeImageFile" type="file" accept="image/*">
+              <img id="welcomePreview" class="mt-3 rounded-lg w-56 hidden" />
+            </div>
+            <button id="saveWelcome" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md text-sm">Save</button>
+            <p id="msgWelcome" class="text-green-600 text-sm mt-2 hidden">✔ Saved</p>
+          </div>
+
+          <div class="card p-5 space-y-4">
+            <div class="font-semibold flex items-center gap-2 mb-3"><i data-lucide="link-2" class="w-5 h-5"></i> Link para probar el chat</div>
+            <div class="flex items-center gap-3 flex-wrap">
+              <input id="chatTestLink" type="text" readonly class="flex-1 min-w-[200px] border rounded-lg px-3 py-2 text-sm bg-gray-50 select-all"/>
+              <div class="flex items-center gap-2">
+                <button id="copyChatLink" class="px-3 py-2 bg-black text-white text-sm rounded-lg">Copiar</button>
+                <button id="openChatLink" class="px-3 py-2 bg-black text-white text-sm rounded-lg">Abrir</button>
+              </div>
+            </div>
+            <p class="text-xs text-gray-500">El enlace se genera automáticamente con el nombre de tu empresa actual.</p>
+          </div>
+
+          <div class="card p-5 space-y-4">
+            <div class="font-semibold flex items-center gap-2 mb-2">
+              <i data-lucide="clock" class="w-5 h-5"></i>
+              Schedule
+            </div>
+            <p class="text-sm text-gray-500">Define the periods when the chat widget should be active.</p>
+            <div id="scheduleList" class="space-y-3"></div>
+            <p id="msgSchedule" class="text-green-600 text-sm hidden">✔ Saved</p>
+          </div>
+        </div>
+
+        <div data-chat-panel="chat" class="space-y-5 hidden">
+          <div class="card p-5 space-y-5">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2 font-semibold text-gray-800">
+                <i data-lucide="messages-square" class="w-5 h-5"></i>
+                Chat
+              </div>
+              <button id="openHeaderPanel" class="inline-flex items-center gap-2 px-3 py-2 rounded-xl border bg-white shadow-sm text-sm font-medium text-gray-700 hover:shadow-md transition">
+                <span class="lowercase">asistente del hotel</span>
+                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+              </button>
+            </div>
+            <p class="text-sm text-gray-500">Customize the chat appearance.</p>
+            <div class="space-y-6">
+              <div class="space-y-4">
+                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Avatar</p>
+                <div id="avatarControls" class="space-y-4">
+                  <div class="flex items-center gap-3 flex-wrap">
+                    <button type="button" class="avatar-option active" data-avatar-option="avatars/1.png">
+                      <img src="avatars/1.png" alt="Avatar 1" />
+                    </button>
+                    <button type="button" class="avatar-option" data-avatar-option="avatars/2.png">
+                      <img src="avatars/2.png" alt="Avatar 2" />
+                    </button>
+                    <button type="button" class="avatar-option" data-avatar-option="avatars/3.png">
+                      <img src="avatars/3.png" alt="Avatar 3" />
+                    </button>
+                    <div class="relative">
+                      <label id="customAvatarOption" class="avatar-option avatar-upload cursor-pointer" data-avatar-option="">
+                        <i id="customAvatarPlus" data-lucide="plus" class="w-5 h-5 text-gray-500"></i>
+                        <img id="customAvatarImage" src="" alt="Avatar personalizado" class="hidden" />
+                        <input id="avatarFile" type="file" accept="image/*" class="hidden" />
+                      </label>
+                      <button type="button" id="deleteAvatar" class="hidden absolute -right-1 -bottom-1 bg-red-600 text-white p-1 rounded-full shadow hover:bg-red-700 transition">
+                        <i data-lucide="trash" class="w-4 h-4"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <label class="flex items-center gap-2 text-sm text-gray-600 select-none">
+                      <input type="checkbox" id="avatarRounded" class="rounded border-gray-300" />
+                      Rounded
+                    </label>
+                    <input type="range" id="avatarRadius" min="0" max="50" value="50" class="flex-none w-28 accent-blue-500">
+                    <span id="avatarRadiusVal" class="text-sm text-gray-600 min-w-[2ch] text-right">50</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="space-y-4">
+                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Font</p>
+                <select id="fontFamily" class="border rounded px-3 py-2 w-full text-sm bg-white">
+                  <option value="Manrope">Manrope</option>
+                  <option value="Inter">Inter</option>
+                  <option value="Poppins">Poppins</option>
+                  <option value="Roboto">Roboto</option>
+                  <option value="Playfair Display">Playfair Display</option>
+                  <option value="Merriweather">Merriweather</option>
+                </select>
+              </div>
+
+              <div class="space-y-4">
+                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Colors</p>
+                <div class="space-y-3">
+                  <div class="flex items-center gap-4">
+                    <input id="chatBackgroundColor" type="color" class="w-10 h-10 cursor-pointer">
+                    <span class="text-sm font-medium text-gray-600 select-none">Chat Background</span>
+                  </div>
+                  <div class="flex items-center gap-4">
+                    <input id="chatAssistantTextColor" type="color" class="w-10 h-10 cursor-pointer">
+                    <span class="text-sm font-medium text-gray-600 select-none">Text</span>
+                  </div>
+                  <div class="flex items-center gap-4">
+                    <input id="chatPrimaryColor" type="color" class="w-10 h-10 cursor-pointer">
+                    <span class="text-sm font-medium text-gray-600 select-none">Client Background</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div data-chat-panel="widget" class="space-y-5 hidden">
+          <div class="card p-5 space-y-6">
+            <div class="flex items-center gap-2 font-semibold text-gray-800">
+              <i data-lucide="mouse-pointer" class="w-5 h-5"></i>
+              Widget
+            </div>
+            <div class="space-y-4">
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Icon</p>
+              <div class="flex items-center gap-4 flex-wrap">
+                <div id="widgetExample" class="widget-mockup">
+                  <img id="widgetExampleIcon" src="widgets/1.png" alt="Widget preview icon" />
+                </div>
+                <button type="button" id="widgetIconTrigger" class="widget-icon-trigger" title="Elegir icono">
+                  <img id="widgetIconTriggerImg" src="widgets/1.png" alt="Icono del widget" />
+                </button>
+              </div>
+              <div class="flex items-center gap-3">
+                <label class="flex items-center gap-2 text-sm text-gray-600 select-none">
+                  <input type="checkbox" id="widgetRounded" class="rounded border-gray-300" />
+                  Rounded
+                </label>
+                <input type="range" id="widgetRadius" min="0" max="50" value="20" class="flex-1 accent-blue-500">
+                <span id="widgetRadiusVal" class="text-sm text-gray-600 inline-block text-right min-w-[2ch]">20</span>
+              </div>
+            </div>
+            <div class="space-y-4">
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Colors</p>
+              <div class="flex items-center gap-4">
+                <input id="chatButtonColor" type="color" class="w-10 h-10 rounded-full cursor-pointer border border-gray-300 shadow-sm" />
+                <span class="text-sm font-medium text-gray-600 select-none">Widget Background</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div data-chat-panel="integration" class="space-y-5 hidden">
+          <div class="card p-5 space-y-4">
+            <div class="font-semibold flex items-center gap-2 mb-1">
+              <i data-lucide="code-2" class="w-5 h-5"></i>
+              Integration Script
+            </div>
+            <p class="text-sm text-gray-500">
+              Copy and paste this code into your website just before the <code>&lt;/body&gt;</code> tag.
+              The chat will automatically appear with your hotel's configuration.
+            </p>
+            <div class="relative">
+              <textarea id="embedScriptBox" readonly class="w-full text-sm font-mono bg-gray-50 border rounded-lg p-3 pr-16 focus:outline-none select-all resize-none"></textarea>
+              <button id="copyEmbedScript" class="absolute top-3 right-3 px-3 py-1.5 text-sm bg-black text-white rounded-md">Copy</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="headerSettingsOverlay" class="hidden fixed inset-0 bg-black/30 z-40 xl:hidden"></div>
+      <div id="headerSettingsPanel" class="hidden xl:absolute xl:top-0 xl:right-[-380px] xl:w-[340px] z-50">
+        <div class="card p-5 shadow-2xl">
           <div class="flex items-center justify-between mb-5">
             <div class="flex items-center gap-2 font-semibold text-gray-800">
               <i data-lucide="panel-top" class="w-5 h-5"></i>
               Header
             </div>
-            <button type="button" class="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition" data-close-card>
+            <button type="button" id="closeHeaderPanel" class="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition">
               <i data-lucide="x" class="w-4 h-4"></i>
             </button>
           </div>
-
           <div class="space-y-6">
             <div class="space-y-4">
               <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Image</p>
@@ -452,7 +691,6 @@ body.login-view #appContainer {
                 <p id="msgLogo" class="text-green-600 text-sm hidden">✔ Header image updated</p>
               </div>
             </div>
-
             <div class="space-y-4">
               <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Colors</p>
               <div class="flex items-center gap-4">
@@ -462,231 +700,12 @@ body.login-view #appContainer {
             </div>
           </div>
         </div>
-
-        <div class="appearance-card hidden card p-5 w-full max-w-md" data-appearance-card="chat">
-          <div class="flex items-center justify-between mb-5">
-            <div class="flex items-center gap-2 font-semibold text-gray-800">
-              <i data-lucide="messages-square" class="w-5 h-5"></i>
-              Chat
-            </div>
-            <button type="button" class="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition" data-close-card>
-              <i data-lucide="x" class="w-4 h-4"></i>
-            </button>
-          </div>
-
-          <div class="space-y-6">
-            <div class="space-y-4">
-              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Avatar</p>
-              <div id="avatarControls" class="space-y-4">
-                <div class="flex items-center gap-3 flex-wrap">
-                  <button type="button" class="avatar-option active" data-avatar-option="avatars/1.png">
-                    <img src="avatars/1.png" alt="Avatar 1" />
-                  </button>
-                  <button type="button" class="avatar-option" data-avatar-option="avatars/2.png">
-                    <img src="avatars/2.png" alt="Avatar 2" />
-                  </button>
-                  <button type="button" class="avatar-option" data-avatar-option="avatars/3.png">
-                    <img src="avatars/3.png" alt="Avatar 3" />
-                  </button>
-                  <div class="relative">
-                    <label id="customAvatarOption" class="avatar-option avatar-upload cursor-pointer" data-avatar-option="">
-                      <i id="customAvatarPlus" data-lucide="plus" class="w-5 h-5 text-gray-500"></i>
-                      <img id="customAvatarImage" src="" alt="Avatar personalizado" class="hidden" />
-                      <input id="avatarFile" type="file" accept="image/*" class="hidden" />
-                    </label>
-                    <button type="button" id="deleteAvatar" class="hidden absolute -right-1 -bottom-1 bg-red-600 text-white p-1 rounded-full shadow hover:bg-red-700 transition">
-                      <i data-lucide="trash" class="w-4 h-4"></i>
-                    </button>
-                  </div>
-                </div>
-                <div class="flex items-center gap-3">
-                  <label class="flex items-center gap-2 text-sm text-gray-600 select-none">
-                    <input type="checkbox" id="avatarRounded" class="rounded border-gray-300" />
-                    Rounded
-                  </label>
-                  <input type="range" id="avatarRadius" min="0" max="50" value="50" class="flex-none w-28 accent-blue-500">
-                  <span id="avatarRadiusVal" class="text-sm text-gray-600 min-w-[2ch] text-right">50</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="space-y-4">
-              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Font</p>
-              <select id="fontFamily" class="border rounded px-3 py-2 w-full text-sm bg-white">
-                <option value="Manrope">Manrope</option>
-                <option value="Inter">Inter</option>
-                <option value="Poppins">Poppins</option>
-                <option value="Roboto">Roboto</option>
-                <option value="Playfair Display">Playfair Display</option>
-                <option value="Merriweather">Merriweather</option>
-              </select>
-            </div>
-
-            <div class="space-y-4">
-              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Colors</p>
-              <div class="space-y-3">
-                <div class="flex items-center gap-4">
-                  <input id="chatBackgroundColor" type="color" class="w-10 h-10 cursor-pointer">
-                  <span class="text-sm font-medium text-gray-600 select-none">Chat Background</span>
-                </div>
-                <div class="flex items-center gap-4">
-                  <input id="chatAssistantTextColor" type="color" class="w-10 h-10 cursor-pointer">
-                  <span class="text-sm font-medium text-gray-600 select-none">Text</span>
-                </div>
-                <div class="flex items-center gap-4">
-                  <input id="chatPrimaryColor" type="color" class="w-10 h-10 cursor-pointer">
-                  <span class="text-sm font-medium text-gray-600 select-none">Client Background</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="appearance-card hidden card p-5 w-full max-w-md" data-appearance-card="widget">
-          <div class="flex items-center justify-between mb-5">
-            <div class="flex items-center gap-2 font-semibold text-gray-800">
-              <i data-lucide="mouse-pointer" class="w-5 h-5"></i>
-              Widget
-            </div>
-            <button type="button" class="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition" data-close-card>
-              <i data-lucide="x" class="w-4 h-4"></i>
-            </button>
-          </div>
-
-          <div class="space-y-6">
-            <div class="space-y-4">
-              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Icon</p>
-              <div class="flex items-center gap-4">
-                <div id="widgetExample" class="widget-mockup">
-                  <img id="widgetExampleIcon" src="widgets/1.png" alt="Widget preview icon" />
-                </div>
-                <button type="button" id="widgetIconTrigger" class="widget-icon-trigger" title="Elegir icono">
-                  <img id="widgetIconTriggerImg" src="widgets/1.png" alt="Icono del widget" />
-                </button>
-              </div>
-              <div class="flex items-center gap-3">
-                <label class="flex items-center gap-2 text-sm text-gray-600 select-none">
-                  <input type="checkbox" id="widgetRounded" class="rounded border-gray-300" />
-                  Rounded
-                </label>
-                <input type="range" id="widgetRadius" min="0" max="50" value="20" class="flex-1 accent-blue-500">
-                <span id="widgetRadiusVal" class="text-sm text-gray-600 inline-block text-right min-w-[2ch]">20</span>
-              </div>
-            </div>
-
-            <div class="space-y-4">
-              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Colors</p>
-              <div class="flex items-center gap-4">
-                <input id="chatButtonColor" type="color" class="w-10 h-10 rounded-full cursor-pointer border border-gray-300 shadow-sm" />
-                <span class="text-sm font-medium text-gray-600 select-none">Widget Background</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
       </div>
     </div>
-
   </div>
-
 </section>
 
-      
-          </div>
-
-          <!-- SETTINGS TAB -->
-          <section id="tab-settings" class="hidden space-y-6 max-w-3xl">
-            <div id="permBannerS" class="hidden card p-4 border border-amber-300/60 bg-amber-50">
-              <div class="flex gap-2 items-start">
-                <i data-lucide="shield-alert" class="w-5 h-5 text-amber-600"></i>
-                <div class="text-sm text-amber-800">
-                  <b>Sin permisos de escritura.</b> Debes iniciar sesión con el email guardado en <code>config/adminEmail</code> o ser <code>globalAdmin</code>.
-                </div>
-              </div>
-            </div>
-
-            <!-- Show Button -->
-            <div class="card p-5">
-              <div class="flex items-center justify-between">
-                <div>
-                  <div class="font-semibold flex items-center gap-2"><i data-lucide="message-circle" class="w-5 h-5"></i> Show Button</div>
-                  <p class="text-sm text-gray-500">Show the chat button on the website</p>
-                </div>
-                <input id="tgChatVisible" type="checkbox" class="toggle" />
-              </div>
-            </div>
-
-            <!-- General Information -->
-            <div class="card p-5">
-              <div class="font-semibold flex items-center gap-2 mb-3"><i data-lucide="building-2" class="w-5 h-5"></i> General Information</div>
-              <label class="block text-sm text-gray-600 mb-1">Name</label>
-              <input id="hotelName" class="w-full border rounded-xl px-3 py-2 mb-3" placeholder="Boletum"/>
-              <label class="block text-sm text-gray-600 mb-1">Time Zone</label>
-              <select id="timeZone" class="w-full border rounded-xl px-3 py-2 mb-4"></select>
-              <button id="saveGeneral" class="px-4 py-2 bg-black text-white rounded-md">Save</button>
-              <p id="msgGeneral" class="text-green-600 text-sm mt-2 hidden">✔ Saved</p>
-            </div>
-
-            <!-- Assistant Personality -->
-            <div class="card p-5">
-              <div class="font-semibold flex items-center gap-2 mb-4"><i data-lucide="sparkles" class="w-5 h-5"></i> Assistant Personality</div>
-              <div id="personalityChips" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                <button data-val="formal" class="chip">Formal & Polite</button>
-                <button data-val="relaxed" class="chip">Relaxed & Friendly</button>
-                <button data-val="warm" class="chip">Warm & Welcoming</button>
-                <button data-val="efficient" class="chip">Efficient & Direct</button>
-                <button data-val="young" class="chip">Young & Playful</button>
-              </div>
-            </div>
-            
-            <!-- 📨 Welcome Message -->
-<div class="card p-5 space-y-4">
-  <div class="font-semibold flex items-center gap-2 mb-2">
-    <i data-lucide="smile" class="w-5 h-5"></i>
-    Welcome Message
-  </div>
-
-  <label class="flex items-center justify-between cursor-pointer">
-    <span class="text-sm text-gray-600">Enable welcome message</span>
-    <input type="checkbox" id="welcomeEnabled" class="toggle">
-  </label>
-
-  <div>
-    <textarea id="welcomeText" class="w-full border rounded-lg px-3 py-2 text-sm"
-              rows="2" placeholder="Enter welcome message..."></textarea>
-  </div>
-
-  <div>
-    <label class="block text-sm text-gray-600 mb-1">Delay (seconds)</label>
-    <input id="welcomeDelay" type="number" min="0" class="border rounded px-2 py-1 text-sm w-24" value="2">
-  </div>
-
-  <div>
-    <label class="block text-sm text-gray-600 mb-1">Welcome image (optional)</label>
-    <input id="welcomeImageFile" type="file" accept="image/*">
-    <img id="welcomePreview" class="mt-3 rounded-lg w-56 hidden" />
-  </div>
-
-  <button id="saveWelcome" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md text-sm">
-    Save
-  </button>
-
-  <p id="msgWelcome" class="text-green-600 text-sm mt-2 hidden">✔ Saved</p>
-</div>
-
-
-            <!-- Link para probar el chat -->
-            <div class="card p-5">
-              <div class="font-semibold flex items-center gap-2 mb-3"><i data-lucide="link-2" class="w-5 h-5"></i> Link para probar el chat</div>
-              <div class="flex items-center gap-3">
-                <input id="chatTestLink" type="text" readonly class="flex-1 border rounded-lg px-3 py-2 text-sm bg-gray-50 select-all"/>
-                <button id="copyChatLink" class="px-3 py-2 bg-black text-white text-sm rounded-lg">Copiar</button>
-                <button id="openChatLink" class="px-3 py-2 bg-black text-white text-sm rounded-lg">Abrir</button>
-              </div>
-              <p class="text-xs text-gray-500 mt-2">El enlace se genera automáticamente con el nombre de tu empresa actual.</p>
-            </div>
-          </section>
-          <!-- KNOWLEDGE TAB -->
+<!-- KNOWLEDGE TAB -->
           <section id="tab-knowledge" class="hidden space-y-6 max-w-3xl">
   <div class="card p-5 space-y-4">
     <div class="font-semibold flex items-center gap-2">
@@ -734,51 +753,7 @@ body.login-view #appContainer {
 </section>
 
 
-<!-- SCHEDULE TAB -->
-<section id="tab-schedule" class="hidden space-y-6 max-w-3xl">
-  <div class="card p-5">
-    <div class="font-semibold flex items-center gap-2 mb-3">
-      <i data-lucide="clock" class="w-5 h-5"></i>
-      Schedule
-    </div>
-    <p class="text-sm text-gray-500 mb-4">
-      Define the periods when the chat widget should be active.
-    </p>
 
-    <div id="scheduleList" class="space-y-3"></div>
-
-
-
-    <p id="msgSchedule" class="text-green-600 text-sm mt-3 hidden">✔ Saved</p>
-  </div>
-</section>
-
-
-
-
-<!-- INTEGRATION TAB -->
-<section id="tab-integration" class="hidden space-y-6 max-w-3xl">
-  <div class="card p-5">
-    <div class="font-semibold flex items-center gap-2 mb-3">
-      <i data-lucide="code-2" class="w-5 h-5"></i>
-      Integration Script
-    </div>
-    <p class="text-sm text-gray-500 mb-3">
-      Copy and paste this code into your website just before the <code>&lt;/body&gt;</code> tag.
-      The chat will automatically appear with your hotel's configuration.
-    </p>
-
-    <div class="relative">
-      <textarea id="embedScriptBox" readonly
-        class="w-full text-sm font-mono bg-gray-50 border rounded-lg p-3 pr-16 focus:outline-none select-all resize-none"
-        rows="2"></textarea>
-      <button id="copyEmbedScript"
-        class="absolute top-2 right-2 px-3 py-1 text-xs bg-black text-white rounded-md hover:bg-gray-800">
-        Copy
-      </button>
-    </div>
-  </div>
-</section>
 
 <!-- RESPUESTAS TAB -->
 <section id="tab-respuestas" class="hidden space-y-6 max-w-3xl">
@@ -1087,11 +1062,11 @@ function setWriteEnabled(enabled) {
   }
 }
 
-const TAB_KEYS = ['apariencia','settings','knowledge','integration','respuestas','schedule'];
+const TAB_KEYS = ['chat','knowledge','respuestas'];
 let tabsInitialized = false;
 
 function setActiveTab(tab) {
-  const targetTab = TAB_KEYS.includes(tab) ? tab : 'apariencia';
+  const targetTab = TAB_KEYS.includes(tab) ? tab : 'chat';
 
   $$('.sidebar-btn').forEach(btn => {
     const btnTab = btn.getAttribute('data-tab');
@@ -1104,6 +1079,14 @@ function setActiveTab(tab) {
       section.classList.toggle('hidden', key !== targetTab);
     }
   });
+
+  if (targetTab === 'chat') {
+    if (typeof window.__setDefaultChatPanel === 'function') {
+      window.__setDefaultChatPanel();
+    }
+  } else if (typeof window.__hideHeaderPanel === 'function') {
+    window.__hideHeaderPanel();
+  }
 }
 
 function showAppView() {
@@ -1126,7 +1109,7 @@ function showLoginView() {
   $('btnLogout').classList.add('hidden');
   document.body.classList.add('login-view');
   document.body.classList.remove('app-view');
-  setActiveTab('apariencia');
+  setActiveTab('chat');
 }
 
 async function canWrite(fn) {
@@ -1203,12 +1186,12 @@ auth.onAuthStateChanged(async (u) => {
 // ====== Tabs ======
 function initTabs() {
   if (tabsInitialized) {
-    setActiveTab('apariencia');
+    setActiveTab('chat');
     return;
   }
 
   tabsInitialized = true;
-  setActiveTab('apariencia');
+  setActiveTab('chat');
 
   $$('.sidebar-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -1254,34 +1237,72 @@ async function initAll(){
 // ====== Apariencia ======
 function initApariencia() {
 
-  const chips = Array.from(document.querySelectorAll('[data-appearance-target]'));
-  const cards = Array.from(document.querySelectorAll('[data-appearance-card]'));
+  const tabs = Array.from(document.querySelectorAll('[data-chat-panel-tab]'));
+  const panels = Array.from(document.querySelectorAll('[data-chat-panel]'));
+  if (!tabs.length || !panels.length) return;
+  const overlay = $('headerSettingsOverlay');
+  const headerPanel = $('headerSettingsPanel');
+  const openHeaderButton = $('openHeaderPanel');
+  const closeHeaderButton = $('closeHeaderPanel');
 
-  const clearAppearanceCards = () => {
-    chips.forEach(chip => chip.classList.remove('active'));
-    cards.forEach(card => card.classList.add('hidden'));
+  const hideHeaderPanel = () => {
+    headerPanel?.classList.add('hidden');
+    overlay?.classList.add('hidden');
+  };
+  window.__hideHeaderPanel = hideHeaderPanel;
+
+  const setChatPanel = (name) => {
+    tabs.forEach(btn => {
+      const isActive = btn.dataset.chatPanelTab === name;
+      btn.classList.toggle('active', isActive);
+    });
+    panels.forEach(panel => {
+      panel.classList.toggle('hidden', panel.dataset.chatPanel !== name);
+    });
+    if (name !== 'chat') {
+      hideHeaderPanel();
+    }
   };
 
-  const openAppearanceCard = (name) => {
-    chips.forEach(chip => chip.classList.toggle('active', chip.dataset.appearanceTarget === name));
-    cards.forEach(card => card.classList.toggle('hidden', card.dataset.appearanceCard !== name));
-  };
-
-  chips.forEach(chip => {
-    chip.addEventListener('click', () => {
-      const target = chip.dataset.appearanceTarget;
-      const isActive = chip.classList.contains('active');
-      clearAppearanceCards();
-      if (!isActive) {
-        openAppearanceCard(target);
-      }
+  tabs.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.chatPanelTab;
+      if (!target) return;
+      setChatPanel(target);
     });
   });
 
-  document.querySelectorAll('[data-close-card]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      clearAppearanceCards();
+  setChatPanel('bot');
+  window.__setDefaultChatPanel = () => setChatPanel('bot');
+
+  const activityScoreButtons = Array.from(document.querySelectorAll('[data-activity-score]'));
+  const setActivityScore = (score) => {
+    activityScoreButtons.forEach(btn => {
+      const isActive = btn.dataset.activityScore === String(score);
+      btn.classList.toggle('activity-score-active', isActive);
     });
+  };
+  activityScoreButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      setActivityScore(btn.dataset.activityScore);
+    });
+  });
+  if (activityScoreButtons.length) {
+    const mid = activityScoreButtons[Math.floor((activityScoreButtons.length - 1) / 2)];
+    setActivityScore(mid.dataset.activityScore);
+  }
+
+  const showHeaderPanel = () => {
+    headerPanel?.classList.remove('hidden');
+    overlay?.classList.remove('hidden');
+    lucide.createIcons();
+  };
+
+  openHeaderButton?.addEventListener('click', showHeaderPanel);
+  closeHeaderButton?.addEventListener('click', hideHeaderPanel);
+  overlay?.addEventListener('click', hideHeaderPanel);
+  window.addEventListener('keyup', (e) => {
+    if (e.key === 'Escape') hideHeaderPanel();
   });
 
 // 🔹 Chat Primary Color (auto-save with toast)
