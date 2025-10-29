@@ -34,6 +34,7 @@
 :root {
   --chat-primary:#111111;
   --assistant-text:#000000; /* 🆕 color del texto del asistente */
+  --chat-client-text:#ffffff;
   --avatar-radius:50%;
 }
     html,body { height:100%; background:#ececec; }
@@ -60,7 +61,7 @@
   box-shadow:0 1px 3px rgba(0,0,0,.08);
   color: var(--assistant-text);
 }
-    .chat-user { margin-left:auto; color:#fff; background:var(--chat-primary); border-radius:14px; padding:10px 14px; }
+    .chat-user { margin-left:auto; color:var(--chat-client-text, #fff); background:var(--chat-primary); border-radius:14px; padding:10px 14px; }
     /* Enlaces dentro de mensajes */
     .chat-bubble a { color:#0a66ff; text-decoration:underline; }
     .chat-bubble a:hover { text-decoration:none; }
@@ -429,6 +430,14 @@ eref('config/chatAssistantTextColor').on('value', s => {
   msgs.forEach(m => m.style.color = c);
   // Guarda el color actual para los nuevos mensajes
   document.documentElement.style.setProperty('--assistant-text', c);
+});
+
+
+// 🟠 Client Text Color
+eref('config/chatClientTextColor').on('value', s => {
+  const c = s.val() || '#ffffff';
+  document.documentElement.style.setProperty('--chat-client-text', c);
+  document.querySelectorAll('.chat-user').forEach(m => { m.style.color = c; });
 });
 
 
