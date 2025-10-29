@@ -448,63 +448,6 @@ body.login-view #appContainer {
 
         <div data-chat-panel="activity" class="space-y-5 hidden">
           <div class="card p-5 space-y-4">
-            <div class="font-semibold flex items-center gap-2"><i data-lucide="activity" class="w-5 h-5"></i> Activity</div>
-            <p class="text-sm text-gray-500">See the impact of your assistant and track guest engagement.</p>
-            <div class="flex items-center justify-between gap-2">
-                            <button class="w-10 h-10 rounded-full flex items-center justify-center border border-gray-300 bg-white text-sm font-medium text-gray-600 hover:border-black transition" data-activity-score="1">1</button>
-              <button class="w-10 h-10 rounded-full flex items-center justify-center border border-gray-300 bg-white text-sm font-medium text-gray-600 hover:border-black transition" data-activity-score="2">2</button>
-              <button class="w-10 h-10 rounded-full flex items-center justify-center border border-gray-300 bg-white text-sm font-medium text-gray-600 hover:border-black transition" data-activity-score="3">3</button>
-              <button class="w-10 h-10 rounded-full flex items-center justify-center border border-gray-300 bg-white text-sm font-medium text-gray-600 hover:border-black transition" data-activity-score="4">4</button>
-              <button class="w-10 h-10 rounded-full flex items-center justify-center border border-gray-300 bg-white text-sm font-medium text-gray-600 hover:border-black transition" data-activity-score="5">5</button>
-              <button class="w-10 h-10 rounded-full flex items-center justify-center border border-gray-300 bg-white text-sm font-medium text-gray-600 hover:border-black transition" data-activity-score="6">6</button>
-              <button class="w-10 h-10 rounded-full flex items-center justify-center border border-gray-300 bg-white text-sm font-medium text-gray-600 hover:border-black transition" data-activity-score="7">7</button>
-              <button class="w-10 h-10 rounded-full flex items-center justify-center border border-gray-300 bg-white text-sm font-medium text-gray-600 hover:border-black transition" data-activity-score="8">8</button>
-              <button class="w-10 h-10 rounded-full flex items-center justify-center border border-gray-300 bg-white text-sm font-medium text-gray-600 hover:border-black transition" data-activity-score="9">9</button>
-              <button class="w-10 h-10 rounded-full flex items-center justify-center border border-gray-300 bg-white text-sm font-medium text-gray-600 hover:border-black transition" data-activity-score="10">10</button>
-            </div>
-            <div class="flex justify-end">
-              <button class="px-4 py-2 bg-black text-white rounded-md">Save</button>
-            </div>
-          </div>
-
-          <div class="card p-5 space-y-4">
-            <div class="font-semibold flex items-center gap-2 mb-2">
-              <i data-lucide="smile" class="w-5 h-5"></i>
-              Welcome Message
-            </div>
-            <label class="flex items-center justify-between cursor-pointer">
-              <span class="text-sm text-gray-600">Enable welcome message</span>
-              <input type="checkbox" id="welcomeEnabled" class="toggle">
-            </label>
-            <div>
-              <textarea id="welcomeText" class="w-full border rounded-lg px-3 py-2 text-sm" rows="2" placeholder="Enter welcome message..."></textarea>
-            </div>
-            <div>
-              <label class="block text-sm text-gray-600 mb-1">Delay (seconds)</label>
-              <input id="welcomeDelay" type="number" min="0" class="border rounded px-2 py-1 text-sm w-24" value="2">
-            </div>
-            <div>
-              <label class="block text-sm text-gray-600 mb-1">Welcome image (optional)</label>
-              <input id="welcomeImageFile" type="file" accept="image/*">
-              <img id="welcomePreview" class="mt-3 rounded-lg w-56 hidden" />
-            </div>
-            <button id="saveWelcome" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md text-sm">Save</button>
-            <p id="msgWelcome" class="text-green-600 text-sm mt-2 hidden">✔ Saved</p>
-          </div>
-
-          <div class="card p-5 space-y-4">
-            <div class="font-semibold flex items-center gap-2 mb-3"><i data-lucide="link-2" class="w-5 h-5"></i> Link para probar el chat</div>
-            <div class="flex items-center gap-3 flex-wrap">
-              <input id="chatTestLink" type="text" readonly class="flex-1 min-w-[200px] border rounded-lg px-3 py-2 text-sm bg-gray-50 select-all"/>
-              <div class="flex items-center gap-2">
-                <button id="copyChatLink" class="px-3 py-2 bg-black text-white text-sm rounded-lg">Copiar</button>
-                <button id="openChatLink" class="px-3 py-2 bg-black text-white text-sm rounded-lg">Abrir</button>
-              </div>
-            </div>
-            <p class="text-xs text-gray-500">El enlace se genera automáticamente con el nombre de tu empresa actual.</p>
-          </div>
-
-          <div class="card p-5 space-y-4">
             <div class="font-semibold flex items-center gap-2 mb-2">
               <i data-lucide="clock" class="w-5 h-5"></i>
               Schedule
@@ -594,6 +537,43 @@ body.login-view #appContainer {
                 </div>
               </div>
             </div>
+          </div>
+
+          <div class="card p-5 space-y-4">
+            <div class="font-semibold flex items-center gap-2 mb-2">
+              <i data-lucide="smile" class="w-5 h-5"></i>
+              Welcome Message
+            </div>
+            <label class="flex items-center justify-between cursor-pointer">
+              <span class="text-sm text-gray-600">Enable welcome message</span>
+              <input type="checkbox" id="welcomeEnabled" class="toggle">
+            </label>
+            <div>
+              <textarea id="welcomeText" class="w-full border rounded-lg px-3 py-2 text-sm" rows="2" placeholder="Enter welcome message..."></textarea>
+            </div>
+            <div>
+              <label class="block text-sm text-gray-600 mb-1">Delay (seconds)</label>
+              <input id="welcomeDelay" type="number" min="0" class="border rounded px-2 py-1 text-sm w-24" value="2">
+            </div>
+            <div>
+              <label class="block text-sm text-gray-600 mb-1">Welcome image (optional)</label>
+              <input id="welcomeImageFile" type="file" accept="image/*">
+              <img id="welcomePreview" class="mt-3 rounded-lg w-56 hidden" />
+            </div>
+            <button id="saveWelcome" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md text-sm">Save</button>
+            <p id="msgWelcome" class="text-green-600 text-sm mt-2 hidden">✔ Saved</p>
+          </div>
+
+          <div class="card p-5 space-y-4">
+            <div class="font-semibold flex items-center gap-2 mb-3"><i data-lucide="link-2" class="w-5 h-5"></i> Link para probar el chat</div>
+            <div class="flex items-center gap-3 flex-wrap">
+              <input id="chatTestLink" type="text" readonly class="flex-1 min-w-[200px] border rounded-lg px-3 py-2 text-sm bg-gray-50 select-all"/>
+              <div class="flex items-center gap-2">
+                <button id="copyChatLink" class="px-3 py-2 bg-black text-white text-sm rounded-lg">Copiar</button>
+                <button id="openChatLink" class="px-3 py-2 bg-black text-white text-sm rounded-lg">Abrir</button>
+              </div>
+            </div>
+            <p class="text-xs text-gray-500">El enlace se genera automáticamente con el nombre de tu empresa actual.</p>
           </div>
         </div>
 
