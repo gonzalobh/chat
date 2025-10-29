@@ -10,770 +10,1001 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-storage-compat.js"></script>
-
+  
   <!-- Cropper.js -->
-  <link href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.1/dist/cropper.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.1/dist/cropper.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.1/dist/cropper.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.1/dist/cropper.min.js"></script>
+
 
   <!-- UI -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Manrope', 'Inter', 'system-ui', 'sans-serif'],
-          },
-          colors: {
-            brand: {
-              50: '#f6f6f6',
-              100: '#e7e7e7',
-              200: '#cfcfcf',
-              300: '#b0b0b0',
-              400: '#7a7a7a',
-              500: '#4a4a4a',
-              600: '#2f2f2f',
-              700: '#1f1f1f',
-              800: '#141414',
-              900: '#0b0b0b',
-            }
-          }
-        }
-      }
-    }
-  </script>
-  <script src="https://unpkg.com/lucide@0.292.0/dist/umd/lucide.min.js"></script>
+<script src="https://unpkg.com/lucide@0.292.0/dist/umd/lucide.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Manrope:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Manrope:wght@400;600&family=Merriweather:wght@400;700&family=Poppins:wght@400;600&family=Playfair+Display:wght@400;700&family=Roboto:wght@400;600&display=swap" rel="stylesheet">
 
-  <style type="text/tailwindcss">
-    @layer base {
-      :root { color-scheme: light; }
-      body { @apply font-sans bg-zinc-100 text-zinc-900 antialiased; }
-      body.login-view { @apply bg-zinc-50; }
-      body.login-view main { @apply items-center; }
-      textarea { @apply min-h-[320px]; }
-      #embedScriptBox { @apply min-h-[40px]; }
-    }
 
-    @layer components {
-      .card { @apply rounded-3xl border border-zinc-200/70 bg-white/90 backdrop-blur px-6 py-5 shadow-sm shadow-black/5; }
-      .chip { @apply inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-500 transition-colors hover:border-zinc-300 hover:text-zinc-900; }
-      .chip.active { @apply border-transparent bg-zinc-900 text-white shadow-sm; }
-      .appearance-chip { @apply min-w-[96px] justify-center; }
-      .sidebar-btn { @apply flex items-center gap-3 rounded-2xl px-3 py-2 text-sm font-medium text-zinc-500 transition-colors hover:bg-zinc-900/5; }
-      .sidebar-btn.active { @apply bg-zinc-900 text-white shadow-sm; }
-      .sidebar-btn svg { @apply h-5 w-5; }
-      .widget-mockup { @apply flex h-16 w-16 items-center justify-center rounded-2xl bg-zinc-900 shadow-lg shadow-black/20; }
-      .widget-icon-trigger { @apply flex h-12 w-12 items-center justify-center rounded-2xl border border-zinc-200 bg-white text-zinc-500 transition hover:border-zinc-400 hover:text-zinc-900; }
-      .widget-icon-option { @apply flex items-center justify-center rounded-2xl border-2 border-transparent bg-zinc-100 p-4 transition hover:border-zinc-300 hover:bg-zinc-200/70; }
-      .widget-icon-option.active { @apply border-zinc-900 bg-zinc-200/70 shadow-inner; }
-      .avatar-option { @apply relative flex h-14 w-14 items-center justify-center rounded-full border-2 border-transparent bg-zinc-100 transition hover:border-zinc-300; }
-      .avatar-option.active { @apply border-zinc-900 bg-zinc-200/60 shadow-sm; }
-      .avatar-option img { @apply h-11 w-11 rounded-full object-cover; }
-      #toast { @apply pointer-events-none rounded-full bg-emerald-600 px-4 py-2 text-sm text-white shadow-lg transition-opacity duration-300; }
-    }
-  </style>
   <style>
-    .toggle {
-      --toggle-height: 28px;
-      --toggle-width: 52px;
-      appearance: none;
-      -webkit-appearance: none;
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      width: var(--toggle-width);
-      height: var(--toggle-height);
-      border-radius: 9999px;
-      border: 1px solid #d4d4d8;
-      background: #fff;
-      cursor: pointer;
-      transition: background-color .2s ease, border-color .2s ease;
-    }
-    .toggle::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 4px;
-      width: 22px;
-      height: 22px;
-      border-radius: 9999px;
-      background: #0b0b0b;
-      transform: translateY(-50%);
-      transition: left .2s ease, background-color .2s ease;
-    }
-    .toggle:checked {
-      background: #0b0b0b;
-      border-color: #0b0b0b;
-    }
-    .toggle:checked::after {
-      left: calc(100% - 26px);
-      background: #fff;
-    }
-    aside {
-      scrollbar-width: thin;
-      scrollbar-color: #d4d4d8 transparent;
-    }
-    aside::-webkit-scrollbar { width: 6px; height: 6px; }
-    aside::-webkit-scrollbar-thumb { background: #d4d4d8; border-radius: 9999px; }
+  body {
+  font-family: 'Manrope', system-ui, sans-serif !important;
+}
+
+    :root{ --tile-radius: 18px; --avatar-radius: 50%; }
+    body{ font-family: 'Manrope', system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+    .card{ background:white; border-radius: var(--tile-radius); box-shadow: 0 10px 30px rgba(0,0,0,.06); }
+    .toggle{--w:52px;--h:28px;--p:3px;appearance:none;-webkit-appearance:none;outline:none;cursor:pointer;width:var(--w);height:var(--h);border-radius:999px;border:2px solid #111;background:#fff;position:relative;box-sizing:border-box;transition:background .2s,border-color .2s}
+    .toggle::after{content:"";position:absolute;top:50%;left:var(--p);width:calc(var(--h) - 2*var(--p));height:calc(var(--h) - 2*var(--p));border-radius:50%;background:#111;transform:translateY(-50%);transition:left .2s,background .2s}
+    .toggle:checked{background:#111;border-color:#111}
+    .toggle:checked::after{background:#fff;left:calc(var(--w) - var(--h) + var(--p))}
+    input[type="color"]{-webkit-appearance:none;border:none;width:34px;height:34px;border:1px solid #c9c9c9;border-radius:999px;padding:0;cursor:pointer;overflow:hidden}
+    input[type="color"]::-webkit-color-swatch-wrapper{padding:0}
+    input[type="color"]::-webkit-color-swatch{border:none;border-radius:999px}
+    .iphone{ position:relative; width:320px; height:640px; border-radius:34px; background:#000; padding:0px; box-shadow:0 30px 60px rgba(0,0,0,.25)}
+    .iphone-in{ width:100%; height:100%; border-radius:26px; overflow:hidden; background:white}
+    .notch{ position:absolute;left:50%;top:0;transform:translateX(-50%); width:160px;height:22px;background:#000;border-bottom-left-radius:16px;border-bottom-right-radius:16px}
+    .chip{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:10px 14px;border:1px solid #e5e7eb;background:#fff;cursor:pointer;font-size:14px}
+    .avatar-option{width:56px;height:56px;border-radius:var(--avatar-radius);border:2px solid transparent;background:#f3f4f6;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s ease;position:relative}
+    .avatar-option img{width:44px;height:44px;object-fit:cover;border-radius:var(--avatar-radius)}
+    .avatar-option:hover{border-color:#93c5fd}
+    .avatar-option.active{border-color:#2563eb;background:#eff6ff;box-shadow:0 0 0 4px rgba(37,99,235,.12)}
+    .avatar-option.avatar-upload{background:#f9fafb}
+    .avatar-option.avatar-upload:hover{background:#f3f4f6}
+    .chip.active{border-color:#111;background:#111;color:#fff}
+    .sidebar-btn{display:flex;gap:10px;align-items:center;width:100%;padding:.65rem .8rem;border-radius:12px}
+    .sidebar-btn.active{background:#111;color:#fff}
+    textarea{resize:none;overflow:hidden;min-height:400px;}
+    .widget-mockup{width:72px;height:72px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,.12);transition:all .2s ease;border-radius:20px;background:#111}
+    .widget-mockup img{width:28px;height:28px;object-fit:contain;filter:drop-shadow(0 2px 4px rgba(0,0,0,.25));}
+    .widget-icon-trigger{width:48px;height:48px;border-radius:14px;border:1px solid #e5e7eb;display:flex;align-items:center;justify-content:center;background:#fff;transition:all .2s ease;box-shadow:0 4px 12px rgba(15,23,42,.08)}
+    .widget-icon-trigger:hover{border-color:#2563eb;box-shadow:0 8px 18px rgba(37,99,235,.18)}
+    .widget-icon-trigger img{width:28px;height:28px;object-fit:contain}
+    .widget-icon-option{border:2px solid transparent;border-radius:16px;padding:16px;background:#f9fafb;display:flex;align-items:center;justify-content:center;transition:all .2s ease}
+    .widget-icon-option img{width:44px;height:44px;object-fit:contain}
+    .widget-icon-option:hover{border-color:#93c5fd;background:#eff6ff}
+    .widget-icon-option.active{border-color:#2563eb;background:#eff6ff;box-shadow:0 0 0 4px rgba(37,99,235,.12)}
+    .appearance-chip{min-width:94px;justify-content:center;font-weight:500}
+aside {
+  scrollbar-width: thin;
+  scrollbar-color: #ccc transparent;
+}
+aside::-webkit-scrollbar {
+  width: 6px;
+}
+aside::-webkit-scrollbar-thumb {
+  background: #bbb;
+  border-radius: 10px;
+}
+
+#fontFamily option {
+  font-size: 14px;
+  padding: 6px 8px;
+}
+
+#fontFamily option[value="Manrope"] { font-family: 'Manrope', system-ui, sans-serif; }
+#fontFamily option[value="Inter"] { font-family: 'Inter', system-ui, sans-serif; }
+#fontFamily option[value="Poppins"] { font-family: 'Poppins', system-ui, sans-serif; }
+#fontFamily option[value="Roboto"] { font-family: 'Roboto', system-ui, sans-serif; }
+#fontFamily option[value="Playfair Display"] { font-family: 'Playfair Display', serif; }
+#fontFamily option[value="Merriweather"] { font-family: 'Merriweather', serif; }
+
+button.bg-black {
+  background: linear-gradient(to bottom, #f7f7f7, #eaeaea) !important; /* degradado suave */
+  color: #111 !important;               
+  border: none !important;               /* 🔹 sin borde */
+  border-radius: 12px !important;       
+  box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+  transition: all 0.2s ease;
+  font-weight: 400; /* sin negrita */
+}
+
+button.bg-black:hover {
+  background: linear-gradient(to bottom, #ececec, #dddddd) !important;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+}
+
+/* === Sidebar buttons === */
+.sidebar-btn {
+  color: #777 !important; /* gris suave para las no activas */
+  transition: all 0.2s ease;
+}
+
+.sidebar-btn i {
+  color: #777 !important;
+  transition: color 0.2s ease;
+}
+
+/* Activa */
+.sidebar-btn.active {
+  background: none !important;
+  color: #000 !important; /* texto negro */
+  font-weight: 500;
+}
+
+.sidebar-btn.active i {
+  color: #000 !important; /* ícono negro */
+}
+
+/* Hover */
+.sidebar-btn:hover {
+  background: #f5f5f5 !important;
+  color: #111 !important;
+}
+
+.sidebar-btn:hover i {
+  color: #111 !important;
+}
+
+/* === Botón Cerrar Sesión (mismo estilo que Save) === */
+#btnLogout {
+  background: linear-gradient(to bottom, #f7f7f7, #eaeaea) !important;
+  color: #111 !important;
+  border: none !important;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+  transition: all 0.2s ease;
+  font-weight: 400;
+}
+
+#btnLogout:hover {
+  background: linear-gradient(to bottom, #ececec, #dddddd) !important;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+}
+
+/* === Logo fijo y estable en el header === */
+header img[alt="Tomos Logo"] {
+  position: absolute;          /* fija su posición dentro del header */
+  left: 14px;                  /* ajusta la distancia desde el borde izquierdo */
+  top: 50%;                    /* lo centra verticalmente */
+  transform: translateY(-50%); /* centra perfectamente en altura */
+  height: 48px;
+  width: auto;
+  border-radius: 10px;
+  object-fit: contain;
+  pointer-events: none;        /* evita clics accidentales */
+}
+header {
+  position: relative; /* necesario para que el logo se posicione dentro */
+}
+
+#embedScriptBox {
+  resize: none;
+  overflow: hidden;
+  min-height: 40px;  /* altura mínima decente */
+  height: auto;
+  line-height: 1.4;
+}
+
+/* === Corrección: botones de días seleccionados === */
+.day.bg-black {
+  background: #000 !important;   /* fondo negro sólido */
+  color: #fff !important;        /* texto blanco */
+  border: none !important;       /* sin borde */
+  box-shadow: none !important;   /* sin sombra */
+}
+.day.bg-black:hover {
+  background: #000 !important;   /* mantiene negro al pasar el mouse */
+  color: #fff !important;
+}
+
+/* === Centrar todas las pestañas excepto Appearance === */
+#tab-settings,
+#tab-knowledge,
+#tab-integration,
+#tab-schedule,
+#tab-respuestas {
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  max-width: 800px; /* puedes ajustar a 900 o 1000 si quieres más ancho */
+}
+#logoRadiusVal {
+  display: inline-block;
+  min-width: 2ch; /* reserva espacio suficiente para dos caracteres */
+  text-align: right;
+}
+body.login-view {
+  background-color: #f3f4f6;
+}
+
+body.login-view main {
+  align-items: center;
+}
+
+body.login-view #appContainer {
+  padding-top: 3rem;
+}
+
+#login {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  #appContainer {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+}
+
+@media (max-width: 640px) {
+  #login {
+    margin-top: 2.5rem;
+    padding: 1.75rem;
+  }
+
+  #login img {
+    width: 88px;
+  }
+
+  #login input {
+    font-size: 16px;
+  }
+}
+/* === Knowledge page buttons === */
+.page-btn {
+  background: #fff;
+  color: #111;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 14px;
+  transition: all 0.15s ease;
+}
+
+.page-btn:hover {
+  background: #f9f9f9;
+}
+
+.page-btn.active {
+  background: #000 !important;
+  color: #fff !important;
+  border-color: #000 !important;
+}
+
+
   </style>
 </head>
-<body class="min-h-screen">
+<body class="bg-gray-100 min-h-screen">
   <!-- Loader -->
-  <div id="pageLoader" class="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white/95">
-    <div class="h-12 w-12 animate-spin rounded-full border-4 border-zinc-300 border-t-zinc-900"></div>
-    <p class="mt-4 text-sm text-zinc-500">Loading…</p>
+  <div id="pageLoader" class="fixed inset-0 bg-white/95 flex flex-col items-center justify-center z-[9999]">
+    <div class="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-black"></div>
+    <p class="mt-4 text-gray-600 text-sm">Loading…</p>
   </div>
 
-  <!-- Header -->
-  <header class="fixed inset-x-0 top-0 z-50 border-b border-zinc-200 bg-white/90 backdrop-blur">
-    <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center gap-3">
-        <img src="logo.png" alt="Tomos Logo" class="h-10 w-auto rounded-xl" />
-        <div class="flex flex-col">
-          <span class="text-xs font-semibold uppercase tracking-wide text-zinc-500">Tomos Admin</span>
-          <span id="empresaBadge" class="text-xs font-semibold text-zinc-900">—</span>
-        </div>
-      </div>
-      <div class="flex items-center gap-4">
-        <div class="flex flex-col items-end text-right">
-          <span class="text-xs text-zinc-400">Signed in as</span>
-          <span id="authEmail" class="text-sm font-medium text-zinc-700">—</span>
-        </div>
-        <button id="btnLogout" class="hidden rounded-full border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 transition hover:border-zinc-300 hover:bg-zinc-100">
-          Cerrar sesión
-        </button>
-      </div>
+  <!-- Header minimal -->
+<header class="fixed top-0 left-0 w-full bg-white backdrop-blur border-b z-50 shadow-sm">
+  <div class="max-w-7xl mx-auto px-5 py-3 flex items-center justify-between">
+
+    <!-- Logo -->
+    <div class="flex items-center gap-3">
+      <img src="logo.png" alt="Tomos Logo" class="h-8 w-auto rounded-lg " />
     </div>
-  </header>
-  <div id="headerSpacer" class="h-16"></div>
 
-  <main class="flex min-h-[calc(100vh-4rem)] flex-col md:flex-row">
-    <!-- Sidebar -->
-    <aside class="w-full border-b border-zinc-200 bg-white/70 backdrop-blur md:w-64 md:border-b-0 md:border-r">
-      <nav class="flex gap-2 overflow-x-auto px-4 py-3 md:flex-col md:gap-1 md:py-6">
-        <button class="sidebar-btn active" data-tab="apariencia">
-          <i data-lucide="palette" class="shrink-0"></i>
-          <span class="hidden md:inline">Appearance</span>
-        </button>
-        <button class="sidebar-btn" data-tab="settings">
-          <i data-lucide="sliders" class="shrink-0"></i>
-          <span class="hidden md:inline">Settings</span>
-        </button>
-        <button class="sidebar-btn" data-tab="knowledge">
-          <i data-lucide="book-open" class="shrink-0"></i>
-          <span class="hidden md:inline">Knowledge</span>
-        </button>
-        <button class="sidebar-btn" data-tab="integration">
-          <i data-lucide="code-2" class="shrink-0"></i>
-          <span class="hidden md:inline">Integration</span>
-        </button>
-        <button class="sidebar-btn" data-tab="respuestas">
-          <i data-lucide="bot" class="shrink-0"></i>
-          <span class="hidden md:inline">Auto Responses</span>
-        </button>
-        <button class="sidebar-btn" data-tab="schedule">
-          <i data-lucide="clock" class="shrink-0"></i>
-          <span class="hidden md:inline">Schedule</span>
-        </button>
-      </nav>
-      <div class="hidden px-4 pb-6 text-xs text-zinc-500 md:block">
-        Empresa: <span id="empresaText" class="font-medium text-zinc-700">—</span>
+    <!-- Empresa + Email + Logout -->
+    <div class="flex items-center gap-4">
+      <div class="flex flex-col items-end text-right leading-tight">
+        <span id="empresaBadge" class="text-[8px] bg-black text-white px-1 py-[1px] rounded mb-[2px]">
+          —
+        </span>
+        <span id="authEmail" class="text-xs text-gray-500">—</span>
       </div>
-    </aside>
+      <button id="btnLogout" class="px-3 py-1.5 bg-red-600 text-white rounded-md hidden">
+        Cerrar sesión
+      </button>
+    </div>
 
-    <!-- Content -->
-    <div class="flex-1">
-      <div id="appContainer" class="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 py-8 sm:px-6 lg:px-10 lg:py-12">
-        <!-- Login card -->
-        <div id="login" class="card mx-auto mt-10 hidden max-w-sm space-y-6 text-center">
-          <div class="flex flex-col items-center gap-3">
-            <img src="logo.png" alt="Tomos Logo" class="h-16 w-auto rounded-xl" />
-            <div>
-              <h2 class="text-xl font-semibold text-zinc-900">Admin Access</h2>
-              <p class="text-sm text-zinc-500">Sign in to manage your Tomos workspace</p>
-            </div>
-          </div>
-          <div class="space-y-5 text-left">
-            <div class="space-y-2">
-              <label class="text-xs font-semibold uppercase tracking-wide text-zinc-500">Email</label>
-              <input id="emailInput" type="email" class="w-full rounded-2xl border border-zinc-200 px-4 py-2.5 text-sm text-zinc-900 shadow-inner shadow-black/5 focus:border-zinc-900 focus:outline-none" placeholder="admin@company.com" />
-            </div>
-            <div class="space-y-2">
-              <label class="text-xs font-semibold uppercase tracking-wide text-zinc-500">Password</label>
-              <input id="passwordInput" type="password" class="w-full rounded-2xl border border-zinc-200 px-4 py-2.5 text-sm text-zinc-900 shadow-inner shadow-black/5 focus:border-zinc-900 focus:outline-none" placeholder="••••••••" />
-            </div>
-            <button id="btnLogin" class="w-full rounded-full bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-zinc-800">Login</button>
-            <p id="loginError" class="hidden text-center text-sm text-red-600">❌ Incorrect credentials</p>
-          </div>
-        </div>
+  </div>
+</header>
+
+
+<div id="headerSpacer" class="h-[57px]"></div>
+<div class="flex min-h-screen">
+      <!-- Sidebar -->
+<aside class="group fixed top-[57px] left-0 h-[calc(100vh-57px)] bg-white border-r overflow-y-auto transition-all duration-300 w-[72px] hover:w-[260px]">
+  <nav class="space-y-2 mt-4 px-2">
+    <button class="sidebar-btn active flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="apariencia">
+      <i data-lucide="palette" class="w-5 h-5 shrink-0"></i>
+      <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Appearance</span>
+    </button>
+    <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="settings">
+      <i data-lucide="sliders" class="w-5 h-5 shrink-0"></i>
+      <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Settings</span>
+    </button>
+    <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="knowledge">
+      <i data-lucide="book-open" class="w-5 h-5 shrink-0"></i>
+      <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Knowledge</span>
+    </button>
+    <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="integration">
+      <i data-lucide="code-2" class="w-5 h-5 shrink-0"></i>
+      <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Integration</span>
+    </button>
+    <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="respuestas">
+      <i data-lucide="bot" class="w-5 h-5 shrink-0"></i>
+      <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Auto Responses</span>
+    </button>
+    <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="schedule">
+  <i data-lucide="clock" class="w-5 h-5 shrink-0"></i>
+  <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Schedule</span>
+</button>
+
+  </nav>
+
+  <div class="mt-6 text-xs text-gray-500 px-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+    Empresa: <b id="empresaText">—</b>
+  </div>
+</aside>
+
+
+<!-- Content -->
+<main class="flex-1 w-full ml-0 lg:ml-[72px] transition-all duration-300 lg:group-hover:ml-[260px] flex justify-center">
+<div id="appContainer" class="w-full max-w-6xl pt-16 px-8 pb-8">
+              <!-- Login card -->
+<div id="login" class="w-full max-w-sm mx-auto mt-10 card p-6 text-center">
+<img src="logo.png" alt="Tomos Logo" class="w-32 h-auto mx-auto mb-4 rounded-lg" />
+  
+  <div class="flex items-center justify-center mb-4 gap-2">
+    <h2 class="text-xl font-bold">Admin Access</h2>
+  </div>
+
+  <label class="block text-sm text-gray-600 mb-1 text-left">Email</label>
+  <input id="emailInput" type="email" class="w-full border rounded-xl px-3 py-2 mb-3" placeholder="admin@company.com">
+  <label class="block text-sm text-gray-600 mb-1 text-left">Password</label>
+  <input id="passwordInput" type="password" class="w-full border rounded-xl px-3 py-2 mb-4" placeholder="••••••••">
+  <button id="btnLogin" class="w-full py-2.5 rounded-xl bg-black text-white">Login</button>
+  <p id="loginError" class="text-red-600 text-sm mt-3 hidden text-center">❌ Incorrect credentials</p>
+</div>
+
+
 
         <!-- Tabs container -->
-        <div id="tabs" class="hidden space-y-12">
-          <!-- Appearance Tab -->
-          <section id="tab-apariencia" class="space-y-10">
-            <div id="permBannerA" class="card hidden border border-amber-300 bg-amber-50/70 text-amber-800">
-              <div class="flex items-start gap-3">
-                <i data-lucide="shield-alert" class="mt-1 h-5 w-5"></i>
-                <p class="text-sm"><strong>Sin permisos de escritura.</strong> Debes iniciar sesión con el email guardado en <code>config/adminEmail</code> o ser <code>globalAdmin</code>.</p>
+        <div id="tabs" class="hidden">
+<!-- Apariencia -->
+<!-- 🧩 APPEARANCE TAB -->
+<section id="tab-apariencia" class="space-y-6">
+
+  <div id="permBannerA" class="hidden card p-4 border border-amber-300/60 bg-amber-50">
+    <div class="flex gap-2 items-start">
+      <i data-lucide="shield-alert" class="w-5 h-5 text-amber-600"></i>
+      <div class="text-sm text-amber-800">
+        <b>Sin permisos de escritura.</b> Debes iniciar sesión con el email guardado en <code>config/adminEmail</code> o ser <code>globalAdmin</code>.
+      </div>
+    </div>
+  </div>
+
+  <div class="flex flex-col xl:flex-row gap-8 items-start">
+    <div class="flex-1 w-full">
+      <div class="flex flex-wrap gap-3 justify-center">
+        <button type="button" class="chip appearance-chip" data-appearance-target="header">Header</button>
+        <button type="button" class="chip appearance-chip" data-appearance-target="chat">Chat</button>
+        <button type="button" class="chip appearance-chip" data-appearance-target="widget">Widget</button>
+      </div>
+
+      <div class="mt-6 flex justify-center">
+        <div class="relative flex flex-col items-center">
+          <div class="space-y-6">
+            <div class="iphone mx-auto">
+              <div class="notch"></div>
+              <div class="iphone-in relative">
+                <iframe id="liveChatFrame"
+                  class="absolute inset-0 w-full h-full border-0 rounded-[26px]"
+                  sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
+                  referrerpolicy="no-referrer-when-downgrade"></iframe>
+
+                <div class="p-4 border-b flex items-center gap-3 hidden">
+                  <img id="previewLogo" class="h-7 w-7 rounded hidden" />
+                  <div class="font-medium">Chat Preview</div>
+                </div>
+                <div class="p-4 space-y-3 hidden" id="previewHolder">
+                  <button id="previewBtn" class="px-4 py-2 rounded text-white">Botón</button>
+                  <div id="previewBubble" class="p-3 rounded text-white inline-block">Mensaje</div>
+                </div>
+
+                <!-- (el botón del widget YA NO va aquí) -->
+              </div>
+
+              <!-- ✅ Botón del widget fuera de .iphone-in, para que quede debajo del mockup -->
+              <div id="widgetExampleClone" class="widget-mockup shadow-lg absolute right-0 bottom-[-86px] z-10">
+                <img id="widgetExampleIconClone" src="widgets/1.png" alt="Widget preview icon" />
               </div>
             </div>
 
-            <div class="flex flex-col gap-10 xl:flex-row">
-              <div class="flex w-full flex-col items-center gap-6 xl:flex-1">
-                <div class="flex flex-wrap justify-center gap-3">
-                  <button type="button" class="chip appearance-chip" data-appearance-target="header">Header</button>
-                  <button type="button" class="chip appearance-chip" data-appearance-target="chat">Chat</button>
-                  <button type="button" class="chip appearance-chip" data-appearance-target="widget">Widget</button>
-                </div>
+          </div>
 
-                <div class="relative flex flex-col items-center">
-                  <div class="relative flex h-[620px] w-[310px] items-center justify-center rounded-[38px] border border-zinc-200 bg-zinc-900 p-4 shadow-xl shadow-black/25">
-                    <div class="absolute left-1/2 top-0 h-6 w-40 -translate-x-1/2 rounded-b-3xl bg-zinc-900"></div>
-                    <div class="relative h-full w-full overflow-hidden rounded-[28px] bg-white">
-                      <iframe id="liveChatFrame" class="absolute inset-0 h-full w-full rounded-[28px] border-0" sandbox="allow-same-origin allow-scripts allow-forms allow-popups" referrerpolicy="no-referrer-when-downgrade"></iframe>
-                      <div class="hidden border-b border-zinc-200 bg-white/90 px-4 py-3" id="previewHeader">
-                        <div class="flex items-center gap-3">
-                          <img id="previewLogo" class="hidden h-7 w-7 rounded-lg" />
-                          <span class="text-sm font-medium text-zinc-700">Chat Preview</span>
-                        </div>
-                      </div>
-                      <div class="hidden space-y-3 bg-white/90 px-4 py-5" id="previewHolder">
-                        <button id="previewBtn" class="rounded-full px-4 py-2 text-sm text-white">Botón</button>
-                        <div id="previewBubble" class="inline-flex max-w-xs rounded-2xl px-4 py-3 text-sm text-white">Mensaje</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div id="widgetExampleClone" class="widget-mockup absolute -bottom-24 right-4 z-10">
-                    <img id="widgetExampleIconClone" src="widgets/1.png" alt="Widget preview icon" class="h-7 w-7 object-contain" />
-                  </div>
-                </div>
-              </div>
+          <div id="appearanceCards" class="w-full max-w-md mt-6 xl:mt-0 xl:absolute xl:top-0 xl:left-full xl:ml-6">
 
-              <div id="appearanceCards" class="flex w-full max-w-xl flex-col gap-6 xl:max-w-sm">
-                <div class="appearance-card card hidden space-y-6" data-appearance-card="header">
-                  <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2 text-sm font-semibold text-zinc-800"><i data-lucide="panel-top" class="h-5 w-5"></i> Header</div>
-                    <button type="button" class="rounded-full p-2 text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-700" data-close-card>
-                      <i data-lucide="x" class="h-4 w-4"></i>
-                    </button>
-                  </div>
-
-                  <div class="space-y-6">
-                    <div class="space-y-4">
-                      <p class="text-xs font-semibold uppercase tracking-wide text-zinc-500">Image</p>
-                      <div class="flex flex-wrap items-center justify-center gap-3" id="logoControls">
-                        <label class="flex cursor-pointer items-center gap-2 rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-800">
-                          Select file
-                          <input id="logoFile" type="file" accept="image/*" class="hidden" />
-                        </label>
-                        <button id="deleteLogo" type="button" class="rounded-full border border-zinc-200 px-4 py-2 text-sm text-zinc-600 transition hover:border-zinc-300 hover:text-zinc-900">Remove</button>
-                      </div>
-                      <div id="logoPreviewWrap" class="hidden">
-                        <div class="mx-auto flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-50 shadow-inner shadow-black/5">
-                          <img id="logoPreview" class="h-full w-full object-cover" />
-                        </div>
-                        <div class="mt-4 flex items-center justify-center gap-3 text-sm text-zinc-600">
-                          <label class="flex items-center gap-2"><input type="range" id="logoRadius" min="0" max="30" value="12" class="accent-black" />
-                            <span>Radius <span id="logoRadiusVal" class="font-medium text-zinc-900">12</span></span>
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="space-y-4">
-                      <p class="text-xs font-semibold uppercase tracking-wide text-zinc-500">Typography</p>
-                      <select id="fontFamily" class="w-full rounded-2xl border border-zinc-200 px-4 py-2 text-sm text-zinc-700 focus:border-zinc-900 focus:outline-none">
-                        <option value="Manrope">Manrope</option>
-                        <option value="Inter">Inter</option>
-                        <option value="Poppins">Poppins</option>
-                        <option value="Roboto">Roboto</option>
-                        <option value="Playfair Display">Playfair Display</option>
-                        <option value="Merriweather">Merriweather</option>
-                      </select>
-                    </div>
-
-                    <div class="space-y-4">
-                      <p class="text-xs font-semibold uppercase tracking-wide text-zinc-500">Colors</p>
-                      <div class="space-y-3">
-                        <label class="flex items-center gap-4 text-sm text-zinc-600">
-                          <input id="chatHeaderColor" type="color" class="h-10 w-10 cursor-pointer rounded-full border border-zinc-200" />
-                          Header background
-                        </label>
-                        <label class="flex items-center gap-4 text-sm text-zinc-600">
-                          <input id="headerTextColor" type="color" class="h-10 w-10 cursor-pointer rounded-full border border-zinc-200" />
-                          Text color
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="appearance-card card hidden space-y-6" data-appearance-card="chat">
-                  <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2 text-sm font-semibold text-zinc-800"><i data-lucide="message-square" class="h-5 w-5"></i> Chat</div>
-                    <button type="button" class="rounded-full p-2 text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-700" data-close-card>
-                      <i data-lucide="x" class="h-4 w-4"></i>
-                    </button>
-                  </div>
-
-                  <div class="space-y-6">
-                    <div class="space-y-4">
-                      <p class="text-xs font-semibold uppercase tracking-wide text-zinc-500">Avatar</p>
-                      <div id="avatarControls" class="space-y-4">
-                        <div class="flex flex-wrap items-center gap-3">
-                          <button type="button" class="avatar-option active" data-avatar-option="avatars/1.png">
-                            <img src="avatars/1.png" alt="Avatar 1" />
-                          </button>
-                          <button type="button" class="avatar-option" data-avatar-option="avatars/2.png">
-                            <img src="avatars/2.png" alt="Avatar 2" />
-                          </button>
-                          <button type="button" class="avatar-option" data-avatar-option="avatars/3.png">
-                            <img src="avatars/3.png" alt="Avatar 3" />
-                          </button>
-                          <div class="relative">
-                            <label id="customAvatarOption" class="avatar-option avatar-upload cursor-pointer" data-avatar-option="">
-                              <i id="customAvatarPlus" data-lucide="plus" class="h-5 w-5 text-zinc-400"></i>
-                              <img id="customAvatarImage" src="" alt="Custom avatar" class="hidden" />
-                              <input id="avatarFile" type="file" accept="image/*" class="hidden" />
-                            </label>
-                            <button type="button" id="deleteAvatar" class="absolute -right-1 -bottom-1 hidden rounded-full bg-red-600 p-1 text-white shadow hover:bg-red-700">
-                              <i data-lucide="trash" class="h-4 w-4"></i>
-                            </button>
-                          </div>
-                        </div>
-                        <div class="flex items-center gap-3 text-sm text-zinc-600">
-                          <input type="range" id="avatarRadius" min="0" max="50" value="50" class="w-32 accent-black" />
-                          <span class="inline-flex items-center gap-1 text-zinc-500">Radius <span id="avatarRadiusVal" class="font-medium text-zinc-900">50</span></span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="space-y-4">
-                      <p class="text-xs font-semibold uppercase tracking-wide text-zinc-500">Font</p>
-                      <select id="fontFamily" class="w-full rounded-2xl border border-zinc-200 px-4 py-2 text-sm text-zinc-700 focus:border-zinc-900 focus:outline-none">
-                        <option value="Manrope">Manrope</option>
-                        <option value="Inter">Inter</option>
-                        <option value="Poppins">Poppins</option>
-                        <option value="Roboto">Roboto</option>
-                        <option value="Playfair Display">Playfair Display</option>
-                        <option value="Merriweather">Merriweather</option>
-                      </select>
-                    </div>
-
-                    <div class="space-y-3">
-                      <label class="flex items-center gap-4 text-sm text-zinc-600">
-                        <input id="chatBackgroundColor" type="color" class="h-10 w-10 cursor-pointer rounded-full border border-zinc-200" />
-                        Chat background
-                      </label>
-                      <label class="flex items-center gap-4 text-sm text-zinc-600">
-                        <input id="chatAssistantTextColor" type="color" class="h-10 w-10 cursor-pointer rounded-full border border-zinc-200" />
-                        Text color
-                      </label>
-                      <label class="flex items-center gap-4 text-sm text-zinc-600">
-                        <input id="chatPrimaryColor" type="color" class="h-10 w-10 cursor-pointer rounded-full border border-zinc-200" />
-                        Client background
-                      </label>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="appearance-card card hidden space-y-6" data-appearance-card="widget">
-                  <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2 text-sm font-semibold text-zinc-800"><i data-lucide="mouse-pointer" class="h-5 w-5"></i> Widget</div>
-                    <button type="button" class="rounded-full p-2 text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-700" data-close-card>
-                      <i data-lucide="x" class="h-4 w-4"></i>
-                    </button>
-                  </div>
-
-                  <div class="space-y-6">
-                    <div class="space-y-4">
-                      <p class="text-xs font-semibold uppercase tracking-wide text-zinc-500">Icon</p>
-                      <div class="flex items-center gap-4">
-                        <div id="widgetExample" class="widget-mockup">
-                          <img id="widgetExampleIcon" src="widgets/1.png" alt="Widget preview icon" class="h-7 w-7 object-contain" />
-                        </div>
-                        <button type="button" id="widgetIconTrigger" class="widget-icon-trigger" title="Elegir icono">
-                          <img id="widgetIconTriggerImg" src="widgets/1.png" alt="Icono del widget" class="h-7 w-7 object-contain" />
-                        </button>
-                      </div>
-                      <div class="flex items-center gap-3 text-sm text-zinc-600">
-                        <label class="flex items-center gap-2">
-                          <input type="checkbox" id="widgetRounded" class="rounded border-zinc-300" />
-                          Rounded
-                        </label>
-                        <input type="range" id="widgetRadius" min="0" max="50" value="20" class="flex-1 accent-black" />
-                        <span id="widgetRadiusVal" class="inline-block min-w-[2ch] text-right font-medium text-zinc-900">20</span>
-                      </div>
-                    </div>
-
-                    <div class="space-y-4">
-                      <p class="text-xs font-semibold uppercase tracking-wide text-zinc-500">Colors</p>
-                      <label class="flex items-center gap-4 text-sm text-zinc-600">
-                        <input id="chatButtonColor" type="color" class="h-10 w-10 cursor-pointer rounded-full border border-zinc-200" />
-                        Widget background
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
+        <div class="appearance-card hidden card p-5 w-full max-w-md" data-appearance-card="header">
+          <div class="flex items-center justify-between mb-5">
+            <div class="flex items-center gap-2 font-semibold text-gray-800">
+              <i data-lucide="panel-top" class="w-5 h-5"></i>
+              Header
             </div>
-          </section>
+            <button type="button" class="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition" data-close-card>
+              <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+          </div>
 
-          <!-- Settings Tab -->
-          <section id="tab-settings" class="hidden space-y-8">
-            <div id="permBannerS" class="card hidden border border-amber-300 bg-amber-50/70 text-amber-800">
-              <div class="flex items-start gap-3">
-                <i data-lucide="shield-alert" class="mt-1 h-5 w-5"></i>
-                <p class="text-sm"><strong>Sin permisos de escritura.</strong> Debes iniciar sesión con el email guardado en <code>config/adminEmail</code> o ser <code>globalAdmin</code>.</p>
+          <div class="space-y-6">
+            <div class="space-y-4">
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Image</p>
+              <div class="space-y-4">
+                <div id="logoControls" class="flex flex-wrap gap-3 justify-center">
+                  <label class="inline-flex items-center justify-center px-4 py-2 bg-black text-white rounded cursor-pointer text-sm hover:bg-gray-800 transition">
+                    Select file
+                    <input id="logoFile" type="file" accept="image/*" class="hidden" />
+                  </label>
+                </div>
+                <div id="logoPreviewWrap" class="hidden">
+                  <div class="relative w-24 h-24 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center shadow mx-auto">
+                    <img id="logoPreview" class="w-full h-full object-cover" alt="Logo" />
+                    <button id="deleteLogo" class="absolute bottom-1 right-1 bg-red-600 text-white p-1.5 rounded-full shadow hover:bg-red-700 transition">
+                      <i data-lucide="trash" class="w-4 h-4"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <label class="flex items-center gap-2 text-sm text-gray-600 select-none">
+                    <input type="checkbox" id="headerRounded" class="rounded border-gray-300" />
+                    Rounded
+                  </label>
+                  <input type="range" id="logoRadius" min="0" max="50" value="23" class="flex-1 accent-blue-500">
+                  <span id="logoRadiusVal" class="text-sm text-gray-600 w-8 text-right">23</span>
+                </div>
+                <p id="msgLogo" class="text-green-600 text-sm hidden">✔ Header image updated</p>
               </div>
             </div>
 
-            <div class="card space-y-4">
+            <div class="space-y-4">
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Colors</p>
+              <div class="flex items-center gap-4">
+                <input id="chatHeaderColor" type="color" class="w-10 h-10 cursor-pointer">
+                <span class="text-sm font-medium text-gray-600 select-none">Header Background</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="appearance-card hidden card p-5 w-full max-w-md" data-appearance-card="chat">
+          <div class="flex items-center justify-between mb-5">
+            <div class="flex items-center gap-2 font-semibold text-gray-800">
+              <i data-lucide="messages-square" class="w-5 h-5"></i>
+              Chat
+            </div>
+            <button type="button" class="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition" data-close-card>
+              <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <div class="space-y-6">
+            <div class="space-y-4">
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Avatar</p>
+              <div id="avatarControls" class="space-y-4">
+                <div class="flex items-center gap-3 flex-wrap">
+                  <button type="button" class="avatar-option active" data-avatar-option="avatars/1.png">
+                    <img src="avatars/1.png" alt="Avatar 1" />
+                  </button>
+                  <button type="button" class="avatar-option" data-avatar-option="avatars/2.png">
+                    <img src="avatars/2.png" alt="Avatar 2" />
+                  </button>
+                  <button type="button" class="avatar-option" data-avatar-option="avatars/3.png">
+                    <img src="avatars/3.png" alt="Avatar 3" />
+                  </button>
+                  <div class="relative">
+                    <label id="customAvatarOption" class="avatar-option avatar-upload cursor-pointer" data-avatar-option="">
+                      <i id="customAvatarPlus" data-lucide="plus" class="w-5 h-5 text-gray-500"></i>
+                      <img id="customAvatarImage" src="" alt="Avatar personalizado" class="hidden" />
+                      <input id="avatarFile" type="file" accept="image/*" class="hidden" />
+                    </label>
+                    <button type="button" id="deleteAvatar" class="hidden absolute -right-1 -bottom-1 bg-red-600 text-white p-1 rounded-full shadow hover:bg-red-700 transition">
+                      <i data-lucide="trash" class="w-4 h-4"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <label class="flex items-center gap-2 text-sm text-gray-600 select-none">
+                    <input type="checkbox" id="avatarRounded" class="rounded border-gray-300" />
+                    Rounded
+                  </label>
+                  <input type="range" id="avatarRadius" min="0" max="50" value="50" class="flex-none w-28 accent-blue-500">
+                  <span id="avatarRadiusVal" class="text-sm text-gray-600 min-w-[2ch] text-right">50</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Font</p>
+              <select id="fontFamily" class="border rounded px-3 py-2 w-full text-sm bg-white">
+                <option value="Manrope">Manrope</option>
+                <option value="Inter">Inter</option>
+                <option value="Poppins">Poppins</option>
+                <option value="Roboto">Roboto</option>
+                <option value="Playfair Display">Playfair Display</option>
+                <option value="Merriweather">Merriweather</option>
+              </select>
+            </div>
+
+            <div class="space-y-4">
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Colors</p>
+              <div class="space-y-3">
+                <div class="flex items-center gap-4">
+                  <input id="chatBackgroundColor" type="color" class="w-10 h-10 cursor-pointer">
+                  <span class="text-sm font-medium text-gray-600 select-none">Chat Background</span>
+                </div>
+                <div class="flex items-center gap-4">
+                  <input id="chatAssistantTextColor" type="color" class="w-10 h-10 cursor-pointer">
+                  <span class="text-sm font-medium text-gray-600 select-none">Text</span>
+                </div>
+                <div class="flex items-center gap-4">
+                  <input id="chatPrimaryColor" type="color" class="w-10 h-10 cursor-pointer">
+                  <span class="text-sm font-medium text-gray-600 select-none">Client Background</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="appearance-card hidden card p-5 w-full max-w-md" data-appearance-card="widget">
+          <div class="flex items-center justify-between mb-5">
+            <div class="flex items-center gap-2 font-semibold text-gray-800">
+              <i data-lucide="mouse-pointer" class="w-5 h-5"></i>
+              Widget
+            </div>
+            <button type="button" class="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition" data-close-card>
+              <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <div class="space-y-6">
+            <div class="space-y-4">
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Icon</p>
+              <div class="flex items-center gap-4">
+                <div id="widgetExample" class="widget-mockup">
+                  <img id="widgetExampleIcon" src="widgets/1.png" alt="Widget preview icon" />
+                </div>
+                <button type="button" id="widgetIconTrigger" class="widget-icon-trigger" title="Elegir icono">
+                  <img id="widgetIconTriggerImg" src="widgets/1.png" alt="Icono del widget" />
+                </button>
+              </div>
+              <div class="flex items-center gap-3">
+                <label class="flex items-center gap-2 text-sm text-gray-600 select-none">
+                  <input type="checkbox" id="widgetRounded" class="rounded border-gray-300" />
+                  Rounded
+                </label>
+                <input type="range" id="widgetRadius" min="0" max="50" value="20" class="flex-1 accent-blue-500">
+                <span id="widgetRadiusVal" class="text-sm text-gray-600 inline-block text-right min-w-[2ch]">20</span>
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Colors</p>
+              <div class="flex items-center gap-4">
+                <input id="chatButtonColor" type="color" class="w-10 h-10 rounded-full cursor-pointer border border-gray-300 shadow-sm" />
+                <span class="text-sm font-medium text-gray-600 select-none">Widget Background</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+      
+          </div>
+
+          <!-- SETTINGS TAB -->
+          <section id="tab-settings" class="hidden space-y-6 max-w-3xl">
+            <div id="permBannerS" class="hidden card p-4 border border-amber-300/60 bg-amber-50">
+              <div class="flex gap-2 items-start">
+                <i data-lucide="shield-alert" class="w-5 h-5 text-amber-600"></i>
+                <div class="text-sm text-amber-800">
+                  <b>Sin permisos de escritura.</b> Debes iniciar sesión con el email guardado en <code>config/adminEmail</code> o ser <code>globalAdmin</code>.
+                </div>
+              </div>
+            </div>
+
+            <!-- Show Button -->
+            <div class="card p-5">
               <div class="flex items-center justify-between">
                 <div>
-                  <h3 class="flex items-center gap-2 text-sm font-semibold text-zinc-800"><i data-lucide="message-circle" class="h-5 w-5"></i> Show Button</h3>
-                  <p class="text-sm text-zinc-500">Show the chat button on the website</p>
+                  <div class="font-semibold flex items-center gap-2"><i data-lucide="message-circle" class="w-5 h-5"></i> Show Button</div>
+                  <p class="text-sm text-gray-500">Show the chat button on the website</p>
                 </div>
                 <input id="tgChatVisible" type="checkbox" class="toggle" />
               </div>
             </div>
 
-            <div class="card space-y-5">
-              <h3 class="flex items-center gap-2 text-sm font-semibold text-zinc-800"><i data-lucide="building-2" class="h-5 w-5"></i> General Information</h3>
-              <div class="space-y-4">
-                <div class="space-y-2">
-                  <label class="text-xs font-semibold uppercase tracking-wide text-zinc-500">Name</label>
-                  <input id="hotelName" class="w-full rounded-2xl border border-zinc-200 px-4 py-2 text-sm text-zinc-900 shadow-inner shadow-black/5 focus:border-zinc-900 focus:outline-none" placeholder="Boletum" />
-                </div>
-                <div class="space-y-2">
-                  <label class="text-xs font-semibold uppercase tracking-wide text-zinc-500">Time Zone</label>
-                  <select id="timeZone" class="w-full rounded-2xl border border-zinc-200 px-4 py-2 text-sm text-zinc-900 focus:border-zinc-900 focus:outline-none"></select>
-                </div>
-              </div>
-              <div class="flex items-center gap-3">
-                <button id="saveGeneral" class="rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-800">Save</button>
-                <p id="msgGeneral" class="hidden text-sm text-emerald-600">✔ Saved</p>
-              </div>
+            <!-- General Information -->
+            <div class="card p-5">
+              <div class="font-semibold flex items-center gap-2 mb-3"><i data-lucide="building-2" class="w-5 h-5"></i> General Information</div>
+              <label class="block text-sm text-gray-600 mb-1">Name</label>
+              <input id="hotelName" class="w-full border rounded-xl px-3 py-2 mb-3" placeholder="Boletum"/>
+              <label class="block text-sm text-gray-600 mb-1">Time Zone</label>
+              <select id="timeZone" class="w-full border rounded-xl px-3 py-2 mb-4"></select>
+              <button id="saveGeneral" class="px-4 py-2 bg-black text-white rounded-md">Save</button>
+              <p id="msgGeneral" class="text-green-600 text-sm mt-2 hidden">✔ Saved</p>
             </div>
 
-            <div class="card space-y-5">
-              <h3 class="flex items-center gap-2 text-sm font-semibold text-zinc-800"><i data-lucide="sparkles" class="h-5 w-5"></i> Assistant Personality</h3>
-              <div id="personalityChips" class="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                <button data-val="formal" class="chip">Formal &amp; Polite</button>
-                <button data-val="relaxed" class="chip">Relaxed &amp; Friendly</button>
-                <button data-val="warm" class="chip">Warm &amp; Welcoming</button>
-                <button data-val="efficient" class="chip">Efficient &amp; Direct</button>
-                <button data-val="young" class="chip">Young &amp; Playful</button>
+            <!-- Assistant Personality -->
+            <div class="card p-5">
+              <div class="font-semibold flex items-center gap-2 mb-4"><i data-lucide="sparkles" class="w-5 h-5"></i> Assistant Personality</div>
+              <div id="personalityChips" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <button data-val="formal" class="chip">Formal & Polite</button>
+                <button data-val="relaxed" class="chip">Relaxed & Friendly</button>
+                <button data-val="warm" class="chip">Warm & Welcoming</button>
+                <button data-val="efficient" class="chip">Efficient & Direct</button>
+                <button data-val="young" class="chip">Young & Playful</button>
               </div>
             </div>
-
-            <div class="card space-y-5">
-              <div class="flex items-center justify-between">
-                <h3 class="flex items-center gap-2 text-sm font-semibold text-zinc-800"><i data-lucide="smile" class="h-5 w-5"></i> Welcome Message</h3>
-                <label class="flex items-center gap-3 text-sm text-zinc-600">
-                  Enable
-                  <input type="checkbox" id="welcomeEnabled" class="toggle" />
-                </label>
-              </div>
-              <div class="space-y-4">
-                <textarea id="welcomeText" class="w-full rounded-3xl border border-zinc-200 px-4 py-3 text-sm text-zinc-700 shadow-inner shadow-black/5 focus:border-zinc-900 focus:outline-none" rows="2" placeholder="Enter welcome message..."></textarea>
-                <div class="grid gap-4 sm:grid-cols-2">
-                  <div class="space-y-2">
-                    <label class="text-xs font-semibold uppercase tracking-wide text-zinc-500">Delay (seconds)</label>
-                    <input id="welcomeDelay" type="number" min="0" class="w-28 rounded-2xl border border-zinc-200 px-3 py-2 text-sm text-zinc-700 focus:border-zinc-900 focus:outline-none" value="2" />
-                  </div>
-                  <div class="space-y-2">
-                    <label class="text-xs font-semibold uppercase tracking-wide text-zinc-500">Welcome image (optional)</label>
-                    <input id="welcomeImageFile" type="file" accept="image/*" class="text-sm text-zinc-600" />
-                  </div>
-                </div>
-                <img id="welcomePreview" class="hidden w-48 rounded-2xl border border-zinc-200" />
-              </div>
-              <div class="flex items-center gap-3">
-                <button id="saveWelcome" class="rounded-full border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 transition hover:border-zinc-300 hover:bg-zinc-100">Save</button>
-                <p id="msgWelcome" class="hidden text-sm text-emerald-600">✔ Saved</p>
-              </div>
-            </div>
-
-            <div class="card space-y-4">
-              <h3 class="flex items-center gap-2 text-sm font-semibold text-zinc-800"><i data-lucide="link-2" class="h-5 w-5"></i> Link para probar el chat</h3>
-              <div class="flex flex-col gap-3 sm:flex-row">
-                <input id="chatTestLink" type="text" readonly class="flex-1 rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-2 text-sm text-zinc-700 focus:border-zinc-900 focus:outline-none" />
-                <div class="flex gap-2">
-                  <button id="copyChatLink" class="rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-800">Copiar</button>
-                  <button id="openChatLink" class="rounded-full border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 transition hover:border-zinc-300 hover:bg-zinc-100">Abrir</button>
-                </div>
-              </div>
-              <p class="text-xs text-zinc-500">El enlace se genera automáticamente con el nombre de tu empresa actual.</p>
-            </div>
-          </section>
-
-          <!-- Knowledge Tab -->
-          <section id="tab-knowledge" class="hidden space-y-8">
-            <div class="card space-y-5">
-              <div class="flex items-center gap-2 text-sm font-semibold text-zinc-800">
-                <i data-lucide="book-open" class="h-5 w-5"></i>
-                Knowledge
-              </div>
-              <p class="text-sm text-zinc-500">Add the contextual information that helps the assistant understand your business, products, and brand tone. You can import pages from a URL and edit them here.</p>
-              <div class="flex flex-wrap items-center gap-2">
-                <div id="knowledgeTabs" class="flex flex-wrap items-center gap-2"></div>
-                <button id="addKnowledgePage" class="inline-flex items-center gap-2 rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-800">
-                  <i data-lucide="plus" class="h-4 w-4"></i>
-                  Add
-                </button>
-              </div>
-              <div id="knowledgeUrlMeta" class="hidden text-xs text-zinc-500">
-                <span class="font-medium text-zinc-700">Source:</span>
-                <span id="knowledgeCurrentUrl" class="truncate"></span>
-              </div>
-              <textarea id="contextText" class="w-full rounded-3xl border border-zinc-200 px-4 py-3 text-sm text-zinc-700 shadow-inner shadow-black/5 focus:border-zinc-900 focus:outline-none" placeholder="Add your knowledge here... (max 10,000 characters)"></textarea>
-              <div class="flex items-center justify-between text-xs text-zinc-500">
-                <span id="ctxCounter">0 / 10000 characters</span>
-                <div class="flex items-center gap-2 text-sm">
-                  <button id="deleteKnowledgePage" class="flex items-center gap-1 rounded-full border border-zinc-200 px-3 py-1.5 text-sm text-zinc-600 transition hover:border-red-300 hover:text-red-600" title="Delete page" aria-label="Delete knowledge page">
-                    <i data-lucide="trash" class="h-4 w-4"></i>
-                  </button>
-                  <button id="saveContext" class="rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-800">Save</button>
-                </div>
-              </div>
-              <p id="msgContext" class="hidden text-sm text-emerald-600">✔ Saved</p>
-            </div>
-          </section>
-
-          <!-- Schedule Tab -->
-          <section id="tab-schedule" class="hidden space-y-8">
-            <div class="card space-y-5">
-              <div class="flex items-center gap-2 text-sm font-semibold text-zinc-800">
-                <i data-lucide="clock" class="h-5 w-5"></i>
-                Schedule
-              </div>
-              <p class="text-sm text-zinc-500">Define the periods when the chat widget should be active.</p>
-              <div id="scheduleList" class="space-y-3"></div>
-              <button id="saveSchedule" class="hidden"></button>
-              <p id="msgSchedule" class="hidden text-sm text-emerald-600">✔ Saved</p>
-            </div>
-          </section>
-
-          <!-- Integration Tab -->
-          <section id="tab-integration" class="hidden space-y-8">
-            <div class="card space-y-5">
-              <div class="flex items-center gap-2 text-sm font-semibold text-zinc-800">
-                <i data-lucide="code-2" class="h-5 w-5"></i>
-                Integration
-              </div>
-              <p class="text-sm text-zinc-500">Embed the Tomos widget on your website by placing this script before the closing <code>&lt;/body&gt;</code> tag.</p>
-              <div class="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
-                <textarea id="embedScriptBox" class="w-full bg-transparent text-xs font-mono text-zinc-700 focus:outline-none" readonly></textarea>
-              </div>
-              <div class="flex flex-wrap gap-3">
-                <button id="copyEmbedScript" class="rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-800">Copy embed code</button>
-                <button id="openDocs" class="rounded-full border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 transition hover:border-zinc-300 hover:bg-zinc-100">View documentation</button>
-              </div>
-              <p id="embedMsg" class="hidden text-sm text-emerald-600">✔ Copied</p>
-            </div>
-          </section>
-
-          <!-- Auto Responses Tab -->
-          <section id="tab-respuestas" class="hidden space-y-8">
-            <div class="card space-y-6">
-              <div class="flex flex-col gap-4">
-                <div class="flex flex-wrap items-center justify-between gap-3">
-                  <div class="flex items-center gap-2 text-sm font-semibold text-zinc-800">
-                    <i data-lucide="bot" class="h-5 w-5"></i>
-                    Auto Responses
-                  </div>
-                  <button id="addAutoResponse" class="inline-flex items-center gap-2 rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-800">
-                    <span class="text-base leading-none">＋</span>
-                    <span>New tab</span>
-                  </button>
-                </div>
-                <p class="text-sm text-zinc-500">Organize quick replies for frequent questions. Create as many tabs as you need and preview how they will look inside the chat widget.</p>
-                <div id="autoResponseTabs" class="flex w-full flex-nowrap items-center gap-2 overflow-x-auto pb-1"></div>
-                <div id="autoResponseEmpty" class="rounded-3xl border border-dashed border-zinc-300 px-6 py-10 text-center text-sm text-zinc-500">Start by creating your first tab to design an automated reply.</div>
-                <div id="autoResponsePlaceholder" class="hidden rounded-3xl border border-dashed border-zinc-300 px-6 py-10 text-center text-sm text-zinc-500">Select a tab to review or edit its configuration.</div>
-              </div>
-
-              <div id="autoResponseEditor" class="hidden space-y-6">
-                <div class="space-y-6 rounded-3xl border border-zinc-200 bg-white/80 p-6 shadow-sm">
-                  <div class="grid gap-5 lg:grid-cols-[1.2fr_1fr] lg:items-start">
-                    <div class="space-y-4">
-                      <div class="space-y-2">
-                        <label class="text-xs font-semibold uppercase tracking-wide text-zinc-500">Keyword</label>
-                        <input id="autoResponseKeyword" type="text" placeholder="e.g. spa, restaurant" class="w-full rounded-2xl border border-zinc-200 px-4 py-2 text-sm text-zinc-800 shadow-inner shadow-black/5 focus:border-zinc-900 focus:outline-none" />
-                        <p class="text-[12px] text-zinc-500">When the guest mentions this keyword, the auto response will be triggered.</p>
-                      </div>
-                    </div>
-                    <div class="space-y-2">
-                      <label class="text-xs font-semibold uppercase tracking-wide text-zinc-500">Response type</label>
-                      <div id="autoResponseType" class="grid grid-cols-3 gap-2 rounded-2xl bg-zinc-100 p-1 text-sm font-medium">
-                        <button data-type="text" class="typeOption inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2 transition hover:bg-white">
-                          <i data-lucide="message-square-text" class="h-4 w-4"></i>
-                          <span>Text</span>
-                        </button>
-                        <button data-type="cards" class="typeOption inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2 transition hover:bg-white">
-                          <i data-lucide="layout-dashboard" class="h-4 w-4"></i>
-                          <span>Cards</span>
-                        </button>
-                        <button data-type="menu" class="typeOption inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2 transition hover:bg-white">
-                          <i data-lucide="list" class="h-4 w-4"></i>
-                          <span>Menu</span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div id="textEditor" class="space-y-5">
-                    <div class="space-y-2">
-                      <label class="text-xs font-semibold uppercase tracking-wide text-zinc-500">Message</label>
-                      <textarea id="autoResponseText" rows="3" placeholder="Write the automatic response..." class="w-full rounded-2xl border border-zinc-200 px-4 py-3 text-sm text-zinc-700 shadow-inner shadow-black/5 focus:border-zinc-900 focus:outline-none"></textarea>
-                    </div>
-                    <div class="grid gap-4 sm:grid-cols-2">
-                      <div class="space-y-2">
-                        <label class="text-xs font-semibold uppercase tracking-wide text-zinc-500">Title</label>
-                        <input id="autoResponseTitle" type="text" class="w-full rounded-2xl border border-zinc-200 px-4 py-2 text-sm text-zinc-800 shadow-inner shadow-black/5 focus:border-zinc-900 focus:outline-none" />
-                      </div>
-                      <div class="space-y-2">
-                        <label class="text-xs font-semibold uppercase tracking-wide text-zinc-500">Subtitle</label>
-                        <input id="autoResponseSubtitle" type="text" class="w-full rounded-2xl border border-zinc-200 px-4 py-2 text-sm text-zinc-800 shadow-inner shadow-black/5 focus:border-zinc-900 focus:outline-none" />
-                      </div>
-                    </div>
-                    <div class="space-y-2">
-                      <label class="text-xs font-semibold uppercase tracking-wide text-zinc-500">Image URL (optional)</label>
-                      <input id="autoResponseImage" type="text" placeholder="https://..." class="w-full rounded-2xl border border-zinc-200 px-4 py-2 text-sm text-zinc-800 shadow-inner shadow-black/5 focus:border-zinc-900 focus:outline-none" />
-                    </div>
-                    <div class="space-y-3">
-                      <div class="flex items-center justify-between">
-                        <span class="text-sm font-semibold text-zinc-700">Buttons</span>
-                        <button id="addTextButton" class="rounded-full border border-zinc-200 px-3 py-1 text-xs font-medium text-zinc-600 transition hover:border-zinc-300 hover:text-zinc-900">+ Add button</button>
-                      </div>
-                      <div id="textButtonsList" class="space-y-2"></div>
-                    </div>
-                    <div class="space-y-2">
-                      <span class="text-sm font-semibold text-zinc-700">Live preview</span>
-                      <div id="textPreview" class="flex justify-center rounded-3xl border border-zinc-200 bg-zinc-50 p-6"></div>
-                    </div>
-                  </div>
-
-                  <div id="cardsEditor" class="hidden space-y-3">
-                    <div class="flex items-center justify-between">
-                      <span class="text-sm font-semibold text-zinc-700">Cards</span>
-                      <button id="addCardButton" class="rounded-full border border-zinc-200 px-3 py-1 text-xs font-medium text-zinc-600 transition hover:border-zinc-300 hover:text-zinc-900">+ Add card</button>
-                    </div>
-                    <div id="cardsList" class="space-y-3"></div>
-                  </div>
-
-                  <div id="menuEditor" class="hidden space-y-3">
-                    <div class="space-y-2">
-                      <label class="text-xs font-semibold uppercase tracking-wide text-zinc-500">Intro text</label>
-                      <input id="menuIntroText" type="text" placeholder="Choose an option" class="w-full rounded-2xl border border-zinc-200 px-4 py-2 text-sm text-zinc-800 shadow-inner shadow-black/5 focus:border-zinc-900 focus:outline-none" />
-                    </div>
-                    <div class="space-y-3">
-                      <div class="flex items-center justify-between">
-                        <span class="text-sm font-semibold text-zinc-700">Buttons</span>
-                        <button id="addMenuButton" class="rounded-full border border-zinc-200 px-3 py-1 text-xs font-medium text-zinc-600 transition hover:border-zinc-300 hover:text-zinc-900">+ Add button</button>
-                      </div>
-                      <div id="menuButtonsList" class="space-y-2"></div>
-                    </div>
-                    <div class="space-y-2">
-                      <span class="text-sm font-semibold text-zinc-700">Preview</span>
-                      <div id="menuPreview" class="flex flex-wrap gap-2 rounded-3xl border border-zinc-200 bg-zinc-50 p-4"></div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="flex items-center justify-end gap-3">
-                  <button id="saveAutoResponses" class="inline-flex items-center gap-2 rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-800">
-                    <i data-lucide="save"></i>
-                    Save changes
-                  </button>
-                  <button id="deleteAutoResponse" class="rounded-full p-2 text-red-600 transition hover:bg-red-50" aria-label="Delete this tab" title="Delete this tab">
-                    <i data-lucide="trash-2" class="h-4 w-4"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
-            <p id="msgAutoResponses" class="hidden text-sm text-emerald-600">✔ Saved</p>
-          </section>
-        </div>
-      </div>
-    </div>
-  </main>
-
-  <!-- Toast -->
-  <div id="toast" class="fixed left-1/2 top-20 z-[9999] -translate-x-1/2 opacity-0"></div>
-
-  <!-- Cropper Modal -->
-  <div id="cropperModal" class="fixed inset-0 z-[9998] hidden items-center justify-center bg-black/60 px-4">
-    <div class="card max-w-sm space-y-5 text-center">
-      <h3 class="text-lg font-semibold text-zinc-900">Crop Header Image</h3>
-      <div class="flex aspect-square w-full items-center justify-center overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-50">
-        <img id="cropperImage" class="max-h-[320px] max-w-full" />
-      </div>
-      <div id="logoProgressWrap" class="hidden w-full overflow-hidden rounded-full bg-zinc-200">
-        <div id="logoBar" class="h-2 w-0 bg-zinc-900 transition-all duration-200"></div>
-      </div>
-      <div class="flex justify-center gap-3">
-        <button id="cancelCrop" class="rounded-full border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 transition hover:border-zinc-300 hover:bg-zinc-100">Cancel</button>
-        <button id="confirmCrop" class="rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-800">Save</button>
-      </div>
-    </div>
+            
+            <!-- 📨 Welcome Message -->
+<div class="card p-5 space-y-4">
+  <div class="font-semibold flex items-center gap-2 mb-2">
+    <i data-lucide="smile" class="w-5 h-5"></i>
+    Welcome Message
   </div>
 
-  <!-- Knowledge Modal -->
-  <div id="knowledgeModal" class="fixed inset-0 z-[1200] hidden items-center justify-center bg-black/40 px-4 backdrop-blur-sm">
-    <div class="card relative w-full max-w-xl space-y-5">
-      <button id="closeKnowledgeModal" class="absolute right-4 top-4 text-zinc-400 transition hover:text-zinc-600">
-        <i data-lucide="x" class="h-5 w-5"></i>
+  <label class="flex items-center justify-between cursor-pointer">
+    <span class="text-sm text-gray-600">Enable welcome message</span>
+    <input type="checkbox" id="welcomeEnabled" class="toggle">
+  </label>
+
+  <div>
+    <textarea id="welcomeText" class="w-full border rounded-lg px-3 py-2 text-sm"
+              rows="2" placeholder="Enter welcome message..."></textarea>
+  </div>
+
+  <div>
+    <label class="block text-sm text-gray-600 mb-1">Delay (seconds)</label>
+    <input id="welcomeDelay" type="number" min="0" class="border rounded px-2 py-1 text-sm w-24" value="2">
+  </div>
+
+  <div>
+    <label class="block text-sm text-gray-600 mb-1">Welcome image (optional)</label>
+    <input id="welcomeImageFile" type="file" accept="image/*">
+    <img id="welcomePreview" class="mt-3 rounded-lg w-56 hidden" />
+  </div>
+
+  <button id="saveWelcome" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md text-sm">
+    Save
+  </button>
+
+  <p id="msgWelcome" class="text-green-600 text-sm mt-2 hidden">✔ Saved</p>
+</div>
+
+
+            <!-- Link para probar el chat -->
+            <div class="card p-5">
+              <div class="font-semibold flex items-center gap-2 mb-3"><i data-lucide="link-2" class="w-5 h-5"></i> Link para probar el chat</div>
+              <div class="flex items-center gap-3">
+                <input id="chatTestLink" type="text" readonly class="flex-1 border rounded-lg px-3 py-2 text-sm bg-gray-50 select-all"/>
+                <button id="copyChatLink" class="px-3 py-2 bg-black text-white text-sm rounded-lg">Copiar</button>
+                <button id="openChatLink" class="px-3 py-2 bg-black text-white text-sm rounded-lg">Abrir</button>
+              </div>
+              <p class="text-xs text-gray-500 mt-2">El enlace se genera automáticamente con el nombre de tu empresa actual.</p>
+            </div>
+          </section>
+          <!-- KNOWLEDGE TAB -->
+          <section id="tab-knowledge" class="hidden space-y-6 max-w-3xl">
+  <div class="card p-5 space-y-4">
+    <div class="font-semibold flex items-center gap-2">
+      <i data-lucide="book-open" class="w-5 h-5"></i>
+      Knowledge
+    </div>
+    <p class="text-sm text-gray-500">
+      Add the contextual information that helps the assistant understand your business, products, and brand tone. You can import pages from a URL and edit them here.
+    </p>
+
+    <div class="flex flex-wrap items-center gap-2">
+      <div id="knowledgeTabs" class="flex flex-wrap items-center gap-2"></div>
+      <button id="addKnowledgePage" class="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-black text-white rounded-lg shadow-sm hover:bg-gray-900 transition">
+        <i data-lucide="plus" class="w-4 h-4"></i>
+        Add
       </button>
-      <div class="space-y-2">
-        <h3 class="text-lg font-semibold text-zinc-900">Add page</h3>
-        <p class="text-sm text-zinc-500">Fetch content from a public URL or create a blank page to train your assistant.</p>
+    </div>
+
+    <div id="knowledgeUrlMeta" class="text-xs text-gray-500 hidden">
+      <span class="font-medium">Source:</span>
+      <span id="knowledgeCurrentUrl" class="truncate"></span>
+    </div>
+
+    <textarea id="contextText"
+      class="w-full border rounded-xl p-3 text-sm focus:outline-none resize-none"
+      placeholder="Add your knowledge here... (max 10,000 characters)"></textarea>
+
+    <div class="flex items-center justify-between text-xs">
+      <span id="ctxCounter" class="text-gray-500">0 / 10000 characters</span>
+      <div class="flex items-center gap-2">
+        <button
+          id="deleteKnowledgePage"
+          class="px-3 py-2 border border-gray-300 rounded-md text-sm flex items-center gap-1 text-gray-600 hover:text-red-600 hover:border-red-300 transition"
+          title="Delete page"
+          aria-label="Delete knowledge page"
+        >
+          <i data-lucide="trash" class="w-4 h-4"></i>
+        </button>
+        <button id="saveContext" class="px-4 py-2 bg-black text-white rounded-md text-sm">Save</button>
       </div>
-      <div class="space-y-3">
-        <label class="text-xs font-semibold uppercase tracking-wide text-zinc-500">Title</label>
-        <input id="knowledgeTitleInput" type="text" placeholder="Customer Support" class="w-full rounded-2xl border border-zinc-200 px-4 py-2 text-sm text-zinc-800 shadow-inner shadow-black/5 focus:border-zinc-900 focus:outline-none" />
-      </div>
-      <div class="space-y-3">
-        <label class="text-xs font-semibold uppercase tracking-wide text-zinc-500">Page URL</label>
-        <input id="knowledgeUrlInput" type="url" placeholder="https://example.com/page" class="w-full rounded-2xl border border-zinc-200 px-4 py-2 text-sm text-zinc-800 shadow-inner shadow-black/5 focus:border-zinc-900 focus:outline-none" />
-      </div>
-      <p id="knowledgeModalError" class="hidden text-sm text-red-600"></p>
-      <p id="knowledgeModalStatus" class="hidden text-sm text-zinc-500"></p>
-      <div class="flex items-center justify-end gap-3 pt-2">
-        <button id="cancelKnowledgeModal" class="rounded-full border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 transition hover:border-zinc-300 hover:bg-zinc-100">Cancel</button>
-        <button id="confirmAddKnowledge" class="inline-flex items-center gap-2 rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-800">
-          <span>Add</span>
+    </div>
+
+    <p id="msgContext" class="text-green-600 text-sm hidden">✔ Saved</p>
+  </div>
+</section>
+
+
+<!-- SCHEDULE TAB -->
+<section id="tab-schedule" class="hidden space-y-6 max-w-3xl">
+  <div class="card p-5">
+    <div class="font-semibold flex items-center gap-2 mb-3">
+      <i data-lucide="clock" class="w-5 h-5"></i>
+      Schedule
+    </div>
+    <p class="text-sm text-gray-500 mb-4">
+      Define the periods when the chat widget should be active.
+    </p>
+
+    <div id="scheduleList" class="space-y-3"></div>
+
+
+
+    <p id="msgSchedule" class="text-green-600 text-sm mt-3 hidden">✔ Saved</p>
+  </div>
+</section>
+
+
+
+
+<!-- INTEGRATION TAB -->
+<section id="tab-integration" class="hidden space-y-6 max-w-3xl">
+  <div class="card p-5">
+    <div class="font-semibold flex items-center gap-2 mb-3">
+      <i data-lucide="code-2" class="w-5 h-5"></i>
+      Integration Script
+    </div>
+    <p class="text-sm text-gray-500 mb-3">
+      Copy and paste this code into your website just before the <code>&lt;/body&gt;</code> tag.
+      The chat will automatically appear with your hotel's configuration.
+    </p>
+
+    <div class="relative">
+      <textarea id="embedScriptBox" readonly
+        class="w-full text-sm font-mono bg-gray-50 border rounded-lg p-3 pr-16 focus:outline-none select-all resize-none"
+        rows="2"></textarea>
+      <button id="copyEmbedScript"
+        class="absolute top-2 right-2 px-3 py-1 text-xs bg-black text-white rounded-md hover:bg-gray-800">
+        Copy
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- RESPUESTAS TAB -->
+<section id="tab-respuestas" class="hidden space-y-6 max-w-3xl">
+  <div class="card p-6 space-y-5">
+    <div class="flex flex-col gap-3">
+      <div class="flex items-center justify-between gap-3">
+        <div class="font-semibold flex items-center gap-2">
+          <i data-lucide="bot" class="w-5 h-5"></i>
+          Auto Responses
+        </div>
+        <button id="addAutoResponse" class="px-4 py-2 bg-black text-white rounded-md flex items-center gap-2 text-sm">
+          <span class="text-lg leading-none">+</span>
+          <span>New tab</span>
         </button>
       </div>
+      <p class="text-sm text-gray-500">
+        Organize quick replies for frequent questions. Create as many tabs as you need, customise their content and preview how they will look in the chat widget.
+      </p>
+
+      <div id="autoResponseTabs" class="flex w-full items-center gap-2 overflow-x-auto pb-1 flex-nowrap"></div>
+
+      <div id="autoResponseEmpty" class="border border-dashed border-gray-300 rounded-2xl p-6 text-center text-gray-500 text-sm">
+        Start by creating your first tab to design an automated reply.
+      </div>
+
+      <div id="autoResponsePlaceholder" class="hidden border border-dashed border-gray-300 rounded-2xl p-6 text-center text-gray-500 text-sm">
+        Select a tab to review or edit its configuration.
+      </div>
+
+      <div id="autoResponseEditor" class="hidden space-y-5">
+        <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-5 space-y-5">
+          <div class="grid gap-4 lg:grid-cols-[2fr,1fr] lg:items-start">
+            <div class="space-y-2">
+              <label class="text-xs font-medium text-gray-600 uppercase tracking-wide">Keyword</label>
+              <input id="autoResponseKeyword" type="text" placeholder="(e.g. spa, restaurant)"
+                     class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60">
+              <p class="text-[12px] text-gray-500">When the guest mentions this keyword, the auto response will be triggered.</p>
+            </div>
+            <div class="space-y-2">
+              <label class="text-xs font-medium text-gray-600 uppercase tracking-wide">Response type</label>
+              <div id="autoResponseType" class="grid grid-cols-3 bg-gray-100 rounded-xl p-1 text-sm font-medium">
+                <button data-type="text" class="typeOption px-3 py-2 rounded-lg transition flex items-center justify-center gap-2">
+                  <i data-lucide="message-square-text" class="w-4 h-4"></i>
+                  <span>Text</span>
+                </button>
+                <button data-type="cards" class="typeOption px-3 py-2 rounded-lg transition flex items-center justify-center gap-2">
+                  <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                  <span>Cards</span>
+                </button>
+                <button data-type="menu" class="typeOption px-3 py-2 rounded-lg transition flex items-center justify-center gap-2">
+                  <i data-lucide="list" class="w-4 h-4"></i>
+                  <span>Menu</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div id="textEditor" class="space-y-4">
+            <div>
+              <label class="block text-xs font-semibold text-gray-600 mb-1">Message</label>
+              <textarea id="autoResponseText" rows="3" placeholder="Write the automatic response..."
+                        class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60"></textarea>
+            </div>
+            <div class="grid gap-3 sm:grid-cols-2">
+              <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1">Title</label>
+                <input id="autoResponseTitle" type="text" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1">Subtitle</label>
+                <input id="autoResponseSubtitle" type="text" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60">
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-600 mb-1">Image URL (optional)</label>
+              <input id="autoResponseImage" type="text" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60" placeholder="https://...">
+            </div>
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-semibold text-gray-700">Buttons</span>
+                <button id="addTextButton" class="text-xs px-2 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 transition">+ Add button</button>
+              </div>
+              <div id="textButtonsList" class="mt-2 space-y-2"></div>
+            </div>
+            <div>
+              <span class="text-sm font-semibold text-gray-700">Live preview</span>
+              <div id="textPreview" class="mt-2 bg-gray-50 border border-gray-200 rounded-2xl p-4 flex justify-center"></div>
+            </div>
+          </div>
+
+          <div id="cardsEditor" class="space-y-3 hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-semibold text-gray-700">Cards</span>
+              <button id="addCardButton" class="text-xs px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 transition">+ Add card</button>
+            </div>
+            <div id="cardsList" class="space-y-3"></div>
+          </div>
+
+          <div id="menuEditor" class="space-y-3 hidden">
+            <div>
+              <label class="block text-xs font-semibold text-gray-600 mb-1">Intro text</label>
+              <input id="menuIntroText" type="text" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60" placeholder="Choose an option">
+            </div>
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-semibold text-gray-700">Buttons</span>
+                <button id="addMenuButton" class="text-xs px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 transition">+ Add button</button>
+              </div>
+              <div id="menuButtonsList" class="mt-2 space-y-2"></div>
+            </div>
+            <div>
+              <span class="text-sm font-semibold text-gray-700">Preview</span>
+              <div id="menuPreview" class="mt-2 bg-gray-50 border border-gray-200 rounded-2xl p-4 flex flex-wrap gap-2"></div>
+            </div>
+          </div>
+
+          <div class="flex justify-end items-center gap-3">
+            <button id="saveAutoResponses" class="px-4 py-2 bg-black text-white rounded-md flex items-center gap-2 text-sm">
+              <i data-lucide="save"></i> Save changes
+            </button>
+            <button id="deleteAutoResponse" class="p-2 rounded-lg text-red-600 hover:text-red-700 hover:bg-red-50 transition"
+                    aria-label="Delete this tab" title="Delete this tab">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p id="msgAutoResponses" class="text-green-600 text-sm hidden">✔ Saved</p>
+  </div>
+</section>
+
+
+</div>
+        </div>
+      </main>
+
     </div>
   </div>
 
-  <!-- Knowledge Delete Modal -->
-  <div id="knowledgeDeleteModal" class="fixed inset-0 z-[1200] hidden items-center justify-center bg-black/40 px-4 backdrop-blur-sm">
-    <div class="card relative w-full max-w-md space-y-5">
-      <button id="closeKnowledgeDeleteModal" class="absolute right-4 top-4 text-zinc-400 transition hover:text-zinc-600">
-        <i data-lucide="x" class="h-5 w-5"></i>
+  <!-- Toast -->
+<div id="toast"
+  class="fixed top-[70px] left-1/2 -translate-x-1/2 bg-green-600 text-white px-4 py-2 rounded-lg opacity-0 text-sm shadow-lg transition-opacity z-[9999]">
+</div>
+
+<!-- 🧩 Modal de recorte de Header -->
+<div id="cropperModal"
+  class="fixed inset-0 bg-black/70 hidden items-center justify-center z-[9998]">
+  <div class="bg-white rounded-2xl p-6 shadow-xl max-w-sm w-full text-center">
+    <h3 class="font-semibold mb-4">Crop Header Image</h3>
+    <div class="w-full aspect-square bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
+      <img id="cropperImage" class="max-w-full max-h-[300px]" />
+    </div>
+
+    <!-- Progress -->
+    <div id="logoProgressWrap" class="mt-4 hidden w-full bg-gray-200 rounded-full overflow-hidden h-2">
+      <div id="logoBar" class="h-2 w-0 bg-black transition-all duration-200"></div>
+    </div>
+
+    <div class="flex justify-center gap-3 mt-5">
+      <button id="cancelCrop"
+        class="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100">
+        Cancel
       </button>
-      <div class="flex items-start gap-3">
-        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-red-50 text-red-600">
-          <i data-lucide="trash-2" class="h-5 w-5"></i>
-        </div>
-        <div class="space-y-2">
-          <h3 class="text-lg font-semibold text-zinc-900">Delete knowledge page</h3>
-          <p class="text-sm text-zinc-600">Are you sure you want to delete <span id="deleteKnowledgePageTitle" class="font-medium text-zinc-900"></span>? This action cannot be undone.</p>
-        </div>
-      </div>
-      <div class="flex items-center justify-end gap-3">
-        <button id="cancelDeleteKnowledge" class="rounded-full border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 transition hover:border-zinc-300 hover:bg-zinc-100">Cancel</button>
-        <button id="confirmDeleteKnowledge" class="rounded-full bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700">Delete</button>
-      </div>
+      <button id="confirmCrop"
+        class="px-4 py-2 rounded-lg bg-black text-white hover:bg-gray-800">
+        Save
+      </button>
     </div>
   </div>
+</div>
+
+
+
+<!-- Modal: Add knowledge page -->
+<div id="knowledgeModal" class="fixed inset-0 hidden items-center justify-center bg-black/40 backdrop-blur-sm z-[1200] px-4">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-xl p-6 space-y-4 relative">
+    <button id="closeKnowledgeModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+      <i data-lucide="x" class="w-5 h-5"></i>
+    </button>
+    <div class="space-y-1">
+      <h3 class="text-lg font-semibold">Add Page Knowledge</h3>
+      <p class="text-sm text-gray-500">Paste the URL of the page you want to import. We will crawl it and organize the information automatically.</p>
+    </div>
+    <div class="space-y-2">
+      <label for="knowledgeUrlInput" class="text-xs font-medium text-gray-600 uppercase tracking-wide">Page URL</label>
+      <input id="knowledgeUrlInput" type="url" placeholder="https://example.com/page" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black" />
+    </div>
+    <p id="knowledgeModalError" class="text-sm text-red-600 hidden"></p>
+    <p id="knowledgeModalStatus" class="text-sm text-gray-500 hidden"></p>
+    <div class="flex items-center justify-end gap-2 pt-2">
+      <button id="cancelKnowledgeModal" class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">Cancel</button>
+      <button id="confirmAddKnowledge" class="px-4 py-2 bg-black text-white rounded-lg text-sm flex items-center gap-2">
+        <span>Add</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Delete knowledge page -->
+<div id="knowledgeDeleteModal" class="fixed inset-0 hidden items-center justify-center bg-black/40 backdrop-blur-sm z-[1200] px-4">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 space-y-5 relative">
+    <button id="closeKnowledgeDeleteModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+      <i data-lucide="x" class="w-5 h-5"></i>
+    </button>
+    <div class="flex items-start gap-3">
+      <div class="flex h-10 w-10 items-center justify-center rounded-full bg-red-50 text-red-600">
+        <i data-lucide="trash-2" class="w-5 h-5"></i>
+      </div>
+      <div class="space-y-2">
+        <h3 class="text-lg font-semibold">Delete knowledge page</h3>
+        <p class="text-sm text-gray-600">
+          Are you sure you want to delete <span id="deleteKnowledgePageTitle" class="font-medium text-gray-900"></span>? This action
+          cannot be undone.
+        </p>
+      </div>
+    </div>
+    <div class="flex items-center justify-end gap-2 pt-2">
+      <button id="cancelDeleteKnowledge" class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">Cancel</button>
+      <button id="confirmDeleteKnowledge" class="px-4 py-2 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700">Delete</button>
+    </div>
+  </div>
+</div>
+
+
 <script>
 // ====== Firebase config ======
 const FIREBASE_CONFIG = {
@@ -3137,15 +3368,16 @@ window.addEventListener('load', ()=>{ $('pageLoader').style.display='none'; });
 
 <!-- 🎯 Selector de icono del widget -->
 <div id="widgetIconModal"
-  class="fixed inset-0 z-[9998] hidden items-center justify-center bg-black/60 px-4 backdrop-blur-sm">
-  <div class="card w-full max-w-md space-y-5">
-    <div class="flex items-center justify-between">
-      <h3 class="text-lg font-semibold text-zinc-900">Choose the widget icon</h3>
-      <button type="button" id="closeWidgetIconModal" class="rounded-full p-2 text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-700">
-        <i data-lucide="x" class="h-4 w-4"></i>
+  class="fixed inset-0 bg-black/70 hidden items-center justify-center z-[9998]">
+  <div class="bg-white rounded-2xl p-6 shadow-xl max-w-md w-full">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="font-semibold text-lg">Choose the widget icon</h3>
+      <button type="button" id="closeWidgetIconModal"
+        class="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition">
+        <i data-lucide="x" class="w-4 h-4"></i>
       </button>
     </div>
-    <p class="text-sm text-zinc-500">Select one of the available icons for your widget.</p>
+    <p class="text-sm text-gray-500 mb-4">Select one of the available icons for your widget.</p>
     <div class="grid grid-cols-3 gap-4">
       <button type="button" class="widget-icon-option" data-widget-icon="widgets/1.png">
         <img src="widgets/1.png" alt="Icon 1" />
@@ -3163,21 +3395,23 @@ window.addEventListener('load', ()=>{ $('pageLoader').style.display='none'; });
 
 <!-- 🧑‍🎨 Avatar Crop Modal -->
 <div id="cropperModalAvatar"
-  class="fixed inset-0 z-[9998] hidden items-center justify-center bg-black/60 px-4 backdrop-blur-sm">
-  <div class="card w-full max-w-sm space-y-5 text-center">
-    <h3 class="text-lg font-semibold text-zinc-900">Crop Avatar</h3>
-    <div class="flex aspect-square w-full items-center justify-center overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-50">
+  class="fixed inset-0 bg-black/70 hidden items-center justify-center z-[9998]">
+  <div class="bg-white rounded-2xl p-6 shadow-xl max-w-sm w-full text-center">
+    <h3 class="font-semibold mb-4">Crop Avatar</h3>
+    <div class="w-full aspect-square bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
       <img id="cropperImageAvatar" class="max-w-full max-h-[300px]" />
     </div>
 
     <!-- Progress -->
-    <div id="avatarProgressWrap" class="hidden w-full overflow-hidden rounded-full bg-zinc-200">
-      <div id="avatarBar" class="h-2 w-0 bg-zinc-900 transition-all duration-200"></div>
+    <div id="avatarProgressWrap" class="mt-4 hidden w-full bg-gray-200 rounded-full overflow-hidden h-2">
+      <div id="avatarBar" class="h-2 w-0 bg-black transition-all duration-200"></div>
     </div>
 
-    <div class="flex justify-center gap-3">
-      <button id="cancelCropAvatar" class="rounded-full border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 transition hover:border-zinc-300 hover:bg-zinc-100">Cancel</button>
-      <button id="confirmCropAvatar" class="rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-800">Save</button>
+    <div class="flex justify-center gap-3 mt-5">
+      <button id="cancelCropAvatar"
+        class="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 text-sm">Cancel</button>
+      <button id="confirmCropAvatar"
+        class="px-4 py-2 rounded-lg bg-black text-white hover:bg-gray-800 text-sm">Save</button>
     </div>
   </div>
 </div>
