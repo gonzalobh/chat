@@ -1115,11 +1115,13 @@ auth.onAuthStateChanged(async (u) => {
 
     // ✅ Mostrar chat en vivo dentro del mockup
     const live = document.getElementById('liveChatFrame');
-    if (live && EMPRESA) {
+    if (live) {
       const previewUrl = new URL('chat.html', window.location.href);
-      previewUrl.searchParams.set('empresa', EMPRESA);
+      if (EMPRESA) {
+        previewUrl.searchParams.set('empresa', EMPRESA);
+      }
       live.src = previewUrl.toString();
-      console.log('💬 Live chat loaded for', EMPRESA, '➡', live.src);
+      console.log('💬 Live chat loaded for', EMPRESA || '(default)', '➡', live.src);
     }
 
   } else {
