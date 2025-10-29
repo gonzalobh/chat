@@ -1116,8 +1116,10 @@ auth.onAuthStateChanged(async (u) => {
     // ✅ Mostrar chat en vivo dentro del mockup
     const live = document.getElementById('liveChatFrame');
     if (live && EMPRESA) {
-      live.src = `https://tomos.bot/chat.html?empresa=${encodeURIComponent(EMPRESA)}`;
-      console.log('💬 Live chat loaded for', EMPRESA);
+      const previewUrl = new URL('chat.html', window.location.href);
+      previewUrl.searchParams.set('empresa', EMPRESA);
+      live.src = previewUrl.toString();
+      console.log('💬 Live chat loaded for', EMPRESA, '➡', live.src);
     }
 
   } else {
@@ -2389,7 +2391,6 @@ function initKnowledge() {
 function initSchedule() {
   const ref = eref('config/schedule');
   const list = $('scheduleList');
-  const btnSave = $('saveSchedule');
   const msg = $('msgSchedule');
 
   // 🧩 Crear fila de horario
@@ -2518,10 +2519,17 @@ function initSchedule() {
   ref.once('value', s => {
     const data = s.val() || {};
     list.innerHTML = '';
-    for (const id in data) {
-      const r = data[id];
-      list.appendChild(makeRow(id, r.start, r.end, r.days || []));
+
+    const ids = Object.keys(data);
+    if (ids.length === 0) {
+      list.appendChild(makeRow('default', '00:00', '23:59', [0, 3]));
+    } else {
+      ids.forEach(id => {
+        const r = data[id] || {};
+        list.appendChild(makeRow(id, r.start, r.end, r.days || []));
+      });
     }
+
     renderActionRow();
   });
 }
