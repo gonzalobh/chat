@@ -457,9 +457,9 @@ body.login-view #appContainer {
               <i data-lucide="clock" class="w-5 h-5"></i>
               Schedule
             </div>
-            <p class="text-sm text-gray-500">Define the periods when the chat widget should be active.</p>
+            <p class="text-sm text-gray-500">Define the periods of activity. Changes are saved automatically.</p>
             <div id="scheduleList" class="space-y-3"></div>
-            <p id="msgSchedule" class="text-green-600 text-sm hidden">✔ Saved</p>
+            <p id="msgSchedule" class="text-green-600 text-sm hidden">✔ Changes saved</p>
           </div>
         </div>
 
@@ -2423,41 +2423,106 @@ function initKnowledge() {
 function initSchedule() {
   const ref = eref('config/schedule');
   const list = $('scheduleList');
-  const btnSave = $('saveSchedule');
   const msg = $('msgSchedule');
 
-  // 🧩 Crear fila de horario
-  function makeRow(id, start = "00:00", end = "23:59", days = []) {
+  const DAYS = [
+    { label: 'M', value: 1, title: 'Monday' },
+    { label: 'T', value: 2, title: 'Tuesday' },
+    { label: 'W', value: 3, title: 'Wednesday' },
+    { label: 'T', value: 4, title: 'Thursday' },
+    { label: 'F', value: 5, title: 'Friday' },
+    { label: 'S', value: 6, title: 'Saturday' },
+    { label: 'S', value: 0, title: 'Sunday' }
+  ];
+
+  let saveTimer = null;
+  let isSaving = false;
+  let needsSave = false;
+
+  function scheduleChanged() {
+    needsSave = true;
+    if (saveTimer) clearTimeout(saveTimer);
+    saveTimer = setTimeout(persistSchedule, 600);
+  }
+
+  async function persistSchedule() {
+    if (isSaving) {
+      saveTimer = setTimeout(persistSchedule, 300);
+      return;
+    }
+
+    if (!needsSave) return;
+    needsSave = false;
+    saveTimer = null;
+
+    if (!canWriteFlag) return;
+
+    const rows = list.querySelectorAll('[data-id]');
+    const out = {};
+    rows.forEach(r => {
+      const id = r.dataset.id;
+      const start = r.querySelector('.start').value;
+      const end = r.querySelector('.end').value;
+      const days = [...r.querySelectorAll('.day.is-active')].map(d => parseInt(d.dataset.day, 10));
+      out[id] = { start, end, days };
+    });
+
+    isSaving = true;
+    try {
+      await canWrite(async () => {
+        await ref.set(out);
+        msg.classList.remove('hidden');
+        setTimeout(() => msg.classList.add('hidden'), 1200);
+      });
+    } finally {
+      isSaving = false;
+      if (needsSave) {
+        persistSchedule();
+      }
+    }
+  }
+
+  function applyDayState(btn, active) {
+    btn.classList.toggle('is-active', active);
+    btn.classList.toggle('bg-gray-900', active);
+    btn.classList.toggle('text-white', active);
+    btn.classList.toggle('shadow-sm', active);
+    btn.classList.toggle('bg-white', !active);
+    btn.classList.toggle('text-gray-500', !active);
+    btn.classList.toggle('border', !active);
+    btn.classList.toggle('border-gray-300', !active);
+    btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+  }
+
+  // 🧩 Crear fila de horario con diseño actualizado
+  function makeRow(id, start = "07:00", end = "21:00", days = []) {
     const div = document.createElement('div');
-    div.className = "flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border rounded-xl bg-gray-50 p-4 shadow-sm";
+    div.className = "rounded-2xl bg-gray-100 p-4 space-y-4";
     div.dataset.id = id;
 
     div.innerHTML = `
-      <div class="flex items-center gap-2">
-        <div class="flex items-center gap-1 border rounded-lg bg-white px-2 py-1">
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 bg-white rounded-xl px-3 py-2 shadow-inner border border-gray-200">
           <i data-lucide="clock" class="w-4 h-4 text-gray-500"></i>
           <input type="text" pattern="^([01]?[0-9]|2[0-3]):[0-5][0-9]$" maxlength="5"
-            placeholder="00:00" class="start text-sm border-none outline-none bg-transparent w-16 text-center" value="${start}">
+            placeholder="07:00" class="start text-lg font-semibold text-gray-700 border-none outline-none bg-transparent w-16 text-center" value="${start}">
         </div>
-        <span class="text-gray-400">→</span>
-        <div class="flex items-center gap-1 border rounded-lg bg-white px-2 py-1">
+        <i data-lucide="arrow-right" class="w-4 h-4 text-gray-400"></i>
+        <div class="flex items-center gap-2 bg-white rounded-xl px-3 py-2 shadow-inner border border-gray-200">
           <i data-lucide="clock" class="w-4 h-4 text-gray-500"></i>
           <input type="text" pattern="^([01]?[0-9]|2[0-3]):[0-5][0-9]$" maxlength="5"
-            placeholder="23:59" class="end text-sm border-none outline-none bg-transparent w-16 text-center" value="${end}">
+            placeholder="21:00" class="end text-lg font-semibold text-gray-700 border-none outline-none bg-transparent w-16 text-center" value="${end}">
         </div>
+        <button type="button" class="delete ml-auto text-gray-400 hover:text-red-500 transition" title="Delete period">
+          <i data-lucide="trash-2" class="w-5 h-5"></i>
+        </button>
       </div>
 
-      <div class="flex items-center gap-1 ml-auto">
-        ${["S","M","T","W","T","F","S"].map((d,i)=>
-          `<button data-day="${i}" class="day w-8 h-8 rounded-full text-xs font-medium transition-all duration-150 ${
-            days.includes(i)
-              ? 'bg-black text-white shadow-sm'
-              : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-100'
-          }">${d}</button>`
-        ).join('')}
-        <button class="delete ml-3 text-gray-400 hover:text-red-600 transition" title="Delete">
-          <i data-lucide="trash" class="w-4 h-4"></i>
-        </button>
+      <div class="flex flex-wrap gap-2">
+        ${DAYS.map((d) => {
+          const active = days.includes(d.value);
+          return `<button type="button" data-day="${d.value}" title="${d.title}" class="day ${active ? 'is-active bg-gray-900 text-white shadow-sm' : 'bg-white text-gray-500 border border-gray-300'} w-9 h-9 rounded-full text-sm font-medium flex items-center justify-center transition hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-gray-300" aria-pressed="${active ? 'true' : 'false'}">${d.label}</button>`;
+        }).join('')}
       </div>
     `;
 
@@ -2467,95 +2532,77 @@ function initSchedule() {
         let val = e.target.value.trim();
         if (!/^\d{1,2}:\d{2}$/.test(val)) {
           e.target.value = "00:00";
-          return;
+        } else {
+          let [h, m] = val.split(":").map(Number);
+          if (h > 23) h = 23;
+          if (m > 59) m = 59;
+          e.target.value = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
         }
-        let [h, m] = val.split(":").map(Number);
-        if (h > 23) h = 23;
-        if (m > 59) m = 59;
-        e.target.value = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+        scheduleChanged();
       });
     });
 
     // 🔸 Toggle de días activos
     div.querySelectorAll('.day').forEach(btn => {
+      applyDayState(btn, btn.classList.contains('is-active'));
       btn.addEventListener('click', () => {
-        const active = btn.classList.contains('bg-black');
-        if (active) {
-          btn.classList.remove('bg-black','text-white','shadow-sm');
-          btn.classList.add('bg-white','text-gray-600','border','border-gray-300','hover:bg-gray-100');
-        } else {
-          btn.classList.add('bg-black','text-white','shadow-sm');
-          btn.classList.remove('bg-white','text-gray-600','border','border-gray-300','hover:bg-gray-100');
-        }
+        const nowActive = !btn.classList.contains('is-active');
+        applyDayState(btn, nowActive);
+        scheduleChanged();
       });
     });
 
     // 🗑️ Eliminar fila
     div.querySelector('.delete').onclick = () => {
       div.remove();
-      renderActionRow(); // reubica el "+" y "Save"
+      renderActionRow();
+      scheduleChanged();
     };
 
     lucide.createIcons();
     return div;
   }
 
-  // 🧩 Renderizar botones "+" y "Save" en la misma fila
+  // 🧩 Renderizar botón "+"
   function renderActionRow() {
-    let actions = document.getElementById('scheduleActions');
-    if (actions) actions.remove();
+    const existing = list.querySelector('#scheduleActions');
+    if (existing) existing.remove();
 
-    actions = document.createElement('div');
+    const actions = document.createElement('div');
     actions.id = 'scheduleActions';
-    actions.className = "flex justify-end items-center gap-3 mt-4";
+    actions.className = "pt-2";
 
     const addBtn = document.createElement('button');
+    addBtn.type = 'button';
     addBtn.innerHTML = '<i data-lucide="plus" class="w-5 h-5"></i>';
-    addBtn.className = "bg-black text-white w-9 h-9 rounded-full flex items-center justify-center hover:bg-gray-800 shadow-sm transition";
-    addBtn.onclick = () => {
-      const newRow = makeRow('r' + Date.now());
+    addBtn.className = "w-10 h-10 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center hover:bg-gray-300 transition";
+    addBtn.addEventListener('click', () => {
+      const newRow = makeRow('r' + Date.now(), "07:00", "21:00", [1, 2, 3, 4, 5]);
       list.appendChild(newRow);
       renderActionRow();
-    };
-
-    const saveBtn = document.createElement('button');
-    saveBtn.textContent = "Save";
-    saveBtn.className = "px-5 py-2 bg-gray-100 rounded-md text-sm hover:bg-gray-200 transition font-medium";
-    saveBtn.onclick = saveSchedule;
+      scheduleChanged();
+    });
 
     actions.appendChild(addBtn);
-    actions.appendChild(saveBtn);
-
-    list.insertAdjacentElement('afterend', actions);
+    list.appendChild(actions);
     lucide.createIcons();
-  }
-
-  // 💾 Guardar configuración
-  async function saveSchedule() {
-    await canWrite(async () => {
-      const rows = list.querySelectorAll('[data-id]');
-      const out = {};
-      rows.forEach(r => {
-        const id = r.dataset.id;
-        const start = r.querySelector('.start').value;
-        const end = r.querySelector('.end').value;
-        const days = [...r.querySelectorAll('.day.bg-black')].map(d => parseInt(d.dataset.day));
-        out[id] = { start, end, days };
-      });
-      await ref.set(out);
-      msg.classList.remove('hidden');
-      setTimeout(() => msg.classList.add('hidden'), 1200);
-    });
   }
 
   // 🧩 Cargar desde Firebase
   ref.once('value', s => {
     const data = s.val() || {};
     list.innerHTML = '';
-    for (const id in data) {
-      const r = data[id];
-      list.appendChild(makeRow(id, r.start, r.end, r.days || []));
+    const keys = Object.keys(data);
+
+    if (!keys.length) {
+      list.appendChild(makeRow('r' + Date.now(), "07:00", "21:00", [1, 2, 3, 4, 5]));
+    } else {
+      keys.forEach(id => {
+        const r = data[id];
+        list.appendChild(makeRow(id, r.start, r.end, r.days || []));
+      });
     }
+
     renderActionRow();
   });
 }
