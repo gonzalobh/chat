@@ -542,9 +542,19 @@ body.login-view #appContainer {
             <div class="space-y-6">
               <div class="space-y-3">
                 <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Header</p>
-                <button id="openHeaderPanel" type="button" class="w-full flex items-center justify-between gap-3 border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 bg-white hover:border-gray-300 transition">
-                  <span id="headerSummaryTitle" class="truncate">Asistente del hotel</span>
-                  <i data-lucide="chevron-right" class="w-4 h-4 text-gray-400"></i>
+                <button id="openHeaderPanel" type="button" class="w-full text-left border border-gray-200 rounded-2xl px-4 py-3 bg-white shadow-sm hover:border-gray-300 transition">
+                  <div class="flex items-center gap-4">
+                    <div class="w-11 h-11 rounded-xl bg-gray-100 flex items-center justify-center text-gray-500">
+                      <i data-lucide="message-square-text" class="w-5 h-5"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <p id="headerSummaryTitle" class="text-sm font-medium text-gray-800 truncate">Asistente del hotel</p>
+                      <p class="text-xs text-gray-500">Edita el título y la identidad visual del encabezado.</p>
+                    </div>
+                    <div class="shrink-0 text-gray-400">
+                      <i data-lucide="pencil" class="w-4 h-4"></i>
+                    </div>
+                  </div>
                 </button>
               </div>
 
@@ -558,10 +568,15 @@ body.login-view #appContainer {
                     </button>
                   </div>
                 </div>
-                <div id="welcomeSummaryCard" class="border border-gray-200 bg-gray-50 rounded-2xl p-4 flex items-start gap-3">
-                  <img id="welcomeSummaryImage" class="w-14 h-14 rounded-xl object-cover hidden" alt="Welcome message image" />
-                  <div class="space-y-1 text-sm">
-                    <p id="welcomeSummaryText" class="text-gray-700 leading-relaxed">Add a welcome message to greet your guests.</p>
+                <div id="welcomeSummaryCard" class="border border-gray-200 bg-white rounded-2xl p-4 flex items-start gap-3 shadow-sm">
+                  <div class="w-14 h-14 rounded-xl bg-gray-100 flex items-center justify-center text-gray-500 relative overflow-hidden">
+                    <img id="welcomeSummaryImage" class="absolute inset-0 w-full h-full rounded-xl object-cover hidden" alt="Welcome message image" />
+                    <i data-lucide="sparkles" class="w-5 h-5" id="welcomeSummaryIcon"></i>
+                  </div>
+                  <div class="flex-1 space-y-2 text-sm">
+                    <div class="rounded-xl bg-gray-50 px-3 py-2 text-gray-700 leading-relaxed">
+                      <p id="welcomeSummaryText" class="leading-relaxed text-gray-700">Add a welcome message to greet your guests.</p>
+                    </div>
                     <p id="welcomeSummaryDelay" class="text-xs text-gray-500">Delay: 2s</p>
                   </div>
                 </div>
@@ -582,19 +597,19 @@ body.login-view #appContainer {
               <div class="space-y-3">
                 <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Colors</p>
                 <div class="grid gap-3 sm:grid-cols-2">
-                  <div class="flex items-center gap-3 border border-gray-200 rounded-xl px-3 py-3 bg-white shadow-sm">
+                  <div class="flex items-center gap-3 border border-gray-200 rounded-2xl px-3 py-3 bg-white shadow-sm">
                     <input id="chatBackgroundColor" type="color" class="w-10 h-10 rounded-full border border-gray-200 shadow-sm cursor-pointer">
                     <span class="text-sm font-medium text-gray-600 select-none">Chat Background</span>
                   </div>
-                  <div class="flex items-center gap-3 border border-gray-200 rounded-xl px-3 py-3 bg-white shadow-sm">
+                  <div class="flex items-center gap-3 border border-gray-200 rounded-2xl px-3 py-3 bg-white shadow-sm">
                     <input id="chatAssistantTextColor" type="color" class="w-10 h-10 rounded-full border border-gray-200 shadow-sm cursor-pointer">
                     <span class="text-sm font-medium text-gray-600 select-none">Text</span>
                   </div>
-                  <div class="flex items-center gap-3 border border-gray-200 rounded-xl px-3 py-3 bg-white shadow-sm">
+                  <div class="flex items-center gap-3 border border-gray-200 rounded-2xl px-3 py-3 bg-white shadow-sm">
                     <input id="chatPrimaryColor" type="color" class="w-10 h-10 rounded-full border border-gray-200 shadow-sm cursor-pointer">
                     <span class="text-sm font-medium text-gray-600 select-none">Client Background</span>
                   </div>
-                  <div class="flex items-center gap-3 border border-gray-200 rounded-xl px-3 py-3 bg-white shadow-sm">
+                  <div class="flex items-center gap-3 border border-gray-200 rounded-2xl px-3 py-3 bg-white shadow-sm">
                     <input id="chatClientTextColor" type="color" class="w-10 h-10 rounded-full border border-gray-200 shadow-sm cursor-pointer">
                     <span class="text-sm font-medium text-gray-600 select-none">Client Text</span>
                   </div>
@@ -3685,6 +3700,7 @@ function initWelcome() {
   const summaryText = $("welcomeSummaryText");
   const summaryDelay = $("welcomeSummaryDelay");
   const summaryImage = $("welcomeSummaryImage");
+  const summaryIcon = $("welcomeSummaryIcon");
 
   const defaultSummary = "Add a welcome message to greet your guests.";
   const state = {
@@ -3716,9 +3732,11 @@ function initWelcome() {
       if (state.image) {
         summaryImage.src = state.image;
         summaryImage.classList.remove('hidden');
+        if (summaryIcon) summaryIcon.classList.add('hidden');
       } else {
         summaryImage.classList.add('hidden');
         summaryImage.removeAttribute('src');
+        if (summaryIcon) summaryIcon.classList.remove('hidden');
       }
     }
     if (summaryCard) {
