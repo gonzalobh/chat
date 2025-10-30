@@ -1428,15 +1428,28 @@ function initApariencia() {
   const closeWelcomeButton = $('closeWelcomePanel');
 
   const hideHeaderPanel = () => {
-    headerPanel?.classList.add('hidden');
-    headerOverlay?.classList.add('hidden');
+    if (headerPanel) {
+      headerPanel.classList.add('hidden');
+      headerPanel.style.display = '';
+    }
+    if (headerOverlay) {
+      headerOverlay.classList.add('hidden');
+      headerOverlay.style.display = '';
+    }
   };
   window.__hideHeaderPanel = hideHeaderPanel;
 
   const hideWelcomePanel = () => {
-    welcomePanel?.classList.add('hidden');
-    welcomeOverlay?.classList.add('hidden');
+    if (welcomePanel) {
+      welcomePanel.classList.add('hidden');
+      welcomePanel.style.display = '';
+    }
+    if (welcomeOverlay) {
+      welcomeOverlay.classList.add('hidden');
+      welcomeOverlay.style.display = '';
+    }
   };
+  window.__hideWelcomePanel = hideWelcomePanel;
 
   const setChatPanel = (name) => {
     tabs.forEach(btn => {
@@ -1484,16 +1497,28 @@ function initApariencia() {
   const showHeaderPanel = () => {
     hideWelcomePanel();
     if (typeof window.__hideAvatarPopover === 'function') window.__hideAvatarPopover();
-    headerPanel?.classList.remove('hidden');
-    headerOverlay?.classList.remove('hidden');
+    if (headerPanel) {
+      headerPanel.classList.remove('hidden');
+      headerPanel.style.display = 'block';
+    }
+    if (headerOverlay) {
+      headerOverlay.classList.remove('hidden');
+      headerOverlay.style.display = 'block';
+    }
     lucide.createIcons();
   };
 
   const showWelcomePanel = () => {
     hideHeaderPanel();
     if (typeof window.__hideAvatarPopover === 'function') window.__hideAvatarPopover();
-    welcomePanel?.classList.remove('hidden');
-    welcomeOverlay?.classList.remove('hidden');
+    if (welcomePanel) {
+      welcomePanel.classList.remove('hidden');
+      welcomePanel.style.display = 'block';
+    }
+    if (welcomeOverlay) {
+      welcomeOverlay.classList.remove('hidden');
+      welcomeOverlay.style.display = 'block';
+    }
     lucide.createIcons();
   };
 
@@ -2212,7 +2237,11 @@ function initSettingsTab(){
   const hideAvatarPopover = () => {
     if (!botAvatarButton || !avatarPopover) return;
     avatarPopover.classList.add('hidden');
-    avatarOverlay?.classList.add('hidden');
+    avatarPopover.style.display = '';
+    if (avatarOverlay) {
+      avatarOverlay.classList.add('hidden');
+      avatarOverlay.style.display = '';
+    }
     botAvatarButton.setAttribute('aria-expanded', 'false');
     avatarPopoverOpen = false;
   };
@@ -2222,7 +2251,11 @@ function initSettingsTab(){
     if (typeof window.__hideHeaderPanel === 'function') window.__hideHeaderPanel();
     if (typeof window.__hideWelcomePanel === 'function') window.__hideWelcomePanel();
     avatarPopover.classList.remove('hidden');
-    avatarOverlay?.classList.remove('hidden');
+    avatarPopover.style.display = 'block';
+    if (avatarOverlay) {
+      avatarOverlay.classList.remove('hidden');
+      avatarOverlay.style.display = 'block';
+    }
     botAvatarButton.setAttribute('aria-expanded', 'true');
     avatarPopoverOpen = true;
     if (window.lucide) lucide.createIcons();
