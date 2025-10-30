@@ -35,6 +35,7 @@
   --chat-primary:#111111;
   --assistant-text:#000000; /* 🆕 color del texto del asistente */
   --chat-client-text:#ffffff;
+  --chat-header-text:#1f2937;
   --avatar-radius:50%;
 }
     html,body { height:100%; background:#ececec; }
@@ -68,7 +69,12 @@
     /* Botón enviar */
     #sendChatBtn { flex-shrink:0; width:40px; height:40px; border-radius:9999px; display:flex; align-items:center; justify-content:center; background:#000; color:#fff; }
     /* Color dinámico aplicado también al nombre del hotel */
-    #chatHotelName { color: var(--chat-primary) !important; }
+    #chatHeader { color: var(--chat-header-text, #1f2937); }
+    #chatHotelName { color: var(--chat-header-text, var(--chat-primary)) !important; }
+    #chatMenuBtn,
+    #chatHeader button { color: var(--chat-header-text, #1f2937) !important; }
+    #chatHeader button svg,
+    #chatHeader svg { color: inherit !important; stroke: currentColor !important; }
     /* Avatar asistente dentro de mensaje */
     .avatar-icon { width:36px; height:36px; border-radius:var(--avatar-radius, 50%); object-fit:cover; margin-top:2px; flex-shrink:0; box-shadow:0 1px 3px rgba(0,0,0,.1); }
     /* Cards (autoResponses tipo cards) */
@@ -416,11 +422,17 @@ function initFirebaseBindings() {
     document.body.style.background = bg;
   });
   
-  // 🟣 Header Background Color
+// 🟣 Header Background Color
 eref('config/chatHeaderColor').on('value', s => {
   const h = s.val() || '#ffffff';
   const chatHeader = document.getElementById('chatHeader');
   if (chatHeader) chatHeader.style.background = h;
+});
+
+// 🟦 Header Text Color
+eref('config/chatHeaderTextColor').on('value', s => {
+  const c = s.val() || '#1f2937';
+  document.documentElement.style.setProperty('--chat-header-text', c);
 });
 
 // 🟢 Assistant Text Color
