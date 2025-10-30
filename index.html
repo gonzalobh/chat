@@ -459,47 +459,6 @@ body.login-view #appContainer {
               </div>
             </div>
 
-            <div id="avatarPopover" class="hidden absolute top-[calc(100%+12px)] right-0 sm:right-auto sm:left-1/2 sm:-translate-x-1/2 z-50">
-              <div class="bg-white border border-gray-200 rounded-2xl shadow-2xl w-[320px] max-w-[85vw] p-5">
-                <div class="flex items-center justify-between pb-3 border-b border-gray-200">
-                  <p class="font-semibold text-gray-800">Avatar</p>
-                  <button type="button" id="closeAvatarPopover" class="p-1.5 rounded-full hover:bg-gray-100 text-gray-500 transition">
-                    <i data-lucide="x" class="w-4 h-4"></i>
-                  </button>
-                </div>
-                <div id="avatarControls" class="space-y-4 pt-4">
-                  <div class="flex items-center gap-3 flex-wrap">
-                    <button type="button" class="avatar-option active" data-avatar-option="avatars/1.png">
-                      <img src="avatars/1.png" alt="Avatar 1" />
-                    </button>
-                    <button type="button" class="avatar-option" data-avatar-option="avatars/2.png">
-                      <img src="avatars/2.png" alt="Avatar 2" />
-                    </button>
-                    <button type="button" class="avatar-option" data-avatar-option="avatars/3.png">
-                      <img src="avatars/3.png" alt="Avatar 3" />
-                    </button>
-                    <div class="relative">
-                      <label id="customAvatarOption" class="avatar-option avatar-upload cursor-pointer" data-avatar-option="">
-                        <i id="customAvatarPlus" data-lucide="plus" class="w-5 h-5 text-gray-500"></i>
-                        <img id="customAvatarImage" src="" alt="Avatar personalizado" class="hidden" />
-                        <input id="avatarFile" type="file" accept="image/*" class="hidden" />
-                      </label>
-                      <button type="button" id="deleteAvatar" class="hidden absolute -right-1 -bottom-1 bg-red-600 text-white p-1 rounded-full shadow hover:bg-red-700 transition">
-                        <i data-lucide="trash" class="w-4 h-4"></i>
-                      </button>
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-3">
-                    <label class="flex items-center gap-2 text-sm text-gray-600 select-none">
-                      <input type="checkbox" id="avatarRounded" class="rounded border-gray-300" />
-                      Rounded
-                    </label>
-                    <input type="range" id="avatarRadius" min="0" max="50" value="50" class="flex-none w-28 accent-blue-500">
-                    <span id="avatarRadiusVal" class="text-sm text-gray-600 min-w-[2ch] text-right">50</span>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
 
         </div>
@@ -728,6 +687,49 @@ body.login-view #appContainer {
                 <button id="saveGeneral" class="px-4 py-2 bg-black text-white rounded-md">Save</button>
               </div>
               <p id="msgGeneral" class="text-green-600 text-sm hidden text-right">✔ Saved</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="avatarSettingsOverlay" class="hidden fixed inset-0 bg-black/30 z-40 xl:hidden"></div>
+      <div id="avatarPopover" class="hidden xl:absolute xl:top-0 xl:right-[-380px] xl:w-[340px] z-50">
+        <div class="card p-5 shadow-2xl space-y-5">
+          <div class="flex items-center justify-between">
+            <p class="font-semibold text-gray-800">Avatar</p>
+            <button type="button" id="closeAvatarPopover" class="p-1.5 rounded-full hover:bg-gray-100 text-gray-500 transition">
+              <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+          </div>
+          <div id="avatarControls" class="space-y-4">
+            <div class="flex items-center gap-3 flex-wrap">
+              <button type="button" class="avatar-option active" data-avatar-option="avatars/1.png">
+                <img src="avatars/1.png" alt="Avatar 1" />
+              </button>
+              <button type="button" class="avatar-option" data-avatar-option="avatars/2.png">
+                <img src="avatars/2.png" alt="Avatar 2" />
+              </button>
+              <button type="button" class="avatar-option" data-avatar-option="avatars/3.png">
+                <img src="avatars/3.png" alt="Avatar 3" />
+              </button>
+              <div class="relative">
+                <label id="customAvatarOption" class="avatar-option avatar-upload cursor-pointer" data-avatar-option="">
+                  <i id="customAvatarPlus" data-lucide="plus" class="w-5 h-5 text-gray-500"></i>
+                  <img id="customAvatarImage" src="" alt="Avatar personalizado" class="hidden" />
+                  <input id="avatarFile" type="file" accept="image/*" class="hidden" />
+                </label>
+                <button type="button" id="deleteAvatar" class="hidden absolute -right-1 -bottom-1 bg-red-600 text-white p-1 rounded-full shadow hover:bg-red-700 transition">
+                  <i data-lucide="trash" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <label class="flex items-center gap-2 text-sm text-gray-600 select-none">
+                <input type="checkbox" id="avatarRounded" class="rounded border-gray-300" />
+                Rounded
+              </label>
+              <input type="range" id="avatarRadius" min="0" max="50" value="50" class="flex-none w-28 accent-blue-500">
+              <span id="avatarRadiusVal" class="text-sm text-gray-600 min-w-[2ch] text-right">50</span>
             </div>
           </div>
         </div>
@@ -1340,6 +1342,7 @@ function initApariencia() {
     if (name !== 'chat') {
       hideHeaderPanel();
       hideWelcomePanel();
+      if (typeof window.__hideAvatarPopover === 'function') window.__hideAvatarPopover();
     }
   };
 
@@ -1373,6 +1376,7 @@ function initApariencia() {
 
   const showHeaderPanel = () => {
     hideWelcomePanel();
+    if (typeof window.__hideAvatarPopover === 'function') window.__hideAvatarPopover();
     headerPanel?.classList.remove('hidden');
     headerOverlay?.classList.remove('hidden');
     lucide.createIcons();
@@ -1380,6 +1384,7 @@ function initApariencia() {
 
   const showWelcomePanel = () => {
     hideHeaderPanel();
+    if (typeof window.__hideAvatarPopover === 'function') window.__hideAvatarPopover();
     welcomePanel?.classList.remove('hidden');
     welcomeOverlay?.classList.remove('hidden');
     lucide.createIcons();
@@ -1397,6 +1402,7 @@ function initApariencia() {
     if (e.key === 'Escape') {
       hideHeaderPanel();
       hideWelcomePanel();
+      if (typeof window.__hideAvatarPopover === 'function') window.__hideAvatarPopover();
     }
   });
 
@@ -2092,40 +2098,57 @@ function applyPreview() {
 function initSettingsTab(){
   const botAvatarButton = $('botAvatarButton');
   const avatarPopover = $('avatarPopover');
+  const avatarOverlay = $('avatarSettingsOverlay');
   const closeAvatarPopover = $('closeAvatarPopover');
   let avatarPopoverOpen = false;
 
-  const toggleAvatarPopover = (show) => {
+  const hideAvatarPopover = () => {
     if (!botAvatarButton || !avatarPopover) return;
-    const shouldShow = typeof show === 'boolean' ? show : !avatarPopoverOpen;
-    avatarPopover.classList.toggle('hidden', !shouldShow);
-    botAvatarButton.setAttribute('aria-expanded', shouldShow ? 'true' : 'false');
-    avatarPopoverOpen = shouldShow;
-    if (shouldShow && window.lucide) {
-      lucide.createIcons();
-    }
+    avatarPopover.classList.add('hidden');
+    avatarOverlay?.classList.add('hidden');
+    botAvatarButton.setAttribute('aria-expanded', 'false');
+    avatarPopoverOpen = false;
   };
+
+  const showAvatarPopover = () => {
+    if (!botAvatarButton || !avatarPopover) return;
+    if (typeof window.__hideHeaderPanel === 'function') window.__hideHeaderPanel();
+    if (typeof window.__hideWelcomePanel === 'function') window.__hideWelcomePanel();
+    avatarPopover.classList.remove('hidden');
+    avatarOverlay?.classList.remove('hidden');
+    botAvatarButton.setAttribute('aria-expanded', 'true');
+    avatarPopoverOpen = true;
+    if (window.lucide) lucide.createIcons();
+  };
+
+  window.__hideAvatarPopover = hideAvatarPopover;
 
   if (botAvatarButton && avatarPopover) {
     botAvatarButton.addEventListener('click', e => {
       e.preventDefault();
       e.stopPropagation();
-      toggleAvatarPopover();
+      if (avatarPopoverOpen) {
+        hideAvatarPopover();
+      } else {
+        showAvatarPopover();
+      }
     });
 
     closeAvatarPopover?.addEventListener('click', e => {
       e.preventDefault();
-      toggleAvatarPopover(false);
+      hideAvatarPopover();
     });
+
+    avatarOverlay?.addEventListener('click', hideAvatarPopover);
 
     document.addEventListener('click', e => {
       if (!avatarPopoverOpen) return;
       if (avatarPopover.contains(e.target) || botAvatarButton.contains(e.target)) return;
-      toggleAvatarPopover(false);
+      hideAvatarPopover();
     });
 
     document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') toggleAvatarPopover(false);
+      if (e.key === 'Escape') hideAvatarPopover();
     });
   }
 
