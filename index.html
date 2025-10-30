@@ -691,9 +691,9 @@ body.login-view #appContainer {
         </div>
       </div>
 
-      <div id="headerSettingsOverlay" class="hidden fixed inset-0 bg-black/30 z-40 xl:hidden"></div>
-      <div id="headerSettingsPanel" class="hidden xl:absolute xl:top-0 xl:right-[-380px] xl:w-[340px] z-50">
-        <div class="card p-5 shadow-2xl">
+      <div id="headerSettingsOverlay" class="hidden fixed inset-0 bg-black/30 z-40"></div>
+      <div id="headerSettingsPanel" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4">
+        <div class="card p-5 shadow-2xl w-full max-w-md">
           <div class="flex items-center justify-between mb-5">
             <div class="flex items-center gap-2 font-semibold text-gray-800">
               <i data-lucide="panel-top" class="w-5 h-5"></i>
@@ -768,9 +768,9 @@ body.login-view #appContainer {
         </div>
       </div>
 
-      <div id="avatarSettingsOverlay" class="hidden fixed inset-0 bg-black/30 z-40 xl:hidden"></div>
-      <div id="avatarPopover" class="hidden xl:absolute xl:top-0 xl:right-[-380px] xl:w-[340px] z-50">
-        <div class="card p-5 shadow-2xl space-y-5">
+      <div id="avatarSettingsOverlay" class="hidden fixed inset-0 bg-black/30 z-40"></div>
+      <div id="avatarPopover" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4">
+        <div class="card p-5 shadow-2xl space-y-5 w-full max-w-md">
           <div class="flex items-center justify-between">
             <p class="font-semibold text-gray-800">Avatar</p>
             <button type="button" id="closeAvatarPopover" class="p-1.5 rounded-full hover:bg-gray-100 text-gray-500 transition">
@@ -811,9 +811,9 @@ body.login-view #appContainer {
         </div>
       </div>
 
-      <div id="welcomeSettingsOverlay" class="hidden fixed inset-0 bg-black/30 z-40 xl:hidden"></div>
-      <div id="welcomeSettingsPanel" class="hidden xl:absolute xl:top-0 xl:right-[-380px] xl:w-[340px] z-50">
-        <div class="card p-5 shadow-2xl space-y-5">
+      <div id="welcomeSettingsOverlay" class="hidden fixed inset-0 bg-black/30 z-40"></div>
+      <div id="welcomeSettingsPanel" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4">
+        <div class="card p-5 shadow-2xl space-y-5 w-full max-w-md">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2 font-semibold text-gray-800">
               <i data-lucide="sparkles" class="w-5 h-5"></i>
@@ -1499,7 +1499,7 @@ function initApariencia() {
     if (typeof window.__hideAvatarPopover === 'function') window.__hideAvatarPopover();
     if (headerPanel) {
       headerPanel.classList.remove('hidden');
-      headerPanel.style.display = 'block';
+      headerPanel.style.display = 'flex';
     }
     if (headerOverlay) {
       headerOverlay.classList.remove('hidden');
@@ -1513,7 +1513,7 @@ function initApariencia() {
     if (typeof window.__hideAvatarPopover === 'function') window.__hideAvatarPopover();
     if (welcomePanel) {
       welcomePanel.classList.remove('hidden');
-      welcomePanel.style.display = 'block';
+      welcomePanel.style.display = 'flex';
     }
     if (welcomeOverlay) {
       welcomeOverlay.classList.remove('hidden');
@@ -2251,7 +2251,7 @@ function initSettingsTab(){
     if (typeof window.__hideHeaderPanel === 'function') window.__hideHeaderPanel();
     if (typeof window.__hideWelcomePanel === 'function') window.__hideWelcomePanel();
     avatarPopover.classList.remove('hidden');
-    avatarPopover.style.display = 'block';
+    avatarPopover.style.display = 'flex';
     if (avatarOverlay) {
       avatarOverlay.classList.remove('hidden');
       avatarOverlay.style.display = 'block';
