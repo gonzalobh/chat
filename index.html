@@ -1142,6 +1142,20 @@ if (window.translationManager) {
     languageSelectEl.addEventListener('change', (event) => {
       translationManager.applyLanguage(event.target.value);
     });
+
+    const languageOptionMap = {
+      en: 'language.english',
+      fr: 'language.french',
+      es: 'language.spanish',
+      de: 'language.german',
+      pt: 'language.portuguese',
+    };
+
+    Array.from(languageSelectEl.options).forEach((option) => {
+      const key = languageOptionMap[option.value];
+      if (!key) return;
+      translationManager.register(option, key);
+    });
   }
 }
 const t = (key, vars) => window.translationManager ? translationManager.translate(key, vars) : key;
