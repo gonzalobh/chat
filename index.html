@@ -195,6 +195,81 @@ header {
   color: #fff !important;
 }
 
+/* === Templates === */
+.template-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  padding: 16px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: all 0.2s ease;
+}
+
+.template-card:hover {
+  border-color: #111;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14);
+  transform: translateY(-2px);
+}
+
+.template-card.active {
+  border-color: #111;
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.18);
+}
+
+.template-card .template-header {
+  border-radius: 12px;
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.template-card .template-preview {
+  border-radius: 14px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.template-card .template-assistant {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 8px 10px;
+  font-size: 12px;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.1);
+}
+
+.template-card .template-client {
+  align-self: flex-end;
+  border-radius: 12px;
+  padding: 8px 10px;
+  font-size: 12px;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.12);
+}
+
+.template-card .template-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.template-card .template-widget-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.template-toggle-active {
+  background: #111 !important;
+  color: #fff !important;
+  border-color: #111 !important;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18) !important;
+}
+
 /* === Centrar todas las pestañas excepto Appearance === */
 #tab-knowledge,
 #tab-respuestas {
@@ -601,7 +676,17 @@ body.login-view #appContainer {
               </div>
 
               <div class="space-y-3">
-                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Colors</p>
+                <div class="flex items-center justify-between gap-3">
+                  <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Colors</p>
+                  <button id="toggleTemplatePanel" type="button" class="flex items-center gap-2 px-3 py-1.5 border border-gray-200 rounded-full text-xs font-medium text-gray-600 bg-white shadow-sm hover:text-gray-900 hover:border-gray-300 transition">
+                    <i data-lucide="palette" class="w-3.5 h-3.5"></i>
+                    <span>Template</span>
+                  </button>
+                </div>
+                <div id="chatTemplatePanel" class="hidden space-y-3 border border-dashed border-gray-300 rounded-2xl p-4 bg-gray-50/70">
+                  <p class="text-xs text-gray-500">Selecciona un estilo predefinido. Puedes ajustar los colores luego.</p>
+                  <div id="chatTemplateGrid" class="grid gap-3 sm:grid-cols-2"></div>
+                </div>
                 <div class="grid gap-3 sm:grid-cols-2">
                   <div class="flex items-center gap-3 border border-gray-200 rounded-2xl px-3 py-3 bg-white shadow-sm">
                     <input id="chatBackgroundColor" type="color" class="w-10 h-10 rounded-full border border-gray-200 shadow-sm cursor-pointer">
@@ -1200,6 +1285,330 @@ let EMPRESA = getEmpresa();
 $('empresaBadge').textContent = EMPRESA;
 $('empresaText').textContent = EMPRESA;
 function eref(path) { return db.ref(`${EMPRESA}/${path}`); }
+
+const DEFAULT_CHAT_TEMPLATES = {
+  midnight: {
+    order: 1,
+    name: 'Midnight Luxe',
+    description: 'Oscuro con acentos dorados.',
+    colors: {
+      background: '#0B1120',
+      assistantText: '#E2E8F0',
+      clientBackground: '#1F2937',
+      clientText: '#F8FAFC',
+      headerBackground: '#111827',
+      headerText: '#FBBF24',
+      widgetBackground: '#F59E0B'
+    }
+  },
+  coastal: {
+    order: 2,
+    name: 'Coastal Breeze',
+    description: 'Fresco, luminoso y relajado.',
+    colors: {
+      background: '#F1F5F9',
+      assistantText: '#1F2937',
+      clientBackground: '#0EA5E9',
+      clientText: '#F8FAFC',
+      headerBackground: '#38BDF8',
+      headerText: '#0F172A',
+      widgetBackground: '#0EA5E9'
+    }
+  },
+  sunset: {
+    order: 3,
+    name: 'Desert Sunset',
+    description: 'Cálido y acogedor con tonos terracota.',
+    colors: {
+      background: '#FFF7ED',
+      assistantText: '#7C2D12',
+      clientBackground: '#FB923C',
+      clientText: '#431407',
+      headerBackground: '#EA580C',
+      headerText: '#FEF3C7',
+      widgetBackground: '#EA580C'
+    }
+  },
+  forest: {
+    order: 4,
+    name: 'Forest Retreat',
+    description: 'Verde profundo con detalles naturales.',
+    colors: {
+      background: '#0B1F17',
+      assistantText: '#D1FAE5',
+      clientBackground: '#047857',
+      clientText: '#ECFDF5',
+      headerBackground: '#064E3B',
+      headerText: '#BBF7D0',
+      widgetBackground: '#10B981'
+    }
+  },
+  minimal: {
+    order: 5,
+    name: 'Minimal Light',
+    description: 'Blancos y negros para un estilo elegante.',
+    colors: {
+      background: '#FFFFFF',
+      assistantText: '#1F2937',
+      clientBackground: '#111827',
+      clientText: '#F9FAFB',
+      headerBackground: '#F3F4F6',
+      headerText: '#111827',
+      widgetBackground: '#111827'
+    }
+  },
+  berry: {
+    order: 6,
+    name: 'Berry Pop',
+    description: 'Vibrante con notas moradas y rosas.',
+    colors: {
+      background: '#FDF2F8',
+      assistantText: '#6B21A8',
+      clientBackground: '#C026D3',
+      clientText: '#FCE7F3',
+      headerBackground: '#86198F',
+      headerText: '#FCE7F3',
+      widgetBackground: '#D946EF'
+    }
+  }
+};
+
+let chatTemplates = [];
+let chatTemplatesInitialized = false;
+let chatTemplatePanelEl = null;
+let chatTemplateGridEl = null;
+let chatTemplateToggleEl = null;
+let chatTemplateRef = null;
+
+function ensureTemplateElements() {
+  if (!chatTemplatePanelEl) chatTemplatePanelEl = $('chatTemplatePanel');
+  if (!chatTemplateGridEl) chatTemplateGridEl = $('chatTemplateGrid');
+  if (!chatTemplateToggleEl) chatTemplateToggleEl = $('toggleTemplatePanel');
+}
+
+function getTemplateArray(data) {
+  const source = data && Object.keys(data || {}).length ? data : DEFAULT_CHAT_TEMPLATES;
+  return Object.entries(source).map(([id, tpl]) => ({
+    id,
+    name: tpl.name || id,
+    description: tpl.description || '',
+    order: typeof tpl.order === 'number' ? tpl.order : 0,
+    colors: {
+      background: tpl.colors?.background || '#ececec',
+      assistantText: tpl.colors?.assistantText || '#111111',
+      clientBackground: tpl.colors?.clientBackground || '#111111',
+      clientText: tpl.colors?.clientText || '#ffffff',
+      headerBackground: tpl.colors?.headerBackground || '#ffffff',
+      headerText: tpl.colors?.headerText || '#111111',
+      widgetBackground: tpl.colors?.widgetBackground || tpl.colors?.clientBackground || '#111111'
+    }
+  })).sort((a, b) => (a.order || 0) - (b.order || 0));
+}
+
+function setTemplatePanelVisibility(show) {
+  ensureTemplateElements();
+  if (!chatTemplatePanelEl || !chatTemplateToggleEl) return;
+  chatTemplatePanelEl.classList.toggle('hidden', !show);
+  chatTemplateToggleEl.classList.toggle('template-toggle-active', !!show);
+  chatTemplateToggleEl.setAttribute('aria-expanded', show ? 'true' : 'false');
+}
+
+function createTemplateCard(template) {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.dataset.templateId = template.id;
+  btn.className = 'template-card text-left focus:outline-none focus:ring-2 focus:ring-black/10';
+
+  const header = document.createElement('div');
+  header.className = 'template-header';
+  header.style.background = template.colors.headerBackground;
+  header.style.color = template.colors.headerText;
+  header.textContent = 'Header';
+
+  const preview = document.createElement('div');
+  preview.className = 'template-preview';
+  preview.style.background = template.colors.background;
+
+  const assistant = document.createElement('div');
+  assistant.className = 'template-assistant';
+  assistant.style.color = template.colors.assistantText;
+  assistant.textContent = 'Hola 👋 ¿En qué te ayudo?';
+
+  const client = document.createElement('div');
+  client.className = 'template-client';
+  client.style.background = template.colors.clientBackground;
+  client.style.color = template.colors.clientText;
+  client.textContent = 'Necesito ayuda';
+
+  preview.appendChild(assistant);
+  preview.appendChild(client);
+
+  const widgetRow = document.createElement('div');
+  widgetRow.className = 'flex items-center gap-2 text-xs text-gray-500';
+  const widgetDot = document.createElement('span');
+  widgetDot.className = 'template-widget-dot';
+  widgetDot.style.background = template.colors.widgetBackground;
+  widgetRow.appendChild(widgetDot);
+  const widgetText = document.createElement('span');
+  widgetText.textContent = 'Widget';
+  widgetRow.appendChild(widgetText);
+
+  const meta = document.createElement('div');
+  meta.className = 'template-meta';
+  const title = document.createElement('div');
+  title.className = 'text-sm font-semibold text-gray-800';
+  title.textContent = template.name;
+  meta.appendChild(title);
+  if (template.description) {
+    const description = document.createElement('div');
+    description.className = 'text-xs text-gray-500';
+    description.textContent = template.description;
+    meta.appendChild(description);
+  }
+
+  btn.appendChild(header);
+  btn.appendChild(preview);
+  btn.appendChild(widgetRow);
+  btn.appendChild(meta);
+
+  btn.addEventListener('click', () => applyTemplateById(template.id));
+
+  return btn;
+}
+
+function renderChatTemplates() {
+  ensureTemplateElements();
+  if (!chatTemplateGridEl) return;
+  chatTemplateGridEl.innerHTML = '';
+
+  if (!chatTemplates.length) {
+    const empty = document.createElement('p');
+    empty.className = 'text-xs text-gray-400 col-span-full';
+    empty.textContent = 'No hay templates disponibles aún.';
+    chatTemplateGridEl.appendChild(empty);
+    updateActiveTemplateIndicator();
+    return;
+  }
+
+  const fragment = document.createDocumentFragment();
+  chatTemplates.forEach(template => {
+    fragment.appendChild(createTemplateCard(template));
+  });
+  chatTemplateGridEl.appendChild(fragment);
+  updateActiveTemplateIndicator();
+}
+
+function getCurrentColorSnapshot() {
+  return {
+    background: ( $('chatBackgroundColor')?.value || '' ).toLowerCase(),
+    assistantText: ( $('chatAssistantTextColor')?.value || '' ).toLowerCase(),
+    clientBackground: ( $('chatPrimaryColor')?.value || '' ).toLowerCase(),
+    clientText: ( $('chatClientTextColor')?.value || '' ).toLowerCase(),
+    headerBackground: ( $('chatHeaderColor')?.value || '' ).toLowerCase(),
+    headerText: ( $('chatHeaderTextColor')?.value || '' ).toLowerCase(),
+    widgetBackground: ( $('chatButtonColor')?.value || '' ).toLowerCase()
+  };
+}
+
+function templateMatches(template, snapshot) {
+  if (!template?.colors) return false;
+  return Object.entries(snapshot).every(([key, val]) => {
+    const templateVal = (template.colors[key] || '').toLowerCase();
+    return templateVal === (val || '').toLowerCase();
+  });
+}
+
+function updateActiveTemplateIndicator() {
+  ensureTemplateElements();
+  if (!chatTemplateGridEl) return;
+  const snapshot = getCurrentColorSnapshot();
+  const buttons = chatTemplateGridEl.querySelectorAll('[data-template-id]');
+  buttons.forEach(btn => {
+    const tpl = chatTemplates.find(t => t.id === btn.dataset.templateId);
+    btn.classList.toggle('active', !!tpl && templateMatches(tpl, snapshot));
+  });
+}
+
+function applyTemplateById(templateId) {
+  const tpl = chatTemplates.find(t => t.id === templateId) || getTemplateArray(DEFAULT_CHAT_TEMPLATES).find(t => t.id === templateId);
+  if (!tpl) return;
+  const colors = tpl.colors || {};
+
+  const map = {
+    chatBackgroundColor: 'background',
+    chatAssistantTextColor: 'assistantText',
+    chatPrimaryColor: 'clientBackground',
+    chatClientTextColor: 'clientText',
+    chatHeaderColor: 'headerBackground',
+    chatHeaderTextColor: 'headerText',
+    chatButtonColor: 'widgetBackground'
+  };
+
+  Object.entries(map).forEach(([inputId, colorKey]) => {
+    const el = $(inputId);
+    if (el && colors[colorKey]) {
+      el.value = colors[colorKey];
+    }
+  });
+
+  applyPreview();
+  updateActiveTemplateIndicator();
+
+  const updates = {};
+  if (colors.background) updates.chatBackgroundColor = colors.background;
+  if (colors.assistantText) updates.chatAssistantTextColor = colors.assistantText;
+  if (colors.clientBackground) updates.chatPrimaryColor = colors.clientBackground;
+  if (colors.clientText) updates.chatClientTextColor = colors.clientText;
+  if (colors.headerBackground) updates.chatHeaderColor = colors.headerBackground;
+  if (colors.headerText) updates.chatHeaderTextColor = colors.headerText;
+  if (colors.widgetBackground) updates.chatButtonColor = colors.widgetBackground;
+
+  if (!Object.keys(updates).length) return;
+
+  canWrite(async () => {
+    await eref('config').update(updates);
+    toast('✔ Template applied');
+  }).catch(err => console.error('No se pudo aplicar el template', err));
+}
+
+function initChatTemplatesUI() {
+  if (chatTemplatesInitialized) return;
+  ensureTemplateElements();
+  if (!chatTemplatePanelEl || !chatTemplateGridEl || !chatTemplateToggleEl) return;
+
+  chatTemplateRef = chatTemplateRef || eref('config/chatTemplates');
+  chatTemplatesInitialized = true;
+  chatTemplates = getTemplateArray(null);
+
+  chatTemplateToggleEl.addEventListener('click', () => {
+    const willOpen = chatTemplatePanelEl.classList.contains('hidden');
+    setTemplatePanelVisibility(willOpen);
+    if (willOpen && !chatTemplates.length) {
+      renderChatTemplates();
+    }
+  });
+
+  chatTemplateRef.on('value', snap => {
+    chatTemplates = getTemplateArray(snap.val());
+    renderChatTemplates();
+  });
+
+  chatTemplateRef.once('value').then(async snap => {
+    if (!snap.exists()) {
+      try {
+        await refreshPermissions();
+        if (!canWriteFlag) return;
+        await chatTemplateRef.set(JSON.parse(JSON.stringify(DEFAULT_CHAT_TEMPLATES)));
+      } catch (err) {
+        console.error('No se pudieron guardar los templates por defecto', err);
+      }
+    }
+  });
+
+  setTemplatePanelVisibility(false);
+  renderChatTemplates();
+  updateActiveTemplateIndicator();
+}
 
 let canWriteFlag = false;
 async function refreshPermissions() {
@@ -2252,10 +2661,13 @@ function applyPreview() {
       console.warn("⚠️ No se pudo aplicar colores en el iframe (dominio cruzado).");
     }
   }
+
+  updateActiveTemplateIndicator();
 }
 
 // ====== Settings Tab ======
 function initSettingsTab(){
+  initChatTemplatesUI();
   const botAvatarButton = $('botAvatarButton');
   const avatarPopover = $('avatarPopover');
   const avatarOverlay = $('avatarSettingsOverlay');
