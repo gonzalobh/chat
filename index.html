@@ -335,6 +335,13 @@ body.login-view #appContainer {
       <button id="btnLogout" class="px-3 py-1.5 bg-red-600 text-white rounded-md hidden">
         Log out
       </button>
+      <select id="languageSelect" class="border border-gray-200 rounded-md px-2 py-1.5 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-black/40 notranslate">
+        <option value="en">English</option>
+        <option value="fr">Français</option>
+        <option value="es">Español</option>
+        <option value="de">Deutsch</option>
+        <option value="pt">Português</option>
+      </select>
     </div>
 
   </div>
@@ -1125,7 +1132,24 @@ body.login-view #appContainer {
 </div>
 
 
+<script src="translations.js"></script>
 <script>
+if (window.translationManager) {
+  translationManager.init();
+  const languageSelectEl = document.getElementById('languageSelect');
+  if (languageSelectEl) {
+    languageSelectEl.value = translationManager.getCurrentLanguage();
+    languageSelectEl.addEventListener('change', (event) => {
+      translationManager.applyLanguage(event.target.value);
+    });
+  }
+}
+const t = (key, vars) => window.translationManager ? translationManager.translate(key, vars) : key;
+const registerTranslationTarget = (node, key, target = 'text', options = {}) => {
+  if (!node || !window.translationManager) return;
+  translationManager.register(node, key, target, options);
+};
+
 // ====== Firebase config ======
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyC2c3S_NtouIjHPrk5LM5c0DQoTWyBrzH4",
@@ -1255,7 +1279,7 @@ function showLoginView() {
 async function canWrite(fn) {
   await refreshPermissions();
   if (!canWriteFlag) {
-    alert('You do not have permission to modify the configuration.');
+    alert(t('You do not have permission to modify the configuration.'));
     return;
   }
   await fn();
@@ -1265,7 +1289,7 @@ async function canWrite(fn) {
 $('btnLogin').addEventListener('click', async () => {
   const email = $('emailInput').value.trim();
   const pass = $('passwordInput').value.trim();
-  if (!email || !pass) return alert('Please enter your credentials.');
+  if (!email || !pass) return alert(t('Please enter your credentials.'));
   try {
     await auth.signInWithEmailAndPassword(email, pass);
   } catch (e) {
@@ -1291,7 +1315,7 @@ auth.onAuthStateChanged(async (u) => {
         }
       }
     } catch (err) {
-      console.error('Error finding company:', err);
+      console.error(t('Error finding company:'), err);
     }
 
     if (empresaDetectada) {
@@ -1299,9 +1323,9 @@ auth.onAuthStateChanged(async (u) => {
       localStorage.setItem('empresa', EMPRESA);
       $('empresaBadge').textContent = EMPRESA;
       $('empresaText').textContent = EMPRESA;
-      console.log('✅ Company detected automatically:', EMPRESA);
+      console.log(t('✅ Company detected automatically:'), EMPRESA);
     } else {
-      console.warn('⚠ No company found for this email, using previous value:', EMPRESA);
+      console.warn(t('⚠ No company found for this email, using previous value:'), EMPRESA);
     }
 
     showAppView();
@@ -1312,7 +1336,7 @@ auth.onAuthStateChanged(async (u) => {
     const live = document.getElementById('liveChatFrame');
     if (live && EMPRESA) {
       live.src = `https://tomos.bot/chat.html?empresa=${encodeURIComponent(EMPRESA)}`;
-      console.log('💬 Live chat loaded for', EMPRESA);
+      console.log(t('💬 Live chat loaded for'), EMPRESA);
     }
 
   } else {
@@ -1496,7 +1520,7 @@ $('chatPrimaryColor').addEventListener('input', (e) => {
   canWrite(async () => {
     await prRef.set(v);
     applyPreview();
-    toast('✔ Primary color saved');
+    toast(t('✔ Primary color saved'));
   });
 });
 
@@ -1512,7 +1536,7 @@ $('chatButtonColor').addEventListener('input', (e) => {
   canWrite(async () => {
     await btRef.set(v);
     applyPreview();
-    toast('✔ Button color saved');
+    toast(t('✔ Button color saved'));
   });
 });
 
@@ -1585,7 +1609,7 @@ widgetIconOptions.forEach(btn => {
       await widgetIconRef.set(icon);
       applyWidgetIcon(icon);
       closeWidgetModal();
-      toast('✔ Widget icon updated');
+      toast(t('✔ Widget icon updated'));
       applyPreview();
     });
   });
@@ -1606,7 +1630,7 @@ $('widgetRadius').addEventListener('input', (e) => {
   $('widgetRadiusVal').textContent = val;
   canWrite(async () => {
     await widgetRadiusRef.set(val);
-    toast('✔ Widget border updated');
+    toast(t('✔ Widget border updated'));
   });
   updateWidgetPreview();
   applyPreview();
@@ -1625,7 +1649,7 @@ $('chatBackgroundColor').addEventListener('input', (e) => {
   canWrite(async () => {
     await bgRef.set(v);
     applyPreview();
-    toast('✔ Background color saved');
+    toast(t('✔ Background color saved'));
   });
 });
 
@@ -1642,7 +1666,7 @@ $('chatAssistantTextColor').addEventListener('input', (e) => {
   canWrite(async () => {
     await atRef.set(v);
     applyPreview();
-    toast('✔ Assistant text color saved');
+    toast(t('✔ Assistant text color saved'));
   });
 });
 
@@ -1660,7 +1684,7 @@ $('chatClientTextColor').addEventListener('input', (e) => {
   canWrite(async () => {
     await ctRef.set(v);
     applyPreview();
-    toast('✔ Client text color saved');
+    toast(t('✔ Client text color saved'));
   });
 });
 
@@ -1678,7 +1702,7 @@ $('chatHeaderColor').addEventListener('input', (e) => {
   canWrite(async () => {
     await headerRef.set(v);
     applyPreview();
-    toast('✔ Header color saved');
+    toast(t('✔ Header color saved'));
   });
 });
 
@@ -1695,7 +1719,7 @@ $('chatHeaderTextColor').addEventListener('input', (e) => {
   canWrite(async () => {
     await headerTextRef.set(v);
     applyPreview();
-    toast('✔ Header text color saved');
+    toast(t('✔ Header text color saved'));
   });
 });
 
@@ -1771,7 +1795,7 @@ $('logoFile').addEventListener('change', e => canWrite(() => {
         $('previewLogo').src = url;
         $('previewLogo').classList.remove('hidden');
         $('logoProgressWrap').classList.add('hidden');
-        toast('✔ Header image updated'); // ✅ only toast
+        toast(t('✔ Header image updated')); // ✅ only toast
         e.target.value = ''; // clear input
         lucide.createIcons();
       });
@@ -1786,7 +1810,7 @@ $('deleteLogo').onclick = () => canWrite(async () => {
   $('logoPreviewWrap').classList.add('hidden');
   $('logoControls').classList.remove('hidden');
   $('previewLogo').classList.add('hidden');
-  toast('Logo eliminado');
+  toast(t('Logo eliminado'));
 });
 
 // === Logo Border Radius ===
@@ -1814,7 +1838,7 @@ if ($('logoRadius')) {
     // Guardar en Firebase solo si se tienen permisos
     canWrite(async () => {
       await radiusRef.set(val);
-      toast('✔ Borders updated');
+      toast(t('✔ Borders updated'));
     });
   });
 }
@@ -1873,7 +1897,7 @@ if (select) {
         await fontRef.set(font);
         $('previewBubble').style.fontFamily = `'${font}', system-ui, sans-serif`;
         $('previewBtn').style.fontFamily = `'${font}', system-ui, sans-serif`;
-        toast('✔ Font saved');
+        toast(t('✔ Font saved'));
 
         // 🔄 Refrescar mockup
 // ✨ Actualizar fuente sin recargar el iframe
@@ -1987,7 +2011,7 @@ if (iframe?.contentWindow?.document) {
       canWrite(async () => {
         await avRef.set(selected);
         applyAvatarSelection(selected);
-toast('✔ Avatar updated');
+toast(t('✔ Avatar updated'));
       });
     });
   });
@@ -2014,7 +2038,7 @@ toast('✔ Avatar updated');
 
     canWrite(async () => {
       await avatarRadiusRef.set(val);
-      toast('✔ Avatar border updated');
+      toast(t('✔ Avatar border updated'));
     });
   });
 
@@ -2068,7 +2092,7 @@ toast('✔ Avatar updated');
           await avRef.set(url);
           applyAvatarSelection(url);
           $('avatarProgressWrap').classList.add('hidden');
-toast('✔ Avatar updated');
+toast(t('✔ Avatar updated'));
           e.target.value = '';
           lucide.createIcons();
         });
@@ -2089,7 +2113,7 @@ toast('✔ Avatar updated');
         await avRef.set(DEFAULT_AVATAR);
         updateCustomAvatarUI('');
         applyAvatarSelection(DEFAULT_AVATAR);
-        toast('Avatar restored');
+        toast(t('Avatar restored'));
       });
     });
   }
@@ -2283,7 +2307,7 @@ function initSettingsTab(){
   // Chat test link
   const link = `https://tomos.bot/chat.html?empresa=${encodeURIComponent(EMPRESA)}`;
   $('chatTestLink').value = link;
-  $('copyChatLink').onclick = ()=>{ navigator.clipboard.writeText(link); toast('Copiado'); };
+  $('copyChatLink').onclick = ()=>{ navigator.clipboard.writeText(link); toast(t('Copiado')); };
   $('openChatLink').onclick = ()=> window.open(link, '_blank');
 }
 
@@ -2422,7 +2446,10 @@ function initKnowledge() {
 
   function updateCounter() {
     const len = (txt.value || '').length;
-    counter.textContent = `${len} / ${LIMIT} characters`;
+    counter.textContent = t('{count} / {limit} characters', { count: len, limit: LIMIT });
+    registerTranslationTarget(counter, '{count} / {limit} characters', 'text', {
+      vars: { count: len, limit: LIMIT }
+    });
     counter.classList.toggle('text-red-600', len > LIMIT);
     counter.classList.toggle('text-gray-500', len <= LIMIT);
     const disabled = len > LIMIT || !canWriteFlag || !currentPageId;
@@ -2490,7 +2517,7 @@ function initKnowledge() {
 
   function ensurePageExists() {
     if (pages.length === 0) {
-      const defaultPage = buildPage({ title: 'Page 1', content: '' }, 0);
+      const defaultPage = buildPage({ title: t('Page 1'), content: '' }, 0);
       pages.push(defaultPage);
     }
   }
@@ -2537,7 +2564,7 @@ function initKnowledge() {
     )}&limit=5&raw=1`;
     const res = await fetch(endpoint);
     if (!res.ok) {
-      throw new Error('Could not fetch the page content.');
+      throw new Error(t('Could not fetch the page content.'));
     }
     const text = await res.text();
     const clean = sanitizeText(text);
@@ -2595,13 +2622,15 @@ function initKnowledge() {
       canWrite(async () => {
         const url = (modalInput.value || '').trim();
         if (!url) {
-          modalError.textContent = 'Please provide a valid URL.';
+          modalError.textContent = t('Please provide a valid URL.');
+          registerTranslationTarget(modalError, 'Please provide a valid URL.');
           modalError.classList.remove('hidden');
           return;
         }
         modalError.classList.add('hidden');
         try {
-          setModalLoading(true, 'Fetching page content...');
+        setModalLoading(true, t('Fetching page content...'));
+        registerTranslationTarget(modalStatus, 'Fetching page content...');
           const raw = await fetchPageContent(url);
           // 🧩 Ahora no hay OpenAI: usamos el texto directamente
           const newPage = buildPage(
@@ -2615,12 +2644,12 @@ function initKnowledge() {
           pages.push(newPage);
           await savePages(false);
           setActivePage(newPage.id);
-          toast('✔ Knowledge page added');
+          toast(t('✔ Knowledge page added'));
           closeModal();
         } catch (err) {
           console.error(err);
           modalError.textContent =
-            err.message || 'Unable to add the page. Please try again.';
+            err.message || t('Unable to add the page. Please try again.');
           modalError.classList.remove('hidden');
         } finally {
           setModalLoading(false);
@@ -2630,7 +2659,7 @@ function initKnowledge() {
 
   function openDeleteModal(page) {
     if (!deleteModal || !deleteModalTitle) return;
-    deleteModalTitle.textContent = page?.title || 'this page';
+    deleteModalTitle.textContent = page?.title || t('this page');
     deleteModal.classList.remove('hidden');
     deleteModal.classList.add('flex');
   }
@@ -2668,7 +2697,7 @@ function initKnowledge() {
         pages.splice(index, 1);
 
         if (!pages.length) {
-          pages.push(buildPage({ title: 'Page 1', content: '' }, 0));
+          pages.push(buildPage({ title: t('Page 1'), content: '' }, 0));
         }
 
         let nextId = currentPageId;
@@ -2683,7 +2712,7 @@ function initKnowledge() {
 
         setActivePage(nextId);
         await savePages(false);
-        toast('✔ Knowledge page deleted');
+        toast(t('✔ Knowledge page deleted'));
         closeDeleteModal();
       })
   );
@@ -2726,7 +2755,7 @@ function initKnowledge() {
       const legacySnap = await legacyRef.once('value');
       const legacyText = legacySnap.val();
       if (legacyText) {
-        pages = [buildPage({ title: 'Page 1', content: legacyText }, 0)];
+        pages = [buildPage({ title: t('Page 1'), content: legacyText }, 0)];
       }
     }
 
@@ -2851,7 +2880,7 @@ function initSchedule() {
           <input type="text" pattern="^([01]?[0-9]|2[0-3]):[0-5][0-9]$" maxlength="5"
             placeholder="21:00" class="end text-lg font-semibold text-gray-700 border-none outline-none bg-transparent w-16 text-center" value="${end}">
         </div>
-        <button type="button" class="delete ml-auto text-gray-400 hover:text-red-500 transition" title="Delete period">
+        <button type="button" class="delete ml-auto text-gray-400 hover:text-red-500 transition" title="${t('Delete period')}">
           <i data-lucide="trash-2" class="w-5 h-5"></i>
         </button>
       </div>
@@ -2863,6 +2892,11 @@ function initSchedule() {
         }).join('')}
       </div>
     `;
+
+    const deleteButton = div.querySelector('button.delete');
+    if (deleteButton) {
+      registerTranslationTarget(deleteButton, 'Delete period', 'title');
+    }
 
     // 🔸 Validar formato HH:mm (24h)
     div.querySelectorAll('input.start, input.end').forEach(inp => {
@@ -2958,7 +2992,7 @@ function initIntegration(){
 
   $('copyEmbedScript').onclick = () => {
     navigator.clipboard.writeText(code);
-    toast('Copied');
+    toast(t('Copied'));
   };
 }
 
@@ -3161,7 +3195,8 @@ function initRespuestas() {
     if (!buttons.length) {
       const empty = document.createElement("p");
       empty.className = "text-xs text-gray-400";
-      empty.textContent = "No buttons added yet.";
+      empty.textContent = t('No buttons added yet.');
+      registerTranslationTarget(empty, 'No buttons added yet.');
       textButtonsList.appendChild(empty);
       return;
     }
@@ -3173,7 +3208,8 @@ function initRespuestas() {
       const labelInput = document.createElement("input");
       labelInput.type = "text";
       labelInput.className = "flex-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60";
-      labelInput.placeholder = "Button text";
+      labelInput.placeholder = t('Button text');
+      registerTranslationTarget(labelInput, 'Button text', 'placeholder');
       labelInput.value = btn.label || "";
       labelInput.addEventListener("input", e => {
         btn.label = e.target.value;
@@ -3183,7 +3219,8 @@ function initRespuestas() {
       const linkInput = document.createElement("input");
       linkInput.type = "text";
       linkInput.className = "flex-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60";
-      linkInput.placeholder = "Link or trigger";
+      linkInput.placeholder = t('Link or trigger');
+      registerTranslationTarget(linkInput, 'Link or trigger', 'placeholder');
       linkInput.value = btn.link || "";
       linkInput.addEventListener("input", e => {
         btn.link = e.target.value;
@@ -3192,7 +3229,8 @@ function initRespuestas() {
       const removeBtn = document.createElement("button");
       removeBtn.type = "button";
       removeBtn.className = "text-xs text-red-600 hover:text-red-700";
-      removeBtn.textContent = "Delete";
+      removeBtn.textContent = t('Delete');
+      registerTranslationTarget(removeBtn, 'Delete');
       removeBtn.addEventListener("click", () => {
         buttons.splice(idx, 1);
         renderTextButtons(item);
@@ -3210,7 +3248,12 @@ function initRespuestas() {
     const actions = (buttons || []).filter(b => (b.label || "").trim());
 
     if (!image && !title && !subtitle && !body && !actions.length) {
-      textPreview.innerHTML = `<p class="text-xs text-gray-400 text-center w-full">Start writing to see the live preview.</p>`;
+      textPreview.innerHTML = "";
+      const placeholder = document.createElement("p");
+      placeholder.className = "text-xs text-gray-400 text-center w-full";
+      placeholder.textContent = t('Start writing to see the live preview.');
+      registerTranslationTarget(placeholder, 'Start writing to see the live preview.');
+      textPreview.appendChild(placeholder);
       return;
     }
 
@@ -3218,7 +3261,7 @@ function initRespuestas() {
 
     textPreview.innerHTML = `
       <div class="inline-block bg-white rounded-2xl shadow-sm border border-gray-200 w-72 text-left text-gray-800 overflow-hidden">
-        ${image ? `<img src="${escapeHtml(image)}" class="w-full h-36 object-cover" alt="Preview image">` : ""}
+        ${image ? `<img src="${escapeHtml(image)}" class="w-full h-36 object-cover" alt="${t('Preview image')}">` : ""}
         <div class="p-3 space-y-2">
           ${title ? `<h3 class="font-semibold text-base">${escapeHtml(title)}</h3>` : ""}
           ${subtitle ? `<p class="text-sm text-gray-500">${escapeHtml(subtitle)}</p>` : ""}
@@ -3227,6 +3270,10 @@ function initRespuestas() {
         </div>
       </div>
     `;
+    const previewImg = textPreview.querySelector('img[alt]');
+    if (previewImg) {
+      registerTranslationTarget(previewImg, 'Preview image', 'alt');
+    }
   }
 
   function renderCards(item) {
@@ -3236,7 +3283,8 @@ function initRespuestas() {
     if (!cards.length) {
       const empty = document.createElement("p");
       empty.className = "text-xs text-gray-400";
-      empty.textContent = "No cards yet. Add one to build a carousel.";
+      empty.textContent = t('No cards yet. Add one to build a carousel.');
+      registerTranslationTarget(empty, 'No cards yet. Add one to build a carousel.');
       cardsList.appendChild(empty);
       return;
     }
@@ -3256,7 +3304,10 @@ function initRespuestas() {
       tabBtn.type = "button";
       const isActive = idx === item.__activeCardIndex;
       tabBtn.className = `whitespace-nowrap rounded-full border px-3 py-1.5 text-xs font-medium transition ${isActive ? "bg-black text-white border-black" : "bg-white border-gray-200 text-gray-600 hover:border-black/40"}`;
-      tabBtn.textContent = `Card ${idx + 1}`;
+      tabBtn.textContent = `${t('Card')} ${idx + 1}`;
+      registerTranslationTarget(tabBtn, 'Card', 'text', {
+        formatter: translated => `${translated} ${idx + 1}`
+      });
       tabBtn.addEventListener("click", () => {
         item.__activeCardIndex = idx;
         renderCards(item);
@@ -3275,11 +3326,15 @@ function initRespuestas() {
     header.className = "flex items-center justify-between";
     const title = document.createElement("span");
     title.className = "text-sm font-semibold text-gray-700";
-    title.textContent = `Card ${item.__activeCardIndex + 1}`;
+    title.textContent = `${t('Card')} ${item.__activeCardIndex + 1}`;
+    registerTranslationTarget(title, 'Card', 'text', {
+      formatter: translated => `${translated} ${item.__activeCardIndex + 1}`
+    });
     const removeBtn = document.createElement("button");
     removeBtn.type = "button";
     removeBtn.className = "text-xs text-red-600 hover:text-red-700";
-    removeBtn.textContent = "Delete";
+    removeBtn.textContent = t('Delete');
+    registerTranslationTarget(removeBtn, 'Delete');
     removeBtn.addEventListener("click", () => {
       cards.splice(item.__activeCardIndex, 1);
       if (!cards.length) {
@@ -3299,11 +3354,13 @@ function initRespuestas() {
     titleWrap.className = "space-y-1";
     const titleLabel = document.createElement("label");
     titleLabel.className = "block text-xs font-semibold text-gray-600";
-    titleLabel.textContent = "Title";
+    titleLabel.textContent = t('Title');
+    registerTranslationTarget(titleLabel, 'Title');
     const titleInput = document.createElement("input");
     titleInput.type = "text";
     titleInput.className = "w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60";
-    titleInput.placeholder = "Title";
+    titleInput.placeholder = t('Title');
+    registerTranslationTarget(titleInput, 'Title', 'placeholder');
     titleInput.value = activeCard.title || "";
     titleInput.addEventListener("input", e => {
       activeCard.title = e.target.value;
@@ -3315,11 +3372,13 @@ function initRespuestas() {
     subtitleWrap.className = "space-y-1";
     const subtitleLabel = document.createElement("label");
     subtitleLabel.className = "block text-xs font-semibold text-gray-600";
-    subtitleLabel.textContent = "Subtitle";
+    subtitleLabel.textContent = t('Subtitle');
+    registerTranslationTarget(subtitleLabel, 'Subtitle');
     const subtitleInput = document.createElement("input");
     subtitleInput.type = "text";
     subtitleInput.className = "w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60";
-    subtitleInput.placeholder = "Subtitle";
+    subtitleInput.placeholder = t('Subtitle');
+    registerTranslationTarget(subtitleInput, 'Subtitle', 'placeholder');
     subtitleInput.value = activeCard.subtitle || "";
     subtitleInput.addEventListener("input", e => {
       activeCard.subtitle = e.target.value;
@@ -3334,11 +3393,13 @@ function initRespuestas() {
     imageWrap.className = "space-y-1";
     const imageLabel = document.createElement("label");
     imageLabel.className = "block text-xs font-semibold text-gray-600";
-    imageLabel.textContent = "Image URL";
+    imageLabel.textContent = t('Image URL');
+    registerTranslationTarget(imageLabel, 'Image URL');
     const imageInput = document.createElement("input");
     imageInput.type = "text";
     imageInput.className = "w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60";
-    imageInput.placeholder = "https://...";
+    imageInput.placeholder = t('https://...');
+    registerTranslationTarget(imageInput, 'https://...', 'placeholder');
     imageInput.value = activeCard.image || "";
     imageInput.addEventListener("input", e => {
       activeCard.image = e.target.value;
@@ -3351,11 +3412,13 @@ function initRespuestas() {
     linkWrap.className = "space-y-1";
     const linkLabel = document.createElement("label");
     linkLabel.className = "block text-xs font-semibold text-gray-600";
-    linkLabel.textContent = "Link";
+    linkLabel.textContent = t('Link');
+    registerTranslationTarget(linkLabel, 'Link');
     const linkInput = document.createElement("input");
     linkInput.type = "text";
     linkInput.className = "w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60";
-    linkInput.placeholder = "https://...";
+    linkInput.placeholder = t('https://...');
+    registerTranslationTarget(linkInput, 'https://...', 'placeholder');
     linkInput.value = activeCard.link || "";
     linkInput.addEventListener("input", e => {
       activeCard.link = e.target.value;
@@ -3367,12 +3430,14 @@ function initRespuestas() {
     buttonWrap.className = "space-y-1";
     const buttonLabel = document.createElement("label");
     buttonLabel.className = "block text-xs font-semibold text-gray-600";
-    buttonLabel.textContent = "Button text";
+    buttonLabel.textContent = t('Button text');
+    registerTranslationTarget(buttonLabel, 'Button text');
     const buttonTextInput = document.createElement("input");
     buttonTextInput.type = "text";
     buttonTextInput.className = "w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60";
-    buttonTextInput.placeholder = "Reserve now";
-    buttonTextInput.value = activeCard.buttonText || "View";
+    buttonTextInput.placeholder = t('Reserve now');
+    registerTranslationTarget(buttonTextInput, 'Reserve now', 'placeholder');
+    buttonTextInput.value = activeCard.buttonText || t('View');
     buttonTextInput.addEventListener("input", e => {
       activeCard.buttonText = e.target.value;
       updateCardPreview();
@@ -3386,7 +3451,7 @@ function initRespuestas() {
     function updateCardPreview() {
       preview.innerHTML = `
         <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-          ${activeCard.image ? `<img src="${escapeHtml(activeCard.image)}" class="w-full h-32 object-cover" alt="">` : ""}
+          ${activeCard.image ? `<img src="${escapeHtml(activeCard.image)}" class="w-full h-32 object-cover" alt="${t('Preview image')}">` : ""}
           <div class="p-3 space-y-2">
             ${activeCard.title ? `<h4 class="text-sm font-semibold text-gray-800">${escapeHtml(activeCard.title)}</h4>` : ""}
             ${activeCard.subtitle ? `<p class="text-xs text-gray-500">${escapeHtml(activeCard.subtitle)}</p>` : ""}
@@ -3394,6 +3459,10 @@ function initRespuestas() {
           </div>
         </div>
       `;
+      const previewImg = preview.querySelector('img[alt]');
+      if (previewImg) {
+        registerTranslationTarget(previewImg, 'Preview image', 'alt');
+      }
     }
 
     updateCardPreview();
@@ -3408,7 +3477,8 @@ function initRespuestas() {
     if (!buttons.length) {
       const empty = document.createElement("p");
       empty.className = "text-xs text-gray-400";
-      empty.textContent = "Add options so guests can tap them quickly.";
+      empty.textContent = t('Add options so guests can tap them quickly.');
+      registerTranslationTarget(empty, 'Add options so guests can tap them quickly.');
       menuButtonsList.appendChild(empty);
       return;
     }
@@ -3421,7 +3491,8 @@ function initRespuestas() {
       const labelInput = document.createElement("input");
       labelInput.type = "text";
       labelInput.className = "flex-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60";
-      labelInput.placeholder = "Button label";
+      labelInput.placeholder = t('Button label');
+      registerTranslationTarget(labelInput, 'Button label', 'placeholder');
       labelInput.value = btn.label || "";
       labelInput.addEventListener("input", e => {
         btn.label = e.target.value;
@@ -3431,7 +3502,8 @@ function initRespuestas() {
       const actionInput = document.createElement("input");
       actionInput.type = "text";
       actionInput.className = "flex-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60";
-      actionInput.placeholder = "Trigger or link";
+      actionInput.placeholder = t('Trigger or link');
+      registerTranslationTarget(actionInput, 'Trigger or link', 'placeholder');
       actionInput.value = btn.action;
       actionInput.addEventListener("input", e => {
         btn.action = e.target.value;
@@ -3441,7 +3513,8 @@ function initRespuestas() {
       const removeBtn = document.createElement("button");
       removeBtn.type = "button";
       removeBtn.className = "text-xs text-red-600 hover:text-red-700";
-      removeBtn.textContent = "Delete";
+      removeBtn.textContent = t('Delete');
+      registerTranslationTarget(removeBtn, 'Delete');
       removeBtn.addEventListener("click", () => {
         buttons.splice(idx, 1);
         renderMenuButtons(item);
@@ -3476,7 +3549,8 @@ function initRespuestas() {
     if (!wrap.childElementCount) {
       const placeholder = document.createElement("p");
       placeholder.className = "text-xs text-gray-400";
-      placeholder.textContent = "Menu buttons will appear here.";
+      placeholder.textContent = t('Menu buttons will appear here.');
+      registerTranslationTarget(placeholder, 'Menu buttons will appear here.');
       menuPreview.appendChild(placeholder);
     } else {
       menuPreview.appendChild(wrap);
@@ -3702,7 +3776,7 @@ function initWelcome() {
   const summaryImage = $("welcomeSummaryImage");
   const summaryIcon = $("welcomeSummaryIcon");
 
-  const defaultSummary = "Add a welcome message to greet your guests.";
+  const defaultSummaryKey = 'Add a welcome message to greet your guests.';
   const state = {
     enabled: false,
     text: "",
@@ -3713,7 +3787,9 @@ function initWelcome() {
   const updateSummary = () => {
     const isEnabled = !!state.enabled;
     if (summaryBadge) {
-      summaryBadge.textContent = isEnabled ? "Enabled" : "Disabled";
+      const badgeKey = isEnabled ? 'Enabled' : 'Disabled';
+      summaryBadge.textContent = t(badgeKey);
+      registerTranslationTarget(summaryBadge, badgeKey);
       summaryBadge.classList.toggle('bg-emerald-100', isEnabled);
       summaryBadge.classList.toggle('text-emerald-700', isEnabled);
       summaryBadge.classList.toggle('bg-gray-200', !isEnabled);
@@ -3721,12 +3797,19 @@ function initWelcome() {
     }
     if (summaryText) {
       const message = (state.text || "").trim();
-      summaryText.textContent = message || defaultSummary;
+      const fallback = t(defaultSummaryKey);
+      summaryText.textContent = message || fallback;
+      registerTranslationTarget(summaryText, defaultSummaryKey, 'text', {
+        formatter: translated => (message ? message : translated)
+      });
       summaryText.classList.toggle('text-gray-400', !message);
     }
     if (summaryDelay) {
       const delayVal = Number.isFinite(state.delay) ? Math.max(0, state.delay) : 0;
-      summaryDelay.textContent = `Delay: ${delayVal}s`;
+      summaryDelay.textContent = t('Delay: {seconds}s', { seconds: delayVal });
+      registerTranslationTarget(summaryDelay, 'Delay: {seconds}s', 'text', {
+        vars: { seconds: delayVal }
+      });
     }
     if (summaryImage) {
       if (state.image) {

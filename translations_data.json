@@ -1,0 +1,1498 @@
+[
+  {
+    "key": "Tomos · Admin",
+    "en": "Tomos · Admin",
+    "fr": "Tomos · Admin",
+    "es": "Tomos · Admin",
+    "de": "Tomos · Admin",
+    "pt": "Tomos · Admin"
+  },
+  {
+    "key": "Loading…",
+    "en": "Loading…",
+    "fr": "Chargement…",
+    "es": "Cargando…",
+    "de": "Wird geladen…",
+    "pt": "Carregando…"
+  },
+  {
+    "key": "Log out",
+    "en": "Log out",
+    "fr": "Se déconnecter",
+    "es": "Cerrar sesión",
+    "de": "Abmelden",
+    "pt": "Sair"
+  },
+  {
+    "key": "Chat",
+    "en": "Chat",
+    "fr": "Discussion",
+    "es": "Chat",
+    "de": "Chat",
+    "pt": "Chat"
+  },
+  {
+    "key": "Knowledge",
+    "en": "Knowledge",
+    "fr": "Connaissances",
+    "es": "Conocimiento",
+    "de": "Wissen",
+    "pt": "Conhecimento"
+  },
+  {
+    "key": "Auto Responses",
+    "en": "Auto Responses",
+    "fr": "Réponses automatiques",
+    "es": "Respuestas automáticas",
+    "de": "Automatische Antworten",
+    "pt": "Respostas automáticas"
+  },
+  {
+    "key": "Empresa:",
+    "en": "Company:",
+    "fr": "Entreprise :",
+    "es": "Empresa:",
+    "de": "Unternehmen:",
+    "pt": "Empresa:"
+  },
+  {
+    "key": "Admin Access",
+    "en": "Admin Access",
+    "fr": "Accès administrateur",
+    "es": "Acceso de administrador",
+    "de": "Admin-Zugang",
+    "pt": "Acesso administrativo"
+  },
+  {
+    "key": "Email",
+    "en": "Email",
+    "fr": "E-mail",
+    "es": "Correo electrónico",
+    "de": "E-Mail",
+    "pt": "E-mail"
+  },
+  {
+    "key": "Password",
+    "en": "Password",
+    "fr": "Mot de passe",
+    "es": "Contraseña",
+    "de": "Passwort",
+    "pt": "Senha"
+  },
+  {
+    "key": "Login",
+    "en": "Login",
+    "fr": "Se connecter",
+    "es": "Iniciar sesión",
+    "de": "Anmelden",
+    "pt": "Entrar"
+  },
+  {
+    "key": "❌ Incorrect credentials",
+    "en": "❌ Incorrect credentials",
+    "fr": "❌ Identifiants incorrects",
+    "es": "❌ Credenciales incorrectas",
+    "de": "❌ Falsche Zugangsdaten",
+    "pt": "❌ Credenciais incorretas"
+  },
+  {
+    "key": "Bot",
+    "en": "Bot",
+    "fr": "Bot",
+    "es": "Bot",
+    "de": "Bot",
+    "pt": "Bot"
+  },
+  {
+    "key": "Activity",
+    "en": "Activity",
+    "fr": "Activité",
+    "es": "Actividad",
+    "de": "Aktivität",
+    "pt": "Atividade"
+  },
+  {
+    "key": "Widget",
+    "en": "Widget",
+    "fr": "Widget",
+    "es": "Widget",
+    "de": "Widget",
+    "pt": "Widget"
+  },
+  {
+    "key": "Integration",
+    "en": "Integration",
+    "fr": "Intégration",
+    "es": "Integración",
+    "de": "Integration",
+    "pt": "Integração"
+  },
+  {
+    "key": "Chat Preview",
+    "en": "Chat Preview",
+    "fr": "Aperçu du chat",
+    "es": "Vista previa del chat",
+    "de": "Chat-Vorschau",
+    "pt": "Prévia do chat"
+  },
+  {
+    "key": "Botón",
+    "en": "Button",
+    "fr": "Bouton",
+    "es": "Botón",
+    "de": "Schaltfläche",
+    "pt": "Botão"
+  },
+  {
+    "key": "Mensaje",
+    "en": "Message",
+    "fr": "Message",
+    "es": "Mensaje",
+    "de": "Nachricht",
+    "pt": "Mensagem"
+  },
+  {
+    "key": "Sin permisos de escritura.",
+    "en": "No write permissions.",
+    "fr": "Pas d'autorisations d'écriture.",
+    "es": "Sin permisos de escritura.",
+    "de": "Keine Schreibberechtigung.",
+    "pt": "Sem permissões de escrita."
+  },
+  {
+    "key": "Debes iniciar sesión con el email guardado en",
+    "en": "You must sign in with the email saved in",
+    "fr": "Vous devez vous connecter avec l'e-mail enregistré dans",
+    "es": "Debes iniciar sesión con el email guardado en",
+    "de": "Sie müssen sich mit der E-Mail anmelden, die gespeichert ist in",
+    "pt": "Você deve entrar com o e-mail salvo em"
+  },
+  {
+    "key": "o ser",
+    "en": "or be",
+    "fr": "ou être",
+    "es": "o ser",
+    "de": "oder",
+    "pt": "ou ser"
+  },
+  {
+    "key": "Your Bot",
+    "en": "Your Bot",
+    "fr": "Votre bot",
+    "es": "Tu bot",
+    "de": "Dein Bot",
+    "pt": "Seu bot"
+  },
+  {
+    "key": "Asistente del hotel",
+    "en": "Hotel assistant",
+    "fr": "Assistant de l'hôtel",
+    "es": "Asistente del hotel",
+    "de": "Hotelassistent",
+    "pt": "Assistente do hotel"
+  },
+  {
+    "key": "Personality",
+    "en": "Personality",
+    "fr": "Personnalité",
+    "es": "Personalidad",
+    "de": "Persönlichkeit",
+    "pt": "Personalidade"
+  },
+  {
+    "key": "🧑‍💼 Formal & Polite",
+    "en": "🧑‍💼 Formal & Polite",
+    "fr": "🧑‍💼 Formel & Poli",
+    "es": "🧑‍💼 Formal y educado",
+    "de": "🧑‍💼 Formal & Höflich",
+    "pt": "🧑‍💼 Formal e educado"
+  },
+  {
+    "key": "🌴 Relaxed & Friendly",
+    "en": "🌴 Relaxed & Friendly",
+    "fr": "🌴 Détendu & Amical",
+    "es": "🌴 Relajado y amistoso",
+    "de": "🌴 Entspannt & Freundlich",
+    "pt": "🌴 Relaxado e amigável"
+  },
+  {
+    "key": "😊 Warm & Welcoming",
+    "en": "😊 Warm & Welcoming",
+    "fr": "😊 Chaleureux & Accueillant",
+    "es": "😊 Cálido y acogedor",
+    "de": "😊 Warm & Einladend",
+    "pt": "😊 Acolhedor e receptivo"
+  },
+  {
+    "key": "⚡ Efficient & Direct",
+    "en": "⚡ Efficient & Direct",
+    "fr": "⚡ Efficace & Direct",
+    "es": "⚡ Eficiente y directo",
+    "de": "⚡ Effizient & Direkt",
+    "pt": "⚡ Eficiente e direto"
+  },
+  {
+    "key": "🎈 Young & Playful",
+    "en": "🎈 Young & Playful",
+    "fr": "🎈 Jeune & Ludique",
+    "es": "🎈 Joven y alegre",
+    "de": "🎈 Jung & Verspielt",
+    "pt": "🎈 Jovem e divertido"
+  },
+  {
+    "key": "Enable",
+    "en": "Enable",
+    "fr": "Activer",
+    "es": "Activar",
+    "de": "Aktivieren",
+    "pt": "Ativar"
+  },
+  {
+    "key": "Show the chat button on your site.",
+    "en": "Show the chat button on your site.",
+    "fr": "Afficher le bouton de chat sur votre site.",
+    "es": "Mostrar el botón de chat en tu sitio.",
+    "de": "Den Chat-Button auf Ihrer Website anzeigen.",
+    "pt": "Mostrar o botão de chat no seu site."
+  },
+  {
+    "key": "Schedule",
+    "en": "Schedule",
+    "fr": "Horaires",
+    "es": "Horario",
+    "de": "Zeitplan",
+    "pt": "Agenda"
+  },
+  {
+    "key": "Define the periods of activity. Changes are saved automatically.",
+    "en": "Define the periods of activity. Changes are saved automatically.",
+    "fr": "Définissez les périodes d'activité. Les modifications sont enregistrées automatiquement.",
+    "es": "Define los periodos de actividad. Los cambios se guardan automáticamente.",
+    "de": "Definieren Sie die Aktivitätszeiträume. Änderungen werden automatisch gespeichert.",
+    "pt": "Defina os períodos de atividade. As alterações são salvas automaticamente."
+  },
+  {
+    "key": "✔ Changes saved",
+    "en": "✔ Changes saved",
+    "fr": "✔ Modifications enregistrées",
+    "es": "✔ Cambios guardados",
+    "de": "✔ Änderungen gespeichert",
+    "pt": "✔ Alterações salvas"
+  },
+  {
+    "key": "Customize the chat appearance.",
+    "en": "Customize the chat appearance.",
+    "fr": "Personnalisez l'apparence du chat.",
+    "es": "Personaliza la apariencia del chat.",
+    "de": "Passen Sie das Erscheinungsbild des Chats an.",
+    "pt": "Personalize a aparência do chat."
+  },
+  {
+    "key": "Header",
+    "en": "Header",
+    "fr": "En-tête",
+    "es": "Encabezado",
+    "de": "Kopfzeile",
+    "pt": "Cabeçalho"
+  },
+  {
+    "key": "Edita el título y la identidad visual del encabezado.",
+    "en": "Edit the header title and visual identity.",
+    "fr": "Modifiez le titre et l'identité visuelle de l'en-tête.",
+    "es": "Edita el título y la identidad visual del encabezado.",
+    "de": "Bearbeiten Sie den Titel und die visuelle Identität der Kopfzeile.",
+    "pt": "Edite o título e a identidade visual do cabeçalho."
+  },
+  {
+    "key": "Welcome message",
+    "en": "Welcome message",
+    "fr": "Message d'accueil",
+    "es": "Mensaje de bienvenida",
+    "de": "Begrüßungsnachricht",
+    "pt": "Mensagem de boas-vindas"
+  },
+  {
+    "key": "Disabled",
+    "en": "Disabled",
+    "fr": "Désactivé",
+    "es": "Desactivado",
+    "de": "Deaktiviert",
+    "pt": "Desativado"
+  },
+  {
+    "key": "Add a welcome message to greet your guests.",
+    "en": "Add a welcome message to greet your guests.",
+    "fr": "Ajoutez un message d'accueil pour saluer vos invités.",
+    "es": "Añade un mensaje de bienvenida para saludar a tus huéspedes.",
+    "de": "Fügen Sie eine Begrüßungsnachricht hinzu, um Ihre Gäste zu begrüßen.",
+    "pt": "Adicione uma mensagem de boas-vindas para saudar seus hóspedes."
+  },
+  {
+    "key": "Delay: 2s",
+    "en": "Delay: 2s",
+    "fr": "Délai : 2s",
+    "es": "Demora: 2 s",
+    "de": "Verzögerung: 2 s",
+    "pt": "Atraso: 2 s"
+  },
+  {
+    "key": "Font",
+    "en": "Font",
+    "fr": "Police",
+    "es": "Fuente",
+    "de": "Schriftart",
+    "pt": "Fonte"
+  },
+  {
+    "key": "Manrope",
+    "en": "Manrope",
+    "fr": "Manrope",
+    "es": "Manrope",
+    "de": "Manrope",
+    "pt": "Manrope"
+  },
+  {
+    "key": "Inter",
+    "en": "Inter",
+    "fr": "Inter",
+    "es": "Inter",
+    "de": "Inter",
+    "pt": "Inter"
+  },
+  {
+    "key": "Poppins",
+    "en": "Poppins",
+    "fr": "Poppins",
+    "es": "Poppins",
+    "de": "Poppins",
+    "pt": "Poppins"
+  },
+  {
+    "key": "Roboto",
+    "en": "Roboto",
+    "fr": "Roboto",
+    "es": "Roboto",
+    "de": "Roboto",
+    "pt": "Roboto"
+  },
+  {
+    "key": "Playfair Display",
+    "en": "Playfair Display",
+    "fr": "Playfair Display",
+    "es": "Playfair Display",
+    "de": "Playfair Display",
+    "pt": "Playfair Display"
+  },
+  {
+    "key": "Merriweather",
+    "en": "Merriweather",
+    "fr": "Merriweather",
+    "es": "Merriweather",
+    "de": "Merriweather",
+    "pt": "Merriweather"
+  },
+  {
+    "key": "Colors",
+    "en": "Colors",
+    "fr": "Couleurs",
+    "es": "Colores",
+    "de": "Farben",
+    "pt": "Cores"
+  },
+  {
+    "key": "Chat Background",
+    "en": "Chat Background",
+    "fr": "Arrière-plan du chat",
+    "es": "Fondo del chat",
+    "de": "Chat-Hintergrund",
+    "pt": "Fundo do chat"
+  },
+  {
+    "key": "Text",
+    "en": "Text",
+    "fr": "Texte",
+    "es": "Texto",
+    "de": "Text",
+    "pt": "Texto"
+  },
+  {
+    "key": "Client Background",
+    "en": "Client Background",
+    "fr": "Arrière-plan du client",
+    "es": "Fondo del cliente",
+    "de": "Hintergrund des Kunden",
+    "pt": "Fundo do cliente"
+  },
+  {
+    "key": "Client Text",
+    "en": "Client Text",
+    "fr": "Texte du client",
+    "es": "Texto del cliente",
+    "de": "Kundentext",
+    "pt": "Texto do cliente"
+  },
+  {
+    "key": "Link para probar el chat",
+    "en": "Link to test the chat",
+    "fr": "Lien pour tester le chat",
+    "es": "Link para probar el chat",
+    "de": "Link zum Testen des Chats",
+    "pt": "Link para testar o chat"
+  },
+  {
+    "key": "Copiar",
+    "en": "Copy",
+    "fr": "Copier",
+    "es": "Copiar",
+    "de": "Kopieren",
+    "pt": "Copiar"
+  },
+  {
+    "key": "Abrir",
+    "en": "Open",
+    "fr": "Ouvrir",
+    "es": "Abrir",
+    "de": "Öffnen",
+    "pt": "Abrir"
+  },
+  {
+    "key": "El enlace se genera automáticamente con el nombre de tu empresa actual.",
+    "en": "The link is generated automatically with your current company name.",
+    "fr": "Le lien est généré automatiquement avec le nom de votre entreprise actuelle.",
+    "es": "El enlace se genera automáticamente con el nombre de tu empresa actual.",
+    "de": "Der Link wird automatisch mit dem aktuellen Unternehmensnamen erstellt.",
+    "pt": "O link é gerado automaticamente com o nome atual da sua empresa."
+  },
+  {
+    "key": "Icon",
+    "en": "Icon",
+    "fr": "Icône",
+    "es": "Ícono",
+    "de": "Symbol",
+    "pt": "Ícone"
+  },
+  {
+    "key": "Rounded",
+    "en": "Rounded",
+    "fr": "Arrondi",
+    "es": "Redondeado",
+    "de": "Abgerundet",
+    "pt": "Arredondado"
+  },
+  {
+    "key": "Widget Background",
+    "en": "Widget Background",
+    "fr": "Arrière-plan du widget",
+    "es": "Fondo del widget",
+    "de": "Widget-Hintergrund",
+    "pt": "Fundo do widget"
+  },
+  {
+    "key": "Integration Script",
+    "en": "Integration Script",
+    "fr": "Script d'intégration",
+    "es": "Script de integración",
+    "de": "Integrationsskript",
+    "pt": "Script de integração"
+  },
+  {
+    "key": "Copy and paste this code into your website just before the",
+    "en": "Copy and paste this code into your website just before the",
+    "fr": "Copiez et collez ce code sur votre site juste avant la",
+    "es": "Copia y pega este código en tu sitio web justo antes de la",
+    "de": "Kopieren Sie diesen Code und fügen Sie ihn direkt vor dem",
+    "pt": "Copie e cole este código no seu site logo antes da"
+  },
+  {
+    "key": "tag.",
+    "en": "tag.",
+    "fr": "balise.",
+    "es": "etiqueta.",
+    "de": "Tag.",
+    "pt": "tag."
+  },
+  {
+    "key": "The chat will automatically appear with your hotel's configuration.",
+    "en": "The chat will automatically appear with your hotel's configuration.",
+    "fr": "Le chat apparaîtra automatiquement avec la configuration de votre hôtel.",
+    "es": "El chat aparecerá automáticamente con la configuración de tu hotel.",
+    "de": "Der Chat erscheint automatisch mit der Konfiguration Ihres Hotels.",
+    "pt": "O chat aparecerá automaticamente com a configuração do seu hotel."
+  },
+  {
+    "key": "Copy",
+    "en": "Copy",
+    "fr": "Copier",
+    "es": "Copiar",
+    "de": "Kopieren",
+    "pt": "Copiar"
+  },
+  {
+    "key": "General",
+    "en": "General",
+    "fr": "Général",
+    "es": "General",
+    "de": "Allgemein",
+    "pt": "Geral"
+  },
+  {
+    "key": "Name",
+    "en": "Name",
+    "fr": "Nom",
+    "es": "Nombre",
+    "de": "Name",
+    "pt": "Nome"
+  },
+  {
+    "key": "Time Zone",
+    "en": "Time Zone",
+    "fr": "Fuseau horaire",
+    "es": "Zona horaria",
+    "de": "Zeitzone",
+    "pt": "Fuso horário"
+  },
+  {
+    "key": "Image",
+    "en": "Image",
+    "fr": "Image",
+    "es": "Imagen",
+    "de": "Bild",
+    "pt": "Imagem"
+  },
+  {
+    "key": "Select file",
+    "en": "Select file",
+    "fr": "Sélectionner un fichier",
+    "es": "Seleccionar archivo",
+    "de": "Datei auswählen",
+    "pt": "Selecionar arquivo"
+  },
+  {
+    "key": "✔ Header image updated",
+    "en": "✔ Header image updated",
+    "fr": "✔ Image d'en-tête mise à jour",
+    "es": "✔ Imagen de encabezado actualizada",
+    "de": "✔ Kopfzeilenbild aktualisiert",
+    "pt": "✔ Imagem do cabeçalho atualizada"
+  },
+  {
+    "key": "Header Background",
+    "en": "Header Background",
+    "fr": "Arrière-plan de l'en-tête",
+    "es": "Fondo del encabezado",
+    "de": "Hintergrund der Kopfzeile",
+    "pt": "Fundo do cabeçalho"
+  },
+  {
+    "key": "Save",
+    "en": "Save",
+    "fr": "Enregistrer",
+    "es": "Guardar",
+    "de": "Speichern",
+    "pt": "Salvar"
+  },
+  {
+    "key": "✔ Saved",
+    "en": "✔ Saved",
+    "fr": "✔ Enregistré",
+    "es": "✔ Guardado",
+    "de": "✔ Gespeichert",
+    "pt": "✔ Salvo"
+  },
+  {
+    "key": "Avatar",
+    "en": "Avatar",
+    "fr": "Avatar",
+    "es": "Avatar",
+    "de": "Avatar",
+    "pt": "Avatar"
+  },
+  {
+    "key": "Enable welcome message",
+    "en": "Enable welcome message",
+    "fr": "Activer le message d'accueil",
+    "es": "Activar mensaje de bienvenida",
+    "de": "Begrüßungsnachricht aktivieren",
+    "pt": "Ativar mensagem de boas-vindas"
+  },
+  {
+    "key": "Message",
+    "en": "Message",
+    "fr": "Message",
+    "es": "Mensaje",
+    "de": "Nachricht",
+    "pt": "Mensagem"
+  },
+  {
+    "key": "Delay (seconds)",
+    "en": "Delay (seconds)",
+    "fr": "Délai (secondes)",
+    "es": "Demora (segundos)",
+    "de": "Verzögerung (Sekunden)",
+    "pt": "Atraso (segundos)"
+  },
+  {
+    "key": "Welcome image (optional)",
+    "en": "Welcome image (optional)",
+    "fr": "Image d'accueil (facultatif)",
+    "es": "Imagen de bienvenida (opcional)",
+    "de": "Begrüßungsbild (optional)",
+    "pt": "Imagem de boas-vindas (opcional)"
+  },
+  {
+    "key": "Add the contextual information that helps the assistant understand your business, products, and brand tone. You can import pages from a URL and edit them here.",
+    "en": "Add the contextual information that helps the assistant understand your business, products, and brand tone. You can import pages from a URL and edit them here.",
+    "fr": "Ajoutez les informations contextuelles qui aident l'assistant à comprendre votre entreprise, vos produits et votre ton de marque. Vous pouvez importer des pages via une URL et les modifier ici.",
+    "es": "Añade la información contextual que ayuda al asistente a comprender tu negocio, productos y tono de marca. Puedes importar páginas desde una URL y editarlas aquí.",
+    "de": "Fügen Sie Kontextinformationen hinzu, die dem Assistenten helfen, Ihr Unternehmen, Ihre Produkte und den Markenton zu verstehen. Sie können Seiten über eine URL importieren und hier bearbeiten.",
+    "pt": "Adicione as informações contextuais que ajudam o assistente a entender o seu negócio, produtos e tom de marca. Você pode importar páginas por URL e editá-las aqui."
+  },
+  {
+    "key": "Add",
+    "en": "Add",
+    "fr": "Ajouter",
+    "es": "Añadir",
+    "de": "Hinzufügen",
+    "pt": "Adicionar"
+  },
+  {
+    "key": "Source:",
+    "en": "Source:",
+    "fr": "Source :",
+    "es": "Fuente:",
+    "de": "Quelle:",
+    "pt": "Fonte:"
+  },
+  {
+    "key": "0 / 10000 characters",
+    "en": "0 / 10000 characters",
+    "fr": "0 / 10000 caractères",
+    "es": "0 / 10000 caracteres",
+    "de": "0 / 10000 Zeichen",
+    "pt": "0 / 10000 caracteres"
+  },
+  {
+    "key": "New tab",
+    "en": "New tab",
+    "fr": "Nouvel onglet",
+    "es": "Nueva pestaña",
+    "de": "Neuer Tab",
+    "pt": "Nova aba"
+  },
+  {
+    "key": "Organize quick replies for frequent questions. Create as many tabs as you need, customise their content and preview how they will look in the chat widget.",
+    "en": "Organize quick replies for frequent questions. Create as many tabs as you need, customise their content and preview how they will look in the chat widget.",
+    "fr": "Organisez des réponses rapides pour les questions fréquentes. Créez autant d'onglets que nécessaire, personnalisez leur contenu et prévisualisez leur apparence dans le widget de chat.",
+    "es": "Organiza respuestas rápidas para preguntas frecuentes. Crea tantas pestañas como necesites, personaliza su contenido y previsualiza cómo se verán en el widget de chat.",
+    "de": "Organisieren Sie Schnellantworten für häufige Fragen. Erstellen Sie so viele Tabs wie nötig, passen Sie ihren Inhalt an und sehen Sie sich an, wie sie im Chat-Widget aussehen.",
+    "pt": "Organize respostas rápidas para perguntas frequentes. Crie quantas abas precisar, personalize o conteúdo e visualize como aparecerão no widget de chat."
+  },
+  {
+    "key": "Start by creating your first tab to design an automated reply.",
+    "en": "Start by creating your first tab to design an automated reply.",
+    "fr": "Commencez par créer votre premier onglet pour concevoir une réponse automatisée.",
+    "es": "Comienza creando tu primera pestaña para diseñar una respuesta automatizada.",
+    "de": "Beginnen Sie, indem Sie Ihren ersten Tab erstellen, um eine automatisierte Antwort zu entwerfen.",
+    "pt": "Comece criando sua primeira aba para definir uma resposta automatizada."
+  },
+  {
+    "key": "Select a tab to review or edit its configuration.",
+    "en": "Select a tab to review or edit its configuration.",
+    "fr": "Sélectionnez un onglet pour examiner ou modifier sa configuration.",
+    "es": "Selecciona una pestaña para revisar o editar su configuración.",
+    "de": "Wählen Sie einen Tab aus, um seine Konfiguration zu überprüfen oder zu bearbeiten.",
+    "pt": "Selecione uma aba para revisar ou editar sua configuração."
+  },
+  {
+    "key": "Keyword",
+    "en": "Keyword",
+    "fr": "Mot-clé",
+    "es": "Palabra clave",
+    "de": "Schlüsselwort",
+    "pt": "Palavra-chave"
+  },
+  {
+    "key": "When the guest mentions this keyword, the auto response will be triggered.",
+    "en": "When the guest mentions this keyword, the auto response will be triggered.",
+    "fr": "Lorsque le client mentionne ce mot-clé, la réponse automatique sera déclenchée.",
+    "es": "Cuando el huésped mencione esta palabra clave, se activará la respuesta automática.",
+    "de": "Wenn der Gast dieses Schlüsselwort erwähnt, wird die automatische Antwort ausgelöst.",
+    "pt": "Quando o hóspede mencionar essa palavra-chave, a resposta automática será acionada."
+  },
+  {
+    "key": "Response type",
+    "en": "Response type",
+    "fr": "Type de réponse",
+    "es": "Tipo de respuesta",
+    "de": "Antworttyp",
+    "pt": "Tipo de resposta"
+  },
+  {
+    "key": "Cards",
+    "en": "Cards",
+    "fr": "Cartes",
+    "es": "Tarjetas",
+    "de": "Karten",
+    "pt": "Cartões"
+  },
+  {
+    "key": "Menu",
+    "en": "Menu",
+    "fr": "Menu",
+    "es": "Menú",
+    "de": "Menü",
+    "pt": "Menu"
+  },
+  {
+    "key": "Title",
+    "en": "Title",
+    "fr": "Titre",
+    "es": "Título",
+    "de": "Titel",
+    "pt": "Título"
+  },
+  {
+    "key": "Subtitle",
+    "en": "Subtitle",
+    "fr": "Sous-titre",
+    "es": "Subtítulo",
+    "de": "Untertitel",
+    "pt": "Subtítulo"
+  },
+  {
+    "key": "Image URL (optional)",
+    "en": "Image URL (optional)",
+    "fr": "URL de l'image (facultatif)",
+    "es": "URL de la imagen (opcional)",
+    "de": "Bild-URL (optional)",
+    "pt": "URL da imagem (opcional)"
+  },
+  {
+    "key": "Buttons",
+    "en": "Buttons",
+    "fr": "Boutons",
+    "es": "Botones",
+    "de": "Schaltflächen",
+    "pt": "Botões"
+  },
+  {
+    "key": "+ Add button",
+    "en": "+ Add button",
+    "fr": "+ Ajouter un bouton",
+    "es": "+ Agregar botón",
+    "de": "+ Schaltfläche hinzufügen",
+    "pt": "+ Adicionar botão"
+  },
+  {
+    "key": "Live preview",
+    "en": "Live preview",
+    "fr": "Aperçu en direct",
+    "es": "Vista previa en vivo",
+    "de": "Live-Vorschau",
+    "pt": "Prévia ao vivo"
+  },
+  {
+    "key": "+ Add card",
+    "en": "+ Add card",
+    "fr": "+ Ajouter une carte",
+    "es": "+ Agregar tarjeta",
+    "de": "+ Karte hinzufügen",
+    "pt": "+ Adicionar cartão"
+  },
+  {
+    "key": "Intro text",
+    "en": "Intro text",
+    "fr": "Texte d'introduction",
+    "es": "Texto de introducción",
+    "de": "Einleitungstext",
+    "pt": "Texto de introdução"
+  },
+  {
+    "key": "Preview",
+    "en": "Preview",
+    "fr": "Aperçu",
+    "es": "Vista previa",
+    "de": "Vorschau",
+    "pt": "Prévia"
+  },
+  {
+    "key": "Save changes",
+    "en": "Save changes",
+    "fr": "Enregistrer les modifications",
+    "es": "Guardar cambios",
+    "de": "Änderungen speichern",
+    "pt": "Salvar alterações"
+  },
+  {
+    "key": "Crop Header Image",
+    "en": "Crop Header Image",
+    "fr": "Recadrer l'image d'en-tête",
+    "es": "Recortar imagen del encabezado",
+    "de": "Kopfzeilenbild zuschneiden",
+    "pt": "Cortar imagem do cabeçalho"
+  },
+  {
+    "key": "Cancel",
+    "en": "Cancel",
+    "fr": "Annuler",
+    "es": "Cancelar",
+    "de": "Abbrechen",
+    "pt": "Cancelar"
+  },
+  {
+    "key": "Add Page Knowledge",
+    "en": "Add Page Knowledge",
+    "fr": "Ajouter une page de connaissances",
+    "es": "Agregar página de conocimiento",
+    "de": "Wissensseite hinzufügen",
+    "pt": "Adicionar página de conhecimento"
+  },
+  {
+    "key": "Paste the URL of the page you want to import. We will crawl it and organize the information automatically.",
+    "en": "Paste the URL of the page you want to import. We will crawl it and organize the information automatically.",
+    "fr": "Collez l'URL de la page que vous souhaitez importer. Nous l'analyserons et organiserons les informations automatiquement.",
+    "es": "Pega la URL de la página que quieres importar. La rastrearemos y organizaremos la información automáticamente.",
+    "de": "Fügen Sie die URL der Seite ein, die Sie importieren möchten. Wir crawlen sie und organisieren die Informationen automatisch.",
+    "pt": "Cole a URL da página que deseja importar. Vamos rastreá-la e organizar as informações automaticamente."
+  },
+  {
+    "key": "Page URL",
+    "en": "Page URL",
+    "fr": "URL de la page",
+    "es": "URL de la página",
+    "de": "Seiten-URL",
+    "pt": "URL da página"
+  },
+  {
+    "key": "Delete knowledge page",
+    "en": "Delete knowledge page",
+    "fr": "Supprimer la page de connaissances",
+    "es": "Eliminar página de conocimiento",
+    "de": "Wissensseite löschen",
+    "pt": "Excluir página de conhecimento"
+  },
+  {
+    "key": "Are you sure you want to delete",
+    "en": "Are you sure you want to delete",
+    "fr": "Êtes-vous sûr de vouloir supprimer",
+    "es": "¿Seguro que quieres eliminar",
+    "de": "Sind Sie sicher, dass Sie löschen möchten",
+    "pt": "Tem certeza de que deseja excluir"
+  },
+  {
+    "key": "? This action cannot be undone.",
+    "en": "? This action cannot be undone.",
+    "fr": "? Cette action est irréversible.",
+    "es": "? Esta acción no se puede deshacer.",
+    "de": "? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "pt": "? Esta ação não pode ser desfeita."
+  },
+  {
+    "key": "Delete",
+    "en": "Delete",
+    "fr": "Supprimer",
+    "es": "Eliminar",
+    "de": "Löschen",
+    "pt": "Excluir"
+  },
+  {
+    "key": "Choose the widget icon",
+    "en": "Choose the widget icon",
+    "fr": "Choisissez l'icône du widget",
+    "es": "Elige el ícono del widget",
+    "de": "Wählen Sie das Widget-Symbol",
+    "pt": "Escolha o ícone do widget"
+  },
+  {
+    "key": "Select one of the available icons for your widget.",
+    "en": "Select one of the available icons for your widget.",
+    "fr": "Sélectionnez l'une des icônes disponibles pour votre widget.",
+    "es": "Selecciona uno de los íconos disponibles para tu widget.",
+    "de": "Wählen Sie eines der verfügbaren Symbole für Ihr Widget aus.",
+    "pt": "Selecione um dos ícones disponíveis para o seu widget."
+  },
+  {
+    "key": "Crop Avatar",
+    "en": "Crop Avatar",
+    "fr": "Recadrer l'avatar",
+    "es": "Recortar avatar",
+    "de": "Avatar zuschneiden",
+    "pt": "Cortar avatar"
+  },
+  {
+    "key": "admin@company.com",
+    "en": "admin@company.com",
+    "fr": "admin@company.com",
+    "es": "admin@company.com",
+    "de": "admin@company.com",
+    "pt": "admin@company.com"
+  },
+  {
+    "key": "Enter welcome message...",
+    "en": "Enter welcome message...",
+    "fr": "Saisissez le message d'accueil...",
+    "es": "Ingresa el mensaje de bienvenida...",
+    "de": "Begrüßungsnachricht eingeben...",
+    "pt": "Digite a mensagem de boas-vindas..."
+  },
+  {
+    "key": "Add your knowledge here... (max 10,000 characters)",
+    "en": "Add your knowledge here... (max 10,000 characters)",
+    "fr": "Ajoutez vos connaissances ici... (max. 10 000 caractères)",
+    "es": "Agrega tu conocimiento aquí... (máx. 10.000 caracteres)",
+    "de": "Fügen Sie Ihr Wissen hier hinzu... (max. 10.000 Zeichen)",
+    "pt": "Adicione seu conhecimento aqui... (máx. 10.000 caracteres)"
+  },
+  {
+    "key": "(e.g. spa, restaurant)",
+    "en": "(e.g. spa, restaurant)",
+    "fr": "(ex. spa, restaurant)",
+    "es": "(p. ej. spa, restaurante)",
+    "de": "(z. B. Spa, Restaurant)",
+    "pt": "(ex.: spa, restaurante)"
+  },
+  {
+    "key": "Write the automatic response...",
+    "en": "Write the automatic response...",
+    "fr": "Rédigez la réponse automatique...",
+    "es": "Escribe la respuesta automática...",
+    "de": "Schreiben Sie die automatische Antwort...",
+    "pt": "Escreva a resposta automática..."
+  },
+  {
+    "key": "https://...",
+    "en": "https://...",
+    "fr": "https://...",
+    "es": "https://...",
+    "de": "https://...",
+    "pt": "https://..."
+  },
+  {
+    "key": "Choose an option",
+    "en": "Choose an option",
+    "fr": "Choisissez une option",
+    "es": "Elige una opción",
+    "de": "Option auswählen",
+    "pt": "Escolha uma opção"
+  },
+  {
+    "key": "https://example.com/page",
+    "en": "https://example.com/page",
+    "fr": "https://example.com/page",
+    "es": "https://example.com/page",
+    "de": "https://example.com/page",
+    "pt": "https://example.com/page"
+  },
+  {
+    "key": "Elegir icono",
+    "en": "Choose icon",
+    "fr": "Choisir l'icône",
+    "es": "Elegir icono",
+    "de": "Symbol wählen",
+    "pt": "Escolher ícone"
+  },
+  {
+    "key": "Delete page",
+    "en": "Delete page",
+    "fr": "Supprimer la page",
+    "es": "Eliminar página",
+    "de": "Seite löschen",
+    "pt": "Excluir página"
+  },
+  {
+    "key": "Delete this tab",
+    "en": "Delete this tab",
+    "fr": "Supprimer cet onglet",
+    "es": "Eliminar esta pestaña",
+    "de": "Diesen Tab löschen",
+    "pt": "Excluir esta aba"
+  },
+  {
+    "key": "Delete period",
+    "en": "Delete period",
+    "fr": "Supprimer la période",
+    "es": "Eliminar período",
+    "de": "Zeitraum löschen",
+    "pt": "Excluir período"
+  },
+  {
+    "key": "More bot options",
+    "en": "More bot options",
+    "fr": "Plus d'options du bot",
+    "es": "Más opciones del bot",
+    "de": "Weitere Bot-Optionen",
+    "pt": "Mais opções do bot"
+  },
+  {
+    "key": "⚠️ No se pudo acceder al iframe directamente (dominio cruzado), se omite actualización en vivo.",
+    "en": "⚠️ Unable to access the iframe directly (cross-domain), live update skipped.",
+    "fr": "⚠️ Impossible d'accéder directement à l'iframe (domaine croisé), mise à jour en direct ignorée.",
+    "es": "⚠️ No se pudo acceder al iframe directamente (dominio cruzado), se omite actualización en vivo.",
+    "de": "⚠️ Kein direkter Zugriff auf das Iframe möglich (Cross-Domain), Live-Aktualisierung übersprungen.",
+    "pt": "⚠️ Não foi possível acessar o iframe diretamente (domínios diferentes), atualização ao vivo ignorada."
+  },
+  {
+    "key": "⚠️ No se pudo aplicar colores en el iframe (dominio cruzado).",
+    "en": "⚠️ Unable to apply colors inside the iframe (cross-domain).",
+    "fr": "⚠️ Impossible d'appliquer les couleurs dans l'iframe (domaine croisé).",
+    "es": "⚠️ No se pudo aplicar colores en el iframe (dominio cruzado).",
+    "de": "⚠️ Farben konnten im Iframe nicht angewendet werden (Cross-Domain).",
+    "pt": "⚠️ Não foi possível aplicar cores no iframe (domínios diferentes)."
+  },
+  {
+    "key": "⏳ Esperando Firebase...",
+    "en": "⏳ Waiting for Firebase...",
+    "fr": "⏳ En attente de Firebase...",
+    "es": "⏳ Esperando Firebase...",
+    "de": "⏳ Warten auf Firebase...",
+    "pt": "⏳ Aguardando o Firebase..."
+  },
+  {
+    "key": "⏳ Esperando elementos del DOM...",
+    "en": "⏳ Waiting for DOM elements...",
+    "fr": "⏳ En attente des éléments du DOM...",
+    "es": "⏳ Esperando elementos del DOM...",
+    "de": "⏳ Warten auf DOM-Elemente...",
+    "pt": "⏳ Aguardando elementos do DOM..."
+  },
+  {
+    "key": "No buttons added yet.",
+    "en": "No buttons added yet.",
+    "fr": "Aucun bouton ajouté pour l'instant.",
+    "es": "Aún no se han agregado botones.",
+    "de": "Noch keine Schaltflächen hinzugefügt.",
+    "pt": "Nenhum botão adicionado ainda."
+  },
+  {
+    "key": "Button text",
+    "en": "Button text",
+    "fr": "Texte du bouton",
+    "es": "Texto del botón",
+    "de": "Schaltflächentext",
+    "pt": "Texto do botão"
+  },
+  {
+    "key": "Link or trigger",
+    "en": "Link or trigger",
+    "fr": "Lien ou déclencheur",
+    "es": "Enlace o disparador",
+    "de": "Link oder Auslöser",
+    "pt": "Link ou gatilho"
+  },
+  {
+    "key": "Preview image",
+    "en": "Preview image",
+    "fr": "Image d'aperçu",
+    "es": "Imagen de vista previa",
+    "de": "Vorschaubild",
+    "pt": "Imagem de prévia"
+  },
+  {
+    "key": "No cards yet. Add one to build a carousel.",
+    "en": "No cards yet. Add one to build a carousel.",
+    "fr": "Aucune carte pour le moment. Ajoutez-en une pour créer un carrousel.",
+    "es": "Aún no hay tarjetas. Agrega una para crear un carrusel.",
+    "de": "Noch keine Karten. Fügen Sie eine hinzu, um ein Karussell zu erstellen.",
+    "pt": "Ainda não há cartões. Adicione um para criar um carrossel."
+  },
+  {
+    "key": "Image URL",
+    "en": "Image URL",
+    "fr": "URL de l'image",
+    "es": "URL de la imagen",
+    "de": "Bild-URL",
+    "pt": "URL da imagem"
+  },
+  {
+    "key": "Reserve now",
+    "en": "Reserve now",
+    "fr": "Réserver maintenant",
+    "es": "Reservar ahora",
+    "de": "Jetzt reservieren",
+    "pt": "Reservar agora"
+  },
+  {
+    "key": "Add options so guests can tap them quickly.",
+    "en": "Add options so guests can tap them quickly.",
+    "fr": "Ajoutez des options pour que les invités puissent les sélectionner rapidement.",
+    "es": "Añade opciones para que los huéspedes puedan seleccionarlas rápidamente.",
+    "de": "Fügen Sie Optionen hinzu, damit Gäste sie schnell auswählen können.",
+    "pt": "Adicione opções para que os hóspedes possam selecioná-las rapidamente."
+  },
+  {
+    "key": "Button label",
+    "en": "Button label",
+    "fr": "Libellé du bouton",
+    "es": "Etiqueta del botón",
+    "de": "Schaltflächenbeschriftung",
+    "pt": "Rótulo do botão"
+  },
+  {
+    "key": "Trigger or link",
+    "en": "Trigger or link",
+    "fr": "Déclencheur ou lien",
+    "es": "Disparador o enlace",
+    "de": "Auslöser oder Link",
+    "pt": "Gatilho ou link"
+  },
+  {
+    "key": "Link",
+    "en": "Link",
+    "fr": "Lien",
+    "es": "Enlace",
+    "de": "Link",
+    "pt": "Link"
+  },
+  {
+    "key": "Menu buttons will appear here.",
+    "en": "Menu buttons will appear here.",
+    "fr": "Les boutons du menu apparaîtront ici.",
+    "es": "Aquí aparecerán los botones del menú.",
+    "de": "Hier erscheinen die Menütasten.",
+    "pt": "Os botões do menu aparecerão aqui."
+  },
+  {
+    "key": "Start writing to see the live preview.",
+    "en": "Start writing to see the live preview.",
+    "fr": "Commencez à écrire pour voir l'aperçu en direct.",
+    "es": "Empieza a escribir para ver la vista previa en vivo.",
+    "de": "Beginnen Sie zu schreiben, um die Live-Vorschau zu sehen.",
+    "pt": "Comece a escrever para ver a prévia ao vivo."
+  },
+  {
+    "key": "❌ No se encontró la referencia de chatWelcome",
+    "en": "❌ chatWelcome reference not found",
+    "fr": "❌ Référence chatWelcome introuvable",
+    "es": "❌ No se encontró la referencia de chatWelcome",
+    "de": "❌ chatWelcome-Referenz nicht gefunden",
+    "pt": "❌ Referência chatWelcome não encontrada"
+  },
+  {
+    "key": "You do not have permission to modify the configuration.",
+    "en": "You do not have permission to modify the configuration.",
+    "fr": "Vous n'avez pas l'autorisation de modifier la configuration.",
+    "es": "No tienes permiso para modificar la configuración.",
+    "de": "Sie haben keine Berechtigung, die Konfiguration zu ändern.",
+    "pt": "Você não tem permissão para modificar a configuração."
+  },
+  {
+    "key": "Please enter your credentials.",
+    "en": "Please enter your credentials.",
+    "fr": "Veuillez saisir vos identifiants.",
+    "es": "Introduce tus credenciales.",
+    "de": "Bitte geben Sie Ihre Zugangsdaten ein.",
+    "pt": "Insira suas credenciais."
+  },
+  {
+    "key": "Error finding company:",
+    "en": "Error finding company:",
+    "fr": "Erreur lors de la recherche de l'entreprise :",
+    "es": "Error al encontrar la empresa:",
+    "de": "Fehler beim Finden des Unternehmens:",
+    "pt": "Erro ao encontrar a empresa:"
+  },
+  {
+    "key": "✅ Company detected automatically:",
+    "en": "✅ Company detected automatically:",
+    "fr": "✅ Entreprise détectée automatiquement :",
+    "es": "✅ Empresa detectada automáticamente:",
+    "de": "✅ Unternehmen automatisch erkannt:",
+    "pt": "✅ Empresa detectada automaticamente:"
+  },
+  {
+    "key": "⚠ No company found for this email, using previous value:",
+    "en": "⚠ No company found for this email, using previous value:",
+    "fr": "⚠ Aucune entreprise trouvée pour cet e-mail, utilisation de la valeur précédente :",
+    "es": "⚠ No se encontró empresa para este correo, se usará el valor anterior:",
+    "de": "⚠ Kein Unternehmen für diese E-Mail gefunden, vorheriger Wert wird verwendet:",
+    "pt": "⚠ Nenhuma empresa encontrada para este e-mail, usando o valor anterior:"
+  },
+  {
+    "key": "💬 Live chat loaded for",
+    "en": "💬 Live chat loaded for",
+    "fr": "💬 Chat en direct chargé pour",
+    "es": "💬 Chat en vivo cargado para",
+    "de": "💬 Live-Chat geladen für",
+    "pt": "💬 Chat ao vivo carregado para"
+  },
+  {
+    "key": "✔ Primary color saved",
+    "en": "✔ Primary color saved",
+    "fr": "✔ Couleur principale enregistrée",
+    "es": "✔ Color primario guardado",
+    "de": "✔ Primärfarbe gespeichert",
+    "pt": "✔ Cor primária salva"
+  },
+  {
+    "key": "✔ Button color saved",
+    "en": "✔ Button color saved",
+    "fr": "✔ Couleur du bouton enregistrée",
+    "es": "✔ Color del botón guardado",
+    "de": "✔ Button-Farbe gespeichert",
+    "pt": "✔ Cor do botão salva"
+  },
+  {
+    "key": "✔ Widget icon updated",
+    "en": "✔ Widget icon updated",
+    "fr": "✔ Icône du widget mise à jour",
+    "es": "✔ Ícono del widget actualizado",
+    "de": "✔ Widget-Symbol aktualisiert",
+    "pt": "✔ Ícone do widget atualizado"
+  },
+  {
+    "key": "✔ Widget border updated",
+    "en": "✔ Widget border updated",
+    "fr": "✔ Bordure du widget mise à jour",
+    "es": "✔ Borde del widget actualizado",
+    "de": "✔ Widget-Rand aktualisiert",
+    "pt": "✔ Borda do widget atualizada"
+  },
+  {
+    "key": "✔ Background color saved",
+    "en": "✔ Background color saved",
+    "fr": "✔ Couleur de fond enregistrée",
+    "es": "✔ Color de fondo guardado",
+    "de": "✔ Hintergrundfarbe gespeichert",
+    "pt": "✔ Cor de fundo salva"
+  },
+  {
+    "key": "✔ Assistant text color saved",
+    "en": "✔ Assistant text color saved",
+    "fr": "✔ Couleur du texte de l'assistant enregistrée",
+    "es": "✔ Color de texto del asistente guardado",
+    "de": "✔ Farbe des Assistententextes gespeichert",
+    "pt": "✔ Cor do texto do assistente salva"
+  },
+  {
+    "key": "✔ Client text color saved",
+    "en": "✔ Client text color saved",
+    "fr": "✔ Couleur du texte client enregistrée",
+    "es": "✔ Color de texto del cliente guardado",
+    "de": "✔ Farbe des Kundentextes gespeichert",
+    "pt": "✔ Cor do texto do cliente salva"
+  },
+  {
+    "key": "✔ Header color saved",
+    "en": "✔ Header color saved",
+    "fr": "✔ Couleur de l'en-tête enregistrée",
+    "es": "✔ Color del encabezado guardado",
+    "de": "✔ Farbe der Kopfzeile gespeichert",
+    "pt": "✔ Cor do cabeçalho salva"
+  },
+  {
+    "key": "✔ Header text color saved",
+    "en": "✔ Header text color saved",
+    "fr": "✔ Couleur du texte de l'en-tête enregistrée",
+    "es": "✔ Color de texto del encabezado guardado",
+    "de": "✔ Farbe des Kopfzeilentextes gespeichert",
+    "pt": "✔ Cor do texto do cabeçalho salva"
+  },
+  {
+    "key": "Logo eliminado",
+    "en": "Logo removed",
+    "fr": "Logo supprimé",
+    "es": "Logo eliminado",
+    "de": "Logo entfernt",
+    "pt": "Logotipo removido"
+  },
+  {
+    "key": "✔ Borders updated",
+    "en": "✔ Borders updated",
+    "fr": "✔ Bordures mises à jour",
+    "es": "✔ Bordes actualizados",
+    "de": "✔ Ränder aktualisiert",
+    "pt": "✔ Bordas atualizadas"
+  },
+  {
+    "key": "✔ Font saved",
+    "en": "✔ Font saved",
+    "fr": "✔ Police enregistrée",
+    "es": "✔ Fuente guardada",
+    "de": "✔ Schriftart gespeichert",
+    "pt": "✔ Fonte salva"
+  },
+  {
+    "key": "✔ Avatar updated",
+    "en": "✔ Avatar updated",
+    "fr": "✔ Avatar mis à jour",
+    "es": "✔ Avatar actualizado",
+    "de": "✔ Avatar aktualisiert",
+    "pt": "✔ Avatar atualizado"
+  },
+  {
+    "key": "✔ Avatar border updated",
+    "en": "✔ Avatar border updated",
+    "fr": "✔ Bordure de l'avatar mise à jour",
+    "es": "✔ Borde del avatar actualizado",
+    "de": "✔ Avatar-Rahmen aktualisiert",
+    "pt": "✔ Borda do avatar atualizada"
+  },
+  {
+    "key": "Avatar restored",
+    "en": "Avatar restored",
+    "fr": "Avatar restauré",
+    "es": "Avatar restaurado",
+    "de": "Avatar wiederhergestellt",
+    "pt": "Avatar restaurado"
+  },
+  {
+    "key": "Copiado",
+    "en": "Copied",
+    "fr": "Copié",
+    "es": "Copiado",
+    "de": "Kopiert",
+    "pt": "Copiado"
+  },
+  {
+    "key": "✔ Knowledge page added",
+    "en": "✔ Knowledge page added",
+    "fr": "✔ Page de connaissances ajoutée",
+    "es": "✔ Página de conocimiento agregada",
+    "de": "✔ Wissensseite hinzugefügt",
+    "pt": "✔ Página de conhecimento adicionada"
+  },
+  {
+    "key": "✔ Knowledge page deleted",
+    "en": "✔ Knowledge page deleted",
+    "fr": "✔ Page de connaissances supprimée",
+    "es": "✔ Página de conocimiento eliminada",
+    "de": "✔ Wissensseite gelöscht",
+    "pt": "✔ Página de conhecimento excluída"
+  },
+  {
+    "key": "Copied",
+    "en": "Copied",
+    "fr": "Copié",
+    "es": "Copiado",
+    "de": "Kopiert",
+    "pt": "Copiado"
+  },
+  {
+    "key": "Page 1",
+    "en": "Page 1",
+    "fr": "Page 1",
+    "es": "Página 1",
+    "de": "Seite 1",
+    "pt": "Página 1"
+  },
+  {
+    "key": "Card",
+    "en": "Card",
+    "fr": "Carte",
+    "es": "Tarjeta",
+    "de": "Karte",
+    "pt": "Cartão"
+  },
+  {
+    "key": "View",
+    "en": "View",
+    "fr": "Voir",
+    "es": "Ver",
+    "de": "Ansehen",
+    "pt": "Ver"
+  },
+  {
+    "key": "Could not fetch the page content.",
+    "en": "Could not fetch the page content.",
+    "fr": "Impossible de récupérer le contenu de la page.",
+    "es": "No se pudo obtener el contenido de la página.",
+    "de": "Der Seiteninhalt konnte nicht abgerufen werden.",
+    "pt": "Não foi possível obter o conteúdo da página."
+  },
+  {
+    "key": "Please provide a valid URL.",
+    "en": "Please provide a valid URL.",
+    "fr": "Veuillez fournir une URL valide.",
+    "es": "Proporciona una URL válida.",
+    "de": "Bitte geben Sie eine gültige URL an.",
+    "pt": "Forneça uma URL válida."
+  },
+  {
+    "key": "Fetching page content...",
+    "en": "Fetching page content...",
+    "fr": "Récupération du contenu de la page...",
+    "es": "Obteniendo contenido de la página...",
+    "de": "Seiteninhalt wird abgerufen...",
+    "pt": "Buscando o conteúdo da página..."
+  },
+  {
+    "key": "Unable to add the page. Please try again.",
+    "en": "Unable to add the page. Please try again.",
+    "fr": "Impossible d'ajouter la page. Veuillez réessayer.",
+    "es": "No se pudo agregar la página. Inténtalo de nuevo.",
+    "de": "Die Seite konnte nicht hinzugefügt werden. Bitte versuchen Sie es erneut.",
+    "pt": "Não foi possível adicionar a página. Tente novamente."
+  },
+  {
+    "key": "this page",
+    "en": "this page",
+    "fr": "cette page",
+    "es": "esta página",
+    "de": "diese Seite",
+    "pt": "esta página"
+  },
+  {
+    "key": "{count} / {limit} characters",
+    "en": "{count} / {limit} characters",
+    "fr": "{count} / {limit} caractères",
+    "es": "{count} / {limit} caracteres",
+    "de": "{count} / {limit} Zeichen",
+    "pt": "{count} / {limit} caracteres"
+  },
+  {
+    "key": "Delay: {seconds}s",
+    "en": "Delay: {seconds}s",
+    "fr": "Délai : {seconds}s",
+    "es": "Demora: {seconds}s",
+    "de": "Verzögerung: {seconds}s",
+    "pt": "Atraso: {seconds}s"
+  },
+  {
+    "key": "language.english",
+    "en": "English",
+    "fr": "Anglais",
+    "es": "Inglés",
+    "de": "Englisch",
+    "pt": "Inglês"
+  },
+  {
+    "key": "language.french",
+    "en": "French",
+    "fr": "Français",
+    "es": "Francés",
+    "de": "Französisch",
+    "pt": "Francês"
+  },
+  {
+    "key": "language.spanish",
+    "en": "Spanish",
+    "fr": "Espagnol",
+    "es": "Español",
+    "de": "Spanisch",
+    "pt": "Espanhol"
+  },
+  {
+    "key": "language.german",
+    "en": "German",
+    "fr": "Allemand",
+    "es": "Alemán",
+    "de": "Deutsch",
+    "pt": "Alemão"
+  },
+  {
+    "key": "language.portuguese",
+    "en": "Portuguese",
+    "fr": "Portugais",
+    "es": "Portugués",
+    "de": "Portugiesisch",
+    "pt": "Português"
+  },
+  {
+    "key": "Enabled",
+    "en": "Enabled",
+    "fr": "Activé",
+    "es": "Activado",
+    "de": "Aktiviert",
+    "pt": "Ativado"
+  }
+]
