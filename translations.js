@@ -948,10 +948,10 @@
     },
   };
   const TRANSLATION_KEYS = new Set(Object.keys(TRANSLATIONS.en));
-  const textNodes = [];
-  const attrNodes = [];
-  let manualTextTargets = [];
-  let manualAttrTargets = [];
+  const TEXT_KEY_SYMBOL = Symbol('translationTextKey');
+  const ATTR_KEYS_SYMBOL = Symbol('translationAttrKeys');
+  const textNodes = new Map();
+  const attrNodes = new Map();
   let currentLanguage = localStorage.getItem('preferredLanguage') || DEFAULT_LANGUAGE;
   const normalize = (value) => (value || '').replace(/\s+/g, ' ').trim();
   function getTranslation(lang, key) {
@@ -970,19 +970,72 @@
     }
     return text;
   }
+  function getStoredTextKey(node) {
+    return node ? node[TEXT_KEY_SYMBOL] : undefined;
+  }
+  function setStoredTextKey(node, key) {
+    if (!node) return;
+    node[TEXT_KEY_SYMBOL] = key;
+  }
+  function getStoredAttrKey(el, attr) {
+    if (!el) return undefined;
+    const store = el[ATTR_KEYS_SYMBOL];
+    return store ? store[attr] : undefined;
+  }
+  function setStoredAttrKey(el, attr, key) {
+    if (!el) return;
+    if (!el[ATTR_KEYS_SYMBOL]) el[ATTR_KEYS_SYMBOL] = {};
+    el[ATTR_KEYS_SYMBOL][attr] = key;
+  }
+  function addTextNode(node, key, options = {}) {
+    if (!node || !key) return;
+    const entry = textNodes.get(node) || { node };
+    entry.key = key;
+    entry.formatter = options.formatter || null;
+    entry.vars = options.vars;
+    entry.manual = options.manual || false;
+    textNodes.set(node, entry);
+    setStoredTextKey(node, key);
+  }
+  function addAttrNode(el, attr, key, options = {}) {
+    if (!el || !attr || !key) return;
+    let attrMap = attrNodes.get(el);
+    if (!attrMap) {
+      attrMap = new Map();
+      attrNodes.set(el, attrMap);
+    }
+    const entry = attrMap.get(attr) || { el, attr };
+    entry.key = key;
+    entry.formatter = options.formatter || null;
+    entry.vars = options.vars;
+    entry.manual = options.manual || false;
+    attrMap.set(attr, entry);
+    setStoredAttrKey(el, attr, key);
+  }
   function scanTargets(root = document.body) {
+    if (!root) return;
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
     let node;
     while ((node = walker.nextNode())) {
-      const key = normalize(node.textContent);
-      if (!key || !TRANSLATION_KEYS.has(key)) continue;
-      textNodes.push({ node, key });
+      const storedKey = getStoredTextKey(node);
+      let key = storedKey;
+      if (!key) {
+        const normalized = normalize(node.textContent);
+        if (!normalized || !TRANSLATION_KEYS.has(normalized)) continue;
+        key = normalized;
+      }
+      addTextNode(node, key);
     }
     ['placeholder', 'title', 'aria-label', 'alt'].forEach(attr => {
       root.querySelectorAll(`[${attr}]`).forEach(el => {
-        const value = normalize(el.getAttribute(attr));
-        if (!value || !TRANSLATION_KEYS.has(value)) return;
-        attrNodes.push({ el, attr, key: value });
+        const storedKey = getStoredAttrKey(el, attr);
+        let key = storedKey;
+        if (!key) {
+          const value = normalize(el.getAttribute(attr));
+          if (!value || !TRANSLATION_KEYS.has(value)) return;
+          key = value;
+        }
+        addAttrNode(el, attr, key);
       });
     });
   }
@@ -992,49 +1045,49 @@
     return !!(document.body && document.body.contains(node));
   }
 
-  function cleanupManualTargets() {
-    manualTextTargets = manualTextTargets.filter(({ node }) => isNodeConnected(node));
-    manualAttrTargets = manualAttrTargets.filter(({ el }) => isNodeConnected(el));
+  function cleanupTargets() {
+    textNodes.forEach((entry, node) => {
+      if (!isNodeConnected(node)) {
+        textNodes.delete(node);
+        return;
+      }
+    });
+    attrNodes.forEach((attrMap, el) => {
+      if (!isNodeConnected(el)) {
+        attrNodes.delete(el);
+        return;
+      }
+      attrMap.forEach((entry, attr) => {
+        if (!el.hasAttribute(attr) || !isNodeConnected(entry.el)) {
+          attrMap.delete(attr);
+        }
+      });
+      if (attrMap.size === 0) attrNodes.delete(el);
+    });
   }
 
   function refreshTargets(root = document.body) {
-    textNodes.length = 0;
-    attrNodes.length = 0;
+    cleanupTargets();
     scanTargets(root);
-    cleanupManualTargets();
-    manualTextTargets.forEach(target => { textNodes.push(target); });
-    manualAttrTargets.forEach(target => { attrNodes.push(target); });
   }
 
-  function applyManualTargets() {
-    cleanupManualTargets();
-    manualTextTargets.forEach(({ node, key, formatter, vars }) => {
-      if (!node) return;
-      const translated = translate(key, vars);
-      node.textContent = formatter ? formatter(translated) : translated;
-    });
-    manualAttrTargets.forEach(({ el, attr, key, formatter, vars }) => {
-      if (!el) return;
-      const translated = translate(key, vars);
-      el.setAttribute(attr, formatter ? formatter(translated) : translated);
-    });
-  }
   function applyLanguage(lang) {
     currentLanguage = lang || DEFAULT_LANGUAGE;
     localStorage.setItem('preferredLanguage', currentLanguage);
     document.documentElement.lang = currentLanguage;
     refreshTargets();
     textNodes.forEach(({ node, key, formatter, vars }) => {
-      if (!node) return;
+      if (!node || !key) return;
       const translated = translate(key, vars);
       node.textContent = formatter ? formatter(translated) : translated;
     });
-    attrNodes.forEach(({ el, attr, key, formatter, vars }) => {
-      if (!el) return;
-      const translated = translate(key, vars);
-      el.setAttribute(attr, formatter ? formatter(translated) : translated);
+    attrNodes.forEach(attrMap => {
+      attrMap.forEach(({ el, attr, key, formatter, vars }) => {
+        if (!el || !attr || !key) return;
+        const translated = translate(key, vars);
+        el.setAttribute(attr, formatter ? formatter(translated) : translated);
+      });
     });
-    applyManualTargets();
     document.title = getTranslation(currentLanguage, 'Tomos · Admin');
     const select = document.getElementById('languageSelect');
     if (select && select.value !== currentLanguage) select.value = currentLanguage;
@@ -1060,30 +1113,15 @@
       const formatter = typeof opts.formatter === 'function' ? opts.formatter : null;
       const vars = opts.vars || undefined;
       if (targetType === 'text' || targetType === 'textContent') {
-        const existing = manualTextTargets.find(entry => entry.node === node);
-        if (existing) {
-          existing.key = normalizedKey;
-          existing.formatter = formatter;
-          existing.vars = vars;
-        } else {
-          manualTextTargets.push({ node, key: normalizedKey, formatter, vars });
-        }
+        addTextNode(node, normalizedKey, { formatter, vars, manual: true });
         const translated = translate(normalizedKey, vars);
         node.textContent = formatter ? formatter(translated) : translated;
       } else {
         const attr = targetType;
-        const existing = manualAttrTargets.find(entry => entry.el === node && entry.attr === attr);
-        if (existing) {
-          existing.key = normalizedKey;
-          existing.formatter = formatter;
-          existing.vars = vars;
-        } else {
-          manualAttrTargets.push({ el: node, attr, key: normalizedKey, formatter, vars });
-        }
+        addAttrNode(node, attr, normalizedKey, { formatter, vars, manual: true });
         const translated = translate(normalizedKey, vars);
         node.setAttribute(attr, formatter ? formatter(translated) : translated);
       }
-    },
-    applyManualTargets
+    }
   };
 })();
