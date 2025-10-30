@@ -196,6 +196,58 @@ header {
 }
 
 /* === Templates === */
+#toggleTemplatePanel {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #1f2937;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+#toggleTemplatePanel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.06), rgba(15, 23, 42, 0.01));
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+#toggleTemplatePanel > * {
+  position: relative;
+  z-index: 1;
+}
+
+#toggleTemplatePanel i {
+  color: inherit;
+}
+
+#toggleTemplatePanel:hover {
+  color: #111827;
+  border-color: #9ca3af;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+  transform: translateY(-1px);
+}
+
+#toggleTemplatePanel:hover::after,
+#toggleTemplatePanel:focus-visible::after {
+  opacity: 1;
+}
+
+#toggleTemplatePanel:focus-visible {
+  outline: 2px solid #111827;
+  outline-offset: 3px;
+}
+
 .template-card {
   border: 1px solid #e5e7eb;
   border-radius: 18px;
@@ -268,6 +320,10 @@ header {
   color: #fff !important;
   border-color: #111 !important;
   box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18) !important;
+}
+
+#toggleTemplatePanel.template-toggle-active::after {
+  opacity: 0;
 }
 
 /* === Centrar todas las pestañas excepto Appearance === */
