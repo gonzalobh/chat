@@ -52,7 +52,7 @@
     .avatar-option.avatar-upload:hover{background:#f3f4f6}
     #botAvatarImage{border-radius:var(--avatar-radius,50%);}
     .chip.active{border-color:#111;background:#111;color:#fff}
-    .chat-panel-tab{flex:1 1 auto;min-width:120px;text-align:center;padding:0.55rem 1rem;border-radius:14px;font-size:14px;font-weight:500;color:#4b5563;background:#f7f7f7;transition:all .2s ease;box-shadow:inset 0 0 0 1px rgba(15,23,42,.08)}
+    .chat-panel-tab{flex:1 1 auto;min-width:120px;text-align:center;padding:0.55rem 1rem;border-radius:14px;font-size:14px;font-weight:500;color:#4b5563;background:#f7f7f7;transition:all .2s ease;box-shadow:inset 0 0 0 1px rgba(15,23,42,.08);display:flex;align-items:center;justify-content:center;gap:0.5rem}
     .chat-panel-tab:hover{color:#111;background:#f0f0f0}
     .chat-panel-tab.active{background:#111;color:#fff;box-shadow:none}
     .activity-score-active{background:#111 !important;color:#fff !important;border-color:#111 !important}
@@ -354,11 +354,26 @@ body.login-view #appContainer {
 <section id="tab-chat" class="space-y-8">
   <div class="flex justify-center">
     <div id="chatPanelTabs" class="flex flex-wrap items-center gap-2 bg-white border border-gray-200 rounded-2xl shadow-sm p-1">
-      <button class="chat-panel-tab active" data-chat-panel-tab="bot">Bot</button>
-      <button class="chat-panel-tab" data-chat-panel-tab="activity">Activity</button>
-      <button class="chat-panel-tab" data-chat-panel-tab="chat">Chat</button>
-      <button class="chat-panel-tab" data-chat-panel-tab="widget">Widget</button>
-      <button class="chat-panel-tab" data-chat-panel-tab="integration">Integration</button>
+      <button class="chat-panel-tab active" data-chat-panel-tab="bot">
+        <i data-lucide="bot" class="w-4 h-4"></i>
+        <span>Bot</span>
+      </button>
+      <button class="chat-panel-tab" data-chat-panel-tab="activity">
+        <i data-lucide="clock-3" class="w-4 h-4"></i>
+        <span>Activity</span>
+      </button>
+      <button class="chat-panel-tab" data-chat-panel-tab="chat">
+        <i data-lucide="message-square" class="w-4 h-4"></i>
+        <span>Chat</span>
+      </button>
+      <button class="chat-panel-tab" data-chat-panel-tab="widget">
+        <i data-lucide="circle" class="w-4 h-4"></i>
+        <span>Widget</span>
+      </button>
+      <button class="chat-panel-tab" data-chat-panel-tab="integration">
+        <i data-lucide="code-2" class="w-4 h-4"></i>
+        <span>Integration</span>
+      </button>
     </div>
   </div>
 
