@@ -546,25 +546,26 @@ body.login-view #appContainer {
 
             <div class="space-y-6">
               <div class="space-y-3">
-                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Header</p>
-                <button id="openHeaderPanel" type="button" class="w-full text-left border border-gray-200 rounded-2xl px-4 py-3 bg-white shadow-sm hover:border-gray-300 transition">
-                  <div class="flex items-center gap-4">
-                    <div class="w-11 h-11 rounded-xl bg-gray-100 flex items-center justify-center text-gray-500">
-                      <i data-lucide="message-square-text" class="w-5 h-5"></i>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                      <p id="headerSummaryTitle" class="text-sm font-medium text-gray-800 truncate">Asistente del hotel</p>
-                      <p class="text-xs text-gray-500">Edita el título y la identidad visual del encabezado.</p>
-                    </div>
-                    <div class="shrink-0 text-gray-400">
-                      <i data-lucide="pencil" class="w-4 h-4"></i>
-                    </div>
+                <div class="flex items-center justify-between">
+                  <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Header</p>
+                  <button id="openHeaderPanel" type="button" class="p-2 rounded-full border border-gray-200 text-gray-500 hover:text-gray-700 hover:border-gray-300 transition">
+                    <i data-lucide="pencil" class="w-4 h-4"></i>
+                  </button>
+                </div>
+                <div class="border border-gray-200 bg-white rounded-2xl p-4 flex items-center gap-4 shadow-sm">
+                  <div class="w-14 h-14 rounded-xl bg-gray-100 flex items-center justify-center text-gray-500 relative overflow-hidden">
+                    <img id="headerSummaryImage" class="absolute inset-0 w-full h-full rounded-xl object-cover hidden" alt="Header logo preview" />
+                    <i data-lucide="message-square-text" class="w-5 h-5" id="headerSummaryIcon"></i>
                   </div>
-                </button>
+                  <div class="flex-1 min-w-0">
+                    <p id="headerSummaryTitle" class="text-sm font-medium text-gray-800 truncate">Asistente del hotel</p>
+                    <p class="text-xs text-gray-500">Edita el título y la identidad visual del encabezado.</p>
+                  </div>
+                </div>
               </div>
 
               <div class="space-y-3">
-                <div class="flex items-center justify-between">
+                <div class="flex items-center justify-between gap-3">
                   <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Welcome message</p>
                   <div class="flex items-center gap-2">
                     <span id="welcomeSummaryBadge" class="px-2.5 py-1 rounded-full text-xs font-medium bg-gray-200 text-gray-600">Disabled</span>
@@ -573,7 +574,7 @@ body.login-view #appContainer {
                     </button>
                   </div>
                 </div>
-                <div id="welcomeSummaryCard" class="border border-gray-200 bg-white rounded-2xl p-4 flex items-start gap-3 shadow-sm">
+                <div id="welcomeSummaryCard" class="border border-gray-200 bg-white rounded-2xl p-4 flex items-start gap-4 shadow-sm">
                   <div class="w-14 h-14 rounded-xl bg-gray-100 flex items-center justify-center text-gray-500 relative overflow-hidden">
                     <img id="welcomeSummaryImage" class="absolute inset-0 w-full h-full rounded-xl object-cover hidden" alt="Welcome message image" />
                     <i data-lucide="sparkles" class="w-5 h-5" id="welcomeSummaryIcon"></i>
@@ -1537,6 +1538,8 @@ function initApariencia() {
   });
 
   const headerSummaryTitle = $('headerSummaryTitle');
+  const headerSummaryImage = $('headerSummaryImage');
+  const headerSummaryIcon = $('headerSummaryIcon');
   const headerNameRef = eref('config/hotelName');
   if (headerSummaryTitle && headerNameRef) {
     headerNameRef.on('value', snap => {
@@ -1765,17 +1768,52 @@ $('chatHeaderTextColor').addEventListener('input', (e) => {
 
 // === Logo ===
 const logoRef = eref('config/logoUrl');
-logoRef.once('value', s => {
-  const url = s.val();
-  if (url) {
-    $('logoPreview').src = url;
-    $('logoPreviewWrap').classList.remove('hidden');
-    $('logoControls').classList.add('hidden');
-    $('previewLogo').src = url;
-    $('previewLogo').classList.remove('hidden');
-    lucide.createIcons();
+const applyLogoPreview = (url) => {
+  const hasLogo = !!url;
+  const preview = $('logoPreview');
+  const previewWrap = $('logoPreviewWrap');
+  const controls = $('logoControls');
+  const phonePreview = $('previewLogo');
+
+  if (preview && previewWrap) {
+    if (hasLogo) {
+      preview.src = url;
+      previewWrap.classList.remove('hidden');
+    } else {
+      preview.removeAttribute('src');
+      previewWrap.classList.add('hidden');
+    }
   }
-});
+  if (controls) controls.classList.toggle('hidden', hasLogo);
+  if (phonePreview) {
+    if (hasLogo) {
+      phonePreview.src = url;
+      phonePreview.classList.remove('hidden');
+    } else {
+      phonePreview.classList.add('hidden');
+      phonePreview.removeAttribute('src');
+    }
+  }
+  if (headerSummaryImage) {
+    if (hasLogo) {
+      headerSummaryImage.src = url;
+      headerSummaryImage.classList.remove('hidden');
+      if (headerSummaryIcon) headerSummaryIcon.classList.add('hidden');
+    } else {
+      headerSummaryImage.classList.add('hidden');
+      headerSummaryImage.removeAttribute('src');
+      if (headerSummaryIcon) headerSummaryIcon.classList.remove('hidden');
+    }
+  }
+};
+
+if (logoRef) {
+  logoRef.on('value', s => {
+    const url = s.val() || '';
+    applyLogoPreview(url);
+    if (window.lucide) lucide.createIcons();
+  });
+}
 
 // 🆙 Subir logo automáticamente al seleccionar archivo
 $('logoFile').addEventListener('change', e => canWrite(() => {
@@ -1826,15 +1864,11 @@ $('logoFile').addEventListener('change', e => canWrite(() => {
       }, console.error, async () => {
         const url = await ref.getDownloadURL();
         await logoRef.set(url);
-        $('logoPreview').src = url;
-        $('logoPreviewWrap').classList.remove('hidden');
-        $('logoControls').classList.add('hidden');
-        $('previewLogo').src = url;
-        $('previewLogo').classList.remove('hidden');
+        applyLogoPreview(url);
         $('logoProgressWrap').classList.add('hidden');
         toast(t('✔ Header image updated')); // ✅ only toast
         e.target.value = ''; // clear input
-        lucide.createIcons();
+        if (window.lucide) lucide.createIcons();
       });
     };
   };
@@ -1844,9 +1878,7 @@ $('logoFile').addEventListener('change', e => canWrite(() => {
 // 🗑️ Eliminar logo
 $('deleteLogo').onclick = () => canWrite(async () => {
   await logoRef.set('');
-  $('logoPreviewWrap').classList.add('hidden');
-  $('logoControls').classList.remove('hidden');
-  $('previewLogo').classList.add('hidden');
+  applyLogoPreview('');
   toast(t('Logo eliminado'));
 });
 
