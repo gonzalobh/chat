@@ -1610,19 +1610,19 @@ function applyTemplateById(templateId) {
   applyPreview();
   updateActiveTemplateIndicator();
 
-  const updates = {};
-  if (colors.background) updates.chatBackgroundColor = colors.background;
-  if (colors.assistantText) updates.chatAssistantTextColor = colors.assistantText;
-  if (colors.clientBackground) updates.chatPrimaryColor = colors.clientBackground;
-  if (colors.clientText) updates.chatClientTextColor = colors.clientText;
-  if (colors.headerBackground) updates.chatHeaderColor = colors.headerBackground;
-  if (colors.headerText) updates.chatHeaderTextColor = colors.headerText;
-  if (colors.widgetBackground) updates.chatButtonColor = colors.widgetBackground;
+  const saveEntries = Object.entries(map)
+    .map(([inputId, colorKey]) => ({
+      path: inputId,
+      value: colors[colorKey]
+    }))
+    .filter(entry => !!entry.value);
 
-  if (!Object.keys(updates).length) return;
+  if (!saveEntries.length) return;
 
   canWrite(async () => {
-    await eref('config').update(updates);
+    await Promise.all(
+      saveEntries.map(({ path, value }) => eref(`config/${path}`).set(value))
+    );
     toast('✔ Template applied');
   }).catch(err => console.error('No se pudo aplicar el template', err));
 }
