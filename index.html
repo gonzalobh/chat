@@ -1854,49 +1854,54 @@ $('btnLogin').addEventListener('click', async () => {
 $('btnLogout').addEventListener('click', () => auth.signOut());
 
 auth.onAuthStateChanged(async (u) => {
-  if (u) {
-    // 🔍 Detect company automatically by user email
-    let empresaDetectada = null;
-    try {
-      const snapshot = await db.ref().once('value');
-      const data = snapshot.val() || {};
-      for (const emp in data) {
-        const adminEmail = data[emp]?.config?.adminEmail;
-        if (adminEmail && adminEmail.toLowerCase() === u.email.toLowerCase()) {
-          empresaDetectada = emp;
-          break;
+  try {
+    if (u) {
+      // 🔍 Detect company automatically by user email
+      let empresaDetectada = null;
+      try {
+        const snapshot = await db.ref().once('value');
+        const data = snapshot.val() || {};
+        for (const emp in data) {
+          const adminEmail = data[emp]?.config?.adminEmail;
+          if (adminEmail && adminEmail.toLowerCase() === u.email.toLowerCase()) {
+            empresaDetectada = emp;
+            break;
+          }
         }
+      } catch (err) {
+        console.error(t('Error finding company:'), err);
       }
-    } catch (err) {
-      console.error(t('Error finding company:'), err);
-    }
 
-    if (empresaDetectada) {
-      EMPRESA = empresaDetectada;
-      localStorage.setItem('empresa', EMPRESA);
-      $('empresaBadge').textContent = EMPRESA;
-      $('empresaText').textContent = EMPRESA;
-      console.log(t('✅ Company detected automatically:'), EMPRESA);
+      if (empresaDetectada) {
+        EMPRESA = empresaDetectada;
+        localStorage.setItem('empresa', EMPRESA);
+        $('empresaBadge').textContent = EMPRESA;
+        $('empresaText').textContent = EMPRESA;
+        console.log(t('✅ Company detected automatically:'), EMPRESA);
+      } else {
+        console.warn(t('⚠ No company found for this email, using previous value:'), EMPRESA);
+      }
+
+      showAppView();
+
+      await initAll();
+
+      // ✅ Mostrar chat en vivo dentro del mockup
+      const live = document.getElementById('liveChatFrame');
+      if (live && EMPRESA) {
+        live.src = `https://tomos.bot/chat.html?empresa=${encodeURIComponent(EMPRESA)}`;
+        console.log(t('💬 Live chat loaded for'), EMPRESA);
+      }
+
     } else {
-      console.warn(t('⚠ No company found for this email, using previous value:'), EMPRESA);
+      showLoginView();
     }
-
-    showAppView();
-
-    await initAll();
-
-    // ✅ Mostrar chat en vivo dentro del mockup
-    const live = document.getElementById('liveChatFrame');
-    if (live && EMPRESA) {
-      live.src = `https://tomos.bot/chat.html?empresa=${encodeURIComponent(EMPRESA)}`;
-      console.log(t('💬 Live chat loaded for'), EMPRESA);
-    }
-
-  } else {
-    showLoginView();
+  } catch (err) {
+    console.error('Error while initializing app', err);
+  } finally {
+    const loader = $('pageLoader');
+    if (loader) loader.style.display = 'none';
   }
-
-  $('pageLoader').style.display = 'none';
 });
 
 
@@ -1933,9 +1938,15 @@ function getTimeZones(){
 
 // ====== Init All ======
 async function initAll(){
-  lucide.createIcons(); 
-  initTabs(); 
-  applyPreview(); 
+  if (window.lucide && typeof lucide.createIcons === 'function') {
+    try {
+      lucide.createIcons();
+    } catch (err) {
+      console.warn('Unable to create Lucide icons', err);
+    }
+  }
+  initTabs();
+  applyPreview();
   await refreshPermissions();
   initApariencia(); 
   initSettingsTab(); 
