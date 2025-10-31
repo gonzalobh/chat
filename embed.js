@@ -7,27 +7,65 @@
   const style = document.createElement("style");
   style.textContent = `
     #chatWidgetBtn {
-      position: fixed; bottom: 24px; right: 24px; z-index: 99999;
+      position: fixed; bottom: 24px; left: auto; right: 24px; z-index: 99999;
+      --widget-horizontal-translate: 0;
       background: #111; color: #fff; border: none;
       border-radius: 50%; /* valor por defecto, se sobrescribe dinámicamente */
       width: 60px; height: 60px; display: none; align-items: center;
       justify-content: center; cursor: pointer;
       box-shadow: 0 4px 8px rgba(0,0,0,0.25);
       transition: transform .25s ease, box-shadow .25s ease, border-radius .25s ease;
+      transform: translateX(var(--widget-horizontal-translate));
+    }
+    #chatWidgetBtn[data-position="left"] {
+      left: 24px;
+      right: auto;
+      --widget-horizontal-translate: 0;
+    }
+    #chatWidgetBtn[data-position="center"] {
+      left: 50%;
+      right: auto;
+      --widget-horizontal-translate: -50%;
+    }
+    #chatWidgetBtn[data-position="right"] {
+      right: 24px;
+      left: auto;
+      --widget-horizontal-translate: 0;
     }
     #chatWidgetBtn:hover {
-      transform: scale(1.05);
+      transform: translateX(var(--widget-horizontal-translate)) scale(1.05);
       box-shadow: 0 6px 14px rgba(0,0,0,0.3);
     }
     #chatWidgetFrame {
-      position: fixed; bottom: 90px; right: 24px; width: 420px; height: 620px;
+      position: fixed; bottom: 90px; left: auto; right: 24px; width: 420px; height: 620px;
+      --widget-frame-translate: 0;
       border: none; border-radius: 18px;
       box-shadow: 0 6px 24px rgba(0,0,0,0.2);
       display: none; z-index: 99999; overflow: hidden;
+      transform: translateX(var(--widget-frame-translate));
+    }
+    #chatWidgetFrame[data-position="left"] {
+      left: 24px;
+      right: auto;
+      --widget-frame-translate: 0;
+    }
+    #chatWidgetFrame[data-position="center"] {
+      left: 50%;
+      right: auto;
+      --widget-frame-translate: -50%;
+    }
+    #chatWidgetFrame[data-position="right"] {
+      right: 24px;
+      left: auto;
+      --widget-frame-translate: 0;
     }
     @media (max-width:640px){
-      #chatWidgetFrame{
-        width:100%;height:100%;bottom:0;right:0;border-radius:0;
+      #chatWidgetFrame,
+      #chatWidgetFrame[data-position="left"],
+      #chatWidgetFrame[data-position="center"],
+      #chatWidgetFrame[data-position="right"]{
+        width:100%;height:100%;bottom:0;left:0;right:0;border-radius:0;
+        --widget-frame-translate:0;transform:none;
       }
     }
   `;
@@ -45,7 +83,18 @@
   document.body.append(btn, frame);
 
   // 🔄 Comunicación con el iframe
-  let ready = false, got = false;
+  let ready = false, got = false, currentPosition = 'right';
+
+  const applyWidgetPosition = (position) => {
+    const normalized = (position || '').toString().toLowerCase();
+    const valid = ['left', 'center', 'right'];
+    const finalPos = valid.includes(normalized) ? normalized : 'right';
+    currentPosition = finalPos;
+    btn.dataset.position = finalPos;
+    frame.dataset.position = finalPos;
+  };
+
+  applyWidgetPosition(currentPosition);
 
   window.addEventListener("message", (e) => {
     if (!e.origin.includes("tomos.bot")) return;
@@ -108,6 +157,10 @@
 
       case "updateChatButtonColor":
         if (d.color) btn.style.backgroundColor = d.color;
+        break;
+
+      case "updateWidgetPosition":
+        applyWidgetPosition(d.position);
         break;
 
       case "closeChatWindow":
