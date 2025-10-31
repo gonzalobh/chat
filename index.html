@@ -970,7 +970,7 @@ body.login-view #appContainer {
 
             <div class="space-y-2">
               <label for="welcomeText" class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Message</label>
-              <textarea id="welcomeText" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60" rows="4" placeholder="Enter welcome message..."></textarea>
+              <textarea id="welcomeText" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60 h-[150px]" rows="4" placeholder="Enter welcome message..."></textarea>
             </div>
 
             <div class="space-y-2">
@@ -2886,7 +2886,10 @@ function initSettingsTab(){
   // Toggle show button
   const visRef = eref('config/chatVisible');
   visRef.once('value', s=> $('tgChatVisible').checked = !!s.val());
-  $('tgChatVisible').addEventListener('change', ()=> canWrite(async ()=>{ await visRef.set(!!$('tgChatVisible').checked); }));
+  $('tgChatVisible').addEventListener('change', ()=> canWrite(async ()=>{
+    await visRef.set(!!$('tgChatVisible').checked);
+    toast(t('✔ Chat visibility updated'));
+  }));
 
   // General Information
   const nameRef = eref('config/hotelName');
@@ -2932,6 +2935,7 @@ function initSettingsTab(){
   });
   personalitySelect?.addEventListener('change', ()=> canWrite(async ()=>{
     await persRef.set(personalitySelect.value);
+    toast(t('✔ Personality updated'));
   }));
   
   
