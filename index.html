@@ -642,10 +642,6 @@ body.login-view #appContainer {
                     <select id="timeZone" class="mt-2 w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-black/70"></select>
                   </div>
                 </div>
-                <div class="flex justify-end">
-                  <button id="saveGeneral" class="px-4 py-2 bg-black text-white rounded-md">Save</button>
-                </div>
-                <p id="msgGeneral" class="text-green-600 text-sm hidden text-right">✔ Saved</p>
               </div>
               <div>
                 <label for="personalitySelect" class="block text-xs font-semibold text-gray-600 uppercase tracking-wide">Personality</label>
@@ -1713,7 +1709,7 @@ function setWriteEnabled(enabled) {
   const ids = [
     'saveChatPrimaryColor','saveChatButtonColor','uploadLogo','deleteLogo',
     'uploadAvatar','deleteAvatar','fontSelect','tgChatVisible','hotelName',
-    'timeZone','saveGeneral','saveContext','contextText','widgetIconTrigger',
+    'timeZone','saveContext','contextText','widgetIconTrigger',
     'addKnowledgePage','knowledgeUrlInput','confirmAddKnowledge','personalitySelect'
   ];
   ids.forEach(id => {
@@ -2895,6 +2891,9 @@ function initSettingsTab(){
   // General Information
   const nameRef = eref('config/hotelName');
   const hotelNameInput = $('hotelName');
+  const timeZoneSelect = $('timeZone');
+
+  let currentHotelName = '';
 
   const updateBotNameDisplay = () => {
     if (!hotelNameInput) return;
@@ -2905,23 +2904,50 @@ function initSettingsTab(){
   };
 
   nameRef.once('value', s=> {
+    currentHotelName = s.val() || '';
     if (hotelNameInput) {
-      hotelNameInput.value = s.val() || '';
+      hotelNameInput.value = currentHotelName;
       updateBotNameDisplay();
     }
   });
 
   hotelNameInput?.addEventListener('input', updateBotNameDisplay);
+  hotelNameInput?.addEventListener('blur', () => {
+    if (!hotelNameInput) return;
+    const newName = (hotelNameInput.value || '').trim();
+    if (newName === currentHotelName) return;
+    canWrite(async () => {
+      await nameRef.set(newName);
+      currentHotelName = newName;
+      hotelNameInput.value = newName;
+      updateBotNameDisplay();
+      toast(t('✔ Saved'));
+    });
+  });
 
   const tzRef = eref('config/timeZone');
   const zones = getTimeZones();
-  $('timeZone').innerHTML = zones.map(z=>`<option value="${z}">${z.replace('_',' ')}</option>`).join('');
-  tzRef.once('value', s=>{ const v=s.val()||Intl.DateTimeFormat().resolvedOptions().timeZone||'Europe/Madrid'; $('timeZone').value = zones.includes(v)?v:'Europe/Madrid'; });
+  if (timeZoneSelect) {
+    timeZoneSelect.innerHTML = zones.map(z=>`<option value="${z}">${z.replace('_',' ')}</option>`).join('');
+  }
+  let currentTimeZone = '';
+  tzRef.once('value', s=>{
+    const fallback = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Madrid';
+    const rawValue = s.val() || fallback;
+    const resolvedValue = zones.includes(rawValue) ? rawValue : 'Europe/Madrid';
+    currentTimeZone = resolvedValue;
+    if (timeZoneSelect) timeZoneSelect.value = resolvedValue;
+  });
 
-  $('saveGeneral').onclick = ()=> canWrite(async ()=>{
-    await nameRef.set(($('hotelName').value||'').trim());
-    await tzRef.set($('timeZone').value);
-    $('msgGeneral').classList.remove('hidden'); setTimeout(()=>$('msgGeneral').classList.add('hidden'),1200);
+  timeZoneSelect?.addEventListener('change', () => {
+    if (!timeZoneSelect) return;
+    const newTimeZone = timeZoneSelect.value;
+    if (!newTimeZone || newTimeZone === currentTimeZone) return;
+    canWrite(async () => {
+      await tzRef.set(newTimeZone);
+      currentTimeZone = newTimeZone;
+      toast(t('✔ Saved'));
+    });
   });
 
   // Assistant personality
