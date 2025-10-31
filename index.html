@@ -263,7 +263,6 @@ header {
   flex-direction: column;
   gap: 16px;
   transition: all 0.2s ease;
-  border: 1px solid rgba(148, 163, 184, 0.22);
   align-items: stretch;
 }
 
@@ -273,8 +272,7 @@ header {
 }
 
 .template-card.active {
-  border-color: rgba(59, 130, 246, 0.45);
-  box-shadow: 0 14px 28px rgba(59, 130, 246, 0.16);
+ border: 1px solid #747474;
 }
 
 .template-card .template-header {
@@ -1504,35 +1502,49 @@ function createTemplateCard(template) {
   const btn = document.createElement('button');
   btn.type = 'button';
   btn.dataset.templateId = template.id;
-  btn.className = 'template-card text-left focus:outline-none focus:ring-2 focus:ring-black/10';
+  btn.className =
+    'template-card focus:outline-none focus:ring-1 focus:ring-black/10 flex flex-col items-center gap-0 p-3 rounded-2xl transition-all hover:shadow-sm';
+  btn.style.background = '#fbfcfc';
+  btn.style.minWidth = '120px';
+  btn.style.maxWidth = '140px';
 
+  // Header
   const header = document.createElement('div');
-  header.className = 'template-header';
+  header.textContent = 'Header';
+  header.className =
+    'w-full h-6 flex items-center justify-center text-[11px] font-medium rounded-t-lg rounded-b-none';
   header.style.background = template.colors.headerBackground;
   header.style.color = template.colors.headerText;
-  header.textContent = 'Header';
 
+  // Preview
   const preview = document.createElement('div');
-  preview.className = 'template-preview';
+  preview.className =
+    'flex flex-col items-center justify-center gap-2 w-full rounded-b-xl rounded-t-none py-3';
   preview.style.background = template.colors.background;
 
+  // Chatbot bubble
   const assistant = document.createElement('div');
-  assistant.className = 'template-assistant';
-  assistant.style.color = template.colors.assistantText;
   assistant.textContent = 'Chatbot';
+  assistant.className =
+    'rounded-full px-3 py-1 text-[11px] font-medium shadow-sm';
+  assistant.style.background = '#fff';
+  assistant.style.color = template.colors.assistantText;
 
+  // Client bubble
   const client = document.createElement('div');
-  client.className = 'template-client';
+  client.textContent = 'Client';
+  client.className =
+    'rounded-full px-3 py-1 text-[11px] font-medium shadow-sm';
   client.style.background = template.colors.clientBackground;
   client.style.color = template.colors.clientText;
-  client.textContent = 'Client';
 
+  // Assemble
   preview.appendChild(assistant);
   preview.appendChild(client);
-
   btn.appendChild(header);
   btn.appendChild(preview);
 
+  // Click → aplicar plantilla
   btn.addEventListener('click', () => applyTemplateById(template.id));
 
   return btn;
