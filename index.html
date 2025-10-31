@@ -461,6 +461,33 @@ body.login-view #appContainer {
         </span>
         <span id="authEmail" class="text-xs text-gray-500">—</span>
       </div>
+
+      <div class="relative">
+        <button id="empresaSelector" class="flex items-center gap-2 px-3 py-1.5 text-sm border border-gray-200 rounded-md bg-white shadow-sm hover:bg-gray-100 transition" type="button">
+          <span id="empresaSelectorLabel" class="max-w-[140px] truncate text-gray-700">—</span>
+          <i data-lucide="chevron-down" class="w-4 h-4 text-gray-500"></i>
+        </button>
+
+        <div id="empresaDropdown" class="hidden absolute right-0 mt-2 w-72 bg-white border border-gray-200 rounded-xl shadow-xl z-[9999]">
+          <div id="empresaList" class="max-h-64 overflow-y-auto py-2"></div>
+          <div class="border-t border-gray-100 px-3 py-3">
+            <form id="empresaCreateForm" class="space-y-2">
+              <p class="text-xs text-gray-500 leading-snug">
+                Crea un bot independiente con su propia configuración.
+              </p>
+              <div>
+                <label for="newEmpresaName" class="sr-only">Nombre del bot</label>
+                <input id="newEmpresaName" type="text" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/10" placeholder="Nombre interno del bot" autocomplete="off">
+              </div>
+              <button type="submit" class="w-full flex items-center justify-center gap-2 rounded-lg bg-black text-white py-2 text-sm">
+                <i data-lucide="plus" class="w-4 h-4"></i>
+                <span>Crear bot</span>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
       <button id="btnLogout" class="px-3 py-1.5 bg-red-600 text-white rounded-md hidden">
         Log out
       </button>
@@ -1361,8 +1388,261 @@ function getEmpresa() {
 }
 
 let EMPRESA = getEmpresa();
-$('empresaBadge').textContent = EMPRESA;
-$('empresaText').textContent = EMPRESA;
+let empresasCache = [];
+let empresaDropdownOpen = false;
+let empresaSelectorInitialized = false;
+let creatingEmpresa = false;
+
+function getEmpresaDisplayName(id) {
+  if (!id) return '';
+  const match = empresasCache.find(item => item.id === id);
+  return (match?.label || id || '').toString();
+}
+
+function updateEmpresaSummary() {
+  const badge = $('empresaBadge');
+  if (badge) badge.textContent = EMPRESA || '—';
+  const text = $('empresaText');
+  if (text) text.textContent = getEmpresaDisplayName(EMPRESA) || '—';
+  updateEmpresaSelectorLabel();
+}
+
+function updateEmpresaSelectorLabel() {
+  const labelEl = $('empresaSelectorLabel');
+  const selectorBtn = $('empresaSelector');
+  const display = getEmpresaDisplayName(EMPRESA) || '—';
+  if (labelEl) {
+    labelEl.textContent = display;
+    labelEl.title = display;
+  }
+  if (selectorBtn) {
+    const titleParts = [];
+    if (display) titleParts.push(display);
+    if (EMPRESA && display !== EMPRESA) titleParts.push(`(${EMPRESA})`);
+    selectorBtn.title = titleParts.join(' ');
+  }
+}
+
+function renderEmpresaList(list = empresasCache) {
+  const container = $('empresaList');
+  if (!container) return;
+  container.innerHTML = '';
+
+  if (!list.length) {
+    const empty = document.createElement('p');
+    empty.className = 'px-3 py-2 text-sm text-gray-500';
+    empty.textContent = t('No bots yet. Create one below.');
+    container.appendChild(empty);
+    return;
+  }
+
+  list.forEach(item => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'w-full text-left px-3 py-2 text-sm rounded-lg transition-colors flex flex-col gap-0.5';
+    if (item.id === EMPRESA) {
+      btn.classList.add('bg-gray-100', 'text-gray-900', 'font-medium');
+    } else {
+      btn.classList.add('hover:bg-gray-100', 'text-gray-700');
+    }
+
+    const nameEl = document.createElement('span');
+    nameEl.className = 'truncate';
+    nameEl.textContent = item.label || item.id;
+
+    const idEl = document.createElement('span');
+    idEl.className = 'text-xs text-gray-400 truncate';
+    idEl.textContent = item.id;
+
+    btn.appendChild(nameEl);
+    btn.appendChild(idEl);
+
+    if (item.adminEmail) {
+      const adminEl = document.createElement('span');
+      adminEl.className = 'text-[11px] text-gray-400 truncate';
+      adminEl.textContent = item.adminEmail;
+      btn.appendChild(adminEl);
+    }
+
+    btn.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      switchEmpresa(item.id);
+    });
+
+    container.appendChild(btn);
+  });
+}
+
+function toggleEmpresaDropdown(force) {
+  const dropdown = $('empresaDropdown');
+  if (!dropdown) return;
+  const shouldOpen = typeof force === 'boolean' ? force : !empresaDropdownOpen;
+  empresaDropdownOpen = shouldOpen;
+  dropdown.classList.toggle('hidden', !shouldOpen);
+}
+
+function slugifyEmpresaName(name) {
+  return (name || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 60);
+}
+
+function switchEmpresa(targetEmpresa) {
+  if (!targetEmpresa || targetEmpresa === EMPRESA) {
+    toggleEmpresaDropdown(false);
+    return;
+  }
+  toggleEmpresaDropdown(false);
+  localStorage.setItem('empresa', targetEmpresa);
+  const url = new URL(window.location.href);
+  url.searchParams.set('empresa', targetEmpresa);
+  window.location.href = url.toString();
+}
+
+function setupEmpresaSelector() {
+  if (empresaSelectorInitialized) return;
+  empresaSelectorInitialized = true;
+
+  const selectorBtn = $('empresaSelector');
+  const form = $('empresaCreateForm');
+  const nameInput = $('newEmpresaName');
+
+  selectorBtn?.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    toggleEmpresaDropdown();
+    if (empresaDropdownOpen && nameInput) {
+      setTimeout(() => nameInput.focus(), 100);
+    }
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!empresaDropdownOpen) return;
+    const dropdown = $('empresaDropdown');
+    const selector = $('empresaSelector');
+    if (!dropdown || dropdown.contains(event.target)) return;
+    if (selector && selector.contains(event.target)) return;
+    toggleEmpresaDropdown(false);
+  });
+
+  form?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (creatingEmpresa) return;
+    const rawName = (nameInput?.value || '').trim();
+    if (!rawName) {
+      alert(t('Please provide a name for the new bot.'));
+      return;
+    }
+
+    const slug = slugifyEmpresaName(rawName);
+    if (!slug) {
+      alert(t('The bot name must include letters or numbers.'));
+      return;
+    }
+
+    if (empresasCache.some(item => item.id === slug)) {
+      alert(t('A bot with that identifier already exists.'));
+      return;
+    }
+
+    creatingEmpresa = true;
+    let created = false;
+    try {
+      const existingSnap = await db.ref(slug).once('value');
+      if (existingSnap.exists()) {
+        alert(t('A bot with that identifier already exists.'));
+      } else {
+        let defaultTimeZone = 'UTC';
+        try {
+          defaultTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+        } catch (tzErr) {
+          defaultTimeZone = 'UTC';
+        }
+
+        const defaultConfig = {
+          hotelName: rawName,
+          adminEmail: auth.currentUser?.email || '',
+          chatPrimaryColor: '#111111',
+          chatButtonColor: '#111111',
+          chatBackgroundColor: '#ECECEC',
+          chatAssistantTextColor: '#000000',
+          chatClientTextColor: '#FFFFFF',
+          chatHeaderColor: '#FFFFFF',
+          chatHeaderTextColor: '#1F2937',
+          widgetIcon: currentWidgetIcon || DEFAULT_WIDGET_ICON,
+          widgetRadius: 50,
+          fontFamily: 'Manrope',
+          avatarRadius: 50,
+          chatVisible: true,
+          timeZone: defaultTimeZone,
+          personality: '',
+          contextInfo: '',
+          contextPages: [],
+          autoResponses: [],
+          schedule: {},
+          chatWelcome: { enabled: false, message: '' }
+        };
+
+        await canWrite(async () => {
+          await db.ref(slug).set({
+            config: defaultConfig,
+            createdAt: firebase.database.ServerValue.TIMESTAMP
+          });
+          created = true;
+        });
+      }
+    } catch (err) {
+      console.error('Error creating bot', err);
+      alert(t('We could not create the bot. Please try again.'));
+    } finally {
+      creatingEmpresa = false;
+    }
+
+    if (!created) return;
+
+    if (nameInput) nameInput.value = '';
+    empresasCache = [...empresasCache, {
+      id: slug,
+      label: rawName,
+      adminEmail: auth.currentUser?.email || ''
+    }].sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }));
+    renderEmpresaList();
+    updateEmpresaSelectorLabel();
+    toggleEmpresaDropdown(false);
+    switchEmpresa(slug);
+  });
+}
+
+function updateEmpresasFromData(data = {}) {
+  const list = [];
+  for (const [key, value] of Object.entries(data || {})) {
+    if (!value || typeof value !== 'object') continue;
+    if (!value.config || typeof value.config !== 'object') continue;
+    const label = (value.config.hotelName || value.config.botName || key || '').toString().trim();
+    const adminEmail = (value.config.adminEmail || '').toString().trim();
+    list.push({
+      id: key,
+      label: label || key,
+      adminEmail
+    });
+  }
+  list.sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }));
+  empresasCache = list;
+  renderEmpresaList();
+  updateEmpresaSelectorLabel();
+  const empresaText = $('empresaText');
+  if (empresaText) empresaText.textContent = getEmpresaDisplayName(EMPRESA) || '—';
+}
+
+setupEmpresaSelector();
+updateEmpresaSummary();
+renderEmpresaList();
+
 function eref(path) { return db.ref(`${EMPRESA}/${path}`); }
 
 const DEFAULT_CHAT_TEMPLATES = {
@@ -1846,12 +2126,18 @@ auth.onAuthStateChanged(async (u) => {
     try {
       const snapshot = await db.ref().once('value');
       const data = snapshot.val() || {};
-      for (const emp in data) {
-        const adminEmail = data[emp]?.config?.adminEmail;
-        if (adminEmail && adminEmail.toLowerCase() === u.email.toLowerCase()) {
-          empresaDetectada = emp;
-          break;
+      updateEmpresasFromData(data);
+
+      const normalizedEmail = (u.email || '').toLowerCase();
+      if (normalizedEmail) {
+        const found = empresasCache.find(item => (item.adminEmail || '').toLowerCase() === normalizedEmail);
+        if (found) {
+          empresaDetectada = found.id;
         }
+      }
+
+      if (!empresasCache.some(item => item.id === EMPRESA) && empresasCache.length) {
+        empresaDetectada = empresaDetectada || empresasCache[0].id;
       }
     } catch (err) {
       console.error(t('Error finding company:'), err);
@@ -1860,12 +2146,13 @@ auth.onAuthStateChanged(async (u) => {
     if (empresaDetectada) {
       EMPRESA = empresaDetectada;
       localStorage.setItem('empresa', EMPRESA);
-      $('empresaBadge').textContent = EMPRESA;
-      $('empresaText').textContent = EMPRESA;
       console.log(t('✅ Company detected automatically:'), EMPRESA);
     } else {
       console.warn(t('⚠ No company found for this email, using previous value:'), EMPRESA);
     }
+
+    updateEmpresaSummary();
+    renderEmpresaList();
 
     showAppView();
 
@@ -1879,6 +2166,9 @@ auth.onAuthStateChanged(async (u) => {
     }
 
   } else {
+    empresasCache = [];
+    updateEmpresaSummary();
+    renderEmpresaList();
     showLoginView();
   }
 
@@ -2071,6 +2361,17 @@ function initApariencia() {
     headerNameRef.on('value', snap => {
       const val = (snap.val() || 'Asistente del hotel').trim();
       headerSummaryTitle.textContent = val || 'Asistente del hotel';
+      const idx = empresasCache.findIndex(item => item.id === EMPRESA);
+      if (idx >= 0) {
+        const updatedLabel = val || empresasCache[idx].label || EMPRESA;
+        empresasCache[idx] = {
+          ...empresasCache[idx],
+          label: updatedLabel
+        };
+        empresasCache = [...empresasCache].sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }));
+        updateEmpresaSummary();
+        renderEmpresaList();
+      }
     });
   }
 
