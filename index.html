@@ -26,6 +26,10 @@
 
 
   <style>
+  :root {
+    color-scheme: light;
+  }
+
   body {
   font-family: 'Manrope', system-ui, sans-serif !important;
 }
@@ -434,6 +438,150 @@ body.login-view #appContainer {
   background-color: #111111;
 }
 
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+    }
+
+    body {
+      background: #0f172a !important;
+      color: #e2e8f0;
+    }
+
+    body.login-view {
+      background-color: #111827;
+    }
+
+    #pageLoader {
+      background: rgba(15, 23, 42, 0.95);
+      color: #e2e8f0;
+    }
+
+    .card,
+    .template-card,
+    .template-card .template-preview,
+    .widget-icon-option,
+    .widget-icon-trigger,
+    .widget-mockup,
+    .page-btn,
+    .chip,
+    .chat-panel-tab,
+    .chat-panel-tab.active,
+    .avatar-option,
+    #toggleTemplatePanel,
+    #login,
+    .iphone-in {
+      background: #1f2937 !important;
+      color: #e2e8f0 !important;
+      border-color: rgba(148, 163, 184, 0.4) !important;
+      box-shadow: none !important;
+    }
+
+    .card,
+    .template-card,
+    .page-btn,
+    #toggleTemplatePanel {
+      border: 1px solid rgba(148, 163, 184, 0.35) !important;
+    }
+
+    .widget-mockup,
+    .chip,
+    .chip.active,
+    .widget-icon-option.active,
+    .avatar-option.active,
+    .sidebar-btn.active {
+      background: #0f172a !important;
+      border-color: rgba(148, 163, 184, 0.5) !important;
+      color: #f8fafc !important;
+    }
+
+    .sidebar-btn {
+      color: #cbd5f5 !important;
+    }
+
+    .sidebar-btn:hover {
+      background: rgba(15, 23, 42, 0.6) !important;
+      color: #f8fafc !important;
+    }
+
+    .sidebar-btn.active i,
+    .sidebar-btn i,
+    .chat-panel-tab i,
+    .chat-panel-tab.active i {
+      color: inherit !important;
+    }
+
+    .chat-panel-tab:hover {
+      color: #f8fafc !important;
+    }
+
+    .template-card .template-client {
+      background: #2563eb !important;
+      color: #e2e8f0 !important;
+    }
+
+    .template-card .template-assistant,
+    .chip.active,
+    .chat-panel-tab.active,
+    .widget-icon-option.active,
+    .page-btn.active,
+    .avatar-option.active {
+      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.35) !important;
+    }
+
+    input,
+    select,
+    textarea,
+    #embedScriptBox {
+      background: #0f172a !important;
+      color: #f1f5f9 !important;
+      border-color: rgba(148, 163, 184, 0.5) !important;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: rgba(226, 232, 240, 0.65) !important;
+    }
+
+    .widget-mockup img,
+    .widget-icon-trigger img,
+    .widget-icon-option img,
+    #botAvatarImage,
+    #previewLogo {
+      filter: none;
+    }
+
+    #saveContext,
+    button.bg-black,
+    #btnLogout {
+      background: linear-gradient(to bottom, #1f2937, #111827) !important;
+      color: #f8fafc !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+
+    #saveContext:hover,
+    button.bg-black:hover,
+    #btnLogout:hover {
+      background: linear-gradient(to bottom, #111827, #0f172a) !important;
+      box-shadow: none !important;
+    }
+
+    #tab-knowledge,
+    #tab-respuestas {
+      background: transparent;
+    }
+
+    .iphone {
+      background: #000;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45);
+    }
+
+    .notch {
+      background: #0b1120;
+    }
+  }
 
   </style>
 </head>
