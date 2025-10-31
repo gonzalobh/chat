@@ -257,11 +257,11 @@ header {
 
 .template-card {
   border-radius: 24px;
-  padding: 18px;
+  padding: 16px;
   background: #f3f6fb;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   transition: all 0.2s ease;
   align-items: stretch;
 }
@@ -286,10 +286,10 @@ header {
 
 .template-card .template-preview {
   border-radius: 20px;
-  padding: 28px 20px;
+  padding: 22px 18px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
   background: #e9eef7;
   align-items: center;
 }
@@ -297,7 +297,7 @@ header {
 .template-card .template-assistant,
 .template-card .template-client {
   border-radius: 999px;
-  padding: 12px 32px;
+  padding: 10px 26px;
   font-size: 14px;
   font-weight: 600;
   text-align: center;
@@ -1253,7 +1253,7 @@ body.login-view #appContainer {
 
 <!-- Modal: Chat templates -->
 <div id="chatTemplateModal" class="fixed inset-0 hidden items-center justify-center bg-black/40 backdrop-blur-sm z-[1200] px-4">
-  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl p-6 space-y-5 relative">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl p-6 space-y-5 relative">
     <button id="closeChatTemplateModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
       <i data-lucide="x" class="w-5 h-5"></i>
     </button>
@@ -1262,7 +1262,7 @@ body.login-view #appContainer {
       <p class="text-sm text-gray-500">Selecciona una plantilla para aplicar rápidamente una combinación de colores. Luego podrás personalizar los detalles.</p>
     </div>
     <div id="chatTemplatePanel" class="space-y-4">
-      <div id="chatTemplateGrid" class="grid gap-3 sm:grid-cols-2 md:grid-cols-3"></div>
+      <div id="chatTemplateGrid" class="grid gap-2 sm:grid-cols-2 md:grid-cols-3"></div>
     </div>
   </div>
 </div>
