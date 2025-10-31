@@ -79,6 +79,10 @@
     .widget-position-btn:hover{color:#111;border-color:#d1d5db;}
     .widget-position-btn svg{width:22px;height:22px;}
     .widget-position-btn-active{border-color:#111;color:#111;background:#f4f4f5;box-shadow:0 6px 14px rgba(15,23,42,.12);}
+    .color-mode-toggle{display:inline-flex;align-items:center;gap:4px;padding:4px;background:#f3f4f6;border-radius:9999px;border:1px solid #e5e7eb;}
+    .color-mode-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:9999px;font-size:12px;font-weight:600;color:#6b7280;transition:all .2s ease;background:transparent;border:1px solid transparent;}
+    .color-mode-btn.active{background:#fff;color:#111827;border-color:#d1d5db;box-shadow:0 3px 8px rgba(15,23,42,.12);}
+    .color-mode-btn:hover{color:#111827;}
     .chat-columns{align-items:stretch;}
     .chat-columns > .chat-column{height:640px;}
     .chat-column-secondary{background:#fff;border-radius:26px;padding:24px;box-shadow:0 10px 24px rgba(15,23,42,.08);border:1px solid rgba(15,23,42,.08);}
@@ -771,19 +775,31 @@ body.login-view #appContainer {
 
         <div data-chat-panel="colors" class="space-y-5 hidden">
           <div class="card p-6 space-y-6">
-            <div class="flex items-center gap-2 font-semibold text-gray-800">
-              <i data-lucide="palette" class="w-5 h-5"></i>
-              Colores
-            </div>
-
-            <div class="space-y-3">
-              <div class="flex items-center justify-between gap-3">
-                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Colors</p>
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div class="flex items-center gap-2 font-semibold text-gray-800">
+                <i data-lucide="palette" class="w-5 h-5"></i>
+                Colores
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="color-mode-toggle" role="group" aria-label="Chat color mode">
+                  <button type="button" class="color-mode-btn active" data-color-mode="light">
+                    <i data-lucide="sun" class="w-3.5 h-3.5"></i>
+                    <span>Light</span>
+                  </button>
+                  <button type="button" class="color-mode-btn" data-color-mode="dark">
+                    <i data-lucide="moon" class="w-3.5 h-3.5"></i>
+                    <span>Dark</span>
+                  </button>
+                </div>
                 <button id="toggleTemplatePanel" type="button" class="flex items-center gap-2 px-3 py-1.5 border border-gray-200 rounded-full text-xs font-medium text-gray-600 bg-white shadow-sm hover:text-gray-900 hover:border-gray-300 transition">
                   <i data-lucide="palette" class="w-3.5 h-3.5"></i>
                   <span>Template</span>
                 </button>
               </div>
+            </div>
+
+            <div class="space-y-3">
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Colors</p>
               <div id="chatTemplatePanel" class="hidden space-y-3 border border-dashed border-gray-300 rounded-2xl p-4 bg-gray-50/70">
                 <p class="text-xs text-gray-500">Selecciona un estilo predefinido. Puedes ajustar los colores luego.</p>
                 <div id="chatTemplateGrid" class="grid gap-3 sm:grid-cols-2"></div>
@@ -1472,6 +1488,66 @@ const DEFAULT_CHAT_TEMPLATES = {
 let isApplyingTemplate = false;
 const pendingColorSaves = {};
 
+const COLOR_MODES = ['light', 'dark'];
+const COLOR_FIELD_CONFIG = {
+  chatHeaderColor: {
+    toastKey: '✔ Header color saved',
+    defaults: { light: '#FFFFFF', dark: '#111827' }
+  },
+  chatHeaderTextColor: {
+    toastKey: '✔ Header text color saved',
+    defaults: { light: '#1F2937', dark: '#F8FAFC' }
+  },
+  chatBackgroundColor: {
+    toastKey: '✔ Background color saved',
+    defaults: { light: '#FFFFFF', dark: '#0B1120' }
+  },
+  chatAssistantTextColor: {
+    toastKey: '✔ Assistant text color saved',
+    defaults: { light: '#000000', dark: '#E2E8F0' }
+  },
+  chatPrimaryColor: {
+    toastKey: '✔ Primary color saved',
+    defaults: { light: '#111111', dark: '#1F2937' }
+  },
+  chatClientTextColor: {
+    toastKey: '✔ Client text color saved',
+    defaults: { light: '#FFFFFF', dark: '#F8FAFC' }
+  }
+};
+
+const COLOR_TEMPLATE_MAP = {
+  chatBackgroundColor: 'background',
+  chatAssistantTextColor: 'assistantText',
+  chatPrimaryColor: 'clientBackground',
+  chatClientTextColor: 'clientText',
+  chatHeaderColor: 'headerBackground',
+  chatHeaderTextColor: 'headerText'
+};
+
+const COLOR_FIELD_KEYS = Object.keys(COLOR_FIELD_CONFIG);
+
+function createDefaultPalette(mode) {
+  const palette = {};
+  COLOR_FIELD_KEYS.forEach((key) => {
+    const defaults = COLOR_FIELD_CONFIG[key].defaults;
+    palette[key] = defaults[mode] || defaults.light;
+  });
+  return palette;
+}
+
+let currentColorMode = 'light';
+const colorState = {
+  light: createDefaultPalette('light'),
+  dark: createDefaultPalette('dark')
+};
+
+const colorModeLoaded = { light: false, dark: false };
+let legacyColorsLoaded = false;
+let chatFrameOrigin = null;
+let colorModeButtons = [];
+let colorModeInitialized = false;
+
 function normalizeHexColor(color) {
   if (!color) return '';
   let hex = color.trim();
@@ -1486,6 +1562,178 @@ function normalizeHexColor(color) {
     return '';
   }
   return `#${hex.toUpperCase()}`;
+}
+
+function ensurePalette(mode) {
+  if (!COLOR_MODES.includes(mode)) return createDefaultPalette('light');
+  if (!colorState[mode]) {
+    colorState[mode] = createDefaultPalette(mode);
+  }
+  COLOR_FIELD_KEYS.forEach((key) => {
+    const defaults = COLOR_FIELD_CONFIG[key].defaults;
+    if (!normalizeHexColor(colorState[mode][key])) {
+      colorState[mode][key] = defaults[mode] || defaults.light;
+    }
+  });
+  return colorState[mode];
+}
+
+function getPalette(mode = currentColorMode) {
+  const palette = ensurePalette(mode);
+  return { ...palette };
+}
+
+function getColorSaveKey(inputId, mode) {
+  return `${inputId}:${mode}`;
+}
+
+function updateColorInputsFromState(mode = currentColorMode) {
+  const palette = ensurePalette(mode);
+  COLOR_FIELD_KEYS.forEach((key) => {
+    const el = $(key);
+    if (!el) return;
+    const val = palette[key] || COLOR_FIELD_CONFIG[key].defaults[mode] || COLOR_FIELD_CONFIG[key].defaults.light;
+    el.value = val;
+  });
+}
+
+function updateColorModeButtons() {
+  if (!colorModeButtons || !colorModeButtons.length) {
+    colorModeButtons = Array.from(document.querySelectorAll('.color-mode-btn'));
+  }
+  colorModeButtons.forEach((btn) => {
+    const mode = btn.dataset.colorMode;
+    btn.classList.toggle('active', mode === currentColorMode);
+  });
+}
+
+function notifyChatFrameColorMode() {
+  const frame = $('liveChatFrame');
+  if (!frame || !frame.contentWindow) return;
+  const origin = chatFrameOrigin && chatFrameOrigin !== 'null' ? chatFrameOrigin : '*';
+  try {
+    frame.contentWindow.postMessage({ type: 'CHAT_FORCE_COLOR_MODE', mode: currentColorMode }, origin);
+  } catch (err) {
+    console.warn('No se pudo enviar el modo de color al iframe', err);
+  }
+}
+
+function setColorMode(mode, { force = false } = {}) {
+  if (!COLOR_MODES.includes(mode)) return;
+  if (mode === currentColorMode && !force) {
+    applyPreview();
+    return;
+  }
+  currentColorMode = mode;
+  updateColorModeButtons();
+  updateColorInputsFromState(mode);
+  applyPreview();
+}
+
+const COLOR_FIELD_ERRORS = {
+  chatHeaderColor: 'No se pudo guardar el color del encabezado',
+  chatHeaderTextColor: 'No se pudo guardar el color de texto del encabezado',
+  chatBackgroundColor: 'No se pudo guardar el color de fondo del chat',
+  chatAssistantTextColor: 'No se pudo guardar el color del texto del asistente',
+  chatPrimaryColor: 'No se pudo guardar el color primario del chat',
+  chatClientTextColor: 'No se pudo guardar el color del texto del cliente'
+};
+
+function applyPaletteFromSnapshot(mode, snapshotValue) {
+  const palette = createDefaultPalette(mode);
+  const data = snapshotValue && typeof snapshotValue === 'object' ? snapshotValue : {};
+  COLOR_FIELD_KEYS.forEach((key) => {
+    const normalized = normalizeHexColor(data[key]);
+    if (normalized) {
+      palette[key] = normalized;
+    }
+  });
+  colorState[mode] = palette;
+}
+
+async function loadLegacyLightColors() {
+  if (legacyColorsLoaded) return;
+  legacyColorsLoaded = true;
+  try {
+    const entries = await Promise.all(COLOR_FIELD_KEYS.map(async (key) => {
+      try {
+        const snap = await eref(`config/${key}`).once('value');
+        return [key, normalizeHexColor(snap.val())];
+      } catch (err) {
+        console.error('No se pudo cargar color legado', key, err);
+        return [key, ''];
+      }
+    }));
+    const palette = createDefaultPalette('light');
+    let hasLegacy = false;
+    entries.forEach(([key, val]) => {
+      if (val) {
+        palette[key] = val;
+        hasLegacy = true;
+      }
+    });
+    if (hasLegacy) {
+      colorState.light = palette;
+      if (currentColorMode === 'light') {
+        updateColorInputsFromState('light');
+        applyPreview();
+      }
+    }
+  } catch (err) {
+    console.error('No se pudo cargar los colores legados', err);
+  }
+}
+
+function bindColorInputs() {
+  COLOR_FIELD_KEYS.forEach((key) => {
+    const input = $(key);
+    if (!input) return;
+    input.addEventListener('input', (event) => {
+      const mode = currentColorMode;
+      const defaults = COLOR_FIELD_CONFIG[key].defaults;
+      const normalized = normalizeHexColor(event.target.value) || (defaults[mode] || defaults.light);
+      event.target.value = normalized;
+      ensurePalette(mode)[key] = normalized;
+      applyPreview();
+      const saveKey = getColorSaveKey(key, mode);
+      const ref = eref(`config/chatColors/${mode}/${key}`);
+      const promise = canWrite(async () => {
+        await ref.set(normalized);
+        if (!isApplyingTemplate) toast(t(COLOR_FIELD_CONFIG[key].toastKey));
+      });
+      if (promise && typeof promise.then === 'function') {
+        pendingColorSaves[saveKey] = promise
+          .catch(err => {
+            console.error(COLOR_FIELD_ERRORS[key] || 'No se pudo guardar el color', err);
+            throw err;
+          })
+          .finally(() => { delete pendingColorSaves[saveKey]; });
+      }
+    });
+  });
+}
+
+function subscribeToColorModes() {
+  COLOR_MODES.forEach((mode) => {
+    const ref = eref(`config/chatColors/${mode}`);
+    ref.on('value', (snap) => {
+      const val = snap.val();
+      if (val) {
+        applyPaletteFromSnapshot(mode, val);
+      } else {
+        colorState[mode] = createDefaultPalette(mode);
+        if (mode === 'light') {
+          loadLegacyLightColors();
+        }
+      }
+      colorModeLoaded[mode] = true;
+      if (mode === currentColorMode) {
+        updateColorInputsFromState(mode);
+        applyPreview();
+      }
+      updateActiveTemplateIndicator();
+    });
+  });
 }
 
 let chatTemplates = [];
@@ -1614,13 +1862,14 @@ function renderChatTemplates() {
 }
 
 function getCurrentColorSnapshot() {
+  const palette = getPalette();
   return {
-    background: ( $('chatBackgroundColor')?.value || '' ).toLowerCase(),
-    assistantText: ( $('chatAssistantTextColor')?.value || '' ).toLowerCase(),
-    clientBackground: ( $('chatPrimaryColor')?.value || '' ).toLowerCase(),
-    clientText: ( $('chatClientTextColor')?.value || '' ).toLowerCase(),
-    headerBackground: ( $('chatHeaderColor')?.value || '' ).toLowerCase(),
-    headerText: ( $('chatHeaderTextColor')?.value || '' ).toLowerCase(),
+    background: (palette.chatBackgroundColor || '').toLowerCase(),
+    assistantText: (palette.chatAssistantTextColor || '').toLowerCase(),
+    clientBackground: (palette.chatPrimaryColor || '').toLowerCase(),
+    clientText: (palette.chatClientTextColor || '').toLowerCase(),
+    headerBackground: (palette.chatHeaderColor || '').toLowerCase(),
+    headerText: (palette.chatHeaderTextColor || '').toLowerCase(),
     widgetBackground: ( $('chatButtonColor')?.value || '' ).toLowerCase()
   };
 }
@@ -1650,29 +1899,20 @@ async function applyTemplateById(templateId) {
   setTemplatePanelVisibility(false);
   const colors = tpl.colors || {};
 
-  const map = {
-    chatBackgroundColor: 'background',
-    chatAssistantTextColor: 'assistantText',
-    chatPrimaryColor: 'clientBackground',
-    chatClientTextColor: 'clientText',
-    chatHeaderColor: 'headerBackground',
-    chatHeaderTextColor: 'headerText',
-    chatButtonColor: 'widgetBackground'
-  };
-
   isApplyingTemplate = true;
 
   const pending = [];
 
-  Object.entries(map).forEach(([inputId, colorKey]) => {
+  Object.entries({ ...COLOR_TEMPLATE_MAP, chatButtonColor: 'widgetBackground' }).forEach(([inputId, colorKey]) => {
     const el = $(inputId);
     const normalized = normalizeHexColor(colors[colorKey]);
     if (!el || !normalized) return;
     el.value = normalized;
     const evt = new Event('input', { bubbles: true });
     el.dispatchEvent(evt);
-    if (pendingColorSaves[inputId]) {
-      pending.push(pendingColorSaves[inputId]);
+    const saveKey = inputId === 'chatButtonColor' ? 'chatButtonColor' : getColorSaveKey(inputId, currentColorMode);
+    if (pendingColorSaves[saveKey]) {
+      pending.push(pendingColorSaves[saveKey]);
     }
   });
 
@@ -1880,6 +2120,14 @@ auth.onAuthStateChanged(async (u) => {
     const live = document.getElementById('liveChatFrame');
     if (live && EMPRESA) {
       live.src = `https://tomos.bot/chat.html?empresa=${encodeURIComponent(EMPRESA)}`;
+      live.addEventListener('load', () => {
+        try {
+          chatFrameOrigin = new URL(live.src, window.location.href).origin;
+        } catch (err) {
+          chatFrameOrigin = null;
+        }
+        notifyChatFrameColorMode();
+      }, { once: false });
       console.log(t('💬 Live chat loaded for'), EMPRESA);
     }
 
@@ -2068,6 +2316,24 @@ function initApariencia() {
     }
   });
 
+  if (!colorModeInitialized) {
+    bindColorInputs();
+    subscribeToColorModes();
+    colorModeButtons = Array.from(document.querySelectorAll('.color-mode-btn'));
+    colorModeButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const mode = (btn.dataset.colorMode || '').trim();
+        if (!mode) return;
+        setColorMode(mode);
+      });
+    });
+    colorModeInitialized = true;
+  }
+
+  updateColorModeButtons();
+  updateColorInputsFromState(currentColorMode);
+  applyPreview();
+
   const headerSummaryTitle = $('headerSummaryTitle');
   const headerSummaryImage = $('headerSummaryImage');
   const headerSummaryIcon = $('headerSummaryIcon');
@@ -2078,33 +2344,6 @@ function initApariencia() {
       headerSummaryTitle.textContent = val || 'Asistente del hotel';
     });
   }
-
-// 🔹 Chat Primary Color (auto-save with toast)
-const prRef = eref('config/chatPrimaryColor');
-prRef.once('value', s => {
-  const initial = normalizeHexColor(s.val()) || '#111111';
-  $('chatPrimaryColor').value = initial;
-  applyPreview();
-});
-
-$('chatPrimaryColor').addEventListener('input', (e) => {
-  const v = normalizeHexColor(e.target.value) || '#111111';
-  e.target.value = v;
-  const promise = canWrite(async () => {
-    await prRef.set(v);
-    applyPreview();
-    if (!isApplyingTemplate) toast(t('✔ Primary color saved'));
-  });
-  if (promise && typeof promise.then === 'function') {
-    pendingColorSaves.chatPrimaryColor = promise
-      .catch(err => {
-        console.error('No se pudo guardar el color primario del chat', err);
-        throw err;
-      })
-      .finally(() => { delete pendingColorSaves.chatPrimaryColor; });
-  }
-});
-
 // 🔹 Chat Button Color (auto-save with toast)
 const btRef = eref('config/chatButtonColor');
 btRef.once('value', s => {
@@ -2285,144 +2524,6 @@ $('widgetRadius').addEventListener('input', (e) => {
   updateWidgetPreview();
   applyPreview();
 });
-
-
-// 🔹 Chat Background Color (auto-save with toast)
-const bgRef = eref('config/chatBackgroundColor');
-bgRef.once('value', s => {
-  const initial = normalizeHexColor(s.val()) || '#FFFFFF';
-  $('chatBackgroundColor').value = initial;
-  applyPreview();
-});
-
-$('chatBackgroundColor').addEventListener('input', (e) => {
-  const v = normalizeHexColor(e.target.value) || '#FFFFFF';
-  e.target.value = v;
-  const promise = canWrite(async () => {
-    await bgRef.set(v);
-    applyPreview();
-    if (!isApplyingTemplate) toast(t('✔ Background color saved'));
-  });
-  if (promise && typeof promise.then === 'function') {
-    pendingColorSaves.chatBackgroundColor = promise
-      .catch(err => {
-        console.error('No se pudo guardar el color de fondo del chat', err);
-        throw err;
-      })
-      .finally(() => { delete pendingColorSaves.chatBackgroundColor; });
-  }
-});
-
-
-// 🆕 Assistant Text Color (auto-save with toast)
-const atRef = eref('config/chatAssistantTextColor');
-atRef.once('value', s => {
-  const initial = normalizeHexColor(s.val()) || '#000000';
-  $('chatAssistantTextColor').value = initial;
-  applyPreview();
-});
-
-$('chatAssistantTextColor').addEventListener('input', (e) => {
-  const v = normalizeHexColor(e.target.value) || '#000000';
-  e.target.value = v;
-  const promise = canWrite(async () => {
-    await atRef.set(v);
-    applyPreview();
-    if (!isApplyingTemplate) toast(t('✔ Assistant text color saved'));
-  });
-  if (promise && typeof promise.then === 'function') {
-    pendingColorSaves.chatAssistantTextColor = promise
-      .catch(err => {
-        console.error('No se pudo guardar el color del texto del asistente', err);
-        throw err;
-      })
-      .finally(() => { delete pendingColorSaves.chatAssistantTextColor; });
-  }
-});
-
-
-
-// 🆕 Client Text Color (auto-save with toast)
-const ctRef = eref('config/chatClientTextColor');
-ctRef.once('value', s => {
-  const initial = normalizeHexColor(s.val()) || '#FFFFFF';
-  $('chatClientTextColor').value = initial;
-  applyPreview();
-});
-
-$('chatClientTextColor').addEventListener('input', (e) => {
-  const v = normalizeHexColor(e.target.value) || '#FFFFFF';
-  e.target.value = v;
-  const promise = canWrite(async () => {
-    await ctRef.set(v);
-    applyPreview();
-    if (!isApplyingTemplate) toast(t('✔ Client text color saved'));
-  });
-  if (promise && typeof promise.then === 'function') {
-    pendingColorSaves.chatClientTextColor = promise
-      .catch(err => {
-        console.error('No se pudo guardar el color del texto del cliente', err);
-        throw err;
-      })
-      .finally(() => { delete pendingColorSaves.chatClientTextColor; });
-  }
-});
-
-
-
-// 🔹 Header Background Color (auto-save with toast)
-const headerRef = eref('config/chatHeaderColor');
-headerRef.once('value', s => {
-  const initial = normalizeHexColor(s.val()) || '#FFFFFF';
-  $('chatHeaderColor').value = initial;
-  applyPreview();
-});
-
-$('chatHeaderColor').addEventListener('input', (e) => {
-  const v = normalizeHexColor(e.target.value) || '#FFFFFF';
-  e.target.value = v;
-  const promise = canWrite(async () => {
-    await headerRef.set(v);
-    applyPreview();
-    if (!isApplyingTemplate) toast(t('✔ Header color saved'));
-  });
-  if (promise && typeof promise.then === 'function') {
-    pendingColorSaves.chatHeaderColor = promise
-      .catch(err => {
-        console.error('No se pudo guardar el color del encabezado', err);
-        throw err;
-      })
-      .finally(() => { delete pendingColorSaves.chatHeaderColor; });
-  }
-});
-
-
-// 🔹 Header Text Color (auto-save with toast)
-const headerTextRef = eref('config/chatHeaderTextColor');
-headerTextRef.once('value', s => {
-  const initial = normalizeHexColor(s.val()) || '#1F2937';
-  $('chatHeaderTextColor').value = initial;
-  applyPreview();
-});
-
-$('chatHeaderTextColor').addEventListener('input', (e) => {
-  const v = normalizeHexColor(e.target.value) || '#1F2937';
-  e.target.value = v;
-  const promise = canWrite(async () => {
-    await headerTextRef.set(v);
-    applyPreview();
-    if (!isApplyingTemplate) toast(t('✔ Header text color saved'));
-  });
-  if (promise && typeof promise.then === 'function') {
-    pendingColorSaves.chatHeaderTextColor = promise
-      .catch(err => {
-        console.error('No se pudo guardar el color de texto del encabezado', err);
-        throw err;
-      })
-      .finally(() => { delete pendingColorSaves.chatHeaderTextColor; });
-  }
-});
-
 
 
 
@@ -2849,72 +2950,81 @@ toast(t('✔ Avatar updated'));
 }
 
 function applyPreview() {
-  const p = $('chatPrimaryColor')?.value || '#111111';
-  const b = $('chatButtonColor')?.value || p;
-  const bg = $('chatBackgroundColor')?.value || '#ffffff';
-  const at = $('chatAssistantTextColor')?.value || '#000000';
-  const ct = $('chatClientTextColor')?.value || '#ffffff';
-  const hb = $('chatHeaderColor')?.value || '#ffffff';
-  const ht = $('chatHeaderTextColor')?.value || '#1f2937';
+  const palette = getPalette();
+  const primary = palette.chatPrimaryColor || '#111111';
+  const buttonColor = $('chatButtonColor')?.value || primary;
+  const background = palette.chatBackgroundColor || '#FFFFFF';
+  const assistantText = palette.chatAssistantTextColor || '#000000';
+  const clientText = palette.chatClientTextColor || '#FFFFFF';
+  const headerBackground = palette.chatHeaderColor || '#FFFFFF';
+  const headerText = palette.chatHeaderTextColor || '#1F2937';
 
   // 🎨 Vista previa del chat dentro del mockup
-  $('previewBtn').style.background = b;
-  $('previewBubble').style.background = p;
-  $('previewBubble').style.color = ct;
+  const previewBtn = $('previewBtn');
+  if (previewBtn) {
+    previewBtn.style.background = buttonColor;
+  }
+  const previewBubble = $('previewBubble');
+  if (previewBubble) {
+    previewBubble.style.background = primary;
+    previewBubble.style.color = clientText;
+  }
+
+  const mockupSurface = $('chatMockupSurface');
+  if (mockupSurface) {
+    mockupSurface.style.background = background;
+  }
+
+  const mockupFrame = $('liveChatFrame');
+  if (mockupFrame) {
+    mockupFrame.style.background = background;
+  }
+
+  document.documentElement.style.setProperty('--chat-header-text', headerText);
+  document.documentElement.style.setProperty('--assistant-text', assistantText);
+  document.documentElement.style.setProperty('--chat-client-text', clientText);
+  document.documentElement.setAttribute('data-chat-mode', currentColorMode);
 
   // 🎨 Widget principal
   const widgetExample = $('widgetExample');
   if (widgetExample) {
     const radiusVal = parseInt($('widgetRadius')?.value) || 20;
-    widgetExample.style.background = b;
+    widgetExample.style.background = buttonColor;
     widgetExample.style.borderRadius = radiusVal + 'px';
   }
 
-  // 🧩 Nuevo: aplicar cambios también al clon del widget debajo del mockup
   const widgetExampleClone = $('widgetExampleClone');
   if (widgetExampleClone) {
     const radiusVal = parseInt($('widgetRadius')?.value) || 20;
-    widgetExampleClone.style.background = b;
+    widgetExampleClone.style.background = buttonColor;
     widgetExampleClone.style.borderRadius = radiusVal + 'px';
   }
 
-  // 🔁 Actualizar íconos en ambos mockups y en el selector
-  const widgetExampleIcon = $('widgetExampleIcon');
-  const widgetExampleIconClone = $('widgetExampleIconClone');
-  const widgetIconTriggerImg = $('widgetIconTriggerImg');
-
-  [widgetExampleIcon, widgetExampleIconClone, widgetIconTriggerImg].forEach(img => {
+  [ $('widgetExampleIcon'), $('widgetExampleIconClone'), $('widgetIconTriggerImg') ].forEach(img => {
     if (img) img.src = currentWidgetIcon || DEFAULT_WIDGET_ICON;
   });
 
-  // 🪄 Fondo y texto dentro del iframe del chat
   const iframe = document.getElementById('liveChatFrame');
   if (iframe?.contentWindow?.document) {
     try {
       const doc = iframe.contentWindow.document;
       const chatRoot = doc.querySelector('#chatWindow');
-      if (chatRoot) chatRoot.style.background = bg;
-
+      if (chatRoot) chatRoot.style.background = background;
       const chatHeader = doc.querySelector('#chatHeader');
-      if (chatHeader) {
-        chatHeader.style.background = hb;
-      }
-
-      doc.documentElement.style.setProperty('--chat-header-text', ht);
-
-      // 🆕 Color del texto de los mensajes del asistente
+      if (chatHeader) chatHeader.style.background = headerBackground;
+      doc.documentElement.style.setProperty('--chat-header-text', headerText);
+      doc.documentElement.style.setProperty('--assistant-text', assistantText);
+      doc.documentElement.style.setProperty('--chat-client-text', clientText);
       const msgs = doc.querySelectorAll('.chat-assistant .msg');
-      msgs.forEach(m => m.style.color = at);
-
+      msgs.forEach(m => m.style.color = assistantText);
       const clientMsgs = doc.querySelectorAll('.chat-user');
-      clientMsgs.forEach(m => m.style.color = ct);
-
-      doc.documentElement.style.setProperty('--chat-client-text', ct);
+      clientMsgs.forEach(m => m.style.color = clientText);
     } catch (err) {
-      console.warn("⚠️ No se pudo aplicar colores en el iframe (dominio cruzado).");
+      console.warn('⚠️ No se pudo aplicar colores en el iframe (dominio cruzado).');
     }
   }
 
+  notifyChatFrameColorMode();
   updateActiveTemplateIndicator();
 }
 
