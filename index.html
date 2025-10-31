@@ -50,31 +50,19 @@
     .avatar-option.active{border-color:#2563eb;background:#eff6ff;box-shadow:0 0 0 4px rgba(37,99,235,.12)}
     .avatar-option.avatar-upload{background:#f9fafb}
     .avatar-option.avatar-upload:hover{background:#f3f4f6}
-    #botAvatarImage{border-radius:var(--avatar-radius,50%);}
     .chip.active{border-color:#111;background:#111;color:#fff}
-    #chatPanelTabs{border-bottom:1px solid #e5e7eb;gap:2rem;padding:0}
-    .chat-panel-tab{flex:0 0 auto;padding:0.75rem 0;font-size:14px;font-weight:500;color:#6b7280;background:transparent;border:none;border-radius:0;box-shadow:none;display:flex;align-items:center;gap:0.5rem;position:relative;cursor:pointer;transition:color .2s ease}
-    .chat-panel-tab::after{content:"";position:absolute;left:0;bottom:-1px;width:100%;height:2px;background:transparent;transition:background .2s ease}
-    .chat-panel-tab:hover{color:#111}
-    .chat-panel-tab.active{color:#111}
-    .chat-panel-tab.active::after{background:#111}
-    .activity-score-active{background:#111 !important;color:#fff !important;border-color:#111 !important}
     .sidebar-btn{display:flex;gap:10px;align-items:center;width:100%;padding:.65rem .8rem;border-radius:12px}
     .sidebar-btn.active{background:#111;color:#fff}
     textarea{resize:none;overflow:hidden;min-height:400px;}
     .widget-mockup{width:72px;height:72px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,.12);transition:all .2s ease;border-radius:20px;background:#111}
     .widget-mockup img{width:28px;height:28px;object-fit:contain;filter:drop-shadow(0 2px 4px rgba(0,0,0,.25));}
-    .widget-icon-trigger{width:100px;height:100px;border-radius:14px;border:1px solid #e5e7eb;display:flex;align-items:center;justify-content:center;background:#fff;transition:all .2s ease;box-shadow:0 4px 12px rgba(15,23,42,.08)}
+    .widget-icon-trigger{width:48px;height:48px;border-radius:14px;border:1px solid #e5e7eb;display:flex;align-items:center;justify-content:center;background:#fff;transition:all .2s ease;box-shadow:0 4px 12px rgba(15,23,42,.08)}
     .widget-icon-trigger:hover{border-color:#2563eb;box-shadow:0 8px 18px rgba(37,99,235,.18)}
-    .widget-icon-trigger img{width:66px;height:66px;object-fit:contain}
+    .widget-icon-trigger img{width:28px;height:28px;object-fit:contain}
     .widget-icon-option{border:2px solid transparent;border-radius:16px;padding:16px;background:#f9fafb;display:flex;align-items:center;justify-content:center;transition:all .2s ease}
     .widget-icon-option img{width:44px;height:44px;object-fit:contain}
     .widget-icon-option:hover{border-color:#93c5fd;background:#eff6ff}
     .widget-icon-option.active{border-color:#2563eb;background:#eff6ff;box-shadow:0 0 0 4px rgba(37,99,235,.12)}
-    .chat-columns{align-items:stretch;}
-    .chat-columns > .chat-column{height:640px;}
-    .chat-column-secondary{background:#fff;border-radius:26px;padding:24px;box-shadow:0 10px 24px rgba(15,23,42,.08);border:1px solid rgba(15,23,42,.08);}
-    .appearance-chip{min-width:94px;justify-content:center;font-weight:500}
 aside {
   scrollbar-width: thin;
   scrollbar-color: #ccc transparent;
@@ -181,7 +169,7 @@ header {
 #embedScriptBox {
   resize: none;
   overflow: hidden;
-  min-height: 120px;  /* altura mínima más cómoda para leer el script */
+  min-height: 40px;  /* altura mínima decente */
   height: auto;
   line-height: 1.4;
 }
@@ -198,139 +186,11 @@ header {
   color: #fff !important;
 }
 
-/* === Templates === */
-#toggleTemplatePanel {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: #ffffff;
-  border: 1px solid #d1d5db;
-  border-radius: 999px;
-  padding: 6px 14px;
-  font-size: 13px;
-  font-weight: 500;
-  color: #1f2937;
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
-  transition: all 0.2s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-#toggleTemplatePanel::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.06), rgba(15, 23, 42, 0.01));
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-#toggleTemplatePanel > * {
-  position: relative;
-  z-index: 1;
-}
-
-#toggleTemplatePanel i {
-  color: inherit;
-}
-
-#toggleTemplatePanel:hover {
-  color: #111827;
-  border-color: #9ca3af;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
-  transform: translateY(-1px);
-}
-
-#toggleTemplatePanel:hover::after,
-#toggleTemplatePanel:focus-visible::after {
-  opacity: 1;
-}
-
-#toggleTemplatePanel:focus-visible {
-  outline: 2px solid #111827;
-  outline-offset: 3px;
-}
-
-.template-card {
-  border: 1px solid #e5e7eb;
-  border-radius: 18px;
-  padding: 16px;
-  background: #fff;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  transition: all 0.2s ease;
-}
-
-.template-card:hover {
-  border-color: #111;
-  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14);
-  transform: translateY(-2px);
-}
-
-.template-card.active {
-  border-color: #111;
-  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.18);
-}
-
-.template-card .template-header {
-  border-radius: 12px;
-  padding: 8px 10px;
-  font-size: 12px;
-  font-weight: 600;
-  text-align: center;
-}
-
-.template-card .template-preview {
-  border-radius: 14px;
-  padding: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.template-card .template-assistant {
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 8px 10px;
-  font-size: 12px;
-  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.1);
-}
-
-.template-card .template-client {
-  align-self: flex-end;
-  border-radius: 12px;
-  padding: 8px 10px;
-  font-size: 12px;
-  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.12);
-}
-
-.template-card .template-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.template-card .template-widget-dot {
-  width: 14px;
-  height: 14px;
-  border-radius: 999px;
-  flex-shrink: 0;
-}
-
-.template-toggle-active {
-  background: #111 !important;
-  color: #fff !important;
-  border-color: #111 !important;
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18) !important;
-}
-
-#toggleTemplatePanel.template-toggle-active::after {
-  opacity: 0;
-}
-
 /* === Centrar todas las pestañas excepto Appearance === */
+#tab-settings,
 #tab-knowledge,
+#tab-integration,
+#tab-schedule,
 #tab-respuestas {
   margin-left: auto;
   margin-right: auto;
@@ -342,103 +202,6 @@ header {
   min-width: 2ch; /* reserva espacio suficiente para dos caracteres */
   text-align: right;
 }
-body.login-view {
-  background-color: #f3f4f6;
-}
-
-body.login-view main {
-  align-items: center;
-}
-
-body.login-view #appContainer {
-  padding-top: 3rem;
-}
-
-#login {
-  width: 100%;
-}
-
-@media (max-width: 768px) {
-  #appContainer {
-    padding-left: 1.25rem;
-    padding-right: 1.25rem;
-  }
-}
-
-@media (max-width: 640px) {
-  #login {
-    margin-top: 2.5rem;
-    padding: 1.75rem;
-  }
-
-  #login img {
-    width: 88px;
-  }
-
-  #login input {
-    font-size: 16px;
-  }
-}
-/* === Knowledge page buttons === */
-.page-btn {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  min-width: 110px;
-  min-height: 86px;
-  background: #ffffff;
-  color: #6b7280;
-  border: 1px solid #e5e7eb;
-  border-radius: 16px;
-  padding: 14px 20px;
-  font-size: 13px;
-  font-weight: 500;
-  text-align: center;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease,
-    color 0.15s ease;
-}
-
-.page-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
-  border-color: #d1d5db;
-}
-
-.page-btn:focus-visible {
-  outline: 2px solid #111;
-  outline-offset: 2px;
-}
-
-.page-btn .page-btn-icon {
-  width: 24px;
-  height: 24px;
-  color: currentColor;
-  stroke-width: 1.8;
-}
-
-.page-btn .page-btn-label {
-  color: inherit;
-  font-size: 14px;
-}
-
-.page-btn.active {
-  border-color: #111111;
-  color: #111111;
-  box-shadow: 0 12px 30px rgba(17, 17, 17, 0.15);
-}
-
-#saveContext {
-  background-color: #000000;
-  color: #ffffff;
-}
-
-#saveContext:hover {
-  background-color: #111111;
-}
-
 
   </style>
 </head>
@@ -467,38 +230,44 @@ body.login-view #appContainer {
         <span id="authEmail" class="text-xs text-gray-500">—</span>
       </div>
       <button id="btnLogout" class="px-3 py-1.5 bg-red-600 text-white rounded-md hidden">
-        Log out
+        Cerrar sesión
       </button>
-      <select id="languageSelect" class="border border-gray-200 rounded-md px-2 py-1.5 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-black/40 notranslate">
-        <option value="en">English</option>
-        <option value="fr">Français</option>
-        <option value="es">Español</option>
-        <option value="de">Deutsch</option>
-        <option value="pt">Português</option>
-      </select>
     </div>
 
   </div>
 </header>
 
 
-<div id="headerSpacer" class="h-[57px]"></div>
+<div class="h-[57px]"></div>
 <div class="flex min-h-screen">
       <!-- Sidebar -->
 <aside class="group fixed top-[57px] left-0 h-[calc(100vh-57px)] bg-white border-r overflow-y-auto transition-all duration-300 w-[72px] hover:w-[260px]">
   <nav class="space-y-2 mt-4 px-2">
-    <button class="sidebar-btn active flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="chat">
-      <i data-lucide="message-circle" class="w-5 h-5 shrink-0"></i>
-      <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Chat</span>
+    <button class="sidebar-btn active flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="apariencia">
+      <i data-lucide="palette" class="w-5 h-5 shrink-0"></i>
+      <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Appearance</span>
+    </button>
+    <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="settings">
+      <i data-lucide="sliders" class="w-5 h-5 shrink-0"></i>
+      <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Settings</span>
     </button>
     <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="knowledge">
       <i data-lucide="book-open" class="w-5 h-5 shrink-0"></i>
       <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Knowledge</span>
     </button>
+    <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="integration">
+      <i data-lucide="code-2" class="w-5 h-5 shrink-0"></i>
+      <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Integration</span>
+    </button>
     <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="respuestas">
       <i data-lucide="bot" class="w-5 h-5 shrink-0"></i>
       <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Auto Responses</span>
     </button>
+    <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="schedule">
+  <i data-lucide="clock" class="w-5 h-5 shrink-0"></i>
+  <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Schedule</span>
+</button>
+
   </nav>
 
   <div class="mt-6 text-xs text-gray-500 px-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
@@ -507,11 +276,11 @@ body.login-view #appContainer {
 </aside>
 
 
-<!-- Content -->
-<main class="flex-1 w-full ml-0 lg:ml-[72px] transition-all duration-300 lg:group-hover:ml-[260px] flex justify-center">
-<div id="appContainer" class="w-full max-w-6xl pt-8 px-8 pb-8">
+      <!-- Content -->
+<main class="flex-1 ml-[72px] transition-all duration-300 group-hover:ml-[260px] flex justify-center">
+<div class="w-full max-w-6xl pt-16 px-8 pb-8">
               <!-- Login card -->
-<div id="login" class="w-full max-w-sm mx-auto mt-10 card p-6 text-center">
+<div id="login" class="max-w-sm mx-auto mt-10 card p-6 text-center">
 <img src="logo.png" alt="Tomos Logo" class="w-32 h-auto mx-auto mb-4 rounded-lg" />
   
   <div class="flex items-center justify-center mb-4 gap-2">
@@ -530,653 +299,437 @@ body.login-view #appContainer {
 
         <!-- Tabs container -->
         <div id="tabs" class="hidden">
-<!-- Chat -->
-<section id="tab-chat" class="space-y-8">
-  <div class="flex justify-center">
-    <div id="chatPanelTabs" class="flex flex-wrap items-center gap-2 p-1">
-      <button class="chat-panel-tab active" data-chat-panel-tab="bot">
-        <i data-lucide="bot" class="w-4 h-4"></i>
-        <span>Bot</span>
-      </button>
-      <button class="chat-panel-tab" data-chat-panel-tab="activity">
-        <i data-lucide="clock-3" class="w-4 h-4"></i>
-        <span>Activity</span>
-      </button>
-      <button class="chat-panel-tab" data-chat-panel-tab="chat">
-        <i data-lucide="message-square" class="w-4 h-4"></i>
-        <span>Chat</span>
-      </button>
-      <button class="chat-panel-tab" data-chat-panel-tab="widget">
-        <i data-lucide="circle" class="w-4 h-4"></i>
-        <span>Widget</span>
-      </button>
-      <button class="chat-panel-tab" data-chat-panel-tab="integration">
-        <i data-lucide="code-2" class="w-4 h-4"></i>
-        <span>Integration</span>
-      </button>
+<!-- Apariencia -->
+<!-- 🧩 APPEARANCE TAB -->
+<section id="tab-apariencia" class="space-y-6">
+
+  <div id="permBannerA" class="hidden card p-4 border border-amber-300/60 bg-amber-50">
+    <div class="flex gap-2 items-start">
+      <i data-lucide="shield-alert" class="w-5 h-5 text-amber-600"></i>
+      <div class="text-sm text-amber-800">
+        <b>Sin permisos de escritura.</b> Debes iniciar sesión con el email guardado en <code>config/adminEmail</code> o ser <code>globalAdmin</code>.
+      </div>
     </div>
   </div>
 
-  <div class="grid gap-8 xl:grid-cols-[360px,480px] xl:justify-center items-start xl:items-stretch chat-columns">
-    <div class="relative flex justify-center h-full chat-column">
-      <div class="space-y-6 h-full flex flex-col">
-        <div class="iphone mx-auto">
-          <div class="notch"></div>
-          <div class="iphone-in relative">
-            <iframe id="liveChatFrame"
-              class="absolute inset-0 w-full h-full border-0 rounded-[26px]"
-              sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
-              referrerpolicy="no-referrer-when-downgrade"></iframe>
+  <!-- 🧱 3 COLUMNAS -->
+<div class="grid grid-cols-1 xl:grid-cols-[2.2fr_320px_2.2fr] gap-12 items-start">
 
-            <div class="p-4 border-b flex items-center gap-3 hidden">
-              <img id="previewLogo" class="h-7 w-7 rounded hidden" />
-              <div class="font-medium">Chat Preview</div>
-            </div>
-            <div class="p-4 space-y-3 hidden" id="previewHolder">
-              <button id="previewBtn" class="px-4 py-2 rounded text-white">Botón</button>
-              <div id="previewBubble" class="p-3 rounded text-white inline-block">Mensaje</div>
+    <!-- 🧩 COLUMNA 1 -->
+    <div class="space-y-6">
+
+      <!-- 🖼️ HEADER FAVICON -->
+      <div class="card p-5">
+        <h3 class="font-semibold mb-3 flex items-center gap-2">
+          <i data-lucide="image" class="w-5 h-5"></i>
+          Header Image
+        </h3>
+
+        <div id="logoControls" class="mb-2">
+          <label class="inline-block px-4 py-2 bg-black text-white rounded cursor-pointer text-sm hover:bg-gray-800 transition">
+            Select file
+            <input id="logoFile" type="file" accept="image/*" class="hidden" />
+          </label>
+        </div>
+
+<div class="relative hidden flex justify-center" id="logoPreviewWrap">
+          <div class="relative w-24 h-24 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center shadow">
+            <img id="logoPreview" class="w-full h-full object-cover" alt="Logo" />
+            <button id="deleteLogo" class="absolute bottom-1 right-1 bg-red-600 text-white p-1.5 rounded-full shadow hover:bg-red-700 transition">
+              <i data-lucide="trash" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+        
+
+
+<!-- Radio + slider -->
+<div class="flex items-center justify-center gap-3 mt-4">
+  <input type="checkbox" id="headerRounded" />
+  <input type="range" id="logoRadius" min="0" max="50" value="23" class="w-1/2 accent-blue-500">
+  <span id="logoRadiusVal" class="text-sm text-gray-600">23</span>
+</div>
+
+        
+
+
+        <p id="msgLogo" class="text-green-600 text-sm mt-2 hidden">✔ Header image updated</p>
+      </div>
+
+      <!-- 🧑‍💻 CHATBOT AVATAR -->
+      <div class="card p-5">
+        <h3 class="font-semibold mb-3 flex items-center gap-2">
+          <i data-lucide="smile" class="w-5 h-5"></i>
+           Avatar
+        </h3>
+
+        <div id="avatarControls" class="space-y-4">
+          <div class="flex items-center gap-3 flex-wrap">
+            <button type="button" class="avatar-option active" data-avatar-option="avatars/1.png">
+              <img src="avatars/1.png" alt="Avatar 1" />
+            </button>
+            <button type="button" class="avatar-option" data-avatar-option="avatars/2.png">
+              <img src="avatars/2.png" alt="Avatar 2" />
+            </button>
+            <button type="button" class="avatar-option" data-avatar-option="avatars/3.png">
+              <img src="avatars/3.png" alt="Avatar 3" />
+            </button>
+            <div class="relative">
+              <label id="customAvatarOption" class="avatar-option avatar-upload cursor-pointer" data-avatar-option="">
+                <i id="customAvatarPlus" data-lucide="plus" class="w-5 h-5 text-gray-500"></i>
+                <img id="customAvatarImage" src="" alt="Avatar personalizado" class="hidden" />
+                <input id="avatarFile" type="file" accept="image/*" class="hidden" />
+              </label>
+              <button type="button" id="deleteAvatar" class="hidden absolute -right-1 -bottom-1 bg-red-600 text-white p-1 rounded-full shadow hover:bg-red-700 transition">
+                <i data-lucide="trash" class="w-4 h-4"></i>
+              </button>
             </div>
           </div>
 
-          <div id="widgetExampleClone" class="widget-mockup shadow-lg absolute right-0 bottom-[-86px] z-10">
-            <img id="widgetExampleIconClone" src="widgets/1.png" alt="Widget preview icon" />
-          </div>
+<div class="flex items-center justify-center gap-3 mt-2 w-48 mx-auto">
+  <input type="checkbox" id="avatarRounded" />
+  <input type="range" id="avatarRadius" min="0" max="50" value="50" class="flex-none w-28 accent-blue-500">
+  <span id="avatarRadiusVal" class="text-sm text-gray-600 min-w-[2ch] text-right">50</span>
+</div>
+</div>
+
+
+      </div>
+
+<!-- 🧭 WIDGET -->
+<div class="card p-5">
+  <h3 class="font-semibold mb-3 flex items-center gap-2">
+    <i data-lucide="mouse-pointer" class="w-5 h-5"></i>
+    Widget
+  </h3>
+
+<!-- 🧭 WIDGET -->
+<div class="p-5">
+  <div class="grid grid-cols-3 gap-6 items-center justify-items-center">
+
+    <!-- 🎨 Selector de color -->
+    <input id="chatButtonColor" type="color"
+      class="w-10 h-10 rounded-full cursor-pointer border border-gray-300 shadow-sm" />
+
+    <!-- 💬 Mockup del botón -->
+    <div id="widgetExample" class="widget-mockup">
+      <img id="widgetExampleIcon" src="widgets/1.png" alt="Widget preview icon" />
+    </div>
+
+    <!-- 🔘 Selección de icono -->
+    <button type="button" id="widgetIconTrigger" class="widget-icon-trigger" title="Elegir icono">
+      <img id="widgetIconTriggerImg" src="widgets/1.png" alt="Icono del widget" />
+    </button>
+
+  </div>
+
+  <!-- 🔹 Slider debajo -->
+<div class="flex items-center justify-center gap-3 mt-5">
+  <input type="checkbox" id="widgetRounded" />
+  <input type="range" id="widgetRadius" min="0" max="50" value="20" class="w-1/2 accent-blue-500">
+  <span id="widgetRadiusVal" class="text-sm text-gray-600 inline-block text-right min-w-[2ch]">20</span>
+</div>
+
+</div>
+
+</div>
+
+
+
+    </div>
+
+    <!-- 📱 COLUMNA 2 (MOCKUP) -->
+<aside class="hidden lg:block">
+  <div class="sticky top-4">
+    <!-- 📱 Mockup del chat -->
+    <div class="iphone mx-auto">
+      <div class="notch"></div>
+      <div class="iphone-in relative">
+        <iframe id="liveChatFrame"
+          class="absolute inset-0 w-full h-full border-0 rounded-[26px]"
+          sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
+          referrerpolicy="no-referrer-when-downgrade"></iframe>
+
+        <!-- Elementos ocultos necesarios para el preview -->
+        <div class="p-4 border-b flex items-center gap-3 hidden">
+          <img id="previewLogo" class="h-7 w-7 rounded hidden" />
+          <div class="font-medium">Chat Preview</div>
+        </div>
+        <div class="p-4 space-y-3 hidden" id="previewHolder">
+          <button id="previewBtn" class="px-4 py-2 rounded text-white">Botón</button>
+          <div id="previewBubble" class="p-3 rounded text-white inline-block">Mensaje</div>
         </div>
       </div>
     </div>
 
-    <div class="relative w-full xl:w-[480px] h-full flex flex-col chat-column">
-      <div id="permBannerA" class="hidden card p-4 border border-amber-300/60 bg-amber-50">
-        <div class="flex gap-2 items-start">
-          <i data-lucide="shield-alert" class="w-5 h-5 text-amber-600"></i>
-          <div class="text-sm text-amber-800">
-            <b>Sin permisos de escritura.</b> Debes iniciar sesión con el email guardado en <code>config/adminEmail</code> o ser <code>globalAdmin</code>.
-          </div>
-        </div>
+<!-- 🧩 CLON DEL WIDGET (alineado más a la derecha) -->
+<div class="flex justify-end mt-6 pr-0">
+  <div id="widgetExampleClone" class="widget-mockup shadow-lg">
+    <img id="widgetExampleIconClone" src="widgets/1.png" alt="Widget preview icon" />
+  </div>
+</div>
+
+  </div>
+</aside>
+
+
+    <!-- 🎨 COLUMNA 3 -->
+    <div class="space-y-6">
+
+  <!-- 🎨 COLORS -->
+<!-- 🎨 COLORS -->
+<div class="card p-5">
+  <h3 class="font-semibold mb-4 flex items-center gap-2">
+    <i data-lucide="palette" class="w-5 h-5"></i>
+    Colors
+  </h3>
+
+  <div class="space-y-5">
+
+<!-- Header Background -->
+<div class="flex items-center gap-4">
+  <input id="chatHeaderColor" type="color" class="w-10 h-10 cursor-pointer">
+  <span class="text-sm font-medium text-gray-600 select-none">Header Background</span>
+</div>
+
+
+    <!-- Chat Background -->
+    <div class="flex items-center gap-4">
+      <input id="chatBackgroundColor" type="color" class="w-10 h-10 cursor-pointer">
+      <span class="text-sm font-medium text-gray-600 select-none">Chat Background</span>
+    </div>
+
+
+    <!-- Chat Primary Color -->
+    <div class="flex items-center gap-4">
+      <input id="chatPrimaryColor" type="color" class="w-10 h-10 cursor-pointer">
+      <span class="text-sm font-medium text-gray-600 select-none">Primary</span>
+    </div>
+
+  </div>
+</div>
+
+
+      <!-- Font -->
+      <div class="card p-5">
+        <h3 class="font-semibold mb-3 flex items-center gap-2">
+          <i data-lucide="type" class="w-5 h-5"></i>
+          Font
+        </h3>
+        <select id="fontFamily" class="border rounded px-3 py-2 w-full text-sm bg-white">
+          <option value="Manrope">Manrope</option>
+          <option value="Inter">Inter</option>
+          <option value="Poppins">Poppins</option>
+          <option value="Roboto">Roboto</option>
+          <option value="Playfair Display">Playfair Display</option>
+          <option value="Merriweather">Merriweather</option>
+        </select>
+        
+         <!-- 🆕 Assistant Text Color -->
+<div class="flex items-center gap-4 mt-4">
+  <input id="chatAssistantTextColor" type="color" class="w-10 h-10 cursor-pointer">
+  <span class="text-sm font-medium text-gray-600 select-none">Text Color</span>
+</div>
+
+  
       </div>
-      <div id="permBannerS" class="hidden card p-4 border border-amber-300/60 bg-amber-50">
-        <div class="flex gap-2 items-start">
-          <i data-lucide="shield-alert" class="w-5 h-5 text-amber-600"></i>
-          <div class="text-sm text-amber-800">
-            <b>Sin permisos de escritura.</b> Debes iniciar sesión con el email guardado en <code>config/adminEmail</code> o ser <code>globalAdmin</code>.
+
+    </div>
+
+  </div>
+
+</section>
+
+      
           </div>
-        </div>
-      </div>
 
-      <div id="chatPanelContents" class="flex flex-col gap-6">
-        <div data-chat-panel="bot" class="space-y-5">
-          <div class="card p-6 space-y-6 relative overflow-visible">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2 font-semibold text-gray-800">
-                <i data-lucide="bot" class="w-5 h-5"></i>
-                Your Bot
+          <!-- SETTINGS TAB -->
+          <section id="tab-settings" class="hidden space-y-6 max-w-3xl">
+            <div id="permBannerS" class="hidden card p-4 border border-amber-300/60 bg-amber-50">
+              <div class="flex gap-2 items-start">
+                <i data-lucide="shield-alert" class="w-5 h-5 text-amber-600"></i>
+                <div class="text-sm text-amber-800">
+                  <b>Sin permisos de escritura.</b> Debes iniciar sesión con el email guardado en <code>config/adminEmail</code> o ser <code>globalAdmin</code>.
+                </div>
               </div>
-           
             </div>
 
-            <div class="flex justify-center">
-              <button id="botAvatarButton" type="button" class="relative group" aria-haspopup="dialog" aria-expanded="false">
-                <img id="botAvatarImage" src="avatars/1.png" alt="Bot avatar"
-                  class="w-24 h-24 rounded-full shadow-lg border-4 border-white object-cover transition-transform duration-200 group-hover:scale-105" />
-                <span class="absolute -bottom-2 -right-2 w-9 h-9 rounded-full bg-white shadow flex items-center justify-center border border-gray-200">
-                  <i data-lucide="pencil" class="w-4 h-4 text-gray-600"></i>
-                </span>
-              </button>
-            </div>
-
-            <div class="text-center">
-              <p id="botNameDisplay" class="text-lg font-semibold text-gray-800">Asistente del hotel</p>
-            </div>
-
-            <div class="space-y-4">
-              <div>
-                <label for="personalitySelect" class="block text-xs font-semibold text-gray-600 uppercase tracking-wide">Personality</label>
-                <select id="personalitySelect" class="mt-2 w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-black/70">
-                  <option value="formal">🧑‍💼 Formal &amp; Polite</option>
-                  <option value="relaxed">🌴 Relaxed &amp; Friendly</option>
-                  <option value="warm">😊 Warm &amp; Welcoming</option>
-                  <option value="efficient">⚡ Efficient &amp; Direct</option>
-                  <option value="young">🎈 Young &amp; Playful</option>
-                </select>
-              </div>
-
-              <div class="flex items-center justify-between gap-4 border border-gray-200 rounded-2xl px-4 py-3 bg-gray-50">
+            <!-- Show Button -->
+            <div class="card p-5">
+              <div class="flex items-center justify-between">
                 <div>
-                  <div class="flex items-center gap-2 font-semibold text-gray-800 text-sm">
-                    <i data-lucide="message-circle" class="w-4 h-4"></i>
-                    Enable
-                  </div>
-                  <p class="text-xs text-gray-500">Show the chat button on your site.</p>
+                  <div class="font-semibold flex items-center gap-2"><i data-lucide="message-circle" class="w-5 h-5"></i> Show Button</div>
+                  <p class="text-sm text-gray-500">Show the chat button on the website</p>
                 </div>
                 <input id="tgChatVisible" type="checkbox" class="toggle" />
               </div>
             </div>
 
-          </div>
-
-        </div>
-
-        <div data-chat-panel="activity" class="space-y-5 hidden">
-          <div class="card p-5 space-y-4">
-            <div class="font-semibold flex items-center gap-2 mb-2">
-              <i data-lucide="clock" class="w-5 h-5"></i>
-              Schedule
-            </div>
-            <p class="text-sm text-gray-500">Define the periods of activity. Changes are saved automatically.</p>
-            <div id="scheduleList" class="space-y-3"></div>
-            <p id="msgSchedule" class="text-green-600 text-sm hidden">✔ Changes saved</p>
-          </div>
-        </div>
-
-        <div data-chat-panel="chat" class="space-y-5 hidden">
-          <div class="card p-5 space-y-6">
-            <div class="space-y-1">
-              <div class="flex items-center gap-2 font-semibold text-gray-800">
-                <i data-lucide="messages-square" class="w-5 h-5"></i>
-                Chat
-              </div>
-              <p class="text-sm text-gray-500">Customize the chat appearance.</p>
+            <!-- General Information -->
+            <div class="card p-5">
+              <div class="font-semibold flex items-center gap-2 mb-3"><i data-lucide="building-2" class="w-5 h-5"></i> General Information</div>
+              <label class="block text-sm text-gray-600 mb-1">Name</label>
+              <input id="hotelName" class="w-full border rounded-xl px-3 py-2 mb-3" placeholder="Boletum"/>
+              <label class="block text-sm text-gray-600 mb-1">Time Zone</label>
+              <select id="timeZone" class="w-full border rounded-xl px-3 py-2 mb-4"></select>
+              <button id="saveGeneral" class="px-4 py-2 bg-black text-white rounded-md">Save</button>
+              <p id="msgGeneral" class="text-green-600 text-sm mt-2 hidden">✔ Saved</p>
             </div>
 
-            <div class="space-y-6">
-              <div class="space-y-3">
-                <div class="flex items-center justify-between">
-                  <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Header</p>
-                  <button id="openHeaderPanel" type="button" class="p-2 rounded-full border border-gray-200 text-gray-500 hover:text-gray-700 hover:border-gray-300 transition">
-                    <i data-lucide="pencil" class="w-4 h-4"></i>
-                  </button>
-                </div>
-                <div class="border border-gray-200 bg-white rounded-2xl p-4 flex items-center gap-4 shadow-sm">
-                  <div class="w-14 h-14 rounded-xl bg-gray-100 flex items-center justify-center text-gray-500 relative overflow-hidden">
-                    <img id="headerSummaryImage" class="absolute inset-0 w-full h-full rounded-xl object-cover hidden" alt="Header logo preview" />
-                    <i data-lucide="message-square-text" class="w-5 h-5" id="headerSummaryIcon"></i>
-                  </div>
-                  <div class="flex-1 min-w-0">
-                    <p id="headerSummaryTitle" class="text-sm font-medium text-gray-800 truncate">Asistente del hotel</p>
-                    <p class="text-xs text-gray-500">Edita el título y la identidad visual del encabezado.</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="space-y-3">
-                <div class="flex items-center justify-between gap-3">
-                  <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Welcome message</p>
-                  <div class="flex items-center gap-2">
-                    <span id="welcomeSummaryBadge" class="px-2.5 py-1 rounded-full text-xs font-medium bg-gray-200 text-gray-600">Disabled</span>
-                    <button id="openWelcomePanel" type="button" class="p-2 rounded-full border border-gray-200 text-gray-500 hover:text-gray-700 hover:border-gray-300 transition">
-                      <i data-lucide="pencil" class="w-4 h-4"></i>
-                    </button>
-                  </div>
-                </div>
-                <div id="welcomeSummaryCard" class="border border-gray-200 bg-white rounded-2xl p-4 flex items-start gap-4 shadow-sm">
-                  <div class="w-14 h-14 rounded-xl bg-gray-100 flex items-center justify-center text-gray-500 relative overflow-hidden">
-                    <img id="welcomeSummaryImage" class="absolute inset-0 w-full h-full rounded-xl object-cover hidden" alt="Welcome message image" />
-                    <i data-lucide="sparkles" class="w-5 h-5" id="welcomeSummaryIcon"></i>
-                  </div>
-                  <div class="flex-1 space-y-2 text-sm">
-                    <div class="rounded-xl bg-gray-50 px-3 py-2 text-gray-700 leading-relaxed">
-                      <p id="welcomeSummaryText" class="leading-relaxed text-gray-700">Add a welcome message to greet your guests.</p>
-                    </div>
-                    <p id="welcomeSummaryDelay" class="text-xs text-gray-500">Delay: 2s</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="space-y-3">
-                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Font</p>
-                <select id="fontFamily" class="border border-gray-200 rounded-xl px-3 py-2 w-full text-sm bg-white focus:outline-none focus:ring-2 focus:ring-black/60">
-                  <option value="Manrope">Manrope</option>
-                  <option value="Inter">Inter</option>
-                  <option value="Poppins">Poppins</option>
-                  <option value="Roboto">Roboto</option>
-                  <option value="Playfair Display">Playfair Display</option>
-                  <option value="Merriweather">Merriweather</option>
-                </select>
-              </div>
-
-              <div class="space-y-3">
-                <div class="flex items-center justify-between gap-3">
-                  <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Colors</p>
-                  <button id="toggleTemplatePanel" type="button" class="flex items-center gap-2 px-3 py-1.5 border border-gray-200 rounded-full text-xs font-medium text-gray-600 bg-white shadow-sm hover:text-gray-900 hover:border-gray-300 transition">
-                    <i data-lucide="palette" class="w-3.5 h-3.5"></i>
-                    <span>Template</span>
-                  </button>
-                </div>
-                <div id="chatTemplatePanel" class="hidden space-y-3 border border-dashed border-gray-300 rounded-2xl p-4 bg-gray-50/70">
-                  <p class="text-xs text-gray-500">Selecciona un estilo predefinido. Puedes ajustar los colores luego.</p>
-                  <div id="chatTemplateGrid" class="grid gap-3 sm:grid-cols-2"></div>
-                </div>
-                <div class="grid gap-3 sm:grid-cols-2">
-                  <div class="flex items-center gap-3 border border-gray-200 rounded-2xl px-3 py-3 bg-white shadow-sm">
-                    <input id="chatBackgroundColor" type="color" class="w-10 h-10 rounded-full border border-gray-200 shadow-sm cursor-pointer">
-                    <span class="text-sm font-medium text-gray-600 select-none">Chat Background</span>
-                  </div>
-                  <div class="flex items-center gap-3 border border-gray-200 rounded-2xl px-3 py-3 bg-white shadow-sm">
-                    <input id="chatAssistantTextColor" type="color" class="w-10 h-10 rounded-full border border-gray-200 shadow-sm cursor-pointer">
-                    <span class="text-sm font-medium text-gray-600 select-none">Text</span>
-                  </div>
-                  <div class="flex items-center gap-3 border border-gray-200 rounded-2xl px-3 py-3 bg-white shadow-sm">
-                    <input id="chatPrimaryColor" type="color" class="w-10 h-10 rounded-full border border-gray-200 shadow-sm cursor-pointer">
-                    <span class="text-sm font-medium text-gray-600 select-none">Client Background</span>
-                  </div>
-                  <div class="flex items-center gap-3 border border-gray-200 rounded-2xl px-3 py-3 bg-white shadow-sm">
-                    <input id="chatClientTextColor" type="color" class="w-10 h-10 rounded-full border border-gray-200 shadow-sm cursor-pointer">
-                    <span class="text-sm font-medium text-gray-600 select-none">Client Text</span>
-                  </div>
-                </div>
+            <!-- Assistant Personality -->
+            <div class="card p-5">
+              <div class="font-semibold flex items-center gap-2 mb-4"><i data-lucide="sparkles" class="w-5 h-5"></i> Assistant Personality</div>
+              <div id="personalityChips" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <button data-val="formal" class="chip">Formal & Polite</button>
+                <button data-val="relaxed" class="chip">Relaxed & Friendly</button>
+                <button data-val="warm" class="chip">Warm & Welcoming</button>
+                <button data-val="efficient" class="chip">Efficient & Direct</button>
+                <button data-val="young" class="chip">Young & Playful</button>
               </div>
             </div>
-          </div>
+            
+            <!-- 📨 Welcome Message -->
+<div class="card p-5 space-y-4">
+  <div class="font-semibold flex items-center gap-2 mb-2">
+    <i data-lucide="smile" class="w-5 h-5"></i>
+    Welcome Message
+  </div>
 
-          <div class="card p-5 space-y-4 hidden">
-            <div class="font-semibold flex items-center gap-2 mb-3"><i data-lucide="link-2" class="w-5 h-5"></i> Link para probar el chat</div>
-            <div class="flex items-center gap-3 flex-wrap">
-              <input id="chatTestLink" type="text" readonly class="flex-1 min-w-[200px] border rounded-lg px-3 py-2 text-sm bg-gray-50 select-all"/>
-              <div class="flex items-center gap-2">
+  <label class="flex items-center justify-between cursor-pointer">
+    <span class="text-sm text-gray-600">Enable welcome message</span>
+    <input type="checkbox" id="welcomeEnabled" class="toggle">
+  </label>
+
+  <div>
+    <textarea id="welcomeText" class="w-full border rounded-lg px-3 py-2 text-sm"
+              rows="2" placeholder="Enter welcome message..."></textarea>
+  </div>
+
+  <div>
+    <label class="block text-sm text-gray-600 mb-1">Delay (seconds)</label>
+    <input id="welcomeDelay" type="number" min="0" class="border rounded px-2 py-1 text-sm w-24" value="2">
+  </div>
+
+  <div>
+    <label class="block text-sm text-gray-600 mb-1">Welcome image (optional)</label>
+    <input id="welcomeImageFile" type="file" accept="image/*">
+    <img id="welcomePreview" class="mt-3 rounded-lg w-56 hidden" />
+  </div>
+
+  <button id="saveWelcome" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md text-sm">
+    Save
+  </button>
+
+  <p id="msgWelcome" class="text-green-600 text-sm mt-2 hidden">✔ Saved</p>
+</div>
+
+
+            <!-- Link para probar el chat -->
+            <div class="card p-5">
+              <div class="font-semibold flex items-center gap-2 mb-3"><i data-lucide="link-2" class="w-5 h-5"></i> Link para probar el chat</div>
+              <div class="flex items-center gap-3">
+                <input id="chatTestLink" type="text" readonly class="flex-1 border rounded-lg px-3 py-2 text-sm bg-gray-50 select-all"/>
                 <button id="copyChatLink" class="px-3 py-2 bg-black text-white text-sm rounded-lg">Copiar</button>
                 <button id="openChatLink" class="px-3 py-2 bg-black text-white text-sm rounded-lg">Abrir</button>
               </div>
+              <p class="text-xs text-gray-500 mt-2">El enlace se genera automáticamente con el nombre de tu empresa actual.</p>
             </div>
-            <p class="text-xs text-gray-500">El enlace se genera automáticamente con el nombre de tu empresa actual.</p>
-          </div>
-        </div>
-
-        <div data-chat-panel="widget" class="space-y-5 hidden">
-          <div class="card p-5 space-y-6">
-            <div class="flex items-center gap-2 font-semibold text-gray-800">
-              <i data-lucide="mouse-pointer" class="w-5 h-5"></i>
-              Widget
-            </div>
-            <div class="space-y-4">
-              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Icon</p>
-<div class="flex justify-center">
-  <button type="button" id="widgetIconTrigger" class="widget-icon-trigger" title="Elegir icono">
-    <img id="widgetIconTriggerImg" src="widgets/1.png" alt="Icono del widget" />
-  </button>
-</div>
-
-              <div class="flex items-center gap-3">
-                <label class="flex items-center gap-2 text-sm text-gray-600 select-none">
-                  <input type="checkbox" id="widgetRounded" class="rounded border-gray-300" />
-                  Rounded
-                </label>
-                <input type="range" id="widgetRadius" min="0" max="50" value="20" class="flex-1 accent-blue-500">
-                <span id="widgetRadiusVal" class="text-sm text-gray-600 inline-block text-right min-w-[2ch]">20</span>
-              </div>
-            </div>
-            <div class="space-y-4">
-              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Colors</p>
-              <div class="flex items-center gap-4">
-                <input id="chatButtonColor" type="color" class="w-10 h-10 rounded-full cursor-pointer border border-gray-300 shadow-sm" />
-                <span class="text-sm font-medium text-gray-600 select-none">Widget Background</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div data-chat-panel="integration" class="space-y-5 hidden">
-          <div class="card p-5 space-y-4">
-            <div class="font-semibold flex items-center gap-2 mb-1">
-              <i data-lucide="code-2" class="w-5 h-5"></i>
-              Integration Script
-            </div>
-            <p class="text-sm text-gray-500">
-              Copy and paste this code into your website just before the <code>&lt;/body&gt;</code> tag.
-              The chat will automatically appear with your hotel's configuration.
-            </p>
-            <div class="relative">
-              <textarea id="embedScriptBox" readonly class="w-full text-sm font-mono bg-gray-50 border rounded-lg p-3 pr-16 focus:outline-none select-all resize-none"></textarea>
-              <button id="copyEmbedScript" class="absolute top-3 right-3 px-3 py-1.5 text-sm bg-black text-white rounded-md">Copy</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div id="headerSettingsOverlay" class="hidden fixed inset-0 bg-black/30 z-40"></div>
-      <div id="headerSettingsPanel" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4">
-        <div class="card p-5 shadow-2xl w-full max-w-md">
-          <div class="flex items-center justify-between mb-5">
-            <div class="flex items-center gap-2 font-semibold text-gray-800">
-              <i data-lucide="panel-top" class="w-5 h-5"></i>
-              Header
-            </div>
-            <button type="button" id="closeHeaderPanel" class="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition">
-              <i data-lucide="x" class="w-4 h-4"></i>
-            </button>
-          </div>
-          <div class="space-y-6">
-            <div class="space-y-4">
-              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">General</p>
-              <div class="space-y-4">
-                <div>
-                  <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wide">Name</label>
-                  <input id="hotelName" class="w-full border rounded-xl px-3 py-2" placeholder="Asistente del hotel" />
-                </div>
-                <div>
-                  <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wide">Time Zone</label>
-                  <select id="timeZone" class="w-full border rounded-xl px-3 py-2"></select>
-                </div>
-              </div>
-            </div>
-            <div class="space-y-4">
-              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Image</p>
-              <div class="space-y-4">
-                <div id="logoControls" class="flex flex-wrap gap-3 justify-center">
-                  <label class="inline-flex items-center justify-center px-4 py-2 bg-black text-white rounded cursor-pointer text-sm hover:bg-gray-800 transition">
-                    Select file
-                    <input id="logoFile" type="file" accept="image/*" class="hidden" />
-                  </label>
-                </div>
-                <div id="logoPreviewWrap" class="hidden">
-                  <div class="relative w-24 h-24 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center shadow mx-auto">
-                    <img id="logoPreview" class="w-full h-full object-cover" alt="Logo" />
-                    <button id="deleteLogo" class="absolute bottom-1 right-1 bg-red-600 text-white p-1.5 rounded-full shadow hover:bg-red-700 transition">
-                      <i data-lucide="trash" class="w-4 h-4"></i>
-                    </button>
-                  </div>
-                </div>
-                <div class="flex items-center gap-3">
-                  <label class="flex items-center gap-2 text-sm text-gray-600 select-none">
-                    <input type="checkbox" id="headerRounded" class="rounded border-gray-300" />
-                    Rounded
-                  </label>
-                  <input type="range" id="logoRadius" min="0" max="50" value="23" class="flex-1 accent-blue-500">
-                  <span id="logoRadiusVal" class="text-sm text-gray-600 w-8 text-right">23</span>
-                </div>
-                <p id="msgLogo" class="text-green-600 text-sm hidden">✔ Header image updated</p>
-              </div>
-            </div>
-            <div class="space-y-4">
-              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Colors</p>
-              <div class="space-y-3">
-                <div class="flex items-center gap-4">
-                  <input id="chatHeaderColor" type="color" class="w-10 h-10 cursor-pointer">
-                  <span class="text-sm font-medium text-gray-600 select-none">Header Background</span>
-                </div>
-                <div class="flex items-center gap-4">
-                  <input id="chatHeaderTextColor" type="color" class="w-10 h-10 cursor-pointer">
-                  <span class="text-sm font-medium text-gray-600 select-none">Text</span>
-                </div>
-              </div>
-            </div>
-            <div class="space-y-2">
-              <div class="flex justify-end">
-                <button id="saveGeneral" class="px-4 py-2 bg-black text-white rounded-md">Save</button>
-              </div>
-              <p id="msgGeneral" class="text-green-600 text-sm hidden text-right">✔ Saved</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div id="avatarSettingsOverlay" class="hidden fixed inset-0 bg-black/30 z-40"></div>
-      <div id="avatarPopover" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4">
-        <div class="card p-5 shadow-2xl space-y-5 w-full max-w-md">
-          <div class="flex items-center justify-between">
-            <p class="font-semibold text-gray-800">Avatar</p>
-            <button type="button" id="closeAvatarPopover" class="p-1.5 rounded-full hover:bg-gray-100 text-gray-500 transition">
-              <i data-lucide="x" class="w-4 h-4"></i>
-            </button>
-          </div>
-          <div id="avatarControls" class="space-y-4">
-            <div class="flex items-center gap-3 flex-wrap">
-              <button type="button" class="avatar-option active" data-avatar-option="avatars/1.png">
-                <img src="avatars/1.png" alt="Avatar 1" />
-              </button>
-              <button type="button" class="avatar-option" data-avatar-option="avatars/2.png">
-                <img src="avatars/2.png" alt="Avatar 2" />
-              </button>
-              <button type="button" class="avatar-option" data-avatar-option="avatars/3.png">
-                <img src="avatars/3.png" alt="Avatar 3" />
-              </button>
-              <div class="relative">
-                <label id="customAvatarOption" class="avatar-option avatar-upload cursor-pointer" data-avatar-option="">
-                  <i id="customAvatarPlus" data-lucide="plus" class="w-5 h-5 text-gray-500"></i>
-                  <img id="customAvatarImage" src="" alt="Avatar personalizado" class="hidden" />
-                  <input id="avatarFile" type="file" accept="image/*" class="hidden" />
-                </label>
-                <button type="button" id="deleteAvatar" class="hidden absolute -right-1 -bottom-1 bg-red-600 text-white p-1 rounded-full shadow hover:bg-red-700 transition">
-                  <i data-lucide="trash" class="w-4 h-4"></i>
-                </button>
-              </div>
-            </div>
-            <div class="flex items-center gap-3">
-              <label class="flex items-center gap-2 text-sm text-gray-600 select-none">
-                <input type="checkbox" id="avatarRounded" class="rounded border-gray-300" />
-                Rounded
-              </label>
-              <input type="range" id="avatarRadius" min="0" max="50" value="50" class="flex-none w-28 accent-blue-500">
-              <span id="avatarRadiusVal" class="text-sm text-gray-600 min-w-[2ch] text-right">50</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div id="welcomeSettingsOverlay" class="hidden fixed inset-0 bg-black/30 z-40"></div>
-      <div id="welcomeSettingsPanel" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4">
-        <div class="card p-5 shadow-2xl space-y-5 w-full max-w-md">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2 font-semibold text-gray-800">
-              <i data-lucide="sparkles" class="w-5 h-5"></i>
-              Welcome message
-            </div>
-            <button type="button" id="closeWelcomePanel" class="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition">
-              <i data-lucide="x" class="w-4 h-4"></i>
-            </button>
-          </div>
-
-          <div class="space-y-5">
-            <div class="flex items-center justify-between">
-              <span class="text-sm font-medium text-gray-700">Enable welcome message</span>
-              <input type="checkbox" id="welcomeEnabled" class="toggle">
-            </div>
-
-            <div class="space-y-2">
-              <label for="welcomeText" class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Message</label>
-              <textarea id="welcomeText" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60 h-[150px]" rows="4" placeholder="Enter welcome message..."></textarea>
-            </div>
-
-            <div class="space-y-2">
-              <label for="welcomeDelay" class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Delay (seconds)</label>
-              <input id="welcomeDelay" type="number" min="0" class="border rounded-lg px-3 py-2 text-sm w-28 focus:outline-none focus:ring-2 focus:ring-black/60" value="2">
-            </div>
-
-            <div class="space-y-3">
-              <label for="welcomeImageFile" class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Welcome image (optional)</label>
-              <input id="welcomeImageFile" type="file" accept="image/*" class="text-sm">
-              <img id="welcomePreview" class="rounded-xl w-full max-h-40 object-cover hidden" />
-            </div>
-
-            <div class="flex items-center justify-between">
-              <button id="saveWelcome" class="px-4 py-2 bg-black text-white rounded-md text-sm">Save</button>
-              <p id="msgWelcome" class="text-green-600 text-sm hidden">✔ Saved</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- KNOWLEDGE TAB -->
-          <section id="tab-knowledge" class="hidden space-y-6 max-w-3xl">
-  <div class="card p-5 space-y-4">
-    <div class="font-semibold flex items-center gap-2">
+          </section>
+          <!-- KNOWLEDGE TAB -->
+<section id="tab-knowledge" class="hidden space-y-6 max-w-3xl">
+  <div class="card p-5">
+    <div class="font-semibold flex items-center gap-2 mb-3">
       <i data-lucide="book-open" class="w-5 h-5"></i>
       Knowledge
     </div>
-    <p class="text-sm text-gray-500">
-      Add the contextual information that helps the assistant understand your business, products, and brand tone. You can import pages from a URL and edit them here.
+    <p class="text-sm text-gray-500 mb-3">
+      Write here the contextual information that helps the assistant
+      understand your business, products, and brand tone.
     </p>
 
-    <div class="flex flex-wrap items-center gap-2">
-      <div id="knowledgeTabs" class="flex flex-wrap items-center gap-2"></div>
-      <button id="addKnowledgePage" class="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-black text-white rounded-lg shadow-sm hover:bg-gray-900 transition">
-        <i data-lucide="plus" class="w-4 h-4"></i>
-        Add
-      </button>
-    </div>
-
-    <div id="knowledgeUrlMeta" class="text-xs text-gray-500 hidden">
-      <span class="font-medium">Source:</span>
-      <span id="knowledgeCurrentUrl" class="truncate"></span>
-    </div>
-
     <textarea id="contextText"
-      class="w-full border rounded-xl p-3 text-sm focus:outline-none resize-none"
+      class="w-full border rounded-xl p-3 text-sm focus:outline-none"
       placeholder="Add your knowledge here... (max 10,000 characters)"></textarea>
 
-    <div class="flex items-center justify-between text-xs">
+    <div class="flex items-center justify-between mt-2 text-xs">
       <span id="ctxCounter" class="text-gray-500">0 / 10000 characters</span>
-      <div class="flex items-center gap-2">
-        <button
-          id="deleteKnowledgePage"
-          class="px-3 py-2 border border-gray-300 rounded-md text-sm flex items-center gap-1 text-gray-600 hover:text-red-600 hover:border-red-300 transition"
-          title="Delete page"
-          aria-label="Delete knowledge page"
-        >
-          <i data-lucide="trash" class="w-4 h-4"></i>
-        </button>
-        <button id="saveContext" class="px-4 py-2 bg-black text-white rounded-md text-sm">Save</button>
-      </div>
     </div>
 
-    <p id="msgContext" class="text-green-600 text-sm hidden">✔ Saved</p>
+    <button id="saveContext" class="mt-3 px-4 py-2 bg-black text-white rounded-md">Save</button>
+    <p id="msgContext" class="text-green-600 text-sm mt-2 hidden">✔ Saved</p>
+  </div>
+</section>
+
+
+<!-- SCHEDULE TAB -->
+<section id="tab-schedule" class="hidden space-y-6 max-w-3xl">
+  <div class="card p-5">
+    <div class="font-semibold flex items-center gap-2 mb-3">
+      <i data-lucide="clock" class="w-5 h-5"></i>
+      Schedule
+    </div>
+    <p class="text-sm text-gray-500 mb-4">
+      Define the periods when the chat widget should be active.
+    </p>
+
+    <div id="scheduleList" class="space-y-3"></div>
+
+
+
+    <p id="msgSchedule" class="text-green-600 text-sm mt-3 hidden">✔ Saved</p>
   </div>
 </section>
 
 
 
 
+<!-- INTEGRATION TAB -->
+<section id="tab-integration" class="hidden space-y-6 max-w-3xl">
+  <div class="card p-5">
+    <div class="font-semibold flex items-center gap-2 mb-3">
+      <i data-lucide="code-2" class="w-5 h-5"></i>
+      Integration Script
+    </div>
+    <p class="text-sm text-gray-500 mb-3">
+      Copy and paste this code into your website just before the <code>&lt;/body&gt;</code> tag.
+      The chat will automatically appear with your hotel's configuration.
+    </p>
+
+    <div class="relative">
+      <textarea id="embedScriptBox" readonly
+        class="w-full text-sm font-mono bg-gray-50 border rounded-lg p-3 pr-16 focus:outline-none select-all resize-none"
+        rows="2"></textarea>
+      <button id="copyEmbedScript"
+        class="absolute top-2 right-2 px-3 py-1 text-xs bg-black text-white rounded-md hover:bg-gray-800">
+        Copy
+      </button>
+    </div>
+  </div>
+</section>
+
 <!-- RESPUESTAS TAB -->
 <section id="tab-respuestas" class="hidden space-y-6 max-w-3xl">
-  <div class="card p-6 space-y-5">
-    <div class="flex flex-col gap-3">
-      <div class="flex items-center justify-between gap-3">
-        <div class="font-semibold flex items-center gap-2">
-          <i data-lucide="bot" class="w-5 h-5"></i>
-          Auto Responses
-        </div>
-        <button id="addAutoResponse" class="px-4 py-2 bg-black text-white rounded-md flex items-center gap-2 text-sm">
-          <span class="text-lg leading-none">+</span>
-          <span>New tab</span>
-        </button>
-      </div>
-      <p class="text-sm text-gray-500">
-        Organize quick replies for frequent questions. Create as many tabs as you need, customise their content and preview how they will look in the chat widget.
-      </p>
+  <div class="card p-5">
+    <div class="font-semibold flex items-center gap-2 mb-3">
+      <i data-lucide="bot" class="w-5 h-5"></i>
+      Auto Responses
+    </div>
+    <p class="text-sm text-gray-500 mb-3">
+      Add responses that the chat will automatically send based on keywords.
+      You can create normal text or groups of cards (if there are several, they will appear in a carousel).
+    </p>
 
-      <div id="autoResponseTabs" class="flex w-full items-center gap-2 overflow-x-auto pb-1 flex-nowrap"></div>
-
-      <div id="autoResponseEmpty" class="border border-dashed border-gray-300 rounded-2xl p-6 text-center text-gray-500 text-sm">
-        Start by creating your first tab to design an automated reply.
-      </div>
-
-      <div id="autoResponsePlaceholder" class="hidden border border-dashed border-gray-300 rounded-2xl p-6 text-center text-gray-500 text-sm">
-        Select a tab to review or edit its configuration.
-      </div>
-
-      <div id="autoResponseEditor" class="hidden space-y-5">
-        <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-5 space-y-5">
-          <div class="grid gap-4 lg:grid-cols-[2fr,1fr] lg:items-start">
-            <div class="space-y-2">
-              <label class="text-xs font-medium text-gray-600 uppercase tracking-wide">Keyword</label>
-              <input id="autoResponseKeyword" type="text" placeholder="(e.g. spa, restaurant)"
-                     class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60">
-              <p class="text-[12px] text-gray-500">When the guest mentions this keyword, the auto response will be triggered.</p>
-            </div>
-            <div class="space-y-2">
-              <label class="text-xs font-medium text-gray-600 uppercase tracking-wide">Response type</label>
-              <div id="autoResponseType" class="grid grid-cols-3 bg-gray-100 rounded-xl p-1 text-sm font-medium">
-                <button data-type="text" class="typeOption px-3 py-2 rounded-lg transition flex items-center justify-center gap-2">
-                  <i data-lucide="message-square-text" class="w-4 h-4"></i>
-                  <span>Text</span>
-                </button>
-                <button data-type="cards" class="typeOption px-3 py-2 rounded-lg transition flex items-center justify-center gap-2">
-                  <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
-                  <span>Cards</span>
-                </button>
-                <button data-type="menu" class="typeOption px-3 py-2 rounded-lg transition flex items-center justify-center gap-2">
-                  <i data-lucide="list" class="w-4 h-4"></i>
-                  <span>Menu</span>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div id="textEditor" class="space-y-4">
-            <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Message</label>
-              <textarea id="autoResponseText" rows="3" placeholder="Write the automatic response..."
-                        class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60"></textarea>
-            </div>
-            <div class="grid gap-3 sm:grid-cols-2">
-              <div>
-                <label class="block text-xs font-semibold text-gray-600 mb-1">Title</label>
-                <input id="autoResponseTitle" type="text" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60">
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-600 mb-1">Subtitle</label>
-                <input id="autoResponseSubtitle" type="text" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60">
-              </div>
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Image URL (optional)</label>
-              <input id="autoResponseImage" type="text" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60" placeholder="https://...">
-            </div>
-            <div>
-              <div class="flex items-center justify-between">
-                <span class="text-sm font-semibold text-gray-700">Buttons</span>
-                <button id="addTextButton" class="text-xs px-2 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 transition">+ Add button</button>
-              </div>
-              <div id="textButtonsList" class="mt-2 space-y-2"></div>
-            </div>
-            <div>
-              <span class="text-sm font-semibold text-gray-700">Live preview</span>
-              <div id="textPreview" class="mt-2 bg-gray-50 border border-gray-200 rounded-2xl p-4 flex justify-center"></div>
-            </div>
-          </div>
-
-          <div id="cardsEditor" class="space-y-3 hidden">
-            <div class="flex items-center justify-between">
-              <span class="text-sm font-semibold text-gray-700">Cards</span>
-              <button id="addCardButton" class="text-xs px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 transition">+ Add card</button>
-            </div>
-            <div id="cardsList" class="space-y-3"></div>
-          </div>
-
-          <div id="menuEditor" class="space-y-3 hidden">
-            <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Intro text</label>
-              <input id="menuIntroText" type="text" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60" placeholder="Choose an option">
-            </div>
-            <div>
-              <div class="flex items-center justify-between">
-                <span class="text-sm font-semibold text-gray-700">Buttons</span>
-                <button id="addMenuButton" class="text-xs px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 transition">+ Add button</button>
-              </div>
-              <div id="menuButtonsList" class="mt-2 space-y-2"></div>
-            </div>
-            <div>
-              <span class="text-sm font-semibold text-gray-700">Preview</span>
-              <div id="menuPreview" class="mt-2 bg-gray-50 border border-gray-200 rounded-2xl p-4 flex flex-wrap gap-2"></div>
-            </div>
-          </div>
-
-          <div class="flex justify-end items-center gap-3">
-            <button id="saveAutoResponses" class="px-4 py-2 bg-black text-white rounded-md flex items-center gap-2 text-sm">
-              <i data-lucide="save"></i> Save changes
-            </button>
-            <button id="deleteAutoResponse" class="p-2 rounded-lg text-red-600 hover:text-red-700 hover:bg-red-50 transition"
-                    aria-label="Delete this tab" title="Delete this tab">
-              <i data-lucide="trash-2" class="w-4 h-4"></i>
-            </button>
-          </div>
-        </div>
-      </div>
+    <div class="flex gap-3 mb-4">
+      <button id="addAutoResponse" class="px-4 py-2 bg-black text-white rounded-md flex items-center gap-2 text-sm">
+        <i data-lucide="plus"></i> New Response
+      </button>
+      <button id="saveAutoResponses" class="px-4 py-2 bg-black text-white rounded-md flex items-center gap-2 text-sm">
+        <i data-lucide="save"></i> Save Changes
+      </button>
     </div>
 
-    <p id="msgAutoResponses" class="text-green-600 text-sm hidden">✔ Saved</p>
+    <div id="autoResponsesList" class="space-y-3"></div>
+    <p id="msgAutoResponses" class="text-green-600 text-sm mt-3 hidden">✔ Saved</p>
   </div>
 </section>
 
@@ -1184,7 +737,6 @@ body.login-view #appContainer {
 </div>
         </div>
       </main>
-
     </div>
   </div>
 
@@ -1193,118 +745,8 @@ body.login-view #appContainer {
   class="fixed top-[70px] left-1/2 -translate-x-1/2 bg-green-600 text-white px-4 py-2 rounded-lg opacity-0 text-sm shadow-lg transition-opacity z-[9999]">
 </div>
 
-<!-- 🧩 Modal de recorte de Header -->
-<div id="cropperModal"
-  class="fixed inset-0 bg-black/70 hidden items-center justify-center z-[9998]">
-  <div class="bg-white rounded-2xl p-6 shadow-xl max-w-sm w-full text-center">
-    <h3 class="font-semibold mb-4">Crop Header Image</h3>
-    <div class="w-full aspect-square bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
-      <img id="cropperImage" class="max-w-full max-h-[300px]" />
-    </div>
 
-    <!-- Progress -->
-    <div id="logoProgressWrap" class="mt-4 hidden w-full bg-gray-200 rounded-full overflow-hidden h-2">
-      <div id="logoBar" class="h-2 w-0 bg-black transition-all duration-200"></div>
-    </div>
-
-    <div class="flex justify-center gap-3 mt-5">
-      <button id="cancelCrop"
-        class="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100">
-        Cancel
-      </button>
-      <button id="confirmCrop"
-        class="px-4 py-2 rounded-lg bg-black text-white hover:bg-gray-800">
-        Save
-      </button>
-    </div>
-  </div>
-</div>
-
-
-
-<!-- Modal: Add knowledge page -->
-<div id="knowledgeModal" class="fixed inset-0 hidden items-center justify-center bg-black/40 backdrop-blur-sm z-[1200] px-4">
-  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-xl p-6 space-y-4 relative">
-    <button id="closeKnowledgeModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
-      <i data-lucide="x" class="w-5 h-5"></i>
-    </button>
-    <div class="space-y-1">
-      <h3 class="text-lg font-semibold">Add Page Knowledge</h3>
-      <p class="text-sm text-gray-500">Paste the URL of the page you want to import. We will crawl it and organize the information automatically.</p>
-    </div>
-    <div class="space-y-2">
-      <label for="knowledgeUrlInput" class="text-xs font-medium text-gray-600 uppercase tracking-wide">Page URL</label>
-      <input id="knowledgeUrlInput" type="url" placeholder="https://example.com/page" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black" />
-    </div>
-    <p id="knowledgeModalError" class="text-sm text-red-600 hidden"></p>
-    <p id="knowledgeModalStatus" class="text-sm text-gray-500 hidden"></p>
-    <div class="flex items-center justify-end gap-2 pt-2">
-      <button id="cancelKnowledgeModal" class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">Cancel</button>
-      <button id="confirmAddKnowledge" class="px-4 py-2 bg-black text-white rounded-lg text-sm flex items-center gap-2">
-        <span>Add</span>
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal: Delete knowledge page -->
-<div id="knowledgeDeleteModal" class="fixed inset-0 hidden items-center justify-center bg-black/40 backdrop-blur-sm z-[1200] px-4">
-  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 space-y-5 relative">
-    <button id="closeKnowledgeDeleteModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
-      <i data-lucide="x" class="w-5 h-5"></i>
-    </button>
-    <div class="flex items-start gap-3">
-      <div class="flex h-10 w-10 items-center justify-center rounded-full bg-red-50 text-red-600">
-        <i data-lucide="trash-2" class="w-5 h-5"></i>
-      </div>
-      <div class="space-y-2">
-        <h3 class="text-lg font-semibold">Delete knowledge page</h3>
-        <p class="text-sm text-gray-600">
-          Are you sure you want to delete <span id="deleteKnowledgePageTitle" class="font-medium text-gray-900"></span>? This action
-          cannot be undone.
-        </p>
-      </div>
-    </div>
-    <div class="flex items-center justify-end gap-2 pt-2">
-      <button id="cancelDeleteKnowledge" class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">Cancel</button>
-      <button id="confirmDeleteKnowledge" class="px-4 py-2 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700">Delete</button>
-    </div>
-  </div>
-</div>
-
-
-<script src="translations.js"></script>
 <script>
-if (window.translationManager) {
-  translationManager.init();
-  const languageSelectEl = document.getElementById('languageSelect');
-  if (languageSelectEl) {
-    languageSelectEl.value = translationManager.getCurrentLanguage();
-    languageSelectEl.addEventListener('change', (event) => {
-      translationManager.applyLanguage(event.target.value);
-    });
-
-    const languageOptionMap = {
-      en: 'language.english',
-      fr: 'language.french',
-      es: 'language.spanish',
-      de: 'language.german',
-      pt: 'language.portuguese',
-    };
-
-    Array.from(languageSelectEl.options).forEach((option) => {
-      const key = languageOptionMap[option.value];
-      if (!key) return;
-      translationManager.register(option, key);
-    });
-  }
-}
-const t = (key, vars) => window.translationManager ? translationManager.translate(key, vars) : key;
-const registerTranslationTarget = (node, key, target = 'text', options = {}) => {
-  if (!node || !window.translationManager) return;
-  translationManager.register(node, key, target, options);
-};
-
 // ====== Firebase config ======
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyC2c3S_NtouIjHPrk5LM5c0DQoTWyBrzH4",
@@ -1345,355 +787,6 @@ $('empresaBadge').textContent = EMPRESA;
 $('empresaText').textContent = EMPRESA;
 function eref(path) { return db.ref(`${EMPRESA}/${path}`); }
 
-const DEFAULT_CHAT_TEMPLATES = {
-  midnight: {
-    order: 1,
-    name: 'Midnight Luxe',
-    description: 'Oscuro con acentos dorados.',
-    colors: {
-      background: '#0B1120',
-      assistantText: '#E2E8F0',
-      clientBackground: '#1F2937',
-      clientText: '#F8FAFC',
-      headerBackground: '#111827',
-      headerText: '#FBBF24',
-      widgetBackground: '#F59E0B'
-    }
-  },
-  coastal: {
-    order: 2,
-    name: 'Coastal Breeze',
-    description: 'Fresco, luminoso y relajado.',
-    colors: {
-      background: '#F1F5F9',
-      assistantText: '#1F2937',
-      clientBackground: '#0EA5E9',
-      clientText: '#F8FAFC',
-      headerBackground: '#38BDF8',
-      headerText: '#0F172A',
-      widgetBackground: '#0EA5E9'
-    }
-  },
-  sunset: {
-    order: 3,
-    name: 'Desert Sunset',
-    description: 'Cálido y acogedor con tonos terracota.',
-    colors: {
-      background: '#FFF7ED',
-      assistantText: '#7C2D12',
-      clientBackground: '#FB923C',
-      clientText: '#431407',
-      headerBackground: '#EA580C',
-      headerText: '#FEF3C7',
-      widgetBackground: '#EA580C'
-    }
-  },
-  forest: {
-    order: 4,
-    name: 'Forest Retreat',
-    description: 'Verde profundo con detalles naturales.',
-    colors: {
-      background: '#0B1F17',
-      assistantText: '#D1FAE5',
-      clientBackground: '#047857',
-      clientText: '#ECFDF5',
-      headerBackground: '#064E3B',
-      headerText: '#BBF7D0',
-      widgetBackground: '#10B981'
-    }
-  },
-  minimal: {
-    order: 5,
-    name: 'Minimal Light',
-    description: 'Blancos y negros para un estilo elegante.',
-    colors: {
-      background: '#FFFFFF',
-      assistantText: '#1F2937',
-      clientBackground: '#111827',
-      clientText: '#F9FAFB',
-      headerBackground: '#F3F4F6',
-      headerText: '#111827',
-      widgetBackground: '#111827'
-    }
-  },
-  berry: {
-    order: 6,
-    name: 'Berry Pop',
-    description: 'Vibrante con notas moradas y rosas.',
-    colors: {
-      background: '#FDF2F8',
-      assistantText: '#6B21A8',
-      clientBackground: '#C026D3',
-      clientText: '#FCE7F3',
-      headerBackground: '#86198F',
-      headerText: '#FCE7F3',
-      widgetBackground: '#D946EF'
-    }
-  }
-};
-
-let isApplyingTemplate = false;
-const pendingColorSaves = {};
-
-function normalizeHexColor(color) {
-  if (!color) return '';
-  let hex = color.trim();
-  if (!hex) return '';
-  if (hex.startsWith('#')) {
-    hex = hex.slice(1);
-  }
-  if (hex.length === 3) {
-    hex = hex.split('').map(ch => ch + ch).join('');
-  }
-  if (!/^[0-9a-fA-F]{6}$/.test(hex)) {
-    return '';
-  }
-  return `#${hex.toUpperCase()}`;
-}
-
-let chatTemplates = [];
-let chatTemplatesInitialized = false;
-let chatTemplatePanelEl = null;
-let chatTemplateGridEl = null;
-let chatTemplateToggleEl = null;
-let chatTemplateRef = null;
-
-function ensureTemplateElements() {
-  if (!chatTemplatePanelEl) chatTemplatePanelEl = $('chatTemplatePanel');
-  if (!chatTemplateGridEl) chatTemplateGridEl = $('chatTemplateGrid');
-  if (!chatTemplateToggleEl) chatTemplateToggleEl = $('toggleTemplatePanel');
-}
-
-function getTemplateArray(data) {
-  const source = data && Object.keys(data || {}).length ? data : DEFAULT_CHAT_TEMPLATES;
-  return Object.entries(source).map(([id, tpl]) => ({
-    id,
-    name: tpl.name || id,
-    description: tpl.description || '',
-    order: typeof tpl.order === 'number' ? tpl.order : 0,
-    colors: {
-      background: tpl.colors?.background || '#ececec',
-      assistantText: tpl.colors?.assistantText || '#111111',
-      clientBackground: tpl.colors?.clientBackground || '#111111',
-      clientText: tpl.colors?.clientText || '#ffffff',
-      headerBackground: tpl.colors?.headerBackground || '#ffffff',
-      headerText: tpl.colors?.headerText || '#111111',
-      widgetBackground: tpl.colors?.widgetBackground || tpl.colors?.clientBackground || '#111111'
-    }
-  })).sort((a, b) => (a.order || 0) - (b.order || 0));
-}
-
-function setTemplatePanelVisibility(show) {
-  ensureTemplateElements();
-  if (!chatTemplatePanelEl || !chatTemplateToggleEl) return;
-  chatTemplatePanelEl.classList.toggle('hidden', !show);
-  chatTemplateToggleEl.classList.toggle('template-toggle-active', !!show);
-  chatTemplateToggleEl.setAttribute('aria-expanded', show ? 'true' : 'false');
-}
-
-function createTemplateCard(template) {
-  const btn = document.createElement('button');
-  btn.type = 'button';
-  btn.dataset.templateId = template.id;
-  btn.className = 'template-card text-left focus:outline-none focus:ring-2 focus:ring-black/10';
-
-  const header = document.createElement('div');
-  header.className = 'template-header';
-  header.style.background = template.colors.headerBackground;
-  header.style.color = template.colors.headerText;
-  header.textContent = 'Header';
-
-  const preview = document.createElement('div');
-  preview.className = 'template-preview';
-  preview.style.background = template.colors.background;
-
-  const assistant = document.createElement('div');
-  assistant.className = 'template-assistant';
-  assistant.style.color = template.colors.assistantText;
-  assistant.textContent = 'Hola 👋 ¿En qué te ayudo?';
-
-  const client = document.createElement('div');
-  client.className = 'template-client';
-  client.style.background = template.colors.clientBackground;
-  client.style.color = template.colors.clientText;
-  client.textContent = 'Necesito ayuda';
-
-  preview.appendChild(assistant);
-  preview.appendChild(client);
-
-  const widgetRow = document.createElement('div');
-  widgetRow.className = 'flex items-center gap-2 text-xs text-gray-500';
-  const widgetDot = document.createElement('span');
-  widgetDot.className = 'template-widget-dot';
-  widgetDot.style.background = template.colors.widgetBackground;
-  widgetRow.appendChild(widgetDot);
-  const widgetText = document.createElement('span');
-  widgetText.textContent = 'Widget';
-  widgetRow.appendChild(widgetText);
-
-  const meta = document.createElement('div');
-  meta.className = 'template-meta';
-  const title = document.createElement('div');
-  title.className = 'text-sm font-semibold text-gray-800';
-  title.textContent = template.name;
-  meta.appendChild(title);
-  if (template.description) {
-    const description = document.createElement('div');
-    description.className = 'text-xs text-gray-500';
-    description.textContent = template.description;
-    meta.appendChild(description);
-  }
-
-  btn.appendChild(header);
-  btn.appendChild(preview);
-  btn.appendChild(widgetRow);
-  btn.appendChild(meta);
-
-  btn.addEventListener('click', () => applyTemplateById(template.id));
-
-  return btn;
-}
-
-function renderChatTemplates() {
-  ensureTemplateElements();
-  if (!chatTemplateGridEl) return;
-  chatTemplateGridEl.innerHTML = '';
-
-  if (!chatTemplates.length) {
-    const empty = document.createElement('p');
-    empty.className = 'text-xs text-gray-400 col-span-full';
-    empty.textContent = 'No hay templates disponibles aún.';
-    chatTemplateGridEl.appendChild(empty);
-    updateActiveTemplateIndicator();
-    return;
-  }
-
-  const fragment = document.createDocumentFragment();
-  chatTemplates.forEach(template => {
-    fragment.appendChild(createTemplateCard(template));
-  });
-  chatTemplateGridEl.appendChild(fragment);
-  updateActiveTemplateIndicator();
-}
-
-function getCurrentColorSnapshot() {
-  return {
-    background: ( $('chatBackgroundColor')?.value || '' ).toLowerCase(),
-    assistantText: ( $('chatAssistantTextColor')?.value || '' ).toLowerCase(),
-    clientBackground: ( $('chatPrimaryColor')?.value || '' ).toLowerCase(),
-    clientText: ( $('chatClientTextColor')?.value || '' ).toLowerCase(),
-    headerBackground: ( $('chatHeaderColor')?.value || '' ).toLowerCase(),
-    headerText: ( $('chatHeaderTextColor')?.value || '' ).toLowerCase(),
-    widgetBackground: ( $('chatButtonColor')?.value || '' ).toLowerCase()
-  };
-}
-
-function templateMatches(template, snapshot) {
-  if (!template?.colors) return false;
-  return Object.entries(snapshot).every(([key, val]) => {
-    const templateVal = (template.colors[key] || '').toLowerCase();
-    return templateVal === (val || '').toLowerCase();
-  });
-}
-
-function updateActiveTemplateIndicator() {
-  ensureTemplateElements();
-  if (!chatTemplateGridEl) return;
-  const snapshot = getCurrentColorSnapshot();
-  const buttons = chatTemplateGridEl.querySelectorAll('[data-template-id]');
-  buttons.forEach(btn => {
-    const tpl = chatTemplates.find(t => t.id === btn.dataset.templateId);
-    btn.classList.toggle('active', !!tpl && templateMatches(tpl, snapshot));
-  });
-}
-
-async function applyTemplateById(templateId) {
-  const tpl = chatTemplates.find(t => t.id === templateId) || getTemplateArray(DEFAULT_CHAT_TEMPLATES).find(t => t.id === templateId);
-  if (!tpl) return;
-  const colors = tpl.colors || {};
-
-  const map = {
-    chatBackgroundColor: 'background',
-    chatAssistantTextColor: 'assistantText',
-    chatPrimaryColor: 'clientBackground',
-    chatClientTextColor: 'clientText',
-    chatHeaderColor: 'headerBackground',
-    chatHeaderTextColor: 'headerText',
-    chatButtonColor: 'widgetBackground'
-  };
-
-  isApplyingTemplate = true;
-
-  const pending = [];
-
-  Object.entries(map).forEach(([inputId, colorKey]) => {
-    const el = $(inputId);
-    const normalized = normalizeHexColor(colors[colorKey]);
-    if (!el || !normalized) return;
-    el.value = normalized;
-    const evt = new Event('input', { bubbles: true });
-    el.dispatchEvent(evt);
-    if (pendingColorSaves[inputId]) {
-      pending.push(pendingColorSaves[inputId]);
-    }
-  });
-
-  applyPreview();
-  updateActiveTemplateIndicator();
-
-  try {
-    if (pending.length) {
-      await Promise.all(pending);
-    }
-    toast('✔ Template applied');
-  } catch (err) {
-    console.error('No se pudo aplicar el template', err);
-    toast('⚠ No se pudo aplicar el template');
-  } finally {
-    isApplyingTemplate = false;
-    updateActiveTemplateIndicator();
-  }
-}
-
-function initChatTemplatesUI() {
-  if (chatTemplatesInitialized) return;
-  ensureTemplateElements();
-  if (!chatTemplatePanelEl || !chatTemplateGridEl || !chatTemplateToggleEl) return;
-
-  chatTemplateRef = chatTemplateRef || eref('config/chatTemplates');
-  chatTemplatesInitialized = true;
-  chatTemplates = getTemplateArray(null);
-
-  chatTemplateToggleEl.addEventListener('click', () => {
-    const willOpen = chatTemplatePanelEl.classList.contains('hidden');
-    setTemplatePanelVisibility(willOpen);
-    if (willOpen && !chatTemplates.length) {
-      renderChatTemplates();
-    }
-  });
-
-  chatTemplateRef.on('value', snap => {
-    chatTemplates = getTemplateArray(snap.val());
-    renderChatTemplates();
-  });
-
-  chatTemplateRef.once('value').then(async snap => {
-    if (!snap.exists()) {
-      try {
-        await refreshPermissions();
-        if (!canWriteFlag) return;
-        await chatTemplateRef.set(JSON.parse(JSON.stringify(DEFAULT_CHAT_TEMPLATES)));
-      } catch (err) {
-        console.error('No se pudieron guardar los templates por defecto', err);
-      }
-    }
-  });
-
-  setTemplatePanelVisibility(false);
-  renderChatTemplates();
-  updateActiveTemplateIndicator();
-}
-
 let canWriteFlag = false;
 async function refreshPermissions() {
   const user = auth.currentUser;
@@ -1715,8 +808,7 @@ function setWriteEnabled(enabled) {
   const ids = [
     'saveChatPrimaryColor','saveChatButtonColor','uploadLogo','deleteLogo',
     'uploadAvatar','deleteAvatar','fontSelect','tgChatVisible','hotelName',
-    'timeZone','saveGeneral','saveContext','contextText','widgetIconTrigger',
-    'addKnowledgePage','knowledgeUrlInput','confirmAddKnowledge','personalitySelect'
+    'timeZone','saveGeneral','saveContext','contextText','widgetIconTrigger'
   ];
   ids.forEach(id => {
     const el = $(id);
@@ -1725,65 +817,16 @@ function setWriteEnabled(enabled) {
     el.classList.toggle('opacity-60', !enabled);
     el.classList.toggle('cursor-not-allowed', !enabled);
   });
-  if (typeof window.__applyKnowledgeWriteState === 'function') {
-    window.__applyKnowledgeWriteState();
-  }
-}
-
-const TAB_KEYS = ['chat','knowledge','respuestas'];
-let tabsInitialized = false;
-
-function setActiveTab(tab) {
-  const targetTab = TAB_KEYS.includes(tab) ? tab : 'chat';
-
-  $$('.sidebar-btn').forEach(btn => {
-    const btnTab = btn.getAttribute('data-tab');
-    btn.classList.toggle('active', btnTab === targetTab);
+  $$('#personalityChips .chip').forEach(ch => {
+    ch.disabled = !enabled;
+    ch.classList.toggle('opacity-60', !enabled);
   });
-
-  TAB_KEYS.forEach(key => {
-    const section = document.getElementById(`tab-${key}`);
-    if (section) {
-      section.classList.toggle('hidden', key !== targetTab);
-    }
-  });
-
-  if (targetTab === 'chat') {
-    if (typeof window.__setDefaultChatPanel === 'function') {
-      window.__setDefaultChatPanel();
-    }
-  } else if (typeof window.__hideHeaderPanel === 'function') {
-    window.__hideHeaderPanel();
-  }
-}
-
-function showAppView() {
-  document.querySelector('header')?.classList.remove('hidden');
-  document.querySelector('aside')?.classList.remove('hidden');
-  $('headerSpacer')?.classList.remove('hidden');
-  $('login').classList.add('hidden');
-  $('tabs').classList.remove('hidden');
-  $('btnLogout').classList.remove('hidden');
-  document.body.classList.add('app-view');
-  document.body.classList.remove('login-view');
-}
-
-function showLoginView() {
-  document.querySelector('header')?.classList.add('hidden');
-  document.querySelector('aside')?.classList.add('hidden');
-  $('headerSpacer')?.classList.add('hidden');
-  $('login').classList.remove('hidden');
-  $('tabs').classList.add('hidden');
-  $('btnLogout').classList.add('hidden');
-  document.body.classList.add('login-view');
-  document.body.classList.remove('app-view');
-  setActiveTab('chat');
 }
 
 async function canWrite(fn) {
   await refreshPermissions();
   if (!canWriteFlag) {
-    alert(t('You do not have permission to modify the configuration.'));
+    alert('You do not have permission to modify the configuration.');
     return;
   }
   await fn();
@@ -1793,7 +836,7 @@ async function canWrite(fn) {
 $('btnLogin').addEventListener('click', async () => {
   const email = $('emailInput').value.trim();
   const pass = $('passwordInput').value.trim();
-  if (!email || !pass) return alert(t('Please enter your credentials.'));
+  if (!email || !pass) return alert('Please enter your credentials.');
   try {
     await auth.signInWithEmailAndPassword(email, pass);
   } catch (e) {
@@ -1805,6 +848,9 @@ $('btnLogin').addEventListener('click', async () => {
 $('btnLogout').addEventListener('click', () => auth.signOut());
 
 auth.onAuthStateChanged(async (u) => {
+  const header = document.querySelector('header');
+  const sidebar = document.querySelector('aside');
+
   if (u) {
     // 🔍 Detect company automatically by user email
     let empresaDetectada = null;
@@ -1819,7 +865,7 @@ auth.onAuthStateChanged(async (u) => {
         }
       }
     } catch (err) {
-      console.error(t('Error finding company:'), err);
+      console.error('Error finding company:', err);
     }
 
     if (empresaDetectada) {
@@ -1827,12 +873,18 @@ auth.onAuthStateChanged(async (u) => {
       localStorage.setItem('empresa', EMPRESA);
       $('empresaBadge').textContent = EMPRESA;
       $('empresaText').textContent = EMPRESA;
-      console.log(t('✅ Company detected automatically:'), EMPRESA);
+      console.log('✅ Company detected automatically:', EMPRESA);
     } else {
-      console.warn(t('⚠ No company found for this email, using previous value:'), EMPRESA);
+      console.warn('⚠ No company found for this email, using previous value:', EMPRESA);
     }
 
-    showAppView();
+    // Show header and sidebar
+    header?.classList.remove('hidden');
+    sidebar?.classList.remove('hidden');
+
+    $('login').classList.add('hidden');
+    $('tabs').classList.remove('hidden');
+    $('btnLogout').classList.remove('hidden');
 
     await initAll();
 
@@ -1840,11 +892,17 @@ auth.onAuthStateChanged(async (u) => {
     const live = document.getElementById('liveChatFrame');
     if (live && EMPRESA) {
       live.src = `https://tomos.bot/chat.html?empresa=${encodeURIComponent(EMPRESA)}`;
-      console.log(t('💬 Live chat loaded for'), EMPRESA);
+      console.log('💬 Live chat loaded for', EMPRESA);
     }
 
   } else {
-    showLoginView();
+    // Hide header and sidebar
+    header?.classList.add('hidden');
+    sidebar?.classList.add('hidden');
+
+    $('login').classList.remove('hidden');
+    $('tabs').classList.add('hidden');
+    $('btnLogout').classList.add('hidden');
   }
 
   $('pageLoader').style.display = 'none';
@@ -1853,19 +911,29 @@ auth.onAuthStateChanged(async (u) => {
 
 // ====== Tabs ======
 function initTabs() {
-  if (tabsInitialized) {
-    setActiveTab('chat');
-    return;
-  }
+  // 👇 Aquí seleccionamos el mockup interior, no el sidebar completo
+  const mockup = document.querySelector("#tab-apariencia aside");
 
-  tabsInitialized = true;
-  setActiveTab('chat');
+  $$(".sidebar-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      // Activar botón
+      $$(".sidebar-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
 
-  $$('.sidebar-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const tab = btn.getAttribute('data-tab');
-      if (!tab) return;
-      setActiveTab(tab);
+      // Mostrar/ocultar secciones
+      const tab = btn.getAttribute("data-tab");
+      $("tab-apariencia").classList.toggle("hidden", tab !== "apariencia");
+      $("tab-settings").classList.toggle("hidden", tab !== "settings");
+      $("tab-knowledge").classList.toggle("hidden", tab !== "knowledge");
+      $("tab-integration").classList.toggle("hidden", tab !== "integration");
+      $("tab-respuestas")?.classList.toggle("hidden", tab !== "respuestas");
+      $("tab-schedule").classList.toggle("hidden", tab !== "schedule");
+
+
+      // 👇 Ocultar solo el iPhone de vista previa, no el sidebar fijo
+      if (mockup) {
+        mockup.classList.toggle("hidden", tab !== "apariencia");
+      }
     });
   });
 }
@@ -1905,190 +973,36 @@ async function initAll(){
 // ====== Apariencia ======
 function initApariencia() {
 
-  const tabs = Array.from(document.querySelectorAll('[data-chat-panel-tab]'));
-  const panels = Array.from(document.querySelectorAll('[data-chat-panel]'));
-  if (!tabs.length || !panels.length) return;
-  const headerOverlay = $('headerSettingsOverlay');
-  const headerPanel = $('headerSettingsPanel');
-  const welcomeOverlay = $('welcomeSettingsOverlay');
-  const welcomePanel = $('welcomeSettingsPanel');
-  const openHeaderButton = $('openHeaderPanel');
-  const closeHeaderButton = $('closeHeaderPanel');
-  const openWelcomeButton = $('openWelcomePanel');
-  const closeWelcomeButton = $('closeWelcomePanel');
-
-  const hideHeaderPanel = () => {
-    if (headerPanel) {
-      headerPanel.classList.add('hidden');
-      headerPanel.style.display = '';
-    }
-    if (headerOverlay) {
-      headerOverlay.classList.add('hidden');
-      headerOverlay.style.display = '';
-    }
-  };
-  window.__hideHeaderPanel = hideHeaderPanel;
-
-  const hideWelcomePanel = () => {
-    if (welcomePanel) {
-      welcomePanel.classList.add('hidden');
-      welcomePanel.style.display = '';
-    }
-    if (welcomeOverlay) {
-      welcomeOverlay.classList.add('hidden');
-      welcomeOverlay.style.display = '';
-    }
-  };
-  window.__hideWelcomePanel = hideWelcomePanel;
-
-  const setChatPanel = (name) => {
-    tabs.forEach(btn => {
-      const isActive = btn.dataset.chatPanelTab === name;
-      btn.classList.toggle('active', isActive);
-    });
-    panels.forEach(panel => {
-      panel.classList.toggle('hidden', panel.dataset.chatPanel !== name);
-    });
-    if (name !== 'chat') {
-      hideHeaderPanel();
-      hideWelcomePanel();
-      if (typeof window.__hideAvatarPopover === 'function') window.__hideAvatarPopover();
-    }
-  };
-
-  tabs.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const target = btn.dataset.chatPanelTab;
-      if (!target) return;
-      setChatPanel(target);
-    });
-  });
-
-  setChatPanel('bot');
-  window.__setDefaultChatPanel = () => setChatPanel('bot');
-
-  const activityScoreButtons = Array.from(document.querySelectorAll('[data-activity-score]'));
-  const setActivityScore = (score) => {
-    activityScoreButtons.forEach(btn => {
-      const isActive = btn.dataset.activityScore === String(score);
-      btn.classList.toggle('activity-score-active', isActive);
-    });
-  };
-  activityScoreButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      setActivityScore(btn.dataset.activityScore);
-    });
-  });
-  if (activityScoreButtons.length) {
-    const mid = activityScoreButtons[Math.floor((activityScoreButtons.length - 1) / 2)];
-    setActivityScore(mid.dataset.activityScore);
-  }
-
-  const showHeaderPanel = () => {
-    hideWelcomePanel();
-    if (typeof window.__hideAvatarPopover === 'function') window.__hideAvatarPopover();
-    if (headerPanel) {
-      headerPanel.classList.remove('hidden');
-      headerPanel.style.display = 'flex';
-    }
-    if (headerOverlay) {
-      headerOverlay.classList.remove('hidden');
-      headerOverlay.style.display = 'block';
-    }
-    lucide.createIcons();
-  };
-
-  const showWelcomePanel = () => {
-    hideHeaderPanel();
-    if (typeof window.__hideAvatarPopover === 'function') window.__hideAvatarPopover();
-    if (welcomePanel) {
-      welcomePanel.classList.remove('hidden');
-      welcomePanel.style.display = 'flex';
-    }
-    if (welcomeOverlay) {
-      welcomeOverlay.classList.remove('hidden');
-      welcomeOverlay.style.display = 'block';
-    }
-    lucide.createIcons();
-  };
-
-  openHeaderButton?.addEventListener('click', showHeaderPanel);
-  closeHeaderButton?.addEventListener('click', hideHeaderPanel);
-  headerOverlay?.addEventListener('click', hideHeaderPanel);
-
-  openWelcomeButton?.addEventListener('click', showWelcomePanel);
-  closeWelcomeButton?.addEventListener('click', hideWelcomePanel);
-  welcomeOverlay?.addEventListener('click', hideWelcomePanel);
-
-  window.addEventListener('keyup', (e) => {
-    if (e.key === 'Escape') {
-      hideHeaderPanel();
-      hideWelcomePanel();
-      if (typeof window.__hideAvatarPopover === 'function') window.__hideAvatarPopover();
-    }
-  });
-
-  const headerSummaryTitle = $('headerSummaryTitle');
-  const headerSummaryImage = $('headerSummaryImage');
-  const headerSummaryIcon = $('headerSummaryIcon');
-  const headerNameRef = eref('config/hotelName');
-  if (headerSummaryTitle && headerNameRef) {
-    headerNameRef.on('value', snap => {
-      const val = (snap.val() || 'Asistente del hotel').trim();
-      headerSummaryTitle.textContent = val || 'Asistente del hotel';
-    });
-  }
-
 // 🔹 Chat Primary Color (auto-save with toast)
 const prRef = eref('config/chatPrimaryColor');
 prRef.once('value', s => {
-  const initial = normalizeHexColor(s.val()) || '#111111';
-  $('chatPrimaryColor').value = initial;
+  $('chatPrimaryColor').value = s.val() || '#111111';
   applyPreview();
 });
 
 $('chatPrimaryColor').addEventListener('input', (e) => {
-  const v = normalizeHexColor(e.target.value) || '#111111';
-  e.target.value = v;
-  const promise = canWrite(async () => {
+  const v = e.target.value || '#111111';
+  canWrite(async () => {
     await prRef.set(v);
     applyPreview();
-    if (!isApplyingTemplate) toast(t('✔ Primary color saved'));
+    toast('✔ Primary color saved');
   });
-  if (promise && typeof promise.then === 'function') {
-    pendingColorSaves.chatPrimaryColor = promise
-      .catch(err => {
-        console.error('No se pudo guardar el color primario del chat', err);
-        throw err;
-      })
-      .finally(() => { delete pendingColorSaves.chatPrimaryColor; });
-  }
 });
 
 // 🔹 Chat Button Color (auto-save with toast)
 const btRef = eref('config/chatButtonColor');
 btRef.once('value', s => {
-  const initial = normalizeHexColor(s.val()) || '#111111';
-  $('chatButtonColor').value = initial;
+  $('chatButtonColor').value = s.val() || '#111111';
   applyPreview();
 });
 
 $('chatButtonColor').addEventListener('input', (e) => {
-  const v = normalizeHexColor(e.target.value) || '#111111';
-  e.target.value = v;
-  const promise = canWrite(async () => {
+  const v = e.target.value || '#111111';
+  canWrite(async () => {
     await btRef.set(v);
     applyPreview();
-    if (!isApplyingTemplate) toast(t('✔ Button color saved'));
+    toast('✔ Button color saved');
   });
-  if (promise && typeof promise.then === 'function') {
-    pendingColorSaves.chatButtonColor = promise
-      .catch(err => {
-        console.error('No se pudo guardar el color del botón del chat', err);
-        throw err;
-      })
-      .finally(() => { delete pendingColorSaves.chatButtonColor; });
-  }
 });
 
 const widgetExample = $('widgetExample');
@@ -2160,7 +1074,7 @@ widgetIconOptions.forEach(btn => {
       await widgetIconRef.set(icon);
       applyWidgetIcon(icon);
       closeWidgetModal();
-      toast(t('✔ Widget icon updated'));
+      toast('✔ Widget icon updated');
       applyPreview();
     });
   });
@@ -2181,7 +1095,7 @@ $('widgetRadius').addEventListener('input', (e) => {
   $('widgetRadiusVal').textContent = val;
   canWrite(async () => {
     await widgetRadiusRef.set(val);
-    toast(t('✔ Widget border updated'));
+    toast('✔ Widget border updated');
   });
   updateWidgetPreview();
   applyPreview();
@@ -2191,82 +1105,34 @@ $('widgetRadius').addEventListener('input', (e) => {
 // 🔹 Chat Background Color (auto-save with toast)
 const bgRef = eref('config/chatBackgroundColor');
 bgRef.once('value', s => {
-  const initial = normalizeHexColor(s.val()) || '#FFFFFF';
-  $('chatBackgroundColor').value = initial;
+  $('chatBackgroundColor').value = s.val() || '#ffffff';
   applyPreview();
 });
 
 $('chatBackgroundColor').addEventListener('input', (e) => {
-  const v = normalizeHexColor(e.target.value) || '#FFFFFF';
-  e.target.value = v;
-  const promise = canWrite(async () => {
+  const v = e.target.value || '#ffffff';
+  canWrite(async () => {
     await bgRef.set(v);
     applyPreview();
-    if (!isApplyingTemplate) toast(t('✔ Background color saved'));
+    toast('✔ Background color saved');
   });
-  if (promise && typeof promise.then === 'function') {
-    pendingColorSaves.chatBackgroundColor = promise
-      .catch(err => {
-        console.error('No se pudo guardar el color de fondo del chat', err);
-        throw err;
-      })
-      .finally(() => { delete pendingColorSaves.chatBackgroundColor; });
-  }
 });
 
 
 // 🆕 Assistant Text Color (auto-save with toast)
 const atRef = eref('config/chatAssistantTextColor');
 atRef.once('value', s => {
-  const initial = normalizeHexColor(s.val()) || '#000000';
-  $('chatAssistantTextColor').value = initial;
+  $('chatAssistantTextColor').value = s.val() || '#000000';
   applyPreview();
 });
 
 $('chatAssistantTextColor').addEventListener('input', (e) => {
-  const v = normalizeHexColor(e.target.value) || '#000000';
-  e.target.value = v;
-  const promise = canWrite(async () => {
+  const v = e.target.value || '#000000';
+  canWrite(async () => {
     await atRef.set(v);
     applyPreview();
-    if (!isApplyingTemplate) toast(t('✔ Assistant text color saved'));
+    toast('✔ Assistant text color saved');
   });
-  if (promise && typeof promise.then === 'function') {
-    pendingColorSaves.chatAssistantTextColor = promise
-      .catch(err => {
-        console.error('No se pudo guardar el color del texto del asistente', err);
-        throw err;
-      })
-      .finally(() => { delete pendingColorSaves.chatAssistantTextColor; });
-  }
-});
-
-
-
-// 🆕 Client Text Color (auto-save with toast)
-const ctRef = eref('config/chatClientTextColor');
-ctRef.once('value', s => {
-  const initial = normalizeHexColor(s.val()) || '#FFFFFF';
-  $('chatClientTextColor').value = initial;
-  applyPreview();
-});
-
-$('chatClientTextColor').addEventListener('input', (e) => {
-  const v = normalizeHexColor(e.target.value) || '#FFFFFF';
-  e.target.value = v;
-  const promise = canWrite(async () => {
-    await ctRef.set(v);
-    applyPreview();
-    if (!isApplyingTemplate) toast(t('✔ Client text color saved'));
-  });
-  if (promise && typeof promise.then === 'function') {
-    pendingColorSaves.chatClientTextColor = promise
-      .catch(err => {
-        console.error('No se pudo guardar el color del texto del cliente', err);
-        throw err;
-      })
-      .finally(() => { delete pendingColorSaves.chatClientTextColor; });
-  }
 });
 
 
@@ -2274,54 +1140,17 @@ $('chatClientTextColor').addEventListener('input', (e) => {
 // 🔹 Header Background Color (auto-save with toast)
 const headerRef = eref('config/chatHeaderColor');
 headerRef.once('value', s => {
-  const initial = normalizeHexColor(s.val()) || '#FFFFFF';
-  $('chatHeaderColor').value = initial;
+  $('chatHeaderColor').value = s.val() || '#ffffff';
   applyPreview();
 });
 
 $('chatHeaderColor').addEventListener('input', (e) => {
-  const v = normalizeHexColor(e.target.value) || '#FFFFFF';
-  e.target.value = v;
-  const promise = canWrite(async () => {
+  const v = e.target.value || '#ffffff';
+  canWrite(async () => {
     await headerRef.set(v);
     applyPreview();
-    if (!isApplyingTemplate) toast(t('✔ Header color saved'));
+    toast('✔ Header color saved');
   });
-  if (promise && typeof promise.then === 'function') {
-    pendingColorSaves.chatHeaderColor = promise
-      .catch(err => {
-        console.error('No se pudo guardar el color del encabezado', err);
-        throw err;
-      })
-      .finally(() => { delete pendingColorSaves.chatHeaderColor; });
-  }
-});
-
-
-// 🔹 Header Text Color (auto-save with toast)
-const headerTextRef = eref('config/chatHeaderTextColor');
-headerTextRef.once('value', s => {
-  const initial = normalizeHexColor(s.val()) || '#1F2937';
-  $('chatHeaderTextColor').value = initial;
-  applyPreview();
-});
-
-$('chatHeaderTextColor').addEventListener('input', (e) => {
-  const v = normalizeHexColor(e.target.value) || '#1F2937';
-  e.target.value = v;
-  const promise = canWrite(async () => {
-    await headerTextRef.set(v);
-    applyPreview();
-    if (!isApplyingTemplate) toast(t('✔ Header text color saved'));
-  });
-  if (promise && typeof promise.then === 'function') {
-    pendingColorSaves.chatHeaderTextColor = promise
-      .catch(err => {
-        console.error('No se pudo guardar el color de texto del encabezado', err);
-        throw err;
-      })
-      .finally(() => { delete pendingColorSaves.chatHeaderTextColor; });
-  }
 });
 
 
@@ -2329,52 +1158,17 @@ $('chatHeaderTextColor').addEventListener('input', (e) => {
 
 // === Logo ===
 const logoRef = eref('config/logoUrl');
-const applyLogoPreview = (url) => {
-  const hasLogo = !!url;
-  const preview = $('logoPreview');
-  const previewWrap = $('logoPreviewWrap');
-  const controls = $('logoControls');
-  const phonePreview = $('previewLogo');
-
-  if (preview && previewWrap) {
-    if (hasLogo) {
-      preview.src = url;
-      previewWrap.classList.remove('hidden');
-    } else {
-      preview.removeAttribute('src');
-      previewWrap.classList.add('hidden');
-    }
+logoRef.once('value', s => {
+  const url = s.val();
+  if (url) {
+    $('logoPreview').src = url;
+    $('logoPreviewWrap').classList.remove('hidden');
+    $('logoControls').classList.add('hidden');
+    $('previewLogo').src = url;
+    $('previewLogo').classList.remove('hidden');
+    lucide.createIcons();
   }
-  if (controls) controls.classList.toggle('hidden', hasLogo);
-  if (phonePreview) {
-    if (hasLogo) {
-      phonePreview.src = url;
-      phonePreview.classList.remove('hidden');
-    } else {
-      phonePreview.classList.add('hidden');
-      phonePreview.removeAttribute('src');
-    }
-  }
-  if (headerSummaryImage) {
-    if (hasLogo) {
-      headerSummaryImage.src = url;
-      headerSummaryImage.classList.remove('hidden');
-      if (headerSummaryIcon) headerSummaryIcon.classList.add('hidden');
-    } else {
-      headerSummaryImage.classList.add('hidden');
-      headerSummaryImage.removeAttribute('src');
-      if (headerSummaryIcon) headerSummaryIcon.classList.remove('hidden');
-    }
-  }
-};
-
-if (logoRef) {
-  logoRef.on('value', s => {
-    const url = s.val() || '';
-    applyLogoPreview(url);
-    if (window.lucide) lucide.createIcons();
-  });
-}
+});
 
 // 🆙 Subir logo automáticamente al seleccionar archivo
 $('logoFile').addEventListener('change', e => canWrite(() => {
@@ -2383,7 +1177,7 @@ $('logoFile').addEventListener('change', e => canWrite(() => {
 
   const reader = new FileReader();
   reader.onload = (ev) => {
-    // Show cropping modal
+    // Mostrar modal con Cropper
     $('cropperImage').src = ev.target.result;
     $('cropperModal').classList.remove('hidden');
     $('cropperModal').classList.add('flex');
@@ -2404,7 +1198,7 @@ $('logoFile').addEventListener('change', e => canWrite(() => {
     $('cancelCrop').onclick = () => {
       cropper.destroy();
       $('cropperModal').classList.add('hidden');
-      e.target.value = ''; // clear input
+      e.target.value = ''; // limpiar input
     };
 
     $('confirmCrop').onclick = async () => {
@@ -2425,11 +1219,16 @@ $('logoFile').addEventListener('change', e => canWrite(() => {
       }, console.error, async () => {
         const url = await ref.getDownloadURL();
         await logoRef.set(url);
-        applyLogoPreview(url);
+        $('logoPreview').src = url;
+        $('logoPreviewWrap').classList.remove('hidden');
+        $('logoControls').classList.add('hidden');
+        $('previewLogo').src = url;
+        $('previewLogo').classList.remove('hidden');
         $('logoProgressWrap').classList.add('hidden');
-        toast(t('✔ Header image updated')); // ✅ only toast
-        e.target.value = ''; // clear input
-        if (window.lucide) lucide.createIcons();
+        $('msgLogo').classList.remove('hidden');
+        setTimeout(() => $('msgLogo').classList.add('hidden'), 1200);
+        e.target.value = ''; // limpiar input
+        lucide.createIcons();
       });
     };
   };
@@ -2439,8 +1238,10 @@ $('logoFile').addEventListener('change', e => canWrite(() => {
 // 🗑️ Eliminar logo
 $('deleteLogo').onclick = () => canWrite(async () => {
   await logoRef.set('');
-  applyLogoPreview('');
-  toast(t('Logo eliminado'));
+  $('logoPreviewWrap').classList.add('hidden');
+  $('logoControls').classList.remove('hidden');
+  $('previewLogo').classList.add('hidden');
+  toast('Logo eliminado');
 });
 
 // === Logo Border Radius ===
@@ -2468,7 +1269,7 @@ if ($('logoRadius')) {
     // Guardar en Firebase solo si se tienen permisos
     canWrite(async () => {
       await radiusRef.set(val);
-      toast(t('✔ Borders updated'));
+      toast('✔ Borders updated');
     });
   });
 }
@@ -2527,7 +1328,7 @@ if (select) {
         await fontRef.set(font);
         $('previewBubble').style.fontFamily = `'${font}', system-ui, sans-serif`;
         $('previewBtn').style.fontFamily = `'${font}', system-ui, sans-serif`;
-        toast(t('✔ Font saved'));
+        toast('✔ Font saved');
 
         // 🔄 Refrescar mockup
 // ✨ Actualizar fuente sin recargar el iframe
@@ -2615,9 +1416,6 @@ if (iframe?.contentWindow?.document) {
       updateCustomAvatarUI(finalUrl);
     }
 
-    const botAvatarImage = $('botAvatarImage');
-    if (botAvatarImage) botAvatarImage.src = finalUrl;
-
     avatarButtons.forEach(btn => {
       const data = (btn.dataset.avatarOption || '').trim();
       const isMatch = data && data === finalUrl;
@@ -2641,7 +1439,7 @@ if (iframe?.contentWindow?.document) {
       canWrite(async () => {
         await avRef.set(selected);
         applyAvatarSelection(selected);
-toast(t('✔ Avatar updated'));
+toast('✔ Avatar updated');
       });
     });
   });
@@ -2668,7 +1466,7 @@ toast(t('✔ Avatar updated'));
 
     canWrite(async () => {
       await avatarRadiusRef.set(val);
-      toast(t('✔ Avatar border updated'));
+      toast('✔ Avatar border updated');
     });
   });
 
@@ -2722,7 +1520,7 @@ toast(t('✔ Avatar updated'));
           await avRef.set(url);
           applyAvatarSelection(url);
           $('avatarProgressWrap').classList.add('hidden');
-toast(t('✔ Avatar updated'));
+toast('✔ Avatar updated');
           e.target.value = '';
           lucide.createIcons();
         });
@@ -2743,7 +1541,7 @@ toast(t('✔ Avatar updated'));
         await avRef.set(DEFAULT_AVATAR);
         updateCustomAvatarUI('');
         applyAvatarSelection(DEFAULT_AVATAR);
-        toast(t('Avatar restored'));
+        toast('Avatar restored');
       });
     });
   }
@@ -2754,14 +1552,10 @@ function applyPreview() {
   const b = $('chatButtonColor')?.value || p;
   const bg = $('chatBackgroundColor')?.value || '#ffffff';
   const at = $('chatAssistantTextColor')?.value || '#000000';
-  const ct = $('chatClientTextColor')?.value || '#ffffff';
-  const hb = $('chatHeaderColor')?.value || '#ffffff';
-  const ht = $('chatHeaderTextColor')?.value || '#1f2937';
 
   // 🎨 Vista previa del chat dentro del mockup
   $('previewBtn').style.background = b;
   $('previewBubble').style.background = p;
-  $('previewBubble').style.color = ct;
 
   // 🎨 Widget principal
   const widgetExample = $('widgetExample');
@@ -2796,124 +1590,25 @@ function applyPreview() {
       const chatRoot = doc.querySelector('#chatWindow');
       if (chatRoot) chatRoot.style.background = bg;
 
-      const chatHeader = doc.querySelector('#chatHeader');
-      if (chatHeader) {
-        chatHeader.style.background = hb;
-      }
-
-      doc.documentElement.style.setProperty('--chat-header-text', ht);
-
       // 🆕 Color del texto de los mensajes del asistente
       const msgs = doc.querySelectorAll('.chat-assistant .msg');
       msgs.forEach(m => m.style.color = at);
-
-      const clientMsgs = doc.querySelectorAll('.chat-user');
-      clientMsgs.forEach(m => m.style.color = ct);
-
-      doc.documentElement.style.setProperty('--chat-client-text', ct);
     } catch (err) {
       console.warn("⚠️ No se pudo aplicar colores en el iframe (dominio cruzado).");
     }
   }
-
-  updateActiveTemplateIndicator();
 }
 
 // ====== Settings Tab ======
 function initSettingsTab(){
-  initChatTemplatesUI();
-  const botAvatarButton = $('botAvatarButton');
-  const avatarPopover = $('avatarPopover');
-  const avatarOverlay = $('avatarSettingsOverlay');
-  const closeAvatarPopover = $('closeAvatarPopover');
-  let avatarPopoverOpen = false;
-
-  const hideAvatarPopover = () => {
-    if (!botAvatarButton || !avatarPopover) return;
-    avatarPopover.classList.add('hidden');
-    avatarPopover.style.display = '';
-    if (avatarOverlay) {
-      avatarOverlay.classList.add('hidden');
-      avatarOverlay.style.display = '';
-    }
-    botAvatarButton.setAttribute('aria-expanded', 'false');
-    avatarPopoverOpen = false;
-  };
-
-  const showAvatarPopover = () => {
-    if (!botAvatarButton || !avatarPopover) return;
-    if (typeof window.__hideHeaderPanel === 'function') window.__hideHeaderPanel();
-    if (typeof window.__hideWelcomePanel === 'function') window.__hideWelcomePanel();
-    avatarPopover.classList.remove('hidden');
-    avatarPopover.style.display = 'flex';
-    if (avatarOverlay) {
-      avatarOverlay.classList.remove('hidden');
-      avatarOverlay.style.display = 'block';
-    }
-    botAvatarButton.setAttribute('aria-expanded', 'true');
-    avatarPopoverOpen = true;
-    if (window.lucide) lucide.createIcons();
-  };
-
-  window.__hideAvatarPopover = hideAvatarPopover;
-
-  if (botAvatarButton && avatarPopover) {
-    botAvatarButton.addEventListener('click', e => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (avatarPopoverOpen) {
-        hideAvatarPopover();
-      } else {
-        showAvatarPopover();
-      }
-    });
-
-    closeAvatarPopover?.addEventListener('click', e => {
-      e.preventDefault();
-      hideAvatarPopover();
-    });
-
-    avatarOverlay?.addEventListener('click', hideAvatarPopover);
-
-    document.addEventListener('click', e => {
-      if (!avatarPopoverOpen) return;
-      if (avatarPopover.contains(e.target) || botAvatarButton.contains(e.target)) return;
-      hideAvatarPopover();
-    });
-
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') hideAvatarPopover();
-    });
-  }
-
   // Toggle show button
   const visRef = eref('config/chatVisible');
   visRef.once('value', s=> $('tgChatVisible').checked = !!s.val());
-  $('tgChatVisible').addEventListener('change', ()=> canWrite(async ()=>{
-    await visRef.set(!!$('tgChatVisible').checked);
-    toast(t('✔ Chat visibility updated'));
-  }));
+  $('tgChatVisible').addEventListener('change', ()=> canWrite(async ()=>{ await visRef.set(!!$('tgChatVisible').checked); }));
 
   // General Information
   const nameRef = eref('config/hotelName');
-  const hotelNameInput = $('hotelName');
-
-  const updateBotNameDisplay = () => {
-    if (!hotelNameInput) return;
-    const name = (hotelNameInput.value || '').trim();
-    const label = name || 'Your bot';
-    const display = $('botNameDisplay');
-    if (display) display.textContent = label;
-  };
-
-  nameRef.once('value', s=> {
-    if (hotelNameInput) {
-      hotelNameInput.value = s.val() || '';
-      updateBotNameDisplay();
-    }
-  });
-
-  hotelNameInput?.addEventListener('input', updateBotNameDisplay);
+  nameRef.once('value', s=> $('hotelName').value = s.val() || '');
 
   const tzRef = eref('config/timeZone');
   const zones = getTimeZones();
@@ -2926,20 +1621,20 @@ function initSettingsTab(){
     $('msgGeneral').classList.remove('hidden'); setTimeout(()=>$('msgGeneral').classList.add('hidden'),1200);
   });
 
-  // Assistant personality
-  const personalitySelect = $('personalitySelect');
+  // Personality chips
+  const chips = $$('#personalityChips .chip');
   const persRef = eref('config/personality');
-  const personalityValues = Array.from(personalitySelect?.options || []).map(opt => opt.value);
   persRef.once('value', s=>{
-    const v = s.val() || 'warm';
-    if (personalitySelect && personalityValues.includes(v)) {
-      personalitySelect.value = v;
-    }
+    const v=(s.val()||'warm');
+    chips.forEach(c=>c.classList.toggle('active', c.dataset.val===v));
   });
-  personalitySelect?.addEventListener('change', ()=> canWrite(async ()=>{
-    await persRef.set(personalitySelect.value);
-    toast(t('✔ Personality updated'));
-  }));
+  chips.forEach(ch=>{
+    ch.addEventListener('click', ()=> canWrite(async ()=>{
+      chips.forEach(c=>c.classList.remove('active'));
+      ch.classList.add('active');
+      await persRef.set(ch.dataset.val);
+    }));
+  });
   
   
   function autoResize(t){
@@ -2952,596 +1647,89 @@ function initSettingsTab(){
   // Chat test link
   const link = `https://tomos.bot/chat.html?empresa=${encodeURIComponent(EMPRESA)}`;
   $('chatTestLink').value = link;
-  $('copyChatLink').onclick = ()=>{ navigator.clipboard.writeText(link); toast(t('Copiado')); };
+  $('copyChatLink').onclick = ()=>{ navigator.clipboard.writeText(link); toast('Copiado'); };
   $('openChatLink').onclick = ()=> window.open(link, '_blank');
 }
 
 
 
-function initKnowledge() {
-  const pagesRef = eref('config/contextPages');
-  const legacyRef = eref('config/contextInfo');
-
+function initKnowledge(){
+  const ref = eref('config/contextInfo');
   const txt = $('contextText');
   const btn = $('saveContext');
   const counter = $('ctxCounter');
-  const tabsWrap = $('knowledgeTabs');
-  const addBtn = $('addKnowledgePage');
-  const deleteBtn = $('deleteKnowledgePage');
-  const urlMeta = $('knowledgeUrlMeta');
-  const urlLabel = $('knowledgeCurrentUrl');
-
-  const modal = $('knowledgeModal');
-  const modalClose = $('closeKnowledgeModal');
-  const modalCancel = $('cancelKnowledgeModal');
-  const modalConfirm = $('confirmAddKnowledge');
-  const modalInput = $('knowledgeUrlInput');
-  const modalError = $('knowledgeModalError');
-  const modalStatus = $('knowledgeModalStatus');
-
-  const deleteModal = $('knowledgeDeleteModal');
-  const deleteModalClose = $('closeKnowledgeDeleteModal');
-  const deleteModalCancel = $('cancelDeleteKnowledge');
-  const deleteModalConfirm = $('confirmDeleteKnowledge');
-  const deleteModalTitle = $('deleteKnowledgePageTitle');
-
   const LIMIT = 10000;
 
-  let pages = [];
-  let currentPageId = '';
-  let isSaving = false;
-  let pageToDeleteId = '';
-
-  const generatePageId = () =>
-    `pg_${Math.random().toString(36).slice(2, 8)}${Date.now().toString(36)}`;
-
-  function sanitizeText(text = '') {
-    return (text || '')
-      .replace(/\r\n/g, '\n')
-      .replace(/\n{3,}/g, '\n\n')
-      .trim();
-  }
-
-  function extractScrapedContent(payload) {
-    if (!payload) return '';
-
-    if (typeof payload === 'string') return payload;
-
-    if (Array.isArray(payload)) {
-      for (const item of payload) {
-        const result = extractScrapedContent(item);
-        if (result) return result;
-      }
-      return '';
-    }
-
-    if (typeof payload === 'object') {
-      if (typeof payload.content === 'string') return payload.content;
-      if (Array.isArray(payload.content)) return payload.content.join('\n');
-      if (payload.text) return extractScrapedContent(payload.text);
-      if (payload.html) return extractScrapedContent(payload.html);
-      if (payload.page) return extractScrapedContent(payload.page);
-      if (payload.pages) return extractScrapedContent(payload.pages);
-      if (payload.data) return extractScrapedContent(payload.data);
-      if (Array.isArray(payload.results)) {
-        const combined = payload.results
-          .map((r) => {
-            if (typeof r?.text === 'string') return r.text;
-            if (typeof r?.content === 'string') return r.content;
-            return extractScrapedContent(r);
-          })
-          .filter(Boolean)
-          .join('\n\n');
-        if (combined) return combined;
-      }
-    }
-
-    return '';
-  }
-
-  function buildPage(data, index) {
-    const fallbackIndex = typeof index === 'number' ? index : pages.length;
-    return {
-      id: data?.id || generatePageId(),
-      title: data?.title || `Page ${fallbackIndex + 1}`,
-      url: data?.url || '',
-      content: data?.content || '',
-      order: typeof data?.order === 'number' ? data.order : fallbackIndex,
-    };
-  }
-
-  function parsePages(val) {
-    if (!val) return [];
-    if (Array.isArray(val)) {
-      return val.map((item, idx) =>
-        buildPage(
-          {
-            id: item?.id,
-            title: item?.title,
-            url: item?.url,
-            content: item?.content,
-            order: typeof item?.order === 'number' ? item.order : idx,
-          },
-          idx
-        )
-      );
-    }
-    if (typeof val === 'object') {
-      const arr = Object.entries(val).map(([id, item]) =>
-        buildPage({
-          id,
-          title: item?.title,
-          url: item?.url,
-          content: item?.content,
-          order: typeof item?.order === 'number' ? item.order : 0,
-        })
-      );
-      return arr.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-    }
-    return [];
-  }
-
-  function updateDeleteButtonState() {
-    if (!deleteBtn) return;
-    const disabled = !canWriteFlag || !currentPageId || !pages.length;
-    deleteBtn.disabled = disabled;
-    deleteBtn.classList.toggle('opacity-60', disabled);
-    deleteBtn.classList.toggle('cursor-not-allowed', disabled);
-  }
-
-  function updateCounter() {
+  function updateCounter(){
     const len = (txt.value || '').length;
-    counter.textContent = t('{count} / {limit} characters', { count: len, limit: LIMIT });
-    registerTranslationTarget(counter, '{count} / {limit} characters', 'text', {
-      vars: { count: len, limit: LIMIT }
-    });
+    counter.textContent = `${len} / ${LIMIT} characters`;
     counter.classList.toggle('text-red-600', len > LIMIT);
     counter.classList.toggle('text-gray-500', len <= LIMIT);
-    const disabled = len > LIMIT || !canWriteFlag || !currentPageId;
-    btn.disabled = disabled;
+    btn.disabled = len > LIMIT || !canWriteFlag;
     btn.classList.toggle('opacity-60', btn.disabled);
-    updateDeleteButtonState();
   }
 
-  function applyTextareaState() {
-    const disabled = !currentPageId || !canWriteFlag;
-    txt.disabled = disabled;
-    txt.classList.toggle('opacity-60', disabled);
+  ref.once('value', s => {
+    txt.value = s.val() || '';
+    txt.style.height = txt.scrollHeight + 'px';
     updateCounter();
-  }
-
-  function renderTabs() {
-    tabsWrap.innerHTML = '';
-    pages.forEach((page, idx) => {
-      const btnTab = document.createElement('button');
-      const isActive = page.id === currentPageId;
-      btnTab.type = 'button';
-      btnTab.dataset.id = page.id;
-      btnTab.className = 'page-btn';
-      if (isActive) btnTab.classList.add('active');
-
-      const iconEl = document.createElement('i');
-      iconEl.dataset.lucide = 'file-text';
-      iconEl.className = 'page-btn-icon';
-
-      const labelEl = document.createElement('span');
-      labelEl.className = 'page-btn-label';
-      labelEl.textContent = page.title || `Page ${idx + 1}`;
-
-      btnTab.append(iconEl, labelEl);
-      btnTab.addEventListener('click', () => {
-        setActivePage(page.id);
-      });
-      tabsWrap.appendChild(btnTab);
-    });
-    if (window.lucide) {
-      lucide.createIcons();
-    }
-    tabsWrap.classList.toggle('hidden', pages.length === 0);
-  }
-
-  function setActivePage(id) {
-    currentPageId = id || '';
-    const page = pages.find((p) => p.id === currentPageId);
-    txt.value = page?.content || '';
-    txt.style.height = 'auto';
-    txt.style.height = (txt.scrollHeight || 120) + 'px';
-    if (page?.url) {
-      urlLabel.textContent = page.url;
-      urlLabel.setAttribute('title', page.url);
-      urlMeta.classList.remove('hidden');
-    } else {
-      urlLabel.textContent = '';
-      urlLabel.removeAttribute('title');
-      urlMeta.classList.add('hidden');
-    }
-    renderTabs();
-    applyTextareaState();
-    updateDeleteButtonState();
-  }
-
-  function ensurePageExists() {
-    if (pages.length === 0) {
-      const defaultPage = buildPage({ title: t('Page 1'), content: '' }, 0);
-      pages.push(defaultPage);
-    }
-  }
-
-  function showSavedMessage() {
-    const msg = $('msgContext');
-    msg.classList.remove('hidden');
-    setTimeout(() => msg.classList.add('hidden'), 1200);
-  }
-
-  async function savePages(showToast = false) {
-    isSaving = true;
-    try {
-      pages.forEach((page, idx) => {
-        if (!page.title || /^Page\s+\d+$/i.test(page.title)) {
-          page.title = `Page ${idx + 1}`;
-        }
-        page.order = idx;
-      });
-
-      const payload = {};
-      pages.forEach((page) => {
-        payload[page.id] = {
-          title: page.title,
-          url: page.url || '',
-          content: page.content || '',
-          order: page.order || 0,
-        };
-      });
-
-      await pagesRef.set(payload);
-      const aggregated = pages.map((p) => p.content || '').filter(Boolean).join('\n\n');
-      await legacyRef.set(aggregated);
-      if (showToast) showSavedMessage();
-    } finally {
-      isSaving = false;
-    }
-  }
-
-  // ✅ SIN OpenAI – obtiene texto completo del crawler
-  async function fetchPageContent(url) {
-    const endpoint = `https://scraper-json.vercel.app/api/crawl?start=${encodeURIComponent(
-      url
-    )}&limit=5&raw=1`;
-    const res = await fetch(endpoint);
-    if (!res.ok) {
-      throw new Error(t('Could not fetch the page content.'));
-    }
-    const text = await res.text();
-    const clean = sanitizeText(text);
-    return clean.length > 16000 ? clean.slice(0, 16000) : clean;
-  }
-
-  // 🚫 función formatWithAI eliminada completamente
-
-  function openModal() {
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-    modalInput.value = '';
-    modalError.classList.add('hidden');
-    modalStatus.classList.add('hidden');
-    setTimeout(() => modalInput.focus(), 50);
-  }
-
-  function closeModal() {
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
-    modalInput.value = '';
-    modalError.classList.add('hidden');
-    modalStatus.classList.add('hidden');
-  }
-
-  function setModalLoading(loading, message) {
-    [modalInput, modalConfirm, modalCancel].forEach((el) => {
-      if (el) {
-        el.disabled = loading || (!canWriteFlag && el === modalConfirm);
-        el.classList.toggle('opacity-60', loading && el === modalConfirm);
-      }
-    });
-    if (loading && message) {
-      modalStatus.textContent = message;
-      modalStatus.classList.remove('hidden');
-    } else {
-      modalStatus.classList.add('hidden');
-    }
-  }
-
-  addBtn?.addEventListener('click', () => {
-    if (!canWriteFlag) return;
-    openModal();
   });
 
-  modalClose?.addEventListener('click', closeModal);
-  modalCancel?.addEventListener('click', closeModal);
-  modal?.addEventListener('click', (e) => {
-    if (e.target === modal) closeModal();
-  });
-
-  modalConfirm?.addEventListener(
-    'click',
-    () =>
-      canWrite(async () => {
-        const url = (modalInput.value || '').trim();
-        if (!url) {
-          modalError.textContent = t('Please provide a valid URL.');
-          registerTranslationTarget(modalError, 'Please provide a valid URL.');
-          modalError.classList.remove('hidden');
-          return;
-        }
-        modalError.classList.add('hidden');
-        try {
-        setModalLoading(true, t('Fetching page content...'));
-        registerTranslationTarget(modalStatus, 'Fetching page content...');
-          const raw = await fetchPageContent(url);
-          // 🧩 Ahora no hay OpenAI: usamos el texto directamente
-          const newPage = buildPage(
-            {
-              title: `Page ${pages.length + 1}`,
-              url,
-              content: raw,
-            },
-            pages.length
-          );
-          pages.push(newPage);
-          await savePages(false);
-          setActivePage(newPage.id);
-          toast(t('✔ Knowledge page added'));
-          closeModal();
-        } catch (err) {
-          console.error(err);
-          modalError.textContent =
-            err.message || t('Unable to add the page. Please try again.');
-          modalError.classList.remove('hidden');
-        } finally {
-          setModalLoading(false);
-        }
-      })
-  );
-
-  function openDeleteModal(page) {
-    if (!deleteModal || !deleteModalTitle) return;
-    deleteModalTitle.textContent = page?.title || t('this page');
-    deleteModal.classList.remove('hidden');
-    deleteModal.classList.add('flex');
-  }
-
-  function closeDeleteModal() {
-    if (!deleteModal) return;
-    deleteModal.classList.add('hidden');
-    deleteModal.classList.remove('flex');
-    pageToDeleteId = '';
-  }
-
-  deleteBtn?.addEventListener('click', () => {
-    if (deleteBtn.disabled) return;
-    const page = pages.find((p) => p.id === currentPageId);
-    if (!page) return;
-    pageToDeleteId = page.id;
-    openDeleteModal(page);
-  });
-
-  deleteModalClose?.addEventListener('click', closeDeleteModal);
-  deleteModalCancel?.addEventListener('click', closeDeleteModal);
-  deleteModal?.addEventListener('click', (e) => {
-    if (e.target === deleteModal) closeDeleteModal();
-  });
-
-  deleteModalConfirm?.addEventListener(
-    'click',
-    () =>
-      canWrite(async () => {
-        if (!pageToDeleteId) return;
-        const index = pages.findIndex((p) => p.id === pageToDeleteId);
-        if (index === -1) return;
-
-        const wasActive = currentPageId === pageToDeleteId;
-        pages.splice(index, 1);
-
-        if (!pages.length) {
-          pages.push(buildPage({ title: t('Page 1'), content: '' }, 0));
-        }
-
-        let nextId = currentPageId;
-        if (wasActive) {
-          const fallbackIndex = Math.min(index, pages.length - 1);
-          nextId = pages[fallbackIndex]?.id || pages[0]?.id || '';
-        }
-
-        if (!pages.some((p) => p.id === nextId)) {
-          nextId = pages[0]?.id || '';
-        }
-
-        setActivePage(nextId);
-        await savePages(false);
-        toast(t('✔ Knowledge page deleted'));
-        closeDeleteModal();
-      })
-  );
-
-  txt.addEventListener('input', (e) => {
-    const page = pages.find((p) => p.id === currentPageId);
-    if (!page) return;
-    page.content = e.target.value;
+  txt.addEventListener('input', e => {
     e.target.style.height = 'auto';
-    e.target.style.height = (e.target.scrollHeight || 120) + 'px';
+    e.target.style.height = e.target.scrollHeight + 'px';
     updateCounter();
   });
 
-  btn.addEventListener('click', () =>
-    canWrite(async () => {
-      if (btn.disabled) return;
-      const page = pages.find((p) => p.id === currentPageId);
-      if (page) {
-        page.content = txt.value;
-      }
-      await savePages(true);
-    })
-  );
-
-  window.__applyKnowledgeWriteState = () => {
-    const disabled = !canWriteFlag;
-    if (addBtn) {
-      addBtn.disabled = disabled;
-      addBtn.classList.toggle('opacity-60', disabled);
-    }
-    updateDeleteButtonState();
-    applyTextareaState();
-  };
-
-  (async () => {
-    const snap = await pagesRef.once('value');
-    pages = parsePages(snap.val());
-
-    if (!pages.length) {
-      const legacySnap = await legacyRef.once('value');
-      const legacyText = legacySnap.val();
-      if (legacyText) {
-        pages = [buildPage({ title: t('Page 1'), content: legacyText }, 0)];
-      }
-    }
-
-    ensurePageExists();
-    renderTabs();
-    setActivePage(pages[0]?.id || '');
-
-    pagesRef.on('value', (snap2) => {
-      if (isSaving) return;
-      const incoming = parsePages(snap2.val());
-      if (!incoming.length) {
-        pages = [];
-        ensurePageExists();
-      } else {
-        pages = incoming;
-      }
-      const keepId = pages.some((p) => p.id === currentPageId)
-        ? currentPageId
-        : pages[0]?.id || '';
-      setActivePage(keepId);
-    });
-
-    updateCounter();
-    if (typeof window.__applyKnowledgeWriteState === 'function') {
-      window.__applyKnowledgeWriteState();
-    }
-  })();
+  btn.onclick = () => canWrite(async () => {
+    if (btn.disabled) return;
+    await ref.set(txt.value.trim());
+    $('msgContext').classList.remove('hidden');
+    setTimeout(() => $('msgContext').classList.add('hidden'), 1200);
+  });
 }
-
 
 
 function initSchedule() {
   const ref = eref('config/schedule');
   const list = $('scheduleList');
+  const btnSave = $('saveSchedule');
   const msg = $('msgSchedule');
 
-  const DAYS = [
-    { label: 'M', value: 1, title: 'Monday' },
-    { label: 'T', value: 2, title: 'Tuesday' },
-    { label: 'W', value: 3, title: 'Wednesday' },
-    { label: 'T', value: 4, title: 'Thursday' },
-    { label: 'F', value: 5, title: 'Friday' },
-    { label: 'S', value: 6, title: 'Saturday' },
-    { label: 'S', value: 0, title: 'Sunday' }
-  ];
-
-  let saveTimer = null;
-  let isSaving = false;
-  let needsSave = false;
-
-  function scheduleChanged() {
-    needsSave = true;
-    if (saveTimer) clearTimeout(saveTimer);
-    saveTimer = setTimeout(persistSchedule, 600);
-  }
-
-  async function persistSchedule() {
-    if (isSaving) {
-      saveTimer = setTimeout(persistSchedule, 300);
-      return;
-    }
-
-    if (!needsSave) return;
-    needsSave = false;
-    saveTimer = null;
-
-    if (!canWriteFlag) return;
-
-    const rows = list.querySelectorAll('[data-id]');
-    const out = {};
-    rows.forEach(r => {
-      const id = r.dataset.id;
-      const start = r.querySelector('.start').value;
-      const end = r.querySelector('.end').value;
-      const days = [...r.querySelectorAll('.day.is-active')].map(d => parseInt(d.dataset.day, 10));
-      out[id] = { start, end, days };
-    });
-
-    isSaving = true;
-    try {
-      await canWrite(async () => {
-        await ref.set(out);
-        msg.classList.remove('hidden');
-        setTimeout(() => msg.classList.add('hidden'), 1200);
-      });
-    } finally {
-      isSaving = false;
-      if (needsSave) {
-        persistSchedule();
-      }
-    }
-  }
-
-  function applyDayState(btn, active) {
-    btn.classList.toggle('is-active', active);
-    btn.classList.toggle('bg-gray-900', active);
-    btn.classList.toggle('text-white', active);
-    btn.classList.toggle('shadow-sm', active);
-    btn.classList.toggle('bg-white', !active);
-    btn.classList.toggle('text-gray-500', !active);
-    btn.classList.toggle('border', !active);
-    btn.classList.toggle('border-gray-300', !active);
-    btn.setAttribute('aria-pressed', active ? 'true' : 'false');
-  }
-
-  // 🧩 Crear fila de horario con diseño actualizado
-  function makeRow(id, start = "07:00", end = "21:00", days = []) {
+  // 🧩 Crear fila de horario
+  function makeRow(id, start = "00:00", end = "23:59", days = []) {
     const div = document.createElement('div');
-    div.className = "rounded-2xl bg-gray-100 p-4 space-y-4";
+    div.className = "flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border rounded-xl bg-gray-50 p-4 shadow-sm";
     div.dataset.id = id;
 
     div.innerHTML = `
-      <div class="flex items-center gap-3">
-        <div class="flex items-center gap-2 bg-white rounded-xl px-3 py-2 shadow-inner border border-gray-200">
+      <div class="flex items-center gap-2">
+        <div class="flex items-center gap-1 border rounded-lg bg-white px-2 py-1">
           <i data-lucide="clock" class="w-4 h-4 text-gray-500"></i>
           <input type="text" pattern="^([01]?[0-9]|2[0-3]):[0-5][0-9]$" maxlength="5"
-            placeholder="07:00" class="start text-lg font-semibold text-gray-700 border-none outline-none bg-transparent w-16 text-center" value="${start}">
+            placeholder="00:00" class="start text-sm border-none outline-none bg-transparent w-16 text-center" value="${start}">
         </div>
-        <i data-lucide="arrow-right" class="w-4 h-4 text-gray-400"></i>
-        <div class="flex items-center gap-2 bg-white rounded-xl px-3 py-2 shadow-inner border border-gray-200">
+        <span class="text-gray-400">→</span>
+        <div class="flex items-center gap-1 border rounded-lg bg-white px-2 py-1">
           <i data-lucide="clock" class="w-4 h-4 text-gray-500"></i>
           <input type="text" pattern="^([01]?[0-9]|2[0-3]):[0-5][0-9]$" maxlength="5"
-            placeholder="21:00" class="end text-lg font-semibold text-gray-700 border-none outline-none bg-transparent w-16 text-center" value="${end}">
+            placeholder="23:59" class="end text-sm border-none outline-none bg-transparent w-16 text-center" value="${end}">
         </div>
-        <button type="button" class="delete ml-auto text-gray-400 hover:text-red-500 transition" title="${t('Delete period')}">
-          <i data-lucide="trash-2" class="w-5 h-5"></i>
+      </div>
+
+      <div class="flex items-center gap-1 ml-auto">
+        ${["S","M","T","W","T","F","S"].map((d,i)=>
+          `<button data-day="${i}" class="day w-8 h-8 rounded-full text-xs font-medium transition-all duration-150 ${
+            days.includes(i)
+              ? 'bg-black text-white shadow-sm'
+              : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-100'
+          }">${d}</button>`
+        ).join('')}
+        <button class="delete ml-3 text-gray-400 hover:text-red-600 transition" title="Delete">
+          <i data-lucide="trash" class="w-4 h-4"></i>
         </button>
       </div>
-
-      <div class="flex flex-wrap gap-2">
-        ${DAYS.map((d) => {
-          const active = days.includes(d.value);
-          return `<button type="button" data-day="${d.value}" title="${d.title}" class="day ${active ? 'is-active bg-gray-900 text-white shadow-sm' : 'bg-white text-gray-500 border border-gray-300'} w-9 h-9 rounded-full text-sm font-medium flex items-center justify-center transition hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-gray-300" aria-pressed="${active ? 'true' : 'false'}">${d.label}</button>`;
-        }).join('')}
-      </div>
     `;
-
-    const deleteButton = div.querySelector('button.delete');
-    if (deleteButton) {
-      registerTranslationTarget(deleteButton, 'Delete period', 'title');
-    }
 
     // 🔸 Validar formato HH:mm (24h)
     div.querySelectorAll('input.start, input.end').forEach(inp => {
@@ -3549,77 +1737,95 @@ function initSchedule() {
         let val = e.target.value.trim();
         if (!/^\d{1,2}:\d{2}$/.test(val)) {
           e.target.value = "00:00";
-        } else {
-          let [h, m] = val.split(":").map(Number);
-          if (h > 23) h = 23;
-          if (m > 59) m = 59;
-          e.target.value = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+          return;
         }
-        scheduleChanged();
+        let [h, m] = val.split(":").map(Number);
+        if (h > 23) h = 23;
+        if (m > 59) m = 59;
+        e.target.value = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
       });
     });
 
     // 🔸 Toggle de días activos
     div.querySelectorAll('.day').forEach(btn => {
-      applyDayState(btn, btn.classList.contains('is-active'));
       btn.addEventListener('click', () => {
-        const nowActive = !btn.classList.contains('is-active');
-        applyDayState(btn, nowActive);
-        scheduleChanged();
+        const active = btn.classList.contains('bg-black');
+        if (active) {
+          btn.classList.remove('bg-black','text-white','shadow-sm');
+          btn.classList.add('bg-white','text-gray-600','border','border-gray-300','hover:bg-gray-100');
+        } else {
+          btn.classList.add('bg-black','text-white','shadow-sm');
+          btn.classList.remove('bg-white','text-gray-600','border','border-gray-300','hover:bg-gray-100');
+        }
       });
     });
 
     // 🗑️ Eliminar fila
     div.querySelector('.delete').onclick = () => {
       div.remove();
-      renderActionRow();
-      scheduleChanged();
+      renderActionRow(); // reubica el "+" y "Save"
     };
 
     lucide.createIcons();
     return div;
   }
 
-  // 🧩 Renderizar botón "+"
+  // 🧩 Renderizar botones "+" y "Save" en la misma fila
   function renderActionRow() {
-    const existing = list.querySelector('#scheduleActions');
-    if (existing) existing.remove();
+    let actions = document.getElementById('scheduleActions');
+    if (actions) actions.remove();
 
-    const actions = document.createElement('div');
+    actions = document.createElement('div');
     actions.id = 'scheduleActions';
-    actions.className = "pt-2";
+    actions.className = "flex justify-end items-center gap-3 mt-4";
 
     const addBtn = document.createElement('button');
-    addBtn.type = 'button';
     addBtn.innerHTML = '<i data-lucide="plus" class="w-5 h-5"></i>';
-    addBtn.className = "w-10 h-10 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center hover:bg-gray-300 transition";
-    addBtn.addEventListener('click', () => {
-      const newRow = makeRow('r' + Date.now(), "07:00", "21:00", [1, 2, 3, 4, 5]);
+    addBtn.className = "bg-black text-white w-9 h-9 rounded-full flex items-center justify-center hover:bg-gray-800 shadow-sm transition";
+    addBtn.onclick = () => {
+      const newRow = makeRow('r' + Date.now());
       list.appendChild(newRow);
       renderActionRow();
-      scheduleChanged();
-    });
+    };
+
+    const saveBtn = document.createElement('button');
+    saveBtn.textContent = "Save";
+    saveBtn.className = "px-5 py-2 bg-gray-100 rounded-md text-sm hover:bg-gray-200 transition font-medium";
+    saveBtn.onclick = saveSchedule;
 
     actions.appendChild(addBtn);
-    list.appendChild(actions);
+    actions.appendChild(saveBtn);
+
+    list.insertAdjacentElement('afterend', actions);
     lucide.createIcons();
+  }
+
+  // 💾 Guardar configuración
+  async function saveSchedule() {
+    await canWrite(async () => {
+      const rows = list.querySelectorAll('[data-id]');
+      const out = {};
+      rows.forEach(r => {
+        const id = r.dataset.id;
+        const start = r.querySelector('.start').value;
+        const end = r.querySelector('.end').value;
+        const days = [...r.querySelectorAll('.day.bg-black')].map(d => parseInt(d.dataset.day));
+        out[id] = { start, end, days };
+      });
+      await ref.set(out);
+      msg.classList.remove('hidden');
+      setTimeout(() => msg.classList.add('hidden'), 1200);
+    });
   }
 
   // 🧩 Cargar desde Firebase
   ref.once('value', s => {
     const data = s.val() || {};
     list.innerHTML = '';
-    const keys = Object.keys(data);
-
-    if (!keys.length) {
-      list.appendChild(makeRow('r' + Date.now(), "07:00", "21:00", [1, 2, 3, 4, 5]));
-    } else {
-      keys.forEach(id => {
-        const r = data[id];
-        list.appendChild(makeRow(id, r.start, r.end, r.days || []));
-      });
+    for (const id in data) {
+      const r = data[id];
+      list.appendChild(makeRow(id, r.start, r.end, r.days || []));
     }
-
     renderActionRow();
   });
 }
@@ -3637,7 +1843,7 @@ function initIntegration(){
 
   $('copyEmbedScript').onclick = () => {
     navigator.clipboard.writeText(code);
-    toast(t('Copied'));
+    toast('Copied');
   };
 }
 
@@ -3645,759 +1851,304 @@ function initIntegration(){
 
 // === Function to initialize Auto Responses tab ===
 function initRespuestas() {
+  // Esperar a que Firebase esté listo
   if (typeof firebase === "undefined" || typeof eref !== "function") {
     console.warn("⏳ Esperando Firebase...");
     setTimeout(initRespuestas, 400);
     return;
   }
 
-  const tabsEl = $("autoResponseTabs");
+  const list = $("autoResponsesList");
   const btnAdd = $("addAutoResponse");
   const btnSave = $("saveAutoResponses");
   const msg = $("msgAutoResponses");
-  const editor = $("autoResponseEditor");
-  const emptyState = $("autoResponseEmpty");
-  const placeholder = $("autoResponsePlaceholder");
 
-  const keywordInput = $("autoResponseKeyword");
-  const typeSelector = $("autoResponseType");
-  const typeButtons = Array.from(typeSelector?.querySelectorAll(".typeOption") || []);
-
-  const textEditor = $("textEditor");
-  const textMessage = $("autoResponseText");
-  const textTitle = $("autoResponseTitle");
-  const textSubtitle = $("autoResponseSubtitle");
-  const textImage = $("autoResponseImage");
-  const addTextButton = $("addTextButton");
-  const textButtonsList = $("textButtonsList");
-  const textPreview = $("textPreview");
-
-  const cardsEditor = $("cardsEditor");
-  const cardsList = $("cardsList");
-  const addCardButton = $("addCardButton");
-
-  const menuEditor = $("menuEditor");
-  const menuIntroText = $("menuIntroText");
-  const menuButtonsList = $("menuButtonsList");
-  const menuPreview = $("menuPreview");
-  const addMenuButton = $("addMenuButton");
-
-  const deleteBtn = $("deleteAutoResponse");
-
-  if (!tabsEl || !btnAdd || !btnSave || !editor || !emptyState) {
+  if (!list || !btnAdd || !btnSave) {
     console.warn("⏳ Esperando elementos del DOM...");
     setTimeout(initRespuestas, 400);
     return;
   }
 
   const ref = eref("config/autoResponses");
-  const escapeHtml = (str = "") => String(str)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
+  console.log("✅ Auto Responses inicializadas correctamente");
 
-  let responses = [];
-  let activeIndex = -1;
+  // === Crear fila de respuesta ===
+  function makeRow(id, trigger = "", type = "text", text = "", cards = [], extras = {}) {
+    const div = document.createElement("div");
+    div.className = "bg-gray-50 border rounded-xl p-4 space-y-3";
+    div.dataset.id = id;
 
-  const createEmptyResponse = () => ({
-    id: "r" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-    trigger: "",
-    type: "text",
-    text: "",
-    extras: { title: "", subtitle: "", image: "", buttons: [] },
-    cards: [],
-    menu: { text: "", buttons: [] }
-  });
+    div.innerHTML = `
+      <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+        <div class="flex-1">
+          <label class="block text-xs font-medium text-gray-600 mb-1">Keyword</label>
+          <input type="text" class="w-full border rounded px-3 py-2 text-sm trigger"
+                 placeholder="(e.g. breakfast)" value="${trigger}">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-600 mb-1">Type</label>
+          <select class="type w-full sm:w-40 border rounded px-3 py-2 text-sm">
+            <option value="text" ${type === "text" ? "selected" : ""}>Text</option>
+            <option value="cards" ${type === "cards" ? "selected" : ""}>Cards</option>
+            <option value="menu" ${type === "menu" ? "selected" : ""}>Bottom Menu</option>
+          </select>
+        </div>
+      </div>
 
-  function setActive(index) {
-    if (index === -1) {
-      activeIndex = -1;
-    } else if (index < 0 || index >= responses.length) {
-      activeIndex = responses.length ? 0 : -1;
-    } else {
-      activeIndex = index;
-    }
-    renderTabs();
-    renderEditor();
-  }
+      <!-- 🔸 TEXT -->
+      <div class="textBlock ${type === "text" ? "" : "hidden"} space-y-3 border rounded-lg p-3 bg-white">
+        <label class="block text-xs font-medium text-gray-600 mb-1">Response</label>
+        <textarea class="replyText w-full border rounded px-3 py-2 text-sm"
+                  placeholder="Write the response...">${text}</textarea>
 
-  function deleteResponse(index) {
-    if (index < 0 || index >= responses.length) return;
-    responses.splice(index, 1);
-    setActive(activeIndex >= responses.length ? responses.length - 1 : activeIndex);
-  }
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">Title</label>
+            <input type="text" class="title w-full border rounded px-2 py-1 text-sm"
+                   value="${extras.title || ""}">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">Subtitle</label>
+            <input type="text" class="subtitle w-full border rounded px-2 py-1 text-sm"
+                   value="${extras.subtitle || ""}">
+          </div>
+        </div>
 
-  function renderTabs() {
-    tabsEl.innerHTML = "";
-    const typeStyles = {
-      text: "bg-blue-100 text-blue-700",
-      cards: "bg-purple-100 text-purple-700",
-      menu: "bg-emerald-100 text-emerald-700"
-    };
+        <div>
+          <label class="block text-xs font-medium text-gray-600 mb-1">Image URL (optional)</label>
+          <input type="text" class="image w-full border rounded px-2 py-1 text-sm"
+                 value="${extras.image || ""}">
+        </div>
 
-    responses.forEach((item, idx) => {
-      const tab = document.createElement("button");
-      tab.type = "button";
-      const isActive = idx === activeIndex;
-      tab.className = `relative flex min-w-[160px] flex-col gap-1 rounded-2xl border px-3 py-2 text-left transition ${isActive ? "bg-black text-white border-black shadow-sm" : "bg-white border-gray-200 text-gray-700 hover:border-black/40"}`;
+        <div class="buttons space-y-2">
+          ${(extras.buttons || []).map(makeButtonForm).join("")}
+        </div>
+        <button class="addButton px-3 py-1.5 bg-gray-200 rounded-lg text-sm hover:bg-gray-300">
+          + Add Button
+        </button>
 
-      const topRow = document.createElement("div");
-      topRow.className = "flex items-center gap-2";
-      const number = document.createElement("span");
-      number.className = `flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-semibold ${isActive ? "bg-white text-black" : "bg-black/10 text-gray-700"}`;
-      number.textContent = idx + 1;
-      const badge = document.createElement("span");
-      badge.className = `px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide rounded-full ${typeStyles[item.type] || "bg-gray-100 text-gray-600"}`;
-      badge.textContent = (item.type || "text").toUpperCase();
-      topRow.append(number, badge);
+        <div class="preview bg-gray-50 border rounded-lg mt-3 p-2 text-center overflow-hidden"></div>
+      </div>
 
-      const label = document.createElement("div");
-      label.className = `text-xs font-medium truncate ${isActive ? "text-white/90" : "text-gray-700"}`;
-      label.textContent = item.trigger || "Keyword";
+      <!-- 🔹 CARDS -->
+      <div class="cardsBlock ${type === "cards" ? "" : "hidden"} space-y-3">
+        <div class="cardsList space-y-3">
+          ${cards.map(makeCardForm).join("")}
+        </div>
+        <button class="addCard px-3 py-1.5 bg-gray-200 rounded-lg text-sm hover:bg-gray-300">
+          + Add Card
+        </button>
+      </div>
 
-      tab.append(topRow, label);
-      tab.addEventListener("click", () => setActive(idx));
+      <!-- 🟢 MENU -->
+      <div class="menuBlock ${type === "menu" ? "" : "hidden"} border rounded-lg p-3 bg-white space-y-3">
+        <label class="block text-xs font-medium text-gray-600 mb-1">Text above menu (optional)</label>
+        <input type="text" class="menuText w-full border rounded px-3 py-2 text-sm"
+               placeholder="(e.g. Choose an option)" value="${text}">
 
-      const remove = document.createElement("button");
-      remove.type = "button";
-      remove.className = "absolute -top-1.5 -right-1.5 bg-white border border-gray-200 rounded-full w-5 h-5 flex items-center justify-center text-[10px] text-gray-500 hover:text-red-600 hover:border-red-300";
-      remove.innerHTML = "&times;";
-      remove.addEventListener("click", e => {
-        e.stopPropagation();
-        deleteResponse(idx);
-      });
+        <div class="menuButtons space-y-2">
+          ${(extras.buttons || []).map(makeMenuRow).join("")}
+        </div>
+        <button class="addMenuBtn mt-2 px-3 py-1 bg-gray-200 rounded-lg text-sm hover:bg-gray-300">
+          + Add Button
+        </button>
+      </div>
 
-      tab.appendChild(remove);
-      tabsEl.appendChild(tab);
-    });
-  }
+      <div class="flex justify-end">
+        <button class="deleteReply text-xs text-red-600 hover:underline">Delete</button>
+      </div>
+    `;
 
-  function renderEditor() {
-    if (!responses.length) {
-      editor.classList.add("hidden");
-      emptyState.classList.remove("hidden");
-      if (placeholder) placeholder.classList.add("hidden");
-      return;
-    }
+    // === Lógica de comportamiento ===
+    const sel = div.querySelector(".type");
+    const textBlock = div.querySelector(".textBlock");
+    const cardsBlock = div.querySelector(".cardsBlock");
+    const menuBlock = div.querySelector(".menuBlock");
 
-    emptyState.classList.add("hidden");
-
-    if (activeIndex < 0) {
-      editor.classList.add("hidden");
-      if (placeholder) placeholder.classList.remove("hidden");
-      return;
-    }
-
-    if (placeholder) placeholder.classList.add("hidden");
-
-    const item = responses[activeIndex];
-    editor.classList.remove("hidden");
-
-    keywordInput.value = item.trigger || "";
-
-    typeButtons.forEach(btn => {
-      const isActive = btn.dataset.type === item.type;
-      btn.classList.toggle("bg-white", isActive);
-      btn.classList.toggle("text-black", isActive);
-      btn.classList.toggle("shadow-sm", isActive);
-      btn.classList.toggle("bg-gray-100", !isActive);
-      btn.classList.toggle("text-gray-500", !isActive);
+    sel.addEventListener("change", () => {
+      textBlock.classList.toggle("hidden", sel.value !== "text");
+      cardsBlock.classList.toggle("hidden", sel.value !== "cards");
+      menuBlock.classList.toggle("hidden", sel.value !== "menu");
     });
 
-    textEditor.classList.toggle("hidden", item.type !== "text");
-    cardsEditor.classList.toggle("hidden", item.type !== "cards");
-    menuEditor.classList.toggle("hidden", item.type !== "menu");
-
-    if (item.type === "text") {
-      textMessage.value = item.text || "";
-      textTitle.value = item.extras?.title || "";
-      textSubtitle.value = item.extras?.subtitle || "";
-      textImage.value = item.extras?.image || "";
-      if (!Array.isArray(item.extras.buttons)) item.extras.buttons = [];
-      renderTextButtons(item);
-      renderTextPreview(item);
-    }
-
-    if (item.type === "cards") {
-      if (!Array.isArray(item.cards)) item.cards = [];
-      renderCards(item);
-    }
-
-    if (item.type === "menu") {
-      if (!item.menu) item.menu = { text: "", buttons: [] };
-      if (!Array.isArray(item.menu.buttons)) item.menu.buttons = [];
-      menuIntroText.value = item.menu.text || "";
-      renderMenuButtons(item);
-      updateMenuPreview(item);
-    }
-  }
-
-  function renderTextButtons(item) {
-    const buttons = item.extras.buttons || (item.extras.buttons = []);
-    textButtonsList.innerHTML = "";
-    if (!buttons.length) {
-      const empty = document.createElement("p");
-      empty.className = "text-xs text-gray-400";
-      empty.textContent = t('No buttons added yet.');
-      registerTranslationTarget(empty, 'No buttons added yet.');
-      textButtonsList.appendChild(empty);
-      return;
-    }
-
-    buttons.forEach((btn, idx) => {
-      const row = document.createElement("div");
-      row.className = "flex flex-col sm:flex-row gap-2 items-start sm:items-center bg-gray-50 border border-gray-200 rounded-xl px-3 py-2";
-
-      const labelInput = document.createElement("input");
-      labelInput.type = "text";
-      labelInput.className = "flex-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60";
-      labelInput.placeholder = t('Button text');
-      registerTranslationTarget(labelInput, 'Button text', 'placeholder');
-      labelInput.value = btn.label || "";
-      labelInput.addEventListener("input", e => {
-        btn.label = e.target.value;
-        renderTextPreview(item);
-      });
-
-      const linkInput = document.createElement("input");
-      linkInput.type = "text";
-      linkInput.className = "flex-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60";
-      linkInput.placeholder = t('Link or trigger');
-      registerTranslationTarget(linkInput, 'Link or trigger', 'placeholder');
-      linkInput.value = btn.link || "";
-      linkInput.addEventListener("input", e => {
-        btn.link = e.target.value;
-      });
-
-      const removeBtn = document.createElement("button");
-      removeBtn.type = "button";
-      removeBtn.className = "text-xs text-red-600 hover:text-red-700";
-      removeBtn.textContent = t('Delete');
-      registerTranslationTarget(removeBtn, 'Delete');
-      removeBtn.addEventListener("click", () => {
-        buttons.splice(idx, 1);
-        renderTextButtons(item);
-        renderTextPreview(item);
-      });
-
-      row.append(labelInput, linkInput, removeBtn);
-      textButtonsList.appendChild(row);
+    // Añadir botones y tarjetas
+    div.querySelector(".addButton").addEventListener("click", () => {
+      div.querySelector(".buttons").insertAdjacentHTML("beforeend", makeButtonForm());
+      updateTextPreview(div);
     });
+    div.querySelector(".addCard").addEventListener("click", () => {
+      div.querySelector(".cardsList").insertAdjacentHTML("beforeend", makeCardForm());
+    });
+    div.querySelector(".addMenuBtn").addEventListener("click", () => {
+      div.querySelector(".menuButtons").insertAdjacentHTML("beforeend", makeMenuRow());
+    });
+
+    div.addEventListener("click", e => {
+      if (e.target.classList.contains("delMenuBtn")) e.target.closest(".menuRow").remove();
+    });
+
+    div.querySelector(".deleteReply").addEventListener("click", () => div.remove());
+    updateTextPreview(div);
+    return div;
   }
 
-  function renderTextPreview(item) {
-    const body = item.text || "";
-    const { title = "", subtitle = "", image = "", buttons = [] } = item.extras || {};
-    const actions = (buttons || []).filter(b => (b.label || "").trim());
+  // === Subcomponentes ===
+  function makeCardForm(c = {}) {
+    return `
+      <div class="cardItem bg-white border rounded-lg p-3 space-y-2">
+        <label class="block text-xs font-medium text-gray-600">Title</label>
+        <input type="text" class="title w-full border rounded px-2 py-1 text-sm" value="${c.title || ""}">
+        <label class="block text-xs font-medium text-gray-600">Subtitle</label>
+        <input type="text" class="subtitle w-full border rounded px-2 py-1 text-sm" value="${c.subtitle || ""}">
+        <label class="block text-xs font-medium text-gray-600">Image URL</label>
+        <input type="text" class="image w-full border rounded px-2 py-1 text-sm" value="${c.image || ""}">
+        <label class="block text-xs font-medium text-gray-600">Link</label>
+        <input type="text" class="link w-full border rounded px-2 py-1 text-sm" value="${c.link || ""}">
+        <label class="block text-xs font-medium text-gray-600">Button Text</label>
+        <input type="text" class="buttonText w-full border rounded px-2 py-1 text-sm" value="${c.buttonText || "View"}">
+      </div>
+    `;
+  }
 
-    if (!image && !title && !subtitle && !body && !actions.length) {
-      textPreview.innerHTML = "";
-      const placeholder = document.createElement("p");
-      placeholder.className = "text-xs text-gray-400 text-center w-full";
-      placeholder.textContent = t('Start writing to see the live preview.');
-      registerTranslationTarget(placeholder, 'Start writing to see the live preview.');
-      textPreview.appendChild(placeholder);
-      return;
-    }
+  function makeButtonForm(b = {}) {
+    return `
+      <div class="buttonItem flex flex-col sm:flex-row gap-2 items-center border rounded-lg p-2 bg-gray-50">
+        <input type="text" class="label flex-1 border rounded px-2 py-1 text-sm"
+               placeholder="Button text (e.g. Book now)" value="${b.label || ""}">
+        <input type="text" class="link flex-1 border rounded px-2 py-1 text-sm"
+               placeholder="Link or trigger" value="${b.link || ""}">
+        <button class="delButton text-xs text-red-600 hover:underline">Remove</button>
+      </div>
+    `;
+  }
 
-    const buttonsHtml = actions.map(b => `<span class="inline-flex items-center justify-center border border-black rounded-full px-3 py-1 text-xs text-black">${escapeHtml(b.label)}</span>`).join(" ");
+  function makeMenuRow(b = {}) {
+    return `
+      <div class="menuRow flex items-center gap-2">
+        <input type="text" class="menuLabel flex-1 border rounded px-2 py-1 text-sm"
+               placeholder="Label" value="${b.label || ""}">
+        <input type="text" class="menuAction flex-1 border rounded px-2 py-1 text-sm"
+               placeholder="Trigger or link" value="${b.trigger || b.link || ""}">
+        <button class="delMenuBtn px-2 py-1 bg-red-100 text-red-700 rounded text-xs">✕</button>
+      </div>
+    `;
+  }
 
-    textPreview.innerHTML = `
-      <div class="inline-block bg-white rounded-2xl shadow-sm border border-gray-200 w-72 text-left text-gray-800 overflow-hidden">
-        ${image ? `<img src="${escapeHtml(image)}" class="w-full h-36 object-cover" alt="${t('Preview image')}">` : ""}
+  // === Vista previa ===
+  function updateTextPreview(row) {
+    const block = row.querySelector(".textBlock");
+    if (!block) return;
+    const image = block.querySelector(".image")?.value?.trim() || "";
+    const title = block.querySelector(".title")?.value?.trim() || "";
+    const subtitle = block.querySelector(".subtitle")?.value?.trim() || "";
+    const body = block.querySelector(".replyText")?.value?.trim() || "";
+    const buttons = [...block.querySelectorAll(".buttonItem")].map(b => ({
+      label: b.querySelector(".label")?.value?.trim() || "",
+      link: b.querySelector(".link")?.value?.trim() || ""
+    }));
+    const preview = block.querySelector(".preview");
+    preview.innerHTML = `
+      <div class="inline-block bg-white rounded-2xl shadow border w-72 text-left text-gray-800">
+        ${image ? `<img src="${image}" class="w-full h-36 object-cover rounded-t-2xl">` : ""}
         <div class="p-3 space-y-2">
-          ${title ? `<h3 class="font-semibold text-base">${escapeHtml(title)}</h3>` : ""}
-          ${subtitle ? `<p class="text-sm text-gray-500">${escapeHtml(subtitle)}</p>` : ""}
-          ${body ? `<p class="text-sm text-gray-700">${escapeHtml(body)}</p>` : ""}
-          ${actions.length ? `<div class="flex flex-wrap gap-2 pt-2">${buttonsHtml}</div>` : ""}
+          ${title ? `<h3 class="font-semibold text-base">${title}</h3>` : ""}
+          ${subtitle ? `<p class="text-sm text-gray-500">${subtitle}</p>` : ""}
+          ${body ? `<p class="text-sm text-gray-700">${body}</p>` : ""}
+          <div class="flex flex-wrap gap-2 mt-2">
+            ${buttons.filter(b => b.label).map(b => 
+              `<a href="${b.link || "#"}" target="_blank"
+                 class="border border-black rounded-full px-3 py-1 text-xs hover:bg-black hover:text-white transition">${b.label}</a>`
+            ).join("")}
+          </div>
         </div>
       </div>
     `;
-    const previewImg = textPreview.querySelector('img[alt]');
-    if (previewImg) {
-      registerTranslationTarget(previewImg, 'Preview image', 'alt');
-    }
   }
 
-  function renderCards(item) {
-    cardsList.innerHTML = "";
-    const cards = item.cards || (item.cards = []);
-
-    if (!cards.length) {
-      const empty = document.createElement("p");
-      empty.className = "text-xs text-gray-400";
-      empty.textContent = t('No cards yet. Add one to build a carousel.');
-      registerTranslationTarget(empty, 'No cards yet. Add one to build a carousel.');
-      cardsList.appendChild(empty);
-      return;
-    }
-
-    if (typeof item.__activeCardIndex !== "number" || item.__activeCardIndex < 0) {
-      item.__activeCardIndex = 0;
-    }
-    if (item.__activeCardIndex >= cards.length) {
-      item.__activeCardIndex = cards.length - 1;
-    }
-
-    const tabsWrap = document.createElement("div");
-    tabsWrap.className = "flex items-center gap-2 overflow-x-auto pb-2 flex-nowrap";
-
-    cards.forEach((card, idx) => {
-      const tabBtn = document.createElement("button");
-      tabBtn.type = "button";
-      const isActive = idx === item.__activeCardIndex;
-      tabBtn.className = `whitespace-nowrap rounded-full border px-3 py-1.5 text-xs font-medium transition ${isActive ? "bg-black text-white border-black" : "bg-white border-gray-200 text-gray-600 hover:border-black/40"}`;
-      tabBtn.textContent = `${t('Card')} ${idx + 1}`;
-      registerTranslationTarget(tabBtn, 'Card', 'text', {
-        formatter: translated => `${translated} ${idx + 1}`
-      });
-      tabBtn.addEventListener("click", () => {
-        item.__activeCardIndex = idx;
-        renderCards(item);
-      });
-      tabsWrap.appendChild(tabBtn);
-    });
-
-    cardsList.appendChild(tabsWrap);
-
-    const activeCard = cards[item.__activeCardIndex];
-
-    const wrap = document.createElement("div");
-    wrap.className = "border border-gray-200 rounded-2xl bg-white p-4 shadow-sm space-y-4";
-
-    const header = document.createElement("div");
-    header.className = "flex items-center justify-between";
-    const title = document.createElement("span");
-    title.className = "text-sm font-semibold text-gray-700";
-    title.textContent = `${t('Card')} ${item.__activeCardIndex + 1}`;
-    registerTranslationTarget(title, 'Card', 'text', {
-      formatter: translated => `${translated} ${item.__activeCardIndex + 1}`
-    });
-    const removeBtn = document.createElement("button");
-    removeBtn.type = "button";
-    removeBtn.className = "text-xs text-red-600 hover:text-red-700";
-    removeBtn.textContent = t('Delete');
-    registerTranslationTarget(removeBtn, 'Delete');
-    removeBtn.addEventListener("click", () => {
-      cards.splice(item.__activeCardIndex, 1);
-      if (!cards.length) {
-        delete item.__activeCardIndex;
-      } else if (item.__activeCardIndex >= cards.length) {
-        item.__activeCardIndex = cards.length - 1;
-      }
-      renderCards(item);
-    });
-    header.append(title, removeBtn);
-    wrap.appendChild(header);
-
-    const grid = document.createElement("div");
-    grid.className = "grid gap-3 sm:grid-cols-2";
-
-    const titleWrap = document.createElement("div");
-    titleWrap.className = "space-y-1";
-    const titleLabel = document.createElement("label");
-    titleLabel.className = "block text-xs font-semibold text-gray-600";
-    titleLabel.textContent = t('Title');
-    registerTranslationTarget(titleLabel, 'Title');
-    const titleInput = document.createElement("input");
-    titleInput.type = "text";
-    titleInput.className = "w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60";
-    titleInput.placeholder = t('Title');
-    registerTranslationTarget(titleInput, 'Title', 'placeholder');
-    titleInput.value = activeCard.title || "";
-    titleInput.addEventListener("input", e => {
-      activeCard.title = e.target.value;
-      updateCardPreview();
-    });
-    titleWrap.append(titleLabel, titleInput);
-
-    const subtitleWrap = document.createElement("div");
-    subtitleWrap.className = "space-y-1";
-    const subtitleLabel = document.createElement("label");
-    subtitleLabel.className = "block text-xs font-semibold text-gray-600";
-    subtitleLabel.textContent = t('Subtitle');
-    registerTranslationTarget(subtitleLabel, 'Subtitle');
-    const subtitleInput = document.createElement("input");
-    subtitleInput.type = "text";
-    subtitleInput.className = "w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60";
-    subtitleInput.placeholder = t('Subtitle');
-    registerTranslationTarget(subtitleInput, 'Subtitle', 'placeholder');
-    subtitleInput.value = activeCard.subtitle || "";
-    subtitleInput.addEventListener("input", e => {
-      activeCard.subtitle = e.target.value;
-      updateCardPreview();
-    });
-    subtitleWrap.append(subtitleLabel, subtitleInput);
-
-    grid.append(titleWrap, subtitleWrap);
-    wrap.appendChild(grid);
-
-    const imageWrap = document.createElement("div");
-    imageWrap.className = "space-y-1";
-    const imageLabel = document.createElement("label");
-    imageLabel.className = "block text-xs font-semibold text-gray-600";
-    imageLabel.textContent = t('Image URL');
-    registerTranslationTarget(imageLabel, 'Image URL');
-    const imageInput = document.createElement("input");
-    imageInput.type = "text";
-    imageInput.className = "w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60";
-    imageInput.placeholder = t('https://...');
-    registerTranslationTarget(imageInput, 'https://...', 'placeholder');
-    imageInput.value = activeCard.image || "";
-    imageInput.addEventListener("input", e => {
-      activeCard.image = e.target.value;
-      updateCardPreview();
-    });
-    imageWrap.append(imageLabel, imageInput);
-    wrap.appendChild(imageWrap);
-
-    const linkWrap = document.createElement("div");
-    linkWrap.className = "space-y-1";
-    const linkLabel = document.createElement("label");
-    linkLabel.className = "block text-xs font-semibold text-gray-600";
-    linkLabel.textContent = t('Link');
-    registerTranslationTarget(linkLabel, 'Link');
-    const linkInput = document.createElement("input");
-    linkInput.type = "text";
-    linkInput.className = "w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60";
-    linkInput.placeholder = t('https://...');
-    registerTranslationTarget(linkInput, 'https://...', 'placeholder');
-    linkInput.value = activeCard.link || "";
-    linkInput.addEventListener("input", e => {
-      activeCard.link = e.target.value;
-    });
-    linkWrap.append(linkLabel, linkInput);
-    wrap.appendChild(linkWrap);
-
-    const buttonWrap = document.createElement("div");
-    buttonWrap.className = "space-y-1";
-    const buttonLabel = document.createElement("label");
-    buttonLabel.className = "block text-xs font-semibold text-gray-600";
-    buttonLabel.textContent = t('Button text');
-    registerTranslationTarget(buttonLabel, 'Button text');
-    const buttonTextInput = document.createElement("input");
-    buttonTextInput.type = "text";
-    buttonTextInput.className = "w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60";
-    buttonTextInput.placeholder = t('Reserve now');
-    registerTranslationTarget(buttonTextInput, 'Reserve now', 'placeholder');
-    buttonTextInput.value = activeCard.buttonText || t('View');
-    buttonTextInput.addEventListener("input", e => {
-      activeCard.buttonText = e.target.value;
-      updateCardPreview();
-    });
-    buttonWrap.append(buttonLabel, buttonTextInput);
-    wrap.appendChild(buttonWrap);
-
-    const preview = document.createElement("div");
-    preview.className = "bg-gray-50 border border-gray-200 rounded-xl p-3";
-
-    function updateCardPreview() {
-      preview.innerHTML = `
-        <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-          ${activeCard.image ? `<img src="${escapeHtml(activeCard.image)}" class="w-full h-32 object-cover" alt="${t('Preview image')}">` : ""}
-          <div class="p-3 space-y-2">
-            ${activeCard.title ? `<h4 class="text-sm font-semibold text-gray-800">${escapeHtml(activeCard.title)}</h4>` : ""}
-            ${activeCard.subtitle ? `<p class="text-xs text-gray-500">${escapeHtml(activeCard.subtitle)}</p>` : ""}
-            ${(activeCard.buttonText || "").trim() ? `<div class="pt-1"><span class="inline-flex text-xs border border-black rounded-full px-3 py-1">${escapeHtml(activeCard.buttonText)}</span></div>` : ""}
-          </div>
-        </div>
-      `;
-      const previewImg = preview.querySelector('img[alt]');
-      if (previewImg) {
-        registerTranslationTarget(previewImg, 'Preview image', 'alt');
-      }
-    }
-
-    updateCardPreview();
-    wrap.appendChild(preview);
-
-    cardsList.appendChild(wrap);
-  }
-
-  function renderMenuButtons(item) {
-    const buttons = item.menu.buttons || (item.menu.buttons = []);
-    menuButtonsList.innerHTML = "";
-    if (!buttons.length) {
-      const empty = document.createElement("p");
-      empty.className = "text-xs text-gray-400";
-      empty.textContent = t('Add options so guests can tap them quickly.');
-      registerTranslationTarget(empty, 'Add options so guests can tap them quickly.');
-      menuButtonsList.appendChild(empty);
-      return;
-    }
-
-    buttons.forEach((btn, idx) => {
-      btn.action = btn.action || btn.link || btn.trigger || "";
-      const row = document.createElement("div");
-      row.className = "flex flex-col sm:flex-row gap-2 items-start sm:items-center bg-white border border-gray-200 rounded-xl px-3 py-2 shadow-sm";
-
-      const labelInput = document.createElement("input");
-      labelInput.type = "text";
-      labelInput.className = "flex-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60";
-      labelInput.placeholder = t('Button label');
-      registerTranslationTarget(labelInput, 'Button label', 'placeholder');
-      labelInput.value = btn.label || "";
-      labelInput.addEventListener("input", e => {
-        btn.label = e.target.value;
-        updateMenuPreview(item);
-      });
-
-      const actionInput = document.createElement("input");
-      actionInput.type = "text";
-      actionInput.className = "flex-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60";
-      actionInput.placeholder = t('Trigger or link');
-      registerTranslationTarget(actionInput, 'Trigger or link', 'placeholder');
-      actionInput.value = btn.action;
-      actionInput.addEventListener("input", e => {
-        btn.action = e.target.value;
-        updateMenuPreview(item);
-      });
-
-      const removeBtn = document.createElement("button");
-      removeBtn.type = "button";
-      removeBtn.className = "text-xs text-red-600 hover:text-red-700";
-      removeBtn.textContent = t('Delete');
-      registerTranslationTarget(removeBtn, 'Delete');
-      removeBtn.addEventListener("click", () => {
-        buttons.splice(idx, 1);
-        renderMenuButtons(item);
-        updateMenuPreview(item);
-      });
-
-      row.append(labelInput, actionInput, removeBtn);
-      menuButtonsList.appendChild(row);
-    });
-  }
-
-  function updateMenuPreview(item) {
-    menuPreview.innerHTML = "";
-    const intro = item.menu.text || "";
-    if (intro) {
-      const introEl = document.createElement("p");
-      introEl.className = "w-full text-sm text-gray-600";
-      introEl.textContent = intro;
-      menuPreview.appendChild(introEl);
-    }
-
-    const wrap = document.createElement("div");
-    wrap.className = `flex flex-wrap gap-2${intro ? " mt-3" : ""}`;
-    (item.menu.buttons || []).forEach(btn => {
-      if (!(btn.label || "").trim()) return;
-      const pill = document.createElement("span");
-      pill.className = "inline-flex items-center border border-black rounded-full px-3 py-1 text-xs text-black";
-      pill.textContent = btn.label;
-      wrap.appendChild(pill);
-    });
-
-    if (!wrap.childElementCount) {
-      const placeholder = document.createElement("p");
-      placeholder.className = "text-xs text-gray-400";
-      placeholder.textContent = t('Menu buttons will appear here.');
-      registerTranslationTarget(placeholder, 'Menu buttons will appear here.');
-      menuPreview.appendChild(placeholder);
-    } else {
-      menuPreview.appendChild(wrap);
-    }
-  }
-
-  btnAdd.addEventListener("click", () => {
-    responses.push(createEmptyResponse());
-    setActive(responses.length - 1);
+  document.addEventListener("input", e => {
+    const row = e.target.closest("[data-id]");
+    if (row) updateTextPreview(row);
   });
 
+  document.addEventListener("click", e => {
+    if (e.target.classList.contains("delButton")) {
+      const row = e.target.closest("[data-id]");
+      e.target.closest(".buttonItem").remove();
+      updateTextPreview(row);
+    }
+  });
+
+  // === Cargar desde Firebase ===
+  ref.once("value").then(snap => {
+    const data = snap.val();
+    list.innerHTML = "";
+    if (!data || Object.keys(data).length === 0) return;
+    for (const id in data) {
+      const r = data[id];
+      const row = makeRow(id, r.trigger, r.type, r.text, r.cards || [], r.extras || {});
+      list.appendChild(row);
+    }
+  });
+
+  // === Nuevo y Guardar ===
+  btnAdd.addEventListener("click", () => list.appendChild(makeRow("r" + Date.now())));
   btnSave.addEventListener("click", async () => {
+    const rows = list.querySelectorAll("[data-id]");
     const saveData = {};
-    responses.forEach(res => {
-      const trigger = (res.trigger || "").trim();
-      if (!trigger) return;
+    rows.forEach(div => {
+      const id = div.dataset.id;
+      const trigger = div.querySelector(".trigger")?.value?.trim() || "";
+      const type = div.querySelector(".type")?.value || "text";
+      let text = "";
+      let cards = [];
+      let extras = {};
 
-      const out = {
-        trigger,
-        type: res.type || "text",
-        text: res.type === "menu" ? (res.menu?.text || "") : (res.type === "text" ? (res.text || "") : (res.text || "")),
-        cards: [],
-        extras: {}
-      };
-
-      if (res.type === "text") {
-        out.text = res.text || "";
-        out.extras = {
-          title: res.extras?.title || "",
-          subtitle: res.extras?.subtitle || "",
-          image: res.extras?.image || "",
-          buttons: (res.extras?.buttons || [])
-            .map(b => ({
-              label: (b.label || "").trim(),
-              link: (b.link || "").trim()
-            }))
-            .filter(b => b.label || b.link)
-        };
-      }
-
-      if (res.type === "cards") {
-        out.cards = (res.cards || [])
-          .map(c => ({
-            title: c.title || "",
-            subtitle: c.subtitle || "",
-            image: c.image || "",
-            link: c.link || "",
-            buttonText: c.buttonText || "View"
+      if (type === "text") {
+        const block = div.querySelector(".textBlock");
+        text = block.querySelector(".replyText")?.value?.trim() || "";
+        extras = {
+          title: block.querySelector(".title")?.value?.trim() || "",
+          subtitle: block.querySelector(".subtitle")?.value?.trim() || "",
+          image: block.querySelector(".image")?.value?.trim() || "",
+          buttons: [...block.querySelectorAll(".buttonItem")].map(b => ({
+            label: b.querySelector(".label")?.value?.trim() || "",
+            link: b.querySelector(".link")?.value?.trim() || ""
           }))
-          .filter(c => (c.title || c.subtitle || c.image || c.link));
-        out.extras = {};
-      }
-
-      if (res.type === "menu") {
-        out.text = res.menu?.text || "";
-        out.extras = {
-          buttons: (res.menu?.buttons || [])
-            .map(btn => {
-              const label = (btn.label || "").trim();
-              const action = (btn.action || btn.link || btn.trigger || "").trim();
-              if (!label || !action) return null;
-              return action.startsWith("http")
-                ? { label, link: action }
-                : { label, trigger: action };
-            })
-            .filter(Boolean)
         };
       }
 
-      saveData[res.id] = out;
+      if (type === "cards") {
+        const block = div.querySelector(".cardsBlock");
+        cards = [...block.querySelectorAll(".cardItem")].map(c => ({
+          title: c.querySelector(".title")?.value?.trim() || "",
+          subtitle: c.querySelector(".subtitle")?.value?.trim() || "",
+          image: c.querySelector(".image")?.value?.trim() || "",
+          link: c.querySelector(".link")?.value?.trim() || "",
+          buttonText: c.querySelector(".buttonText")?.value?.trim() || "View"
+        }));
+      }
+
+      if (type === "menu") {
+        const block = div.querySelector(".menuBlock");
+        text = block.querySelector(".menuText")?.value?.trim() || "";
+        extras = {
+          buttons: [...block.querySelectorAll(".menuRow")].map(r => {
+            const label = r.querySelector(".menuLabel")?.value?.trim() || "";
+            const action = r.querySelector(".menuAction")?.value?.trim() || "";
+            if (!label || !action) return null;
+            return action.startsWith("http")
+              ? { label, link: action }
+              : { label, trigger: action };
+          }).filter(Boolean)
+        };
+      }
+
+      if (trigger) saveData[id] = { trigger, type, text, cards, extras };
     });
 
     await ref.set(saveData);
     msg.classList.remove("hidden");
     setTimeout(() => msg.classList.add("hidden"), 1500);
-  });
-
-  keywordInput.addEventListener("input", e => {
-    if (!responses.length || activeIndex < 0) return;
-    responses[activeIndex].trigger = e.target.value;
-    renderTabs();
-  });
-
-  textMessage.addEventListener("input", e => {
-    if (!responses.length || activeIndex < 0) return;
-    responses[activeIndex].text = e.target.value;
-    renderTextPreview(responses[activeIndex]);
-  });
-
-  textTitle.addEventListener("input", e => {
-    if (!responses.length || activeIndex < 0) return;
-    responses[activeIndex].extras.title = e.target.value;
-    renderTextPreview(responses[activeIndex]);
-  });
-
-  textSubtitle.addEventListener("input", e => {
-    if (!responses.length || activeIndex < 0) return;
-    responses[activeIndex].extras.subtitle = e.target.value;
-    renderTextPreview(responses[activeIndex]);
-  });
-
-  textImage.addEventListener("input", e => {
-    if (!responses.length || activeIndex < 0) return;
-    responses[activeIndex].extras.image = e.target.value;
-    renderTextPreview(responses[activeIndex]);
-  });
-
-  addTextButton.addEventListener("click", () => {
-    if (!responses.length || activeIndex < 0) return;
-    const item = responses[activeIndex];
-    if (!Array.isArray(item.extras.buttons)) item.extras.buttons = [];
-    item.extras.buttons.push({ label: "", link: "" });
-    renderTextButtons(item);
-    renderTextPreview(item);
-  });
-
-  addCardButton.addEventListener("click", () => {
-    if (!responses.length || activeIndex < 0) return;
-    const item = responses[activeIndex];
-    if (!Array.isArray(item.cards)) item.cards = [];
-    item.cards.push({ title: "", subtitle: "", image: "", link: "", buttonText: "View" });
-    item.__activeCardIndex = item.cards.length - 1;
-    renderCards(item);
-  });
-
-  menuIntroText.addEventListener("input", e => {
-    if (!responses.length || activeIndex < 0) return;
-    responses[activeIndex].menu.text = e.target.value;
-    updateMenuPreview(responses[activeIndex]);
-  });
-
-  addMenuButton.addEventListener("click", () => {
-    if (!responses.length || activeIndex < 0) return;
-    const item = responses[activeIndex];
-    if (!Array.isArray(item.menu.buttons)) item.menu.buttons = [];
-    item.menu.buttons.push({ label: "", action: "" });
-    renderMenuButtons(item);
-    updateMenuPreview(item);
-  });
-
-  deleteBtn.addEventListener("click", () => {
-    if (!responses.length || activeIndex < 0) return;
-    deleteResponse(activeIndex);
-  });
-
-  typeButtons.forEach(btn => {
-    btn.addEventListener("click", () => {
-      if (!responses.length || activeIndex < 0) return;
-      const item = responses[activeIndex];
-      item.type = btn.dataset.type;
-      if (item.type === "cards" && (!Array.isArray(item.cards) || !item.cards.length)) {
-        item.cards = [{ title: "", subtitle: "", image: "", link: "", buttonText: "View" }];
-        item.__activeCardIndex = 0;
-      }
-      if (item.type === "menu") {
-        if (!item.menu) item.menu = { text: "", buttons: [] };
-        if (!Array.isArray(item.menu.buttons) || !item.menu.buttons.length) {
-          item.menu.buttons = [{ label: "", action: "" }];
-        }
-      }
-      if (item.type !== "cards") {
-        delete item.__activeCardIndex;
-      }
-      renderTabs();
-      renderEditor();
-    });
-  });
-
-  ref.once("value").then(snap => {
-    const data = snap.val() || {};
-    responses = Object.entries(data).map(([id, val]) => ({
-      id,
-      trigger: val.trigger || "",
-      type: val.type || "text",
-      text: val.text || "",
-      extras: {
-        title: val.extras?.title || "",
-        subtitle: val.extras?.subtitle || "",
-        image: val.extras?.image || "",
-        buttons: Array.isArray(val.extras?.buttons) && val.type === "text"
-          ? val.extras.buttons.map(b => ({ label: b.label || "", link: b.link || "" }))
-          : []
-      },
-      cards: Array.isArray(val.cards) ? val.cards.map(c => ({
-        title: c.title || "",
-        subtitle: c.subtitle || "",
-        image: c.image || "",
-        link: c.link || "",
-        buttonText: c.buttonText || "View"
-      })) : [],
-      menu: {
-        text: val.type === "menu" ? (val.text || "") : "",
-        buttons: Array.isArray(val.extras?.buttons) && val.type === "menu"
-          ? val.extras.buttons.map(b => ({
-              label: b.label || "",
-              action: (b.link || b.trigger || "")
-            }))
-          : []
-      }
-    }));
-
-    setActive(-1);
   });
 }
 
@@ -4414,63 +2165,6 @@ function initWelcome() {
   const preview = $("welcomePreview");
   const saveBtn = $("saveWelcome");
   const msg = $("msgWelcome");
-  const summaryCard = $("welcomeSummaryCard");
-  const summaryBadge = $("welcomeSummaryBadge");
-  const summaryText = $("welcomeSummaryText");
-  const summaryDelay = $("welcomeSummaryDelay");
-  const summaryImage = $("welcomeSummaryImage");
-  const summaryIcon = $("welcomeSummaryIcon");
-
-  const defaultSummaryKey = 'Add a welcome message to greet your guests.';
-  const state = {
-    enabled: false,
-    text: "",
-    delay: 2,
-    image: ""
-  };
-
-  const updateSummary = () => {
-    const isEnabled = !!state.enabled;
-    if (summaryBadge) {
-      const badgeKey = isEnabled ? 'Enabled' : 'Disabled';
-      summaryBadge.textContent = t(badgeKey);
-      registerTranslationTarget(summaryBadge, badgeKey);
-      summaryBadge.classList.toggle('bg-emerald-100', isEnabled);
-      summaryBadge.classList.toggle('text-emerald-700', isEnabled);
-      summaryBadge.classList.toggle('bg-gray-200', !isEnabled);
-      summaryBadge.classList.toggle('text-gray-600', !isEnabled);
-    }
-    if (summaryText) {
-      const message = (state.text || "").trim();
-      const fallback = t(defaultSummaryKey);
-      summaryText.textContent = message || fallback;
-      registerTranslationTarget(summaryText, defaultSummaryKey, 'text', {
-        formatter: translated => (message ? message : translated)
-      });
-      summaryText.classList.toggle('text-gray-400', !message);
-    }
-    if (summaryDelay) {
-      const delayVal = Number.isFinite(state.delay) ? Math.max(0, state.delay) : 0;
-      summaryDelay.textContent = t('Delay: {seconds}s', { seconds: delayVal });
-      registerTranslationTarget(summaryDelay, 'Delay: {seconds}s', 'text', {
-        vars: { seconds: delayVal }
-      });
-    }
-    if (summaryImage) {
-      if (state.image) {
-        summaryImage.src = state.image;
-        summaryImage.classList.remove('hidden');
-        if (summaryIcon) summaryIcon.classList.add('hidden');
-      } else {
-        summaryImage.classList.add('hidden');
-        summaryImage.removeAttribute('src');
-        if (summaryIcon) summaryIcon.classList.remove('hidden');
-      }
-    }
-    if (summaryCard) {
-      summaryCard.classList.toggle('opacity-60', !isEnabled);
-    }
-  };
 
   if (!ref) return console.warn("❌ No se encontró la referencia de chatWelcome");
 
@@ -4483,16 +2177,7 @@ function initWelcome() {
     if (val.image) {
       preview.src = val.image;
       preview.classList.remove("hidden");
-    } else {
-      preview.classList.add("hidden");
-      preview.removeAttribute('src');
     }
-    state.enabled = !!val.enabled;
-    state.text = val.text || "";
-    const parsedDelay = parseInt(delay.value);
-    state.delay = Number.isFinite(parsedDelay) ? parsedDelay : 0;
-    state.image = val.image || "";
-    updateSummary();
   });
 
   // Mostrar preview al elegir imagen
@@ -4503,25 +2188,8 @@ function initWelcome() {
     reader.onload = ev => {
       preview.src = ev.target.result;
       preview.classList.remove("hidden");
-      state.image = ev.target.result;
-      updateSummary();
     };
     reader.readAsDataURL(f);
-  });
-
-  enabled.addEventListener('change', () => {
-    state.enabled = !!enabled.checked;
-    updateSummary();
-  });
-
-  text.addEventListener('input', () => {
-    state.text = text.value;
-    updateSummary();
-  });
-
-  delay.addEventListener('input', () => {
-    state.delay = parseInt(delay.value) || 0;
-    updateSummary();
   });
 
   // Guardar en Firebase
@@ -4540,12 +2208,6 @@ function initWelcome() {
       delay: parseInt(delay.value) || 0,
       image: imageUrl
     });
-
-    state.enabled = !!enabled.checked;
-    state.text = text.value.trim();
-    state.delay = parseInt(delay.value) || 0;
-    state.image = imageUrl;
-    updateSummary();
 
     msg.classList.remove("hidden");
     setTimeout(() => msg.classList.add("hidden"), 1500);
