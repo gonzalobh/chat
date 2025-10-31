@@ -75,6 +75,10 @@
     .widget-icon-option img{width:44px;height:44px;object-fit:contain}
     .widget-icon-option:hover{border-color:#93c5fd;background:#eff6ff}
     .widget-icon-option.active{border-color:#2563eb;background:#eff6ff;box-shadow:0 0 0 4px rgba(37,99,235,.12)}
+    .widget-position-btn{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 10px;border-radius:16px;border:1px solid #e5e7eb;font-size:12px;font-weight:500;color:#6b7280;background:#fff;transition:all .2s ease;}
+    .widget-position-btn:hover{color:#111;border-color:#d1d5db;}
+    .widget-position-btn svg{width:22px;height:22px;}
+    .widget-position-btn-active{border-color:#111;color:#111;background:#f4f4f5;box-shadow:0 6px 14px rgba(15,23,42,.12);}
     .chat-columns{align-items:stretch;}
     .chat-columns > .chat-column{height:640px;}
     .chat-column-secondary{background:#fff;border-radius:26px;padding:24px;box-shadow:0 10px 24px rgba(15,23,42,.08);border:1px solid rgba(15,23,42,.08);}
@@ -857,6 +861,23 @@ body.login-view #appContainer {
               <div class="flex items-center gap-4">
                 <input id="chatButtonColor" type="color" class="color-circle rounded-full cursor-pointer border border-gray-300 shadow-sm" />
                 <span class="text-sm font-medium text-gray-600 select-none">Widget Background</span>
+              </div>
+            </div>
+            <div class="space-y-4">
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Ubicación del widget</p>
+              <div class="grid grid-cols-3 gap-3">
+                <button type="button" class="widget-position-btn" data-widget-position="left">
+                  <i data-lucide="align-left"></i>
+                  <span>Izquierda</span>
+                </button>
+                <button type="button" class="widget-position-btn" data-widget-position="center">
+                  <i data-lucide="align-center"></i>
+                  <span>Centro</span>
+                </button>
+                <button type="button" class="widget-position-btn" data-widget-position="right">
+                  <i data-lucide="align-right"></i>
+                  <span>Derecha</span>
+                </button>
               </div>
             </div>
           </div>
@@ -2118,6 +2139,63 @@ const widgetIconTrigger = $('widgetIconTrigger');
 const closeWidgetIconModal = $('closeWidgetIconModal');
 const widgetIconOptions = $$('.widget-icon-option');
 const widgetIconRef = eref('config/widgetIcon');
+const widgetPositionButtons = $$('.widget-position-btn');
+const widgetPositionRef = eref('config/widgetPosition');
+const VALID_WIDGET_POSITIONS = ['left', 'center', 'right'];
+let currentWidgetPosition = 'right';
+
+function normalizeWidgetPosition(value) {
+  const normalized = (value || '').toString().toLowerCase();
+  return VALID_WIDGET_POSITIONS.includes(normalized) ? normalized : 'right';
+}
+
+function applyWidgetPositionPreview(position) {
+  const previewEls = [ $('widgetExample'), $('widgetExampleClone') ].filter(Boolean);
+  previewEls.forEach(el => {
+    if (!el) return;
+    if (position === 'center') {
+      el.style.left = '50%';
+      el.style.right = 'auto';
+      el.style.transform = 'translateX(-50%)';
+    } else if (position === 'left') {
+      el.style.left = '0';
+      el.style.right = 'auto';
+      el.style.transform = 'translateX(0)';
+    } else {
+      el.style.right = '0';
+      el.style.left = 'auto';
+      el.style.transform = 'translateX(0)';
+    }
+  });
+}
+
+function setWidgetPositionUI(position) {
+  currentWidgetPosition = position;
+  widgetPositionButtons.forEach(btn => {
+    const btnPos = normalizeWidgetPosition(btn.dataset.widgetPosition);
+    btn.classList.toggle('widget-position-btn-active', btnPos === position);
+  });
+  applyWidgetPositionPreview(position);
+}
+
+if (widgetPositionButtons.length) {
+  widgetPositionRef.on('value', snap => {
+    const position = normalizeWidgetPosition(snap.val());
+    setWidgetPositionUI(position);
+  });
+
+  widgetPositionButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const desired = normalizeWidgetPosition(btn.dataset.widgetPosition);
+      if (desired === currentWidgetPosition) return;
+      setWidgetPositionUI(desired);
+      canWrite(async () => {
+        await widgetPositionRef.set(desired);
+        toast(t('✔ Widget position updated'));
+      });
+    });
+  });
+}
 
 const updateWidgetPreview = () => {
   const color = $('chatButtonColor')?.value || '#111111';
@@ -2129,6 +2207,8 @@ const updateWidgetPreview = () => {
     el.style.background = color;
     el.style.borderRadius = radiusVal + 'px';
   });
+
+  applyWidgetPositionPreview(currentWidgetPosition);
 
   // Actualiza iconos en ambos + en el botón selector
   [ $('widgetExampleIcon'), $('widgetExampleIconClone'), $('widgetIconTriggerImg') ].forEach(img => {

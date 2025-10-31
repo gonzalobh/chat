@@ -627,6 +627,17 @@ eref("config/chatButtonColor").on("value", s => {
   window.parent.postMessage({ action: "updateChatButtonColor", color }, "*");
 });
 
+const CHAT_WIDGET_POSITIONS = ["left", "center", "right"];
+const normalizeWidgetPosition = (value) => {
+  const normalized = (value || "").toString().toLowerCase();
+  return CHAT_WIDGET_POSITIONS.includes(normalized) ? normalized : "right";
+};
+
+eref("config/widgetPosition").on("value", s => {
+  const position = normalizeWidgetPosition(s.val());
+  window.parent.postMessage({ action: "updateWidgetPosition", position }, "*");
+});
+
   </script>
 
 </body>
