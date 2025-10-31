@@ -771,10 +771,7 @@ body.login-view #appContainer {
                   <span>Template</span>
                 </button>
               </div>
-              <div id="chatTemplatePanel" class="hidden space-y-3 border border-dashed border-gray-300 rounded-2xl p-4 bg-gray-50/70">
-                <p class="text-xs text-gray-500">Selecciona un estilo predefinido. Puedes ajustar los colores luego.</p>
-                <div id="chatTemplateGrid" class="grid gap-3 sm:grid-cols-2"></div>
-              </div>
+              <p class="text-xs text-gray-500">Selecciona un estilo predefinido en la ventana emergente. Puedes ajustar los colores luego.</p>
               <div class="space-y-4">
                 <div>
                   <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Encabezado</p>
@@ -1254,6 +1251,22 @@ body.login-view #appContainer {
   </div>
 </div>
 
+<!-- Modal: Chat templates -->
+<div id="chatTemplateModal" class="fixed inset-0 hidden items-center justify-center bg-black/40 backdrop-blur-sm z-[1200] px-4">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl p-6 space-y-5 relative">
+    <button id="closeChatTemplateModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+      <i data-lucide="x" class="w-5 h-5"></i>
+    </button>
+    <div class="space-y-1 pr-10">
+      <h3 class="text-lg font-semibold text-gray-900">Plantillas del chat</h3>
+      <p class="text-sm text-gray-500">Selecciona una plantilla para aplicar rápidamente una combinación de colores. Luego podrás personalizar los detalles.</p>
+    </div>
+    <div id="chatTemplatePanel" class="space-y-4">
+      <div id="chatTemplateGrid" class="grid gap-3 sm:grid-cols-2 md:grid-cols-3"></div>
+    </div>
+  </div>
+</div>
+
 <!-- Modal: Delete knowledge page -->
 <div id="knowledgeDeleteModal" class="fixed inset-0 hidden items-center justify-center bg-black/40 backdrop-blur-sm z-[1200] px-4">
   <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 space-y-5 relative">
@@ -1463,12 +1476,16 @@ let chatTemplatesInitialized = false;
 let chatTemplatePanelEl = null;
 let chatTemplateGridEl = null;
 let chatTemplateToggleEl = null;
+let chatTemplateModalEl = null;
+let chatTemplateCloseEl = null;
 let chatTemplateRef = null;
 
 function ensureTemplateElements() {
   if (!chatTemplatePanelEl) chatTemplatePanelEl = $('chatTemplatePanel');
   if (!chatTemplateGridEl) chatTemplateGridEl = $('chatTemplateGrid');
   if (!chatTemplateToggleEl) chatTemplateToggleEl = $('toggleTemplatePanel');
+  if (!chatTemplateModalEl) chatTemplateModalEl = $('chatTemplateModal');
+  if (!chatTemplateCloseEl) chatTemplateCloseEl = $('closeChatTemplateModal');
 }
 
 function getTemplateArray(data) {
@@ -1492,10 +1509,20 @@ function getTemplateArray(data) {
 
 function setTemplatePanelVisibility(show) {
   ensureTemplateElements();
-  if (!chatTemplatePanelEl || !chatTemplateToggleEl) return;
-  chatTemplatePanelEl.classList.toggle('hidden', !show);
+  if (!chatTemplateToggleEl) return;
   chatTemplateToggleEl.classList.toggle('template-toggle-active', !!show);
   chatTemplateToggleEl.setAttribute('aria-expanded', show ? 'true' : 'false');
+  if (!chatTemplateModalEl) return;
+  chatTemplateModalEl.classList.toggle('hidden', !show);
+  chatTemplateModalEl.classList.toggle('flex', !!show);
+  if (show) {
+    setTimeout(() => {
+      const firstButton = chatTemplatePanelEl?.querySelector('button[data-template-id]');
+      if (typeof firstButton?.focus === 'function') {
+        firstButton.focus();
+      }
+    }, 100);
+  }
 }
 
 function createTemplateCard(template) {
@@ -1657,18 +1684,27 @@ async function applyTemplateById(templateId) {
 function initChatTemplatesUI() {
   if (chatTemplatesInitialized) return;
   ensureTemplateElements();
-  if (!chatTemplatePanelEl || !chatTemplateGridEl || !chatTemplateToggleEl) return;
+  if (!chatTemplatePanelEl || !chatTemplateGridEl || !chatTemplateToggleEl || !chatTemplateModalEl) return;
 
   chatTemplateRef = chatTemplateRef || eref('config/chatTemplates');
   chatTemplatesInitialized = true;
   chatTemplates = getTemplateArray(null);
 
   chatTemplateToggleEl.addEventListener('click', () => {
-    const willOpen = chatTemplatePanelEl.classList.contains('hidden');
+    const willOpen = chatTemplateModalEl?.classList.contains('hidden');
     setTemplatePanelVisibility(willOpen);
     if (willOpen && !chatTemplates.length) {
       renderChatTemplates();
     }
+  });
+
+  const closeTemplateModal = () => setTemplatePanelVisibility(false);
+  chatTemplateCloseEl?.addEventListener('click', closeTemplateModal);
+  chatTemplateModalEl?.addEventListener('click', (event) => {
+    if (event.target === chatTemplateModalEl) closeTemplateModal();
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeTemplateModal();
   });
 
   chatTemplateRef.on('value', snap => {
