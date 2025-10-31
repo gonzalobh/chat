@@ -256,70 +256,84 @@ header {
 }
 
 .template-card {
-  border: 1px solid #e5e7eb;
-  border-radius: 18px;
-  padding: 16px;
-  background: #fff;
+  border-radius: 20px;
+  padding: 20px;
+  background: #ffffff;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 18px;
   transition: all 0.2s ease;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
 }
 
 .template-card:hover {
-  border-color: #111;
-  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14);
   transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
 }
 
 .template-card.active {
-  border-color: #111;
-  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.18);
+  border-color: rgba(37, 99, 235, 0.35);
+  box-shadow: 0 16px 34px rgba(37, 99, 235, 0.16);
 }
 
 .template-card .template-header {
-  border-radius: 12px;
-  padding: 8px 10px;
-  font-size: 12px;
+  border-radius: 16px;
+  padding: 12px;
+  font-size: 13px;
   font-weight: 600;
   text-align: center;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.1);
 }
 
 .template-card .template-preview {
-  border-radius: 14px;
-  padding: 14px;
+  border-radius: 22px;
+  padding: 22px 20px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 16px;
+  background: #f7f9fc;
+  border: 1px solid rgba(148, 163, 184, 0.12);
 }
 
 .template-card .template-assistant {
   background: #ffffff;
-  border-radius: 12px;
-  padding: 8px 10px;
-  font-size: 12px;
-  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.1);
+  border-radius: 999px;
+  padding: 12px 20px;
+  font-size: 13px;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  align-self: center;
+  text-align: center;
 }
 
 .template-card .template-client {
-  align-self: flex-end;
-  border-radius: 12px;
-  padding: 8px 10px;
-  font-size: 12px;
-  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.12);
+  align-self: center;
+  border-radius: 999px;
+  padding: 12px 20px;
+  font-size: 13px;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.1);
+  text-align: center;
 }
 
 .template-card .template-meta {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 
 .template-card .template-widget-dot {
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
   border-radius: 999px;
   flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.12);
+}
+
+.template-card .template-widget-row {
+  padding: 0 2px;
+  justify-content: center;
+  gap: 8px;
+  color: #6b7280;
 }
 
 .template-toggle-active {
@@ -1538,7 +1552,7 @@ function createTemplateCard(template) {
   preview.appendChild(client);
 
   const widgetRow = document.createElement('div');
-  widgetRow.className = 'flex items-center gap-2 text-xs text-gray-500';
+  widgetRow.className = 'template-widget-row flex items-center text-xs';
   const widgetDot = document.createElement('span');
   widgetDot.className = 'template-widget-dot';
   widgetDot.style.background = template.colors.widgetBackground;
