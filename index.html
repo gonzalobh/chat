@@ -1618,6 +1618,7 @@ function updateActiveTemplateIndicator() {
 async function applyTemplateById(templateId) {
   const tpl = chatTemplates.find(t => t.id === templateId) || getTemplateArray(DEFAULT_CHAT_TEMPLATES).find(t => t.id === templateId);
   if (!tpl) return;
+  setTemplatePanelVisibility(false);
   const colors = tpl.colors || {};
 
   const map = {
