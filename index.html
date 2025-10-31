@@ -256,84 +256,63 @@ header {
 }
 
 .template-card {
-  border-radius: 20px;
-  padding: 20px;
-  background: #ffffff;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  transition: all 0.2s ease;
-  border: 1px solid rgba(148, 163, 184, 0.16);
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
-}
-
-.template-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
-}
-
-.template-card.active {
-  border-color: rgba(37, 99, 235, 0.35);
-  box-shadow: 0 16px 34px rgba(37, 99, 235, 0.16);
-}
-
-.template-card .template-header {
-  border-radius: 16px;
-  padding: 12px;
-  font-size: 13px;
-  font-weight: 600;
-  text-align: center;
-  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.1);
-}
-
-.template-card .template-preview {
-  border-radius: 22px;
-  padding: 22px 20px;
+  border-radius: 24px;
+  padding: 18px;
+  background: #f3f6fb;
   display: flex;
   flex-direction: column;
   gap: 16px;
-  background: #f7f9fc;
-  border: 1px solid rgba(148, 163, 184, 0.12);
+  transition: all 0.2s ease;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  align-items: stretch;
+}
+
+.template-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+.template-card.active {
+  border-color: rgba(59, 130, 246, 0.45);
+  box-shadow: 0 14px 28px rgba(59, 130, 246, 0.16);
+}
+
+.template-card .template-header {
+  border-radius: 18px;
+  padding: 14px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  color: inherit;
+}
+
+.template-card .template-preview {
+  border-radius: 20px;
+  padding: 28px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: #e9eef7;
+  align-items: center;
+}
+
+.template-card .template-assistant,
+.template-card .template-client {
+  border-radius: 999px;
+  padding: 12px 32px;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
 }
 
 .template-card .template-assistant {
   background: #ffffff;
-  border-radius: 999px;
-  padding: 12px 20px;
-  font-size: 13px;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
-  align-self: center;
-  text-align: center;
 }
 
 .template-card .template-client {
-  align-self: center;
-  border-radius: 999px;
-  padding: 12px 20px;
-  font-size: 13px;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.1);
-  text-align: center;
-}
-
-.template-card .template-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.template-card .template-widget-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 999px;
-  flex-shrink: 0;
-  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.12);
-}
-
-.template-card .template-widget-row {
-  padding: 0 2px;
-  justify-content: center;
-  gap: 8px;
-  color: #6b7280;
+  background: #2563eb;
+  color: #ffffff;
 }
 
 .template-toggle-active {
@@ -1540,44 +1519,19 @@ function createTemplateCard(template) {
   const assistant = document.createElement('div');
   assistant.className = 'template-assistant';
   assistant.style.color = template.colors.assistantText;
-  assistant.textContent = 'Hola 👋 ¿En qué te ayudo?';
+  assistant.textContent = 'Chatbot';
 
   const client = document.createElement('div');
   client.className = 'template-client';
   client.style.background = template.colors.clientBackground;
   client.style.color = template.colors.clientText;
-  client.textContent = 'Necesito ayuda';
+  client.textContent = 'Client';
 
   preview.appendChild(assistant);
   preview.appendChild(client);
 
-  const widgetRow = document.createElement('div');
-  widgetRow.className = 'template-widget-row flex items-center text-xs';
-  const widgetDot = document.createElement('span');
-  widgetDot.className = 'template-widget-dot';
-  widgetDot.style.background = template.colors.widgetBackground;
-  widgetRow.appendChild(widgetDot);
-  const widgetText = document.createElement('span');
-  widgetText.textContent = 'Widget';
-  widgetRow.appendChild(widgetText);
-
-  const meta = document.createElement('div');
-  meta.className = 'template-meta';
-  const title = document.createElement('div');
-  title.className = 'text-sm font-semibold text-gray-800';
-  title.textContent = template.name;
-  meta.appendChild(title);
-  if (template.description) {
-    const description = document.createElement('div');
-    description.className = 'text-xs text-gray-500';
-    description.textContent = template.description;
-    meta.appendChild(description);
-  }
-
   btn.appendChild(header);
   btn.appendChild(preview);
-  btn.appendChild(widgetRow);
-  btn.appendChild(meta);
 
   btn.addEventListener('click', () => applyTemplateById(template.id));
 
