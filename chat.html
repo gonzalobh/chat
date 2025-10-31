@@ -179,11 +179,6 @@ const urlParams = new URLSearchParams(location.search);
 let PROXY_URL = urlParams.get('proxy') || "https://hotel-chat-proxy.vercel.app/api/chat";
 // Espera respuesta JSON: { choices: [ { message: { content: "…" } } ] } (OpenAI-style)
 
-const initialModeParam = (urlParams.get('colorMode') || urlParams.get('mode') || '').toLowerCase();
-if (COLOR_MODES.includes(initialModeParam)) {
-  forcedColorMode = initialModeParam;
-}
-
 /* =========================
    UI ELEMENTS
 ========================= */
@@ -194,36 +189,6 @@ const hotelNameEl = document.getElementById('chatHotelName');
 const chatLogo = document.getElementById('chatLogo');
 const chatAvatarHead = document.getElementById('chatAvatarHead');
 
-const COLOR_MODES = ['light', 'dark'];
-const COLOR_DEFAULTS = {
-  light: {
-    chatPrimaryColor: '#111111',
-    chatBackgroundColor: '#ECECEC',
-    chatAssistantTextColor: '#000000',
-    chatClientTextColor: '#FFFFFF',
-    chatHeaderColor: '#FFFFFF',
-    chatHeaderTextColor: '#1F2937'
-  },
-  dark: {
-    chatPrimaryColor: '#1F2937',
-    chatBackgroundColor: '#0B1120',
-    chatAssistantTextColor: '#E2E8F0',
-    chatClientTextColor: '#F8FAFC',
-    chatHeaderColor: '#111827',
-    chatHeaderTextColor: '#F1F5F9'
-  }
-};
-
-const colorPalettes = {
-  light: { ...COLOR_DEFAULTS.light },
-  dark: { ...COLOR_DEFAULTS.dark }
-};
-
-let forcedColorMode = null;
-let activeColorMode = 'light';
-const systemColorQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
-let legacyColorsRequested = false;
-
 function linkify(text){
   if (!text) return "";
   const urlRegex=/((https?:\/\/|www\.)[^\s]+|[a-zA-Z0-9-]+\.[a-z]{2,}(\/\S*)?)/gi;
@@ -232,132 +197,6 @@ function linkify(text){
     return `<a href="${u}" target="_blank" rel="noopener noreferrer">${m}</a>`;
   });
 }
-
-function normalizeHexColor(color) {
-  if (!color) return '';
-  let hex = String(color).trim();
-  if (!hex) return '';
-  if (hex.startsWith('#')) hex = hex.slice(1);
-  if (hex.length === 3) hex = hex.split('').map(ch => ch + ch).join('');
-  if (!/^[0-9a-fA-F]{6}$/.test(hex)) return '';
-  return `#${hex.toUpperCase()}`;
-}
-
-function getPalette(mode) {
-  const target = COLOR_DEFAULTS[mode] ? { ...COLOR_DEFAULTS[mode] } : { ...COLOR_DEFAULTS.light };
-  const stored = colorPalettes[mode] || {};
-  Object.keys(target).forEach(key => {
-    const normalized = normalizeHexColor(stored[key]);
-    if (normalized) target[key] = normalized;
-  });
-  return target;
-}
-
-function getEffectiveColorMode() {
-  if (forcedColorMode && COLOR_MODES.includes(forcedColorMode)) return forcedColorMode;
-  if (systemColorQuery && systemColorQuery.matches && COLOR_MODES.includes('dark')) return 'dark';
-  return 'light';
-}
-
-function applyColorPalette(mode) {
-  if (!COLOR_MODES.includes(mode)) mode = 'light';
-  const palette = getPalette(mode);
-  activeColorMode = mode;
-
-  applyPrimaryColor(palette.chatPrimaryColor || '#111111');
-
-  const chatWin = document.getElementById('chatWindow');
-  const bg = palette.chatBackgroundColor || '#ECECEC';
-  if (chatWin) chatWin.style.background = bg;
-  document.body.style.background = bg;
-
-  const chatHeader = document.getElementById('chatHeader');
-  if (chatHeader) chatHeader.style.background = palette.chatHeaderColor || '#FFFFFF';
-
-  document.documentElement.style.setProperty('--chat-header-text', palette.chatHeaderTextColor || '#1F2937');
-  document.documentElement.style.setProperty('--assistant-text', palette.chatAssistantTextColor || '#000000');
-  document.documentElement.style.setProperty('--chat-client-text', palette.chatClientTextColor || '#FFFFFF');
-  document.documentElement.setAttribute('data-chat-color-mode', mode);
-
-  document.querySelectorAll('.chat-assistant .msg').forEach(m => { m.style.color = palette.chatAssistantTextColor || '#000000'; });
-  document.querySelectorAll('.chat-user').forEach(m => { m.style.color = palette.chatClientTextColor || '#FFFFFF'; });
-}
-
-function updateChatColors() {
-  applyColorPalette(getEffectiveColorMode());
-}
-
-function applyPaletteSnapshot(mode, snapshotValue) {
-  const defaults = COLOR_DEFAULTS[mode] || COLOR_DEFAULTS.light;
-  const palette = { ...defaults };
-  if (snapshotValue && typeof snapshotValue === 'object') {
-    Object.keys(defaults).forEach(key => {
-      const normalized = normalizeHexColor(snapshotValue[key]);
-      if (normalized) palette[key] = normalized;
-    });
-  }
-  colorPalettes[mode] = palette;
-}
-
-function loadLegacyLightColors() {
-  if (legacyColorsRequested) return;
-  legacyColorsRequested = true;
-  const keys = ['chatPrimaryColor','chatBackgroundColor','chatAssistantTextColor','chatClientTextColor','chatHeaderColor','chatHeaderTextColor'];
-  Promise.all(keys.map(key => eref(`config/${key}`).once('value').then(snap => [key, normalizeHexColor(snap.val())]).catch(() => [key, ''])))
-    .then(entries => {
-      const palette = { ...COLOR_DEFAULTS.light };
-      let hasLegacy = false;
-      entries.forEach(([key, val]) => {
-        if (val) {
-          palette[key] = val;
-          hasLegacy = true;
-        }
-      });
-      if (hasLegacy) {
-        colorPalettes.light = palette;
-        updateChatColors();
-      }
-    })
-    .catch(err => console.error('No se pudieron cargar los colores legados', err));
-}
-
-function subscribeToColorPalettes() {
-  COLOR_MODES.forEach(mode => {
-    const ref = eref(`config/chatColors/${mode}`);
-    ref.on('value', snap => {
-      const val = snap.val();
-      if (val && typeof val === 'object') {
-        applyPaletteSnapshot(mode, val);
-      } else {
-        colorPalettes[mode] = { ...COLOR_DEFAULTS[mode] };
-        if (mode === 'light') loadLegacyLightColors();
-      }
-      updateChatColors();
-    });
-  });
-}
-
-const handleSystemColorChange = () => {
-  if (!forcedColorMode) updateChatColors();
-};
-
-if (systemColorQuery) {
-  if (typeof systemColorQuery.addEventListener === 'function') {
-    systemColorQuery.addEventListener('change', handleSystemColorChange);
-  } else if (typeof systemColorQuery.addListener === 'function') {
-    systemColorQuery.addListener(handleSystemColorChange);
-  }
-}
-
-window.addEventListener('message', (event) => {
-  if (!event || typeof event.data !== 'object' || event.data === null) return;
-  if (event.source && event.source !== window.parent) return;
-  const { type, mode } = event.data;
-  if (type === 'CHAT_FORCE_COLOR_MODE' && COLOR_MODES.includes((mode || '').toLowerCase())) {
-    forcedColorMode = mode.toLowerCase();
-    updateChatColors();
-  }
-});
 
 /* =========================
    RENDER MENSAJES
@@ -571,8 +410,47 @@ function applyPrimaryColor(color){
 }
 function initFirebaseBindings() {
   // Colores
-  subscribeToColorPalettes();
-  updateChatColors();
+  eref('config/chatPrimaryColor').on('value', s => applyPrimaryColor(s.val() || '#111111'));
+
+  // 🆕 Fondo del chat
+  eref('config/chatBackgroundColor').on('value', s => {
+    const bg = s.val() || '#ececec';
+    const chatWin = document.getElementById('chatWindow');
+    if (chatWin) chatWin.style.background = bg;
+
+    // Opcional: también el body si el chat ocupa toda la pantalla
+    document.body.style.background = bg;
+  });
+  
+// 🟣 Header Background Color
+eref('config/chatHeaderColor').on('value', s => {
+  const h = s.val() || '#ffffff';
+  const chatHeader = document.getElementById('chatHeader');
+  if (chatHeader) chatHeader.style.background = h;
+});
+
+// 🟦 Header Text Color
+eref('config/chatHeaderTextColor').on('value', s => {
+  const c = s.val() || '#1f2937';
+  document.documentElement.style.setProperty('--chat-header-text', c);
+});
+
+// 🟢 Assistant Text Color
+eref('config/chatAssistantTextColor').on('value', s => {
+  const c = s.val() || '#000000';
+  const msgs = document.querySelectorAll('.chat-assistant .msg');
+  msgs.forEach(m => m.style.color = c);
+  // Guarda el color actual para los nuevos mensajes
+  document.documentElement.style.setProperty('--assistant-text', c);
+});
+
+
+// 🟠 Client Text Color
+eref('config/chatClientTextColor').on('value', s => {
+  const c = s.val() || '#ffffff';
+  document.documentElement.style.setProperty('--chat-client-text', c);
+  document.querySelectorAll('.chat-user').forEach(m => { m.style.color = c; });
+});
 
 
 // 🟡 Avatar en tiempo real
@@ -714,51 +592,107 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
 
 
+/* =========================
+   INTEGRACIÓN CON embed.js (versión estable y limpia)
+========================= */
+function initEmbedIntegration() {
+  window.addEventListener("message", (e) => {
+    if (!e.data || typeof e.data !== "object") return;
+    const { action } = e.data;
+
+    if (action === "getChatButtonIcon") {
+      if (typeof eref !== "function") {
+        console.warn("eref no disponible aún");
+        return;
+      }
+
+      Promise.all([
+        eref("config/widgetIcon").once("value"),
+        eref("config/widgetRadius").once("value")
+      ]).then(([iconSnap, radiusSnap]) => {
+        const iconPath = iconSnap.val() || "";
+        const radius = radiusSnap.val() || 0;
+
+        if (iconPath) {
+          const fullUrl = iconPath.startsWith("http")
+            ? iconPath
+            : `https://tomos.bot/${iconPath}`;
+
+          window.parent.postMessage(
+            { action: "chatButtonIcon", imageUrl: fullUrl, radius },
+            "*"
+          );
+        } else {
+          const svg = `
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+              viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M7 8h10M7 12h6m-6 4h8m-5 8c-1.654 0-3-.346-3-1v-1.691
+                c-3.771-1.466-6-4.718-6-8.309C1 5.373 5.373 1 11 1s10 4.373
+                10 9c0 3.591-2.229 6.843-6 8.309V21c0 .654-1.346 1-3 1z"/>
+            </svg>`;
+
+          window.parent.postMessage(
+            { action: "chatButtonIcon", svg, radius },
+            "*"
+          );
+        }
+      });
+    }
+
+    if (action === "getChatButtonStatus") {
+      window.parent.postMessage(
+        { action: "chatButtonStatus", visible: true },
+        "*"
+      );
+    }
+
+    if (action === "openChatWindow") {
+      const w = document.getElementById("chatWindow");
+      if (w) w.style.display = "flex";
+    }
+  });
+
+  window.parent.postMessage({ action: "chatReady" }, "*");
+
+  if (typeof eref === "function") {
+    eref("config/chatButtonColor").on("value", (s) => {
+      const color = s.val() || "#111111";
+      window.parent.postMessage(
+        { action: "updateChatButtonColor", color },
+        "*"
+      );
+    });
+  }
+}
 
 /* =========================
-   INTEGRACIÓN CON embed.js
+   INICIO GLOBAL (espera Firebase y luego integra embed.js)
 ========================= */
-window.addEventListener("message", (e) => {
-  if (!e.data || typeof e.data !== "object") return;
-  const { action } = e.data;
+document.addEventListener("DOMContentLoaded", () => {
+  lucide.createIcons();
+  initFirebaseBindings();
 
-  if (action === "getChatButtonIcon") {
-    const svg = `
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round"
-          d="M7 8h10M7 12h6m-6 4h8m-5 8c-1.654 0-3-.346-3-1v-1.691c-3.771-1.466-6-4.718-6-8.309C1 5.373 5.373 1 11 1s10 4.373 10 9c0 3.591-2.229 6.843-6 8.309V21c0 .654-1.346 1-3 1z" />
-      </svg>`;
-    window.parent.postMessage({ action: "chatButtonIcon", svg }, "*");
-  }
+  // Cerrar chat
+  document.getElementById("closeChat").addEventListener("click", () => {
+    try {
+      if (window.parent !== window)
+        window.parent.postMessage({ action: "closeChatWindow" }, "*");
+    } catch (e) {}
+  });
 
-  if (action === "getChatButtonStatus") {
-    window.parent.postMessage({ action: "chatButtonStatus", visible: true }, "*");
-  }
-
-  if (action === "openChatWindow") {
-    document.getElementById("chatWindow").style.display = "flex";
-  }
+  // Iniciar integración con embed.js después que Firebase esté listo
+  const tryInit = () => {
+    if (typeof firebase !== "undefined" && typeof eref === "function") {
+      initEmbedIntegration();
+    } else {
+      console.warn("⏳ Esperando Firebase para integración...");
+      setTimeout(tryInit, 600);
+    }
+  };
+  tryInit();
 });
 
-// Avisar que el chat está listo
-window.parent.postMessage({ action: "chatReady" }, "*");
-
-// Sincronizar color del botón desde Firebase
-eref("config/chatButtonColor").on("value", s => {
-  const color = s.val() || "#111111";
-  window.parent.postMessage({ action: "updateChatButtonColor", color }, "*");
-});
-
-const CHAT_WIDGET_POSITIONS = ["left", "center", "right"];
-const normalizeWidgetPosition = (value) => {
-  const normalized = (value || "").toString().toLowerCase();
-  return CHAT_WIDGET_POSITIONS.includes(normalized) ? normalized : "right";
-};
-
-eref("config/widgetPosition").on("value", s => {
-  const position = normalizeWidgetPosition(s.val());
-  window.parent.postMessage({ action: "updateWidgetPosition", position }, "*");
-});
 
   </script>
 
