@@ -37,7 +37,7 @@
     .toggle::after{content:"";position:absolute;top:50%;left:var(--p);width:calc(var(--h) - 2*var(--p));height:calc(var(--h) - 2*var(--p));border-radius:50%;background:#111;transform:translateY(-50%);transition:left .2s,background .2s}
     .toggle:checked{background:#111;border-color:#111}
     .toggle:checked::after{background:#fff;left:calc(var(--w) - var(--h) + var(--p))}
-    input[type="color"]{-webkit-appearance:none;border:none;width:34px;height:34px;border:1px solid #c9c9c9;border-radius:999px;padding:0;cursor:pointer;overflow:hidden}
+    input[type="color"]{-webkit-appearance:none;border:none;width:34px;height:34px;border:1px solid #c9c9c9;border-radius:999px;padding:0;cursor:pointer;overflow:hidden;aspect-ratio:1/1}
     input[type="color"]::-webkit-color-swatch-wrapper{padding:0}
     input[type="color"]::-webkit-color-swatch{border:none;border-radius:999px}
     .color-circle{width:2.5rem;height:2.5rem;border-radius:9999px;padding:0;overflow:hidden;aspect-ratio:1/1}
@@ -793,7 +793,7 @@ body.login-view #appContainer {
                       <span class="text-sm font-medium text-gray-600 select-none">Fondo del encabezado</span>
                     </div>
                     <div class="flex items-center gap-3 border border-gray-200 rounded-2xl px-3 py-3 bg-white shadow-sm">
-                      <input id="chatHeaderTextColor" type="color" class="w-10 h-10 rounded-full border border-gray-200 shadow-sm cursor-pointer">
+                      <input id="chatHeaderTextColor" type="color" class="color-circle rounded-full border border-gray-200 shadow-sm cursor-pointer">
                       <span class="text-sm font-medium text-gray-600 select-none">Texto del encabezado</span>
                     </div>
                   </div>
@@ -806,7 +806,7 @@ body.login-view #appContainer {
                       <span class="text-sm font-medium text-gray-600 select-none">Fondo del chat</span>
                     </div>
                     <div class="flex items-center gap-3 border border-gray-200 rounded-2xl px-3 py-3 bg-white shadow-sm">
-                      <input id="chatAssistantTextColor" type="color" class="w-10 h-10 rounded-full border border-gray-200 shadow-sm cursor-pointer">
+                      <input id="chatAssistantTextColor" type="color" class="color-circle rounded-full border border-gray-200 shadow-sm cursor-pointer">
                       <span class="text-sm font-medium text-gray-600 select-none">Color del texto</span>
                     </div>
                   </div>
@@ -819,7 +819,7 @@ body.login-view #appContainer {
                       <span class="text-sm font-medium text-gray-600 select-none">Fondo del cliente</span>
                     </div>
                     <div class="flex items-center gap-3 border border-gray-200 rounded-2xl px-3 py-3 bg-white shadow-sm">
-                      <input id="chatClientTextColor" type="color" class="w-10 h-10 rounded-full border border-gray-200 shadow-sm cursor-pointer">
+                      <input id="chatClientTextColor" type="color" class="color-circle rounded-full border border-gray-200 shadow-sm cursor-pointer">
                       <span class="text-sm font-medium text-gray-600 select-none">Texto del cliente</span>
                     </div>
                   </div>
@@ -855,7 +855,7 @@ body.login-view #appContainer {
             <div class="space-y-4">
               <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Colors</p>
               <div class="flex items-center gap-4">
-                <input id="chatButtonColor" type="color" class="w-10 h-10 rounded-full cursor-pointer border border-gray-300 shadow-sm" />
+                <input id="chatButtonColor" type="color" class="color-circle rounded-full cursor-pointer border border-gray-300 shadow-sm" />
                 <span class="text-sm font-medium text-gray-600 select-none">Widget Background</span>
               </div>
             </div>
