@@ -488,6 +488,38 @@
     "pt": "Fundo do widget"
   },
   {
+    "key": "Widget Position",
+    "en": "Widget Position",
+    "fr": "Position du widget",
+    "es": "Ubicación",
+    "de": "Widget-Position",
+    "pt": "Posição do widget"
+  },
+  {
+    "key": "Left",
+    "en": "Left",
+    "fr": "Gauche",
+    "es": "Izquierda",
+    "de": "Links",
+    "pt": "Esquerda"
+  },
+  {
+    "key": "Center",
+    "en": "Center",
+    "fr": "Centre",
+    "es": "Centro",
+    "de": "Zentriert",
+    "pt": "Centro"
+  },
+  {
+    "key": "Right",
+    "en": "Right",
+    "fr": "Droite",
+    "es": "Derecha",
+    "de": "Rechts",
+    "pt": "Direita"
+  },
+  {
     "key": "Integration Script",
     "en": "Integration Script",
     "fr": "Script d'intégration",
@@ -1246,6 +1278,14 @@
     "es": "✔ Borde del widget actualizado",
     "de": "✔ Widget-Rand aktualisiert",
     "pt": "✔ Borda do widget atualizada"
+  },
+  {
+    "key": "✔ Widget position updated",
+    "en": "✔ Widget position updated",
+    "fr": "✔ Position du widget mise à jour",
+    "es": "✔ Ubicación del widget actualizada",
+    "de": "✔ Widget-Position aktualisiert",
+    "pt": "✔ Posição do widget atualizada"
   },
   {
     "key": "✔ Background color saved",
