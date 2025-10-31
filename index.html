@@ -692,7 +692,6 @@ body.login-view #appContainer {
                 <i data-lucide="messages-square" class="w-5 h-5"></i>
                 Chat
               </div>
-              <p class="text-sm text-gray-500">Customize the chat appearance.</p>
             </div>
 
             <div class="space-y-6">
@@ -734,7 +733,6 @@ body.login-view #appContainer {
                     <div class="rounded-xl bg-gray-50 px-3 py-2 text-gray-700 leading-relaxed">
                       <p id="welcomeSummaryText" class="leading-relaxed text-gray-700">Add a welcome message to greet your guests.</p>
                     </div>
-                    <p id="welcomeSummaryDelay" class="text-xs text-gray-500">Delay: 2s</p>
                   </div>
                 </div>
               </div>
@@ -1654,7 +1652,9 @@ async function applyTemplateById(templateId) {
     if (pending.length) {
       await Promise.all(pending);
     }
-    toast('✔ Template applied');
+    const templateName = (tpl.name || 'Plantilla').trim();
+    const safeName = templateName.replace(/["`]/g, '');
+    toast(`✔ Plantilla "${safeName}" seleccionada`);
   } catch (err) {
     console.error('No se pudo aplicar el template', err);
     toast('⚠ No se pudo aplicar el template');
@@ -4454,7 +4454,6 @@ function initWelcome() {
   const summaryCard = $("welcomeSummaryCard");
   const summaryBadge = $("welcomeSummaryBadge");
   const summaryText = $("welcomeSummaryText");
-  const summaryDelay = $("welcomeSummaryDelay");
   const summaryImage = $("welcomeSummaryImage");
   const summaryIcon = $("welcomeSummaryIcon");
 
@@ -4485,13 +4484,6 @@ function initWelcome() {
         formatter: translated => (message ? message : translated)
       });
       summaryText.classList.toggle('text-gray-400', !message);
-    }
-    if (summaryDelay) {
-      const delayVal = Number.isFinite(state.delay) ? Math.max(0, state.delay) : 0;
-      summaryDelay.textContent = t('Delay: {seconds}s', { seconds: delayVal });
-      registerTranslationTarget(summaryDelay, 'Delay: {seconds}s', 'text', {
-        vars: { seconds: delayVal }
-      });
     }
     if (summaryImage) {
       if (state.image) {
