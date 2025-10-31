@@ -40,8 +40,8 @@
     input[type="color"]{-webkit-appearance:none;border:none;width:34px;height:34px;border:1px solid #c9c9c9;border-radius:999px;padding:0;cursor:pointer;overflow:hidden}
     input[type="color"]::-webkit-color-swatch-wrapper{padding:0}
     input[type="color"]::-webkit-color-swatch{border:none;border-radius:999px}
-    .iphone{ position:relative; width:320px; height:640px; border-radius:34px; background:#000; padding:0px; box-shadow:0 30px 60px rgba(0,0,0,.25)}
-    .iphone-in{ width:100%; height:100%; border-radius:26px; overflow:hidden; background:white}
+    .iphone{position:relative;width:min(100%,360px);aspect-ratio:9/16;border-radius:34px;background:#000;padding:clamp(14px,2vw,18px);box-shadow:0 30px 60px rgba(0,0,0,.25);margin:0 auto;max-height:min(640px,calc(100vh - 4rem));}
+    .iphone-in{position:relative;width:100%;height:100%;border-radius:26px;overflow:hidden;background:#fff}
     .notch{ position:absolute;left:50%;top:0;transform:translateX(-50%); width:160px;height:22px;background:#000;border-bottom-left-radius:16px;border-bottom-right-radius:16px}
     .chip{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:10px 14px;border:1px solid #e5e7eb;background:#fff;cursor:pointer;font-size:14px}
     .avatar-option{width:56px;height:56px;border-radius:var(--avatar-radius);border:2px solid transparent;background:#f3f4f6;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s ease;position:relative}
@@ -68,8 +68,16 @@
     .widget-icon-option img{width:44px;height:44px;object-fit:contain}
     .widget-icon-option:hover{border-color:#93c5fd;background:#eff6ff}
     .widget-icon-option.active{border-color:#2563eb;background:#eff6ff;box-shadow:0 0 0 4px rgba(37,99,235,.12)}
-    .chat-columns{align-items:stretch;}
-    .chat-columns > .chat-column{height:640px;}
+    .chat-columns{align-items:stretch;gap:clamp(1.5rem,4vw,3rem);}
+    .chat-column{width:100%;min-height:0;}
+    .chat-column:first-child{display:flex;justify-content:center;}
+    .chat-column:first-child > *{width:100%;}
+    @media (max-width:767px){
+      .chat-columns{justify-items:center;}
+      .chat-column{width:100%;}
+      .chat-column:first-child{justify-content:center;}
+      .iphone{width:min(100%,320px);max-height:calc(100vh - 3rem);}
+    }
     .chat-column-secondary{background:#fff;border-radius:26px;padding:24px;box-shadow:0 10px 24px rgba(15,23,42,.08);border:1px solid rgba(15,23,42,.08);}
     .appearance-chip{min-width:94px;justify-content:center;font-weight:500}
 aside {
