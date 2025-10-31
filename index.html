@@ -75,16 +75,6 @@
     .widget-icon-option img{width:44px;height:44px;object-fit:contain}
     .widget-icon-option:hover{border-color:#93c5fd;background:#eff6ff}
     .widget-icon-option.active{border-color:#2563eb;background:#eff6ff;box-shadow:0 0 0 4px rgba(37,99,235,.12)}
-    .widget-placement-preview{transition:all .2s ease}
-    .widget-placement-left{left:0;right:auto;transform:translateX(0)}
-    .widget-placement-right{right:0;left:auto;transform:translateX(0)}
-    .widget-placement-center{left:50%;right:auto;transform:translateX(-50%)}
-    .widget-position-option{display:flex;flex-direction:column;align-items:center;gap:0.5rem;padding:0.75rem;border-radius:1rem;border:1px solid #e5e7eb;background:#fff;cursor:pointer;transition:all .2s ease;text-align:center}
-    .widget-position-option span{font-size:0.875rem;font-weight:500;color:#4b5563}
-    .widget-position-option i{width:20px;height:20px}
-    .widget-position-option:hover{border-color:#93c5fd;background:#f8fbff}
-    .widget-position-option.active{border-color:#2563eb;background:#eff6ff;box-shadow:0 0 0 4px rgba(37,99,235,.12)}
-    .widget-position-option.active span{color:#1d4ed8}
     .chat-columns{align-items:stretch;}
     .chat-columns > .chat-column{height:640px;}
     .chat-column-secondary{background:#fff;border-radius:26px;padding:24px;box-shadow:0 10px 24px rgba(15,23,42,.08);border:1px solid rgba(15,23,42,.08);}
@@ -596,7 +586,7 @@ body.login-view #appContainer {
             </div>
           </div>
 
-          <div id="widgetExampleClone" class="widget-mockup shadow-lg absolute bottom-[-86px] z-10 widget-placement-preview widget-placement-right">
+          <div id="widgetExampleClone" class="widget-mockup shadow-lg absolute right-0 bottom-[-86px] z-10">
             <img id="widgetExampleIconClone" src="widgets/1.png" alt="Widget preview icon" />
           </div>
         </div>
@@ -647,9 +637,17 @@ body.login-view #appContainer {
             </div>
 
             <div class="space-y-4">
-              <div>
-                <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wide">Name</label>
-                <input id="hotelName" class="mt-2 w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-black/70" placeholder="Asistente del hotel" />
+              <div class="space-y-4">
+                <div class="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wide">Name</label>
+                    <input id="hotelName" class="mt-2 w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-black/70" placeholder="Asistente del hotel" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wide">Time Zone</label>
+                    <select id="timeZone" class="mt-2 w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-black/70"></select>
+                  </div>
+                </div>
               </div>
               <div>
                 <label for="personalitySelect" class="block text-xs font-semibold text-gray-600 uppercase tracking-wide">Personality</label>
@@ -686,10 +684,6 @@ body.login-view #appContainer {
             </div>
             <p class="text-sm text-gray-500">Define the periods of activity. Changes are saved automatically.</p>
             <div id="scheduleList" class="space-y-3"></div>
-            <div class="pt-4 border-t border-gray-200">
-              <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-2">Time Zone</label>
-              <select id="timeZone" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-black/70"></select>
-            </div>
           </div>
         </div>
 
@@ -865,26 +859,6 @@ body.login-view #appContainer {
               <div class="flex items-center gap-4">
                 <input id="chatButtonColor" type="color" class="color-circle rounded-full cursor-pointer border border-gray-300 shadow-sm" />
                 <span class="text-sm font-medium text-gray-600 select-none">Widget Background</span>
-              </div>
-            </div>
-            <div class="space-y-3">
-              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Widget Position</p>
-              <div class="grid grid-cols-3 gap-3">
-                <label class="widget-position-option" data-position-value="left">
-                  <input type="radio" name="widgetPosition" value="left" class="sr-only" />
-                  <i data-lucide="align-left" class="text-gray-600"></i>
-                  <span>Left</span>
-                </label>
-                <label class="widget-position-option" data-position-value="center">
-                  <input type="radio" name="widgetPosition" value="center" class="sr-only" />
-                  <i data-lucide="align-center" class="text-gray-600"></i>
-                  <span>Center</span>
-                </label>
-                <label class="widget-position-option active" data-position-value="right">
-                  <input type="radio" name="widgetPosition" value="right" class="sr-only" checked />
-                  <i data-lucide="align-right" class="text-gray-600"></i>
-                  <span>Right</span>
-                </label>
               </div>
             </div>
           </div>
@@ -1366,8 +1340,6 @@ const storage = firebase.storage();
 
 const DEFAULT_WIDGET_ICON = 'widgets/1.png';
 let currentWidgetIcon = DEFAULT_WIDGET_ICON;
-const WIDGET_POSITIONS = ['left', 'center', 'right'];
-let currentWidgetPosition = 'right';
 
 // ====== Helpers ======
 const $ = (id) => document.getElementById(id);
@@ -1854,54 +1826,49 @@ $('btnLogin').addEventListener('click', async () => {
 $('btnLogout').addEventListener('click', () => auth.signOut());
 
 auth.onAuthStateChanged(async (u) => {
-  try {
-    if (u) {
-      // 🔍 Detect company automatically by user email
-      let empresaDetectada = null;
-      try {
-        const snapshot = await db.ref().once('value');
-        const data = snapshot.val() || {};
-        for (const emp in data) {
-          const adminEmail = data[emp]?.config?.adminEmail;
-          if (adminEmail && adminEmail.toLowerCase() === u.email.toLowerCase()) {
-            empresaDetectada = emp;
-            break;
-          }
+  if (u) {
+    // 🔍 Detect company automatically by user email
+    let empresaDetectada = null;
+    try {
+      const snapshot = await db.ref().once('value');
+      const data = snapshot.val() || {};
+      for (const emp in data) {
+        const adminEmail = data[emp]?.config?.adminEmail;
+        if (adminEmail && adminEmail.toLowerCase() === u.email.toLowerCase()) {
+          empresaDetectada = emp;
+          break;
         }
-      } catch (err) {
-        console.error(t('Error finding company:'), err);
       }
-
-      if (empresaDetectada) {
-        EMPRESA = empresaDetectada;
-        localStorage.setItem('empresa', EMPRESA);
-        $('empresaBadge').textContent = EMPRESA;
-        $('empresaText').textContent = EMPRESA;
-        console.log(t('✅ Company detected automatically:'), EMPRESA);
-      } else {
-        console.warn(t('⚠ No company found for this email, using previous value:'), EMPRESA);
-      }
-
-      showAppView();
-
-      await initAll();
-
-      // ✅ Mostrar chat en vivo dentro del mockup
-      const live = document.getElementById('liveChatFrame');
-      if (live && EMPRESA) {
-        live.src = `https://tomos.bot/chat.html?empresa=${encodeURIComponent(EMPRESA)}`;
-        console.log(t('💬 Live chat loaded for'), EMPRESA);
-      }
-
-    } else {
-      showLoginView();
+    } catch (err) {
+      console.error(t('Error finding company:'), err);
     }
-  } catch (err) {
-    console.error('Error while initializing app', err);
-  } finally {
-    const loader = $('pageLoader');
-    if (loader) loader.style.display = 'none';
+
+    if (empresaDetectada) {
+      EMPRESA = empresaDetectada;
+      localStorage.setItem('empresa', EMPRESA);
+      $('empresaBadge').textContent = EMPRESA;
+      $('empresaText').textContent = EMPRESA;
+      console.log(t('✅ Company detected automatically:'), EMPRESA);
+    } else {
+      console.warn(t('⚠ No company found for this email, using previous value:'), EMPRESA);
+    }
+
+    showAppView();
+
+    await initAll();
+
+    // ✅ Mostrar chat en vivo dentro del mockup
+    const live = document.getElementById('liveChatFrame');
+    if (live && EMPRESA) {
+      live.src = `https://tomos.bot/chat.html?empresa=${encodeURIComponent(EMPRESA)}`;
+      console.log(t('💬 Live chat loaded for'), EMPRESA);
+    }
+
+  } else {
+    showLoginView();
   }
+
+  $('pageLoader').style.display = 'none';
 });
 
 
@@ -1938,15 +1905,9 @@ function getTimeZones(){
 
 // ====== Init All ======
 async function initAll(){
-  if (window.lucide && typeof lucide.createIcons === 'function') {
-    try {
-      lucide.createIcons();
-    } catch (err) {
-      console.warn('Unable to create Lucide icons', err);
-    }
-  }
-  initTabs();
-  applyPreview();
+  lucide.createIcons(); 
+  initTabs(); 
+  applyPreview(); 
   await refreshPermissions();
   initApariencia(); 
   initSettingsTab(); 
@@ -2245,58 +2206,6 @@ $('widgetRadius').addEventListener('input', (e) => {
   });
   updateWidgetPreview();
   applyPreview();
-});
-
-
-const widgetPositionInputs = Array.from(document.querySelectorAll('input[name="widgetPosition"]'));
-const widgetPositionRef = eref('config/widgetPosition');
-
-function updateWidgetPlacementPreview(position) {
-  const target = WIDGET_POSITIONS.includes(position) ? position : 'right';
-  [ $('widgetExample'), $('widgetExampleClone') ].forEach(el => {
-    if (!el) return;
-    el.classList.remove('widget-placement-left', 'widget-placement-center', 'widget-placement-right');
-    el.classList.add(`widget-placement-${target}`);
-  });
-}
-
-function setWidgetPositionUI(position) {
-  const target = WIDGET_POSITIONS.includes(position) ? position : 'right';
-  widgetPositionInputs.forEach(input => {
-    const isSelected = input.value === target;
-    if (input.checked !== isSelected) input.checked = isSelected;
-    const option = input.closest('.widget-position-option');
-    if (option) option.classList.toggle('active', isSelected);
-  });
-  updateWidgetPlacementPreview(target);
-}
-
-widgetPositionRef.once('value', snap => {
-  const stored = snap.val();
-  currentWidgetPosition = WIDGET_POSITIONS.includes(stored) ? stored : 'right';
-  setWidgetPositionUI(currentWidgetPosition);
-});
-
-widgetPositionInputs.forEach(input => {
-  input.addEventListener('change', () => {
-    if (!input.checked) return;
-    const newValue = input.value;
-    if (!WIDGET_POSITIONS.includes(newValue)) {
-      setWidgetPositionUI(currentWidgetPosition);
-      return;
-    }
-    if (newValue === currentWidgetPosition) {
-      setWidgetPositionUI(currentWidgetPosition);
-      return;
-    }
-    currentWidgetPosition = newValue;
-    setWidgetPositionUI(currentWidgetPosition);
-    canWrite(async () => {
-      await widgetPositionRef.set(currentWidgetPosition);
-      toast(t('✔ Widget position updated'));
-      applyPreview();
-    });
-  });
 });
 
 
@@ -2899,8 +2808,6 @@ function applyPreview() {
   [widgetExampleIcon, widgetExampleIconClone, widgetIconTriggerImg].forEach(img => {
     if (img) img.src = currentWidgetIcon || DEFAULT_WIDGET_ICON;
   });
-
-  updateWidgetPlacementPreview(currentWidgetPosition);
 
   // 🪄 Fondo y texto dentro del iframe del chat
   const iframe = document.getElementById('liveChatFrame');
