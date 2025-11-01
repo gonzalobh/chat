@@ -1904,13 +1904,14 @@ async function refreshPermissions() {
   const user = auth.currentUser;
   if (!user) { canWriteFlag = false; setWriteEnabled(false); return; }
 
+  const userEmail = (user.email || '').toLowerCase();
   $('authEmail').textContent = user.email || '';
   const adminEmailSnap = await eref('config/adminEmail').once('value');
-  const adminEmail = adminEmailSnap.val();
+  const adminEmail = (adminEmailSnap.val() || '').toLowerCase();
   const globalAdminSnap = await db.ref('globalAdmins/' + user.uid).once('value');
   const isGlobal = !!globalAdminSnap.val();
 
-  canWriteFlag = isGlobal || (adminEmail && user.email && adminEmail === user.email);
+  canWriteFlag = isGlobal || (!!adminEmail && !!userEmail && adminEmail === userEmail);
   setWriteEnabled(canWriteFlag);
   document.getElementById('permBannerA').classList.toggle('hidden', canWriteFlag);
   document.getElementById('permBannerS').classList.toggle('hidden', canWriteFlag);
