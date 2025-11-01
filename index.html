@@ -441,7 +441,7 @@ body.login-view #appContainer {
   <!-- Loader -->
   <div id="pageLoader" class="fixed inset-0 bg-white/95 flex flex-col items-center justify-center z-[9999]">
     <div class="animate-spin rounded-full h-14 w-14 border-[3px] border-gray-300 border-t-gray-900"></div>
-    <p class="mt-4 text-gray-600 text-sm">Loading…</p>
+    <p id="pageLoaderText" class="mt-4 text-gray-600 text-sm">Loading…</p>
   </div>
 
   <!-- Header minimal -->
@@ -456,10 +456,10 @@ body.login-view #appContainer {
     <!-- Empresa + Email + Logout -->
     <div class="flex items-center gap-4">
       <div class="flex items-center gap-2" id="botSelectorWrap">
-        <select id="botSelect" class="border border-gray-200 rounded-md px-2 py-1.5 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-black/40 min-w-[150px]">
+        <select id="botSelect" class="border border-gray-200 rounded-md px-2 py-1 text-xs leading-tight bg-white focus:outline-none focus:ring-1 focus:ring-black/40 min-w-[110px] h-8">
           <option value="" disabled selected>Loading bots…</option>
         </select>
-        <button id="btnNewBot" class="px-2.5 py-1.5 text-sm border border-gray-200 rounded-md bg-white hover:bg-gray-100 transition">
+        <button id="btnNewBot" class="inline-flex items-center justify-center px-2.5 h-8 text-xs leading-tight border border-gray-200 rounded-md bg-white hover:bg-gray-100 transition">
           + New Bot
         </button>
       </div>
@@ -1572,6 +1572,19 @@ function initBotSelector() {
   select.addEventListener('change', (event) => {
     const nextBot = event.target.value;
     if (!nextBot || nextBot === BOT) return;
+    const selectedOption = event.target.options[event.target.selectedIndex];
+    const selectedLabel = (selectedOption?.textContent || '').trim() || nextBot;
+    const loader = $('pageLoader');
+    if (loader) {
+      const loaderTextEl = $('pageLoaderText');
+      if (loaderTextEl) {
+        const baseLoading = (typeof t === 'function' ? t('Loading…') : 'Loading…') || 'Loading…';
+        const cleanedBase = baseLoading.replace(/(…|\.{1,3})$/, '').trim();
+        const prefix = cleanedBase ? `${cleanedBase} ` : '';
+        loaderTextEl.textContent = `${prefix}${selectedLabel}…`;
+      }
+      loader.style.display = 'flex';
+    }
     const url = new URL(window.location.href);
     url.searchParams.set('bot', nextBot);
     localStorage.setItem(storageKey, nextBot);
