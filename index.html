@@ -1906,15 +1906,41 @@ async function refreshPermissions() {
 
   const userEmail = (user.email || '').toLowerCase();
   $('authEmail').textContent = user.email || '';
-  const adminEmailSnap = await eref('config/adminEmail').once('value');
-  const adminEmail = (adminEmailSnap.val() || '').toLowerCase();
+
+  const adminEmails = new Set();
+
+  const botAdminSnap = await eref('config/adminEmail').once('value');
+  const botAdminEmail = (botAdminSnap.val() || '').toLowerCase();
+  if (botAdminEmail) adminEmails.add(botAdminEmail);
+
+  try {
+    const companyAdminSnap = await db.ref(`empresas/${EMPRESA}/config/adminEmail`).once('value');
+    const companyAdminEmail = (companyAdminSnap.val() || '').toLowerCase();
+    if (companyAdminEmail) adminEmails.add(companyAdminEmail);
+  } catch (err) {
+    console.warn('No se pudo leer config/adminEmail a nivel empresa', err);
+  }
+
+  if (!adminEmails.size) {
+    try {
+      const legacyAdminSnap = await db.ref(`${EMPRESA}/config/adminEmail`).once('value');
+      const legacyAdminEmail = (legacyAdminSnap.val() || '').toLowerCase();
+      if (legacyAdminEmail) adminEmails.add(legacyAdminEmail);
+    } catch (err) {
+      console.warn('No se pudo leer config/adminEmail legacy', err);
+    }
+  }
+
   const globalAdminSnap = await db.ref('globalAdmins/' + user.uid).once('value');
   const isGlobal = !!globalAdminSnap.val();
 
-  canWriteFlag = isGlobal || (!!adminEmail && !!userEmail && adminEmail === userEmail);
+  canWriteFlag = isGlobal || (userEmail && adminEmails.has(userEmail));
   setWriteEnabled(canWriteFlag);
-  document.getElementById('permBannerA').classList.toggle('hidden', canWriteFlag);
-  document.getElementById('permBannerS').classList.toggle('hidden', canWriteFlag);
+
+  const permBannerA = document.getElementById('permBannerA');
+  const permBannerS = document.getElementById('permBannerS');
+  if (permBannerA) permBannerA.classList.toggle('hidden', canWriteFlag);
+  if (permBannerS) permBannerS.classList.toggle('hidden', canWriteFlag);
 }
 
 function setWriteEnabled(enabled) {
