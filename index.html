@@ -455,10 +455,19 @@ body.login-view #appContainer {
 
     <!-- Empresa + Email + Logout -->
     <div class="flex items-center gap-4">
+      <div class="flex items-center gap-2" id="botSelectorWrap">
+        <select id="botSelect" class="border border-gray-200 rounded-md px-2 py-1.5 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-black/40 min-w-[150px]">
+          <option value="" disabled selected>Loading bots…</option>
+        </select>
+        <button id="btnNewBot" class="px-2.5 py-1.5 text-sm border border-gray-200 rounded-md bg-white hover:bg-gray-100 transition">
+          + New Bot
+        </button>
+      </div>
       <div class="flex flex-col items-end text-right leading-tight">
         <span id="empresaBadge" class="text-[8px] bg-black text-white px-1 py-[1px] rounded mb-[2px]">
           —
         </span>
+        <span id="botBadge" class="text-[10px] text-gray-500 leading-tight">—</span>
         <span id="authEmail" class="text-xs text-gray-500">—</span>
       </div>
       <button id="btnLogout" class="px-3 py-1.5 bg-red-600 text-white rounded-md hidden">
@@ -496,8 +505,9 @@ body.login-view #appContainer {
     </button>
   </nav>
 
-  <div class="mt-6 text-xs text-gray-500 px-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-    Empresa: <b id="empresaText">—</b>
+  <div class="mt-6 text-xs text-gray-500 px-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 space-y-1">
+    <div>Empresa: <b id="empresaText">—</b></div>
+    <div>Bot: <b id="botText">—</b></div>
   </div>
 </aside>
 
@@ -1361,9 +1371,169 @@ function getEmpresa() {
 }
 
 let EMPRESA = getEmpresa();
-$('empresaBadge').textContent = EMPRESA;
-$('empresaText').textContent = EMPRESA;
-function eref(path) { return db.ref(`${EMPRESA}/${path}`); }
+
+function getBot() {
+  const url = new URL(window.location.href);
+  const storageKey = `bot:${EMPRESA}`;
+  const raw = (url.searchParams.get('bot') || localStorage.getItem(storageKey) || 'default').trim();
+  const bot = raw || 'default';
+  localStorage.setItem(storageKey, bot);
+  return bot;
+}
+
+let BOT = getBot();
+
+const empresaBadgeEl = $('empresaBadge');
+if (empresaBadgeEl) empresaBadgeEl.textContent = EMPRESA;
+const empresaTextEl = $('empresaText');
+if (empresaTextEl) empresaTextEl.textContent = EMPRESA;
+
+function updateBotLabels(label) {
+  const text = (label || '').trim() || BOT;
+  const botBadge = $('botBadge');
+  if (botBadge) botBadge.textContent = text;
+  const botText = $('botText');
+  if (botText) botText.textContent = text;
+}
+
+updateBotLabels(BOT);
+
+function getBotBasePath(botId = BOT) {
+  return `empresas/${EMPRESA}/bots/${botId}`;
+}
+
+function eref(path) {
+  return db.ref(`${getBotBasePath()}/${path}`);
+}
+
+function getBotsRef() {
+  return db.ref(`empresas/${EMPRESA}/bots`);
+}
+
+function slugifyBotId(name = '') {
+  return name
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 40);
+}
+
+async function ensureBotDataExists() {
+  try {
+    const botRef = db.ref(getBotBasePath());
+    const botSnap = await botRef.once('value');
+    if (botSnap.exists()) return;
+
+    const legacySnap = await db.ref(`${EMPRESA}`).once('value');
+    if (legacySnap.exists()) {
+      await botRef.set(legacySnap.val());
+    } else {
+      await botRef.set({ config: {} });
+    }
+  } catch (err) {
+    console.error('No se pudo preparar el bot seleccionado', err);
+  }
+}
+
+let botSelectorInitialized = false;
+function initBotSelector() {
+  if (botSelectorInitialized) return;
+  const select = $('botSelect');
+  if (!select) return;
+
+  botSelectorInitialized = true;
+  const createBtn = $('btnNewBot');
+  const storageKey = `bot:${EMPRESA}`;
+  const botsRef = getBotsRef();
+  let cachedBots = {};
+
+  botsRef.on('value', (snap) => {
+    cachedBots = snap.val() || {};
+    const entries = Object.entries(cachedBots);
+    select.innerHTML = '';
+
+    if (!entries.length) {
+      const option = document.createElement('option');
+      option.value = BOT;
+      option.textContent = BOT;
+      option.selected = true;
+      select.appendChild(option);
+      updateBotLabels(BOT);
+      return;
+    }
+
+    entries
+      .sort((a, b) => {
+        const nameA = (a[1]?.config?.hotelName || a[0] || '').toString().toLowerCase();
+        const nameB = (b[1]?.config?.hotelName || b[0] || '').toString().toLowerCase();
+        if (nameA < nameB) return -1;
+        if (nameA > nameB) return 1;
+        return 0;
+      })
+      .forEach(([id, data]) => {
+        const option = document.createElement('option');
+        option.value = id;
+        option.textContent = data?.config?.hotelName || id;
+        select.appendChild(option);
+      });
+
+    if (!cachedBots[BOT]) {
+      const fallbackOption = document.createElement('option');
+      fallbackOption.value = BOT;
+      fallbackOption.textContent = BOT;
+      select.appendChild(fallbackOption);
+    }
+
+    select.value = BOT;
+    const activeBot = cachedBots[BOT];
+    updateBotLabels(activeBot?.config?.hotelName || BOT);
+  });
+
+  select.addEventListener('change', (event) => {
+    const nextBot = event.target.value;
+    if (!nextBot || nextBot === BOT) return;
+    const url = new URL(window.location.href);
+    url.searchParams.set('bot', nextBot);
+    localStorage.setItem(storageKey, nextBot);
+    window.location.href = url.toString();
+  });
+
+  if (createBtn) {
+    createBtn.addEventListener('click', () => {
+      canWrite(async () => {
+        const name = prompt('Name for the new bot?');
+        if (!name) return;
+        const trimmed = name.trim();
+        if (!trimmed) return;
+
+        try {
+          const baseSlug = slugifyBotId(trimmed);
+          let candidate = baseSlug || `bot-${Date.now().toString(36)}`;
+          let suffix = 2;
+          while (cachedBots[candidate]) {
+            candidate = `${baseSlug || 'bot'}-${suffix++}`;
+          }
+
+          const currentSnapshot = await db.ref(getBotBasePath()).once('value');
+          const payload = JSON.parse(JSON.stringify(currentSnapshot.val() || {}));
+          payload.config = payload.config || {};
+          payload.config.hotelName = trimmed;
+
+          await botsRef.child(candidate).set(payload);
+          localStorage.setItem(storageKey, candidate);
+          const url = new URL(window.location.href);
+          url.searchParams.set('bot', candidate);
+          window.location.href = url.toString();
+        } catch (err) {
+          console.error('No se pudo crear el bot', err);
+          toast('⚠ Could not create the bot');
+        }
+      });
+    });
+  }
+}
 
 const DEFAULT_CHAT_TEMPLATES = {
   midnight: {
@@ -1751,7 +1921,7 @@ function setWriteEnabled(enabled) {
     'saveChatPrimaryColor','saveChatButtonColor','uploadLogo','deleteLogo',
     'uploadAvatar','deleteAvatar','fontSelect','tgChatVisible','hotelName',
     'timeZone','saveContext','contextText','widgetIconTrigger',
-    'addKnowledgePage','knowledgeUrlInput','confirmAddKnowledge','personalitySelect'
+    'addKnowledgePage','knowledgeUrlInput','confirmAddKnowledge','personalitySelect','btnNewBot'
   ];
   ids.forEach(id => {
     const el = $(id);
@@ -1841,16 +2011,35 @@ $('btnLogout').addEventListener('click', () => auth.signOut());
 
 auth.onAuthStateChanged(async (u) => {
   if (u) {
-    // 🔍 Detect company automatically by user email
+    const email = (u.email || '').toLowerCase();
     let empresaDetectada = null;
+    let botDetectado = null;
+
     try {
-      const snapshot = await db.ref().once('value');
-      const data = snapshot.val() || {};
-      for (const emp in data) {
-        const adminEmail = data[emp]?.config?.adminEmail;
-        if (adminEmail && adminEmail.toLowerCase() === u.email.toLowerCase()) {
-          empresaDetectada = emp;
-          break;
+      const empresasSnap = await db.ref('empresas').once('value');
+      const empresasData = empresasSnap.val() || {};
+      outer: for (const [empresaId, empresaData] of Object.entries(empresasData)) {
+        const bots = empresaData?.bots || {};
+        for (const [botId, botData] of Object.entries(bots)) {
+          const adminEmail = (botData?.config?.adminEmail || '').toLowerCase();
+          if (adminEmail && adminEmail === email) {
+            empresaDetectada = empresaId;
+            botDetectado = botId;
+            break outer;
+          }
+        }
+      }
+
+      if (!empresaDetectada) {
+        const legacySnap = await db.ref().once('value');
+        const legacyData = legacySnap.val() || {};
+        for (const [empresaId, empresaData] of Object.entries(legacyData)) {
+          if (empresaId === 'empresas' || empresaId === 'globalAdmins') continue;
+          const adminEmail = (empresaData?.config?.adminEmail || '').toLowerCase();
+          if (adminEmail && adminEmail === email) {
+            empresaDetectada = empresaId;
+            break;
+          }
         }
       }
     } catch (err) {
@@ -1860,22 +2049,36 @@ auth.onAuthStateChanged(async (u) => {
     if (empresaDetectada) {
       EMPRESA = empresaDetectada;
       localStorage.setItem('empresa', EMPRESA);
-      $('empresaBadge').textContent = EMPRESA;
-      $('empresaText').textContent = EMPRESA;
-      console.log(t('✅ Company detected automatically:'), EMPRESA);
+      if (empresaBadgeEl) empresaBadgeEl.textContent = EMPRESA;
+      if (empresaTextEl) empresaTextEl.textContent = EMPRESA;
+      BOT = botDetectado || getBot();
+      localStorage.setItem(`bot:${EMPRESA}`, BOT);
+      updateBotLabels(BOT);
+      console.log(t('✅ Company detected automatically:'), EMPRESA, BOT);
     } else {
+      BOT = getBot();
       console.warn(t('⚠ No company found for this email, using previous value:'), EMPRESA);
     }
 
+    const currentUrl = new URL(window.location.href);
+    currentUrl.searchParams.set('empresa', EMPRESA);
+    currentUrl.searchParams.set('bot', BOT);
+    window.history.replaceState({}, '', currentUrl);
+
+    await ensureBotDataExists();
+
     showAppView();
 
+    initBotSelector();
     await initAll();
 
-    // ✅ Mostrar chat en vivo dentro del mockup
     const live = document.getElementById('liveChatFrame');
     if (live && EMPRESA) {
-      live.src = `https://tomos.bot/chat.html?empresa=${encodeURIComponent(EMPRESA)}`;
-      console.log(t('💬 Live chat loaded for'), EMPRESA);
+      const chatUrl = new URL('https://tomos.bot/chat.html');
+      chatUrl.searchParams.set('empresa', EMPRESA);
+      chatUrl.searchParams.set('bot', BOT);
+      live.src = chatUrl.toString();
+      console.log(t('💬 Live chat loaded for'), EMPRESA, BOT);
     }
 
   } else {
@@ -1919,8 +2122,9 @@ function getTimeZones(){
 
 // ====== Init All ======
 async function initAll(){
-  lucide.createIcons(); 
-  initTabs(); 
+  lucide.createIcons();
+  initBotSelector();
+  initTabs();
   applyPreview(); 
   await refreshPermissions();
   initApariencia(); 
@@ -2448,7 +2652,7 @@ $('logoFile').addEventListener('change', e => canWrite(() => {
       cropper.destroy();
 
       const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.9));
-      const path = `logos/${EMPRESA}_${Date.now()}.jpg`;
+      const path = `logos/${EMPRESA}_${BOT}_${Date.now()}.jpg`;
       const ref = storage.ref(path);
       const task = ref.put(blob);
 
@@ -2743,7 +2947,7 @@ toast(t('✔ Avatar updated'));
         cropper.destroy();
 
         const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.9));
-        const path = `avatars/${EMPRESA}_${Date.now()}.jpg`;
+        const path = `avatars/${EMPRESA}_${BOT}_${Date.now()}.jpg`;
         const ref = storage.ref(path);
         const task = ref.put(blob);
 
@@ -2942,6 +3146,7 @@ function initSettingsTab(){
     const label = name || 'Your bot';
     const display = $('botNameDisplay');
     if (display) display.textContent = label;
+    updateBotLabels(label);
   };
 
   nameRef.once('value', s=> {
@@ -3015,10 +3220,12 @@ function initSettingsTab(){
 
 
   // Chat test link
-  const link = `https://tomos.bot/chat.html?empresa=${encodeURIComponent(EMPRESA)}`;
-  $('chatTestLink').value = link;
-  $('copyChatLink').onclick = ()=>{ navigator.clipboard.writeText(link); toast(t('Copiado')); };
-  $('openChatLink').onclick = ()=> window.open(link, '_blank');
+  const chatUrl = new URL('https://tomos.bot/chat.html');
+  chatUrl.searchParams.set('empresa', EMPRESA);
+  chatUrl.searchParams.set('bot', BOT);
+  $('chatTestLink').value = chatUrl.toString();
+  $('copyChatLink').onclick = ()=>{ navigator.clipboard.writeText(chatUrl.toString()); toast(t('Copiado')); };
+  $('openChatLink').onclick = ()=> window.open(chatUrl.toString(), '_blank');
 }
 
 
@@ -3690,7 +3897,9 @@ function initSchedule() {
 
 // === Function to initialize Integration tab ===
 function initIntegration(){
-  const code = `<script src="https://tomos.bot/embed.js" data-empresa="${EMPRESA}"><\\/script>`;
+  const scriptAttrs = [`src="https://tomos.bot/embed.js"`, `data-empresa="${EMPRESA}"`];
+  scriptAttrs.push(`data-bot="${BOT}"`);
+  const code = `<script ${scriptAttrs.join(' ')}><\\/script>`;
   const box = $('embedScriptBox');
   box.value = code;
 
@@ -4584,7 +4793,7 @@ function initWelcome() {
     let imageUrl = preview.src || "";
     // Si el usuario cargó un nuevo archivo, subir a Storage
     if (file.files.length) {
-      const storageRef = firebase.storage().ref(`${EMPRESA}/welcome.jpg`);
+      const storageRef = firebase.storage().ref(`${getBotBasePath()}/welcome.jpg`);
       await storageRef.put(file.files[0]);
       imageUrl = await storageRef.getDownloadURL();
     }

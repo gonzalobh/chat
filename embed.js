@@ -1,7 +1,18 @@
 (() => {
   const script = document.currentScript;
-  const empresa = script.dataset.empresa || "Boletum";
-  const iframeSrc = `https://tomos.bot/chat.html?empresa=${empresa}`;
+  let scriptUrl = null;
+  try {
+    scriptUrl = script?.src ? new URL(script.src, window.location.href) : null;
+  } catch (err) {
+    scriptUrl = null;
+  }
+
+  const empresaAttr = (script?.dataset?.empresa || scriptUrl?.searchParams.get("empresa") || "Boletum").trim();
+  const botAttr = (script?.dataset?.bot || scriptUrl?.searchParams.get("bot") || "").trim();
+  const empresa = empresaAttr || "Boletum";
+  const params = new URLSearchParams({ empresa });
+  if (botAttr) params.set("bot", botAttr);
+  const iframeSrc = `https://tomos.bot/chat.html?${params.toString()}`;
 
   // 💅 Estilos del widget
   const style = document.createElement("style");
