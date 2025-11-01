@@ -180,26 +180,54 @@ function getBot() {
 let BOT = getBot();
 
 let useLegacyBotPath = false;
+let botCollectionPath = null;
+
+function getDefaultBotCollectionPath() {
+  return `empresas/${EMPRESA}/bots`;
+}
+
+function getConfigBotCollectionPath() {
+  return `empresas/${EMPRESA}/config/bots`;
+}
+
+function getLegacyBotCollectionPath() {
+  return `${EMPRESA}/bots`;
+}
+
 function getBotBasePath() {
+  if (botCollectionPath) {
+    return `${botCollectionPath}/${BOT}`;
+  }
   return useLegacyBotPath ? `${EMPRESA}` : `empresas/${EMPRESA}/bots/${BOT}`;
 }
 
 function eref(path){ return db.ref(`${getBotBasePath()}/${path}`); }
 
 async function prepareBotPath() {
-  try {
-    const botSnap = await db.ref(`empresas/${EMPRESA}/bots/${BOT}`).once('value');
-    if (botSnap.exists()) {
+  const candidates = [
+    getDefaultBotCollectionPath(),
+    getConfigBotCollectionPath(),
+    getLegacyBotCollectionPath()
+  ];
+
+  for (const path of candidates) {
+    try {
+      await db.ref(`${path}/${BOT}`).once('value');
+      botCollectionPath = path;
       useLegacyBotPath = false;
       return;
+    } catch (err) {
+      if (err?.code === 'PERMISSION_DENIED') {
+        continue;
+      }
+      console.warn('No se pudo verificar la ruta del bot', path, err);
     }
-  } catch (err) {
-    console.warn('No se pudo verificar la ruta del bot', err);
   }
 
   try {
     const legacySnap = await db.ref(`${EMPRESA}`).once('value');
     if (legacySnap.exists()) {
+      botCollectionPath = null;
       useLegacyBotPath = true;
       return;
     }
@@ -207,6 +235,7 @@ async function prepareBotPath() {
     console.warn('No se pudo verificar la ruta legacy del bot', err);
   }
 
+  botCollectionPath = getConfigBotCollectionPath();
   useLegacyBotPath = false;
 }
 
