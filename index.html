@@ -1482,48 +1482,6 @@ function slugifyBotId(name = '') {
     .slice(0, 40);
 }
 
-async function renameBotIfNeeded(newName = '') {
-  if (!BOT_COLLECTION_PATH) return;
-
-  const baseSlug = slugifyBotId(newName || '');
-  if (!baseSlug || baseSlug === BOT) return;
-
-  try {
-    const botsRef = getBotsRef();
-    const botsSnap = await botsRef.once('value');
-    const bots = botsSnap.val() || {};
-    const currentBotId = BOT;
-    delete bots[currentBotId];
-
-    let candidate = baseSlug;
-    let suffix = 2;
-    while (bots[candidate]) {
-      candidate = `${baseSlug}-${suffix++}`;
-    }
-
-    if (candidate === currentBotId) return;
-
-    const currentBotPath = getBotBasePath(currentBotId);
-    const currentRef = db.ref(currentBotPath);
-    const currentSnap = await currentRef.once('value');
-    if (!currentSnap.exists()) return;
-
-    await botsRef.child(candidate).set(currentSnap.val());
-    await currentRef.remove();
-
-    BOT = candidate;
-    localStorage.setItem(`bot:${EMPRESA}`, BOT);
-    updateBotLabels(newName || BOT);
-
-    const url = new URL(window.location.href);
-    url.searchParams.set('bot', BOT);
-    window.location.replace(url.toString());
-  } catch (err) {
-    console.error('No se pudo renombrar el bot', err);
-    toast('⚠ Could not rename the bot');
-  }
-}
-
 async function ensureBotDataExists() {
   try {
     const botRef = db.ref(getBotBasePath());
@@ -3338,7 +3296,6 @@ function initSettingsTab(){
       hotelNameInput.value = newName;
       updateBotNameDisplay();
       toast(t('✔ Saved'));
-      await renameBotIfNeeded(newName);
     });
   });
 
