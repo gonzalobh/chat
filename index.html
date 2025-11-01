@@ -118,124 +118,6 @@ button.bg-black:hover {
   box-shadow: 0 3px 6px rgba(0,0,0,0.1);
 }
 
-.app-modal-overlay {
-  position: fixed;
-  inset: 0;
-  padding: 1.25rem;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  background: rgba(15, 23, 42, 0.45);
-  backdrop-filter: blur(8px);
-  opacity: 0;
-  transition: opacity 0.22s ease;
-  pointer-events: none;
-  z-index: 1200;
-}
-
-.app-modal-overlay.flex {
-  display: flex;
-}
-
-.app-modal-overlay.is-open {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.app-modal {
-  position: relative;
-  width: 100%;
-  background: rgba(255, 255, 255, 0.96);
-  border-radius: 22px;
-  padding: 1.75rem;
-  box-shadow: 0 30px 70px rgba(15, 23, 42, 0.28);
-  border: 1px solid rgba(226, 232, 240, 0.65);
-  transform: translateY(12px) scale(0.97);
-  opacity: 0;
-  transition: transform 0.28s ease, opacity 0.22s ease;
-}
-
-.app-modal-overlay.is-open .app-modal {
-  transform: translateY(0) scale(1);
-  opacity: 1;
-}
-
-.app-modal h3 {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #0f172a;
-}
-
-.app-modal p {
-  color: #475569;
-}
-
-.app-modal-actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0.75rem;
-}
-
-.app-modal-secondary,
-.app-modal-primary {
-  border-radius: 12px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  padding: 0.55rem 1.2rem;
-  transition: all 0.2s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-}
-
-.app-modal-secondary {
-  background: rgba(248, 250, 252, 0.92);
-  border: 1px solid rgba(148, 163, 184, 0.35);
-  color: #1f2937;
-}
-
-.app-modal-secondary:hover {
-  background: rgba(241, 245, 249, 0.96);
-}
-
-.app-modal-primary {
-  background: linear-gradient(135deg, #0f172a, #111827);
-  color: #ffffff;
-  box-shadow: 0 12px 30px rgba(17, 24, 39, 0.25);
-}
-
-.app-modal-primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 16px 36px rgba(17, 24, 39, 0.28);
-}
-
-.app-modal-danger {
-  background: linear-gradient(135deg, #dc2626, #b91c1c);
-  color: #ffffff;
-  box-shadow: 0 12px 30px rgba(220, 38, 38, 0.28);
-}
-
-.app-modal-danger:hover {
-  box-shadow: 0 16px 36px rgba(220, 38, 38, 0.32);
-}
-
-.app-modal-primary:disabled,
-.app-modal-secondary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-#languageSelect {
-  min-width: 110px;
-  padding: 0.35rem 1.8rem 0.35rem 0.75rem;
-  font-size: 0.78rem;
-  border-radius: 10px;
-}
-
 /* === Sidebar buttons === */
 .sidebar-btn {
   color: #777 !important; /* gris suave para las no activas */
@@ -559,7 +441,7 @@ body.login-view #appContainer {
   <!-- Loader -->
   <div id="pageLoader" class="fixed inset-0 bg-white/95 flex flex-col items-center justify-center z-[9999]">
     <div class="animate-spin rounded-full h-14 w-14 border-[3px] border-gray-300 border-t-gray-900"></div>
-    <p id="pageLoaderText" class="mt-4 text-gray-600 text-sm">Loading…</p>
+    <p class="mt-4 text-gray-600 text-sm">Loading…</p>
   </div>
 
   <!-- Header minimal -->
@@ -591,7 +473,7 @@ body.login-view #appContainer {
       <button id="btnLogout" class="px-3 py-1.5 bg-red-600 text-white rounded-md hidden">
         Log out
       </button>
-      <select id="languageSelect" class="border border-gray-200 rounded-md px-2 py-1 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-black/40 notranslate">
+      <select id="languageSelect" class="border border-gray-200 rounded-md px-2 py-1.5 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-black/40 notranslate">
         <option value="en">English</option>
         <option value="fr">Français</option>
         <option value="es">Español</option>
@@ -1327,10 +1209,9 @@ body.login-view #appContainer {
 
 <!-- 🧩 Modal de recorte de Header -->
 <div id="cropperModal"
-  class="app-modal-overlay hidden z-[1300] px-4">
-  <div class="app-modal max-w-sm w-full text-center space-y-4">
-    <h3 class="font-semibold">Crop Header Image</h3>
-    <p id="cropperModalSubtitle" class="text-sm">Adjust the frame so your header looks perfect.</p>
+  class="fixed inset-0 bg-black/70 hidden items-center justify-center z-[9998]">
+  <div class="bg-white rounded-2xl p-6 shadow-xl max-w-sm w-full text-center">
+    <h3 class="font-semibold mb-4">Crop Header Image</h3>
     <div class="w-full aspect-square bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
       <img id="cropperImage" class="max-w-full max-h-[300px]" />
     </div>
@@ -1340,13 +1221,13 @@ body.login-view #appContainer {
       <div id="logoBar" class="h-2 w-0 bg-black transition-all duration-200"></div>
     </div>
 
-    <div class="app-modal-actions mt-2">
+    <div class="flex justify-center gap-3 mt-5">
       <button id="cancelCrop"
-        class="app-modal-secondary">
+        class="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100">
         Cancel
       </button>
       <button id="confirmCrop"
-        class="app-modal-primary">
+        class="px-4 py-2 rounded-lg bg-black text-white hover:bg-gray-800">
         Save
       </button>
     </div>
@@ -1355,35 +1236,9 @@ body.login-view #appContainer {
 
 
 
-<!-- Modal: Create new bot -->
-<div id="newBotModal" class="app-modal-overlay hidden px-4">
-  <div class="app-modal w-full max-w-md space-y-5 relative">
-    <button id="closeNewBotModal" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
-      <i data-lucide="x" class="w-5 h-5"></i>
-    </button>
-    <div class="space-y-1 pr-8">
-      <h3 id="newBotModalTitle">Create a new bot</h3>
-      <p id="newBotModalDescription" class="text-sm">Give it a friendly name so you can identify it later.</p>
-    </div>
-    <form id="newBotForm" class="space-y-4">
-      <div class="space-y-2">
-        <label id="newBotNameLabel" for="newBotName" class="text-xs font-semibold tracking-wide uppercase text-slate-500">Bot name</label>
-        <input id="newBotName" type="text" maxlength="60" placeholder="e.g. Boutique Paris" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/20" />
-        <p id="newBotError" class="text-sm text-red-600 hidden"></p>
-      </div>
-      <div class="app-modal-actions pt-1">
-        <button type="button" id="cancelNewBot" class="app-modal-secondary">Cancel</button>
-        <button type="submit" id="confirmNewBot" class="app-modal-primary">
-          <span>Create bot</span>
-        </button>
-      </div>
-    </form>
-  </div>
-</div>
-
 <!-- Modal: Add knowledge page -->
-<div id="knowledgeModal" class="app-modal-overlay hidden px-4">
-  <div class="app-modal w-full max-w-xl space-y-4 relative">
+<div id="knowledgeModal" class="fixed inset-0 hidden items-center justify-center bg-black/40 backdrop-blur-sm z-[1200] px-4">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-xl p-6 space-y-4 relative">
     <button id="closeKnowledgeModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
       <i data-lucide="x" class="w-5 h-5"></i>
     </button>
@@ -1393,13 +1248,13 @@ body.login-view #appContainer {
     </div>
     <div class="space-y-2">
       <label for="knowledgeUrlInput" class="text-xs font-medium text-gray-600 uppercase tracking-wide">Page URL</label>
-      <input id="knowledgeUrlInput" type="url" placeholder="https://example.com/page" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black" />
+      <input id="knowledgeUrlInput" type="url" placeholder="https://example.com/page" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black" />
     </div>
     <p id="knowledgeModalError" class="text-sm text-red-600 hidden"></p>
     <p id="knowledgeModalStatus" class="text-sm text-gray-500 hidden"></p>
-    <div class="app-modal-actions pt-2">
-      <button id="cancelKnowledgeModal" class="app-modal-secondary text-sm">Cancel</button>
-      <button id="confirmAddKnowledge" class="app-modal-primary text-sm flex items-center gap-2">
+    <div class="flex items-center justify-end gap-2 pt-2">
+      <button id="cancelKnowledgeModal" class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">Cancel</button>
+      <button id="confirmAddKnowledge" class="px-4 py-2 bg-black text-white rounded-lg text-sm flex items-center gap-2">
         <span>Add</span>
       </button>
     </div>
@@ -1407,8 +1262,8 @@ body.login-view #appContainer {
 </div>
 
 <!-- Modal: Chat templates -->
-<div id="chatTemplateModal" class="app-modal-overlay hidden px-4">
-  <div class="app-modal w-full max-w-2xl space-y-5 relative">
+<div id="chatTemplateModal" class="fixed inset-0 hidden items-center justify-center bg-black/40 backdrop-blur-sm z-[1200] px-4">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl p-6 space-y-5 relative">
     <button id="closeChatTemplateModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
       <i data-lucide="x" class="w-5 h-5"></i>
     </button>
@@ -1423,8 +1278,8 @@ body.login-view #appContainer {
 </div>
 
 <!-- Modal: Delete knowledge page -->
-<div id="knowledgeDeleteModal" class="app-modal-overlay hidden px-4">
-  <div class="app-modal w-full max-w-md space-y-5 relative">
+<div id="knowledgeDeleteModal" class="fixed inset-0 hidden items-center justify-center bg-black/40 backdrop-blur-sm z-[1200] px-4">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 space-y-5 relative">
     <button id="closeKnowledgeDeleteModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
       <i data-lucide="x" class="w-5 h-5"></i>
     </button>
@@ -1440,9 +1295,9 @@ body.login-view #appContainer {
         </p>
       </div>
     </div>
-    <div class="app-modal-actions pt-2">
-      <button id="cancelDeleteKnowledge" class="app-modal-secondary text-sm">Cancel</button>
-      <button id="confirmDeleteKnowledge" class="app-modal-primary app-modal-danger text-sm">Delete</button>
+    <div class="flex items-center justify-end gap-2 pt-2">
+      <button id="cancelDeleteKnowledge" class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">Cancel</button>
+      <button id="confirmDeleteKnowledge" class="px-4 py-2 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700">Delete</button>
     </div>
   </div>
 </div>
@@ -1480,9 +1335,6 @@ const registerTranslationTarget = (node, key, target = 'text', options = {}) => 
   translationManager.register(node, key, target, options);
 };
 
-registerTranslationTarget($('cropperModalSubtitle'), 'Adjust the frame so your header looks perfect.');
-registerTranslationTarget($('cropperAvatarSubtitle'), 'Center the image so your assistant looks great everywhere.');
-
 // ====== Firebase config ======
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyC2c3S_NtouIjHPrk5LM5c0DQoTWyBrzH4",
@@ -1504,25 +1356,6 @@ let currentWidgetIcon = DEFAULT_WIDGET_ICON;
 // ====== Helpers ======
 const $ = (id) => document.getElementById(id);
 const $$ = (sel) => Array.from(document.querySelectorAll(sel));
-
-function showAppModal(modal) {
-  if (!modal) return;
-  modal.classList.remove('hidden');
-  modal.classList.add('flex');
-  requestAnimationFrame(() => {
-    modal.classList.add('is-open');
-  });
-}
-
-function hideAppModal(modal) {
-  if (!modal) return;
-  modal.classList.remove('is-open');
-  setTimeout(() => {
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
-  }, 220);
-}
-
 function toast(msg){
   const t = $('toast');
   t.textContent = msg;
@@ -1678,139 +1511,6 @@ function initBotSelector() {
   const botsRef = getBotsRef();
   let cachedBots = {};
 
-  const loaderEl = $('pageLoader');
-  const loaderTextEl = $('pageLoaderText');
-
-  const resolveBotLabel = (botId) =>
-    (cachedBots?.[botId]?.config?.hotelName || botId || '').toString();
-
-  const showBotLoadingState = (botId, fallbackLabel = '') => {
-    if (!loaderEl) return;
-    const label = (fallbackLabel || resolveBotLabel(botId) || '').trim();
-    const displayLabel = label || botId || '';
-    if (loaderTextEl) {
-      const base = (t('Loading…') || 'Loading…').replace(/…$/, '').trim();
-      const parts = [base, displayLabel].filter(Boolean);
-      loaderTextEl.textContent = parts.join(' ');
-    }
-    loaderEl.style.display = 'flex';
-  };
-
-  const newBotModal = $('newBotModal');
-  const newBotForm = $('newBotForm');
-  const newBotInput = $('newBotName');
-  const newBotError = $('newBotError');
-  const newBotCancel = $('cancelNewBot');
-  const newBotConfirm = $('confirmNewBot');
-  const newBotClose = $('closeNewBotModal');
-  const newBotTitle = $('newBotModalTitle');
-  const newBotDescription = $('newBotModalDescription');
-  const newBotNameLabel = $('newBotNameLabel');
-
-  const resetNewBotError = () => {
-    if (!newBotError) return;
-    newBotError.textContent = '';
-    newBotError.classList.add('hidden');
-  };
-
-  const showNewBotError = (message, key = null) => {
-    if (!newBotError) return;
-    newBotError.textContent = message;
-    newBotError.classList.toggle('hidden', !message);
-    if (key) registerTranslationTarget(newBotError, key);
-  };
-
-  const resetNewBotModal = () => {
-    if (newBotInput) newBotInput.value = '';
-    resetNewBotError();
-  };
-
-  const openNewBotModal = () => {
-    if (!newBotModal) return;
-    resetNewBotModal();
-    showAppModal(newBotModal);
-    setTimeout(() => newBotInput?.focus(), 70);
-  };
-
-  const closeNewBotModal = () => {
-    if (!newBotModal) return;
-    hideAppModal(newBotModal);
-  };
-
-  const setNewBotModalLoading = (loading) => {
-    [newBotInput, newBotCancel, newBotConfirm].forEach((el) => {
-      if (!el) return;
-      el.disabled = loading;
-      if (el === newBotConfirm) {
-        el.classList.toggle('opacity-60', loading);
-      }
-    });
-  };
-
-  if (newBotModal) {
-    newBotModal.addEventListener('click', (event) => {
-      if (event.target === newBotModal) closeNewBotModal();
-    });
-  }
-  newBotCancel?.addEventListener('click', closeNewBotModal);
-  newBotClose?.addEventListener('click', closeNewBotModal);
-
-  registerTranslationTarget(newBotTitle, 'Create a new bot');
-  registerTranslationTarget(newBotDescription, 'Give it a friendly name so you can identify it later.');
-  registerTranslationTarget(newBotNameLabel, 'Bot name');
-  registerTranslationTarget(newBotInput, 'e.g. Boutique Paris', 'placeholder');
-  registerTranslationTarget(newBotCancel, 'Cancel');
-  registerTranslationTarget(newBotConfirm, 'Create bot');
-
-  const createBotFromName = async (trimmedName) => {
-    const baseSlug = slugifyBotId(trimmedName);
-    let candidate = baseSlug || `bot-${Date.now().toString(36)}`;
-    let suffix = 2;
-    while (cachedBots[candidate]) {
-      candidate = `${baseSlug || 'bot'}-${suffix++}`;
-    }
-
-    const currentSnapshot = await db.ref(getBotBasePath()).once('value');
-    const payload = JSON.parse(JSON.stringify(currentSnapshot.val() || {}));
-    payload.config = payload.config || {};
-    payload.config.hotelName = trimmedName;
-
-    await botsRef.child(candidate).set(payload);
-    localStorage.setItem(storageKey, candidate);
-    return candidate;
-  };
-
-  newBotForm?.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    if (!newBotInput) return;
-    const trimmed = (newBotInput.value || '').trim();
-    if (!trimmed) {
-      showNewBotError(t('Please provide a name for the bot.'), 'Please provide a name for the bot.');
-      return;
-    }
-    resetNewBotError();
-
-    await canWrite(async () => {
-      setNewBotModalLoading(true);
-      try {
-        const candidate = await createBotFromName(trimmed);
-        closeNewBotModal();
-        showBotLoadingState(candidate, trimmed);
-        const url = new URL(window.location.href);
-        url.searchParams.set('bot', candidate);
-        window.location.href = url.toString();
-      } catch (err) {
-        console.error('No se pudo crear el bot', err);
-        showNewBotError(
-          err?.message || t('Could not create the bot. Please try again.'),
-          'Could not create the bot. Please try again.'
-        );
-      } finally {
-        setNewBotModalLoading(false);
-      }
-    });
-  });
-
   if (!BOT_COLLECTION_PATH) {
     select.innerHTML = '';
     const option = document.createElement('option');
@@ -1872,7 +1572,6 @@ function initBotSelector() {
   select.addEventListener('change', (event) => {
     const nextBot = event.target.value;
     if (!nextBot || nextBot === BOT) return;
-    showBotLoadingState(nextBot);
     const url = new URL(window.location.href);
     url.searchParams.set('bot', nextBot);
     localStorage.setItem(storageKey, nextBot);
@@ -1881,13 +1580,6 @@ function initBotSelector() {
 
   if (createBtn) {
     createBtn.addEventListener('click', () => {
-      if (newBotModal && newBotForm && newBotInput) {
-        canWrite(async () => {
-          openNewBotModal();
-        });
-        return;
-      }
-
       canWrite(async () => {
         const name = prompt('Name for the new bot?');
         if (!name) return;
@@ -1895,8 +1587,20 @@ function initBotSelector() {
         if (!trimmed) return;
 
         try {
-          const candidate = await createBotFromName(trimmed);
-          showBotLoadingState(candidate, trimmed);
+          const baseSlug = slugifyBotId(trimmed);
+          let candidate = baseSlug || `bot-${Date.now().toString(36)}`;
+          let suffix = 2;
+          while (cachedBots[candidate]) {
+            candidate = `${baseSlug || 'bot'}-${suffix++}`;
+          }
+
+          const currentSnapshot = await db.ref(getBotBasePath()).once('value');
+          const payload = JSON.parse(JSON.stringify(currentSnapshot.val() || {}));
+          payload.config = payload.config || {};
+          payload.config.hotelName = trimmed;
+
+          await botsRef.child(candidate).set(payload);
+          localStorage.setItem(storageKey, candidate);
           const url = new URL(window.location.href);
           url.searchParams.set('bot', candidate);
           window.location.href = url.toString();
@@ -2772,12 +2476,14 @@ updateWidgetPreview();
 
 const closeWidgetModal = () => {
   if (!widgetIconModal) return;
-  hideAppModal(widgetIconModal);
+  widgetIconModal.classList.add('hidden');
+  widgetIconModal.classList.remove('flex');
 };
 
 const openWidgetModal = () => {
   if (!widgetIconModal) return;
-  showAppModal(widgetIconModal);
+  widgetIconModal.classList.remove('hidden');
+  widgetIconModal.classList.add('flex');
 };
 
 widgetIconTrigger?.addEventListener('click', openWidgetModal);
@@ -3033,7 +2739,8 @@ $('logoFile').addEventListener('change', e => canWrite(() => {
   reader.onload = (ev) => {
     // Show cropping modal
     $('cropperImage').src = ev.target.result;
-    showAppModal($('cropperModal'));
+    $('cropperModal').classList.remove('hidden');
+    $('cropperModal').classList.add('flex');
 
     let cropper;
     $('cropperImage').onload = () => {
@@ -3050,13 +2757,13 @@ $('logoFile').addEventListener('change', e => canWrite(() => {
 
     $('cancelCrop').onclick = () => {
       cropper.destroy();
-      hideAppModal($('cropperModal'));
+      $('cropperModal').classList.add('hidden');
       e.target.value = ''; // clear input
     };
 
     $('confirmCrop').onclick = async () => {
       const canvas = cropper.getCroppedCanvas({ width: 400, height: 400 });
-      hideAppModal($('cropperModal'));
+      $('cropperModal').classList.add('hidden');
       cropper.destroy();
 
       const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.9));
@@ -3327,7 +3034,8 @@ toast(t('✔ Avatar updated'));
     const reader = new FileReader();
     reader.onload = ev => {
       $('cropperImageAvatar').src = ev.target.result;
-      showAppModal($('cropperModalAvatar'));
+      $('cropperModalAvatar').classList.remove('hidden');
+      $('cropperModalAvatar').classList.add('flex');
 
       let cropper;
       $('cropperImageAvatar').onload = () => {
@@ -3344,13 +3052,13 @@ toast(t('✔ Avatar updated'));
 
       $('cancelCropAvatar').onclick = () => {
         cropper.destroy();
-        hideAppModal($('cropperModalAvatar'));
+        $('cropperModalAvatar').classList.add('hidden');
         e.target.value = '';
       };
 
       $('confirmCropAvatar').onclick = async () => {
         const canvas = cropper.getCroppedCanvas({ width: 400, height: 400 });
-        hideAppModal($('cropperModalAvatar'));
+        $('cropperModalAvatar').classList.add('hidden');
         cropper.destroy();
 
         const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.9));
@@ -3898,7 +3606,8 @@ function initKnowledge() {
   // 🚫 función formatWithAI eliminada completamente
 
   function openModal() {
-    showAppModal(modal);
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
     modalInput.value = '';
     modalError.classList.add('hidden');
     modalStatus.classList.add('hidden');
@@ -3906,7 +3615,8 @@ function initKnowledge() {
   }
 
   function closeModal() {
-    hideAppModal(modal);
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
     modalInput.value = '';
     modalError.classList.add('hidden');
     modalStatus.classList.add('hidden');
@@ -3982,12 +3692,14 @@ function initKnowledge() {
   function openDeleteModal(page) {
     if (!deleteModal || !deleteModalTitle) return;
     deleteModalTitle.textContent = page?.title || t('this page');
-    showAppModal(deleteModal);
+    deleteModal.classList.remove('hidden');
+    deleteModal.classList.add('flex');
   }
 
   function closeDeleteModal() {
     if (!deleteModal) return;
-    hideAppModal(deleteModal);
+    deleteModal.classList.add('hidden');
+    deleteModal.classList.remove('flex');
     pageToDeleteId = '';
   }
 
@@ -5227,16 +4939,16 @@ function initWelcome() {
 
 <!-- 🎯 Selector de icono del widget -->
 <div id="widgetIconModal"
-  class="app-modal-overlay hidden px-4 z-[1300]">
-  <div class="app-modal w-full max-w-md space-y-5">
-    <div class="flex items-center justify-between">
-      <h3 class="text-lg font-semibold">Choose the widget icon</h3>
+  class="fixed inset-0 bg-black/70 hidden items-center justify-center z-[9998]">
+  <div class="bg-white rounded-2xl p-6 shadow-xl max-w-md w-full">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="font-semibold text-lg">Choose the widget icon</h3>
       <button type="button" id="closeWidgetIconModal"
         class="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition">
         <i data-lucide="x" class="w-4 h-4"></i>
       </button>
     </div>
-    <p class="text-sm text-gray-500">Select one of the available icons for your widget.</p>
+    <p class="text-sm text-gray-500 mb-4">Select one of the available icons for your widget.</p>
     <div class="grid grid-cols-3 gap-4">
       <button type="button" class="widget-icon-option" data-widget-icon="widgets/1.png">
         <img src="widgets/1.png" alt="Icon 1" />
@@ -5254,10 +4966,9 @@ function initWelcome() {
 
 <!-- 🧑‍🎨 Avatar Crop Modal -->
 <div id="cropperModalAvatar"
-  class="app-modal-overlay hidden z-[1300] px-4">
-  <div class="app-modal max-w-sm w-full text-center space-y-4">
-    <h3 class="font-semibold">Crop Avatar</h3>
-    <p id="cropperAvatarSubtitle" class="text-sm">Center the image so your assistant looks great everywhere.</p>
+  class="fixed inset-0 bg-black/70 hidden items-center justify-center z-[9998]">
+  <div class="bg-white rounded-2xl p-6 shadow-xl max-w-sm w-full text-center">
+    <h3 class="font-semibold mb-4">Crop Avatar</h3>
     <div class="w-full aspect-square bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
       <img id="cropperImageAvatar" class="max-w-full max-h-[300px]" />
     </div>
@@ -5267,11 +4978,11 @@ function initWelcome() {
       <div id="avatarBar" class="h-2 w-0 bg-black transition-all duration-200"></div>
     </div>
 
-    <div class="app-modal-actions mt-2">
+    <div class="flex justify-center gap-3 mt-5">
       <button id="cancelCropAvatar"
-        class="app-modal-secondary text-sm">Cancel</button>
+        class="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 text-sm">Cancel</button>
       <button id="confirmCropAvatar"
-        class="app-modal-primary text-sm">Save</button>
+        class="px-4 py-2 rounded-lg bg-black text-white hover:bg-gray-800 text-sm">Save</button>
     </div>
   </div>
 </div>
