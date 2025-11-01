@@ -150,211 +150,6 @@ button.bg-black:hover {
   color: #111 !important;
 }
 
-/* === Bot selector & modal === */
-#botSelectorWrap {
-  gap: 0.65rem !important;
-}
-
-.bot-select-wrapper {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  min-width: 160px;
-}
-
-.bot-select-wrapper .bot-select-control {
-  -webkit-appearance: none;
-  appearance: none;
-  background: linear-gradient(135deg, #ffffff, #f6f7f9);
-  border: 1px solid #d1d5db;
-  border-radius: 12px;
-  padding: 0.45rem 2.6rem 0.45rem 0.85rem;
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: #111827;
-  line-height: 1.2;
-  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
-}
-
-.bot-select-wrapper .bot-select-control:hover {
-  border-color: #111827;
-  transform: translateY(-1px);
-  box-shadow: 0 18px 34px rgba(15, 23, 42, 0.16);
-}
-
-.bot-select-wrapper .bot-select-control:focus {
-  outline: none;
-  border-color: #111827;
-  box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.14);
-}
-
-.bot-select-wrapper .bot-select-control:disabled {
-  color: #9ca3af;
-  background: #f3f4f6;
-  border-color: #e5e7eb;
-  box-shadow: none;
-  transform: none;
-  cursor: not-allowed;
-}
-
-.bot-select-wrapper::after {
-  content: '';
-  position: absolute;
-  right: 16px;
-  width: 8px;
-  height: 8px;
-  border-bottom: 2px solid #6b7280;
-  border-right: 2px solid #6b7280;
-  transform: rotate(45deg);
-  pointer-events: none;
-  top: calc(50% - 4px);
-}
-
-#btnNewBot {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.45rem 0.95rem;
-  min-height: 36px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #111827, #000000);
-  color: #ffffff;
-  font-size: 0.78rem;
-  font-weight: 600;
-  border: none;
-  box-shadow: 0 14px 30px rgba(17, 24, 39, 0.18);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
-}
-
-#btnNewBot:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 18px 38px rgba(17, 24, 39, 0.22);
-  filter: brightness(1.05);
-}
-
-#btnNewBot:active {
-  transform: translateY(0);
-  box-shadow: 0 10px 22px rgba(17, 24, 39, 0.18);
-}
-
-#btnNewBot:disabled {
-  opacity: 0.65;
-  cursor: not-allowed;
-  filter: none;
-  box-shadow: none;
-}
-
-.modal-backdrop {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  background: rgba(15, 23, 42, 0.55);
-  z-index: 9999;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.25s ease;
-}
-
-.modal-backdrop.modal-open {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.modal-panel {
-  width: 100%;
-  max-width: 420px;
-  background: #ffffff;
-  border-radius: 20px;
-  padding: 28px 30px;
-  box-shadow: 0 30px 60px rgba(15, 23, 42, 0.28);
-  transform: translateY(18px) scale(0.97);
-  opacity: 0;
-  transition: transform 0.25s ease, opacity 0.25s ease;
-}
-
-.modal-backdrop.modal-open .modal-panel {
-  transform: translateY(0) scale(1);
-  opacity: 1;
-}
-
-.modal-title {
-  font-size: 1.15rem;
-  font-weight: 600;
-  color: #111827;
-  margin-bottom: 0.5rem;
-}
-
-.modal-subtitle {
-  font-size: 0.92rem;
-  color: #6b7280;
-  margin-bottom: 1.25rem;
-}
-
-.modal-input {
-  width: 100%;
-  border-radius: 12px;
-  border: 1px solid #d1d5db;
-  padding: 0.65rem 0.85rem;
-  font-size: 0.95rem;
-  color: #111827;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.modal-input:focus {
-  outline: none;
-  border-color: #111827;
-  box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.14);
-}
-
-.modal-actions {
-  margin-top: 1.75rem;
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.75rem;
-}
-
-.modal-btn {
-  border-radius: 12px;
-  padding: 0.55rem 1.15rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  transition: all 0.2s ease;
-}
-
-.modal-btn.modal-secondary {
-  background: #ffffff;
-  border: 1px solid #d1d5db;
-  color: #6b7280;
-}
-
-.modal-btn.modal-secondary:hover {
-  color: #111827;
-  border-color: #9ca3af;
-}
-
-.modal-btn.modal-primary {
-  background: linear-gradient(135deg, #111827, #000000);
-  color: #ffffff;
-  border: none;
-  box-shadow: 0 18px 36px rgba(17, 24, 39, 0.22);
-}
-
-.modal-btn.modal-primary:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 22px 42px rgba(17, 24, 39, 0.26);
-}
-
-.modal-btn.modal-primary:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
 /* === Botón Cerrar Sesión (mismo estilo que Save) === */
 #btnLogout {
   background: linear-gradient(to bottom, #f7f7f7, #eaeaea) !important;
@@ -649,21 +444,6 @@ body.login-view #appContainer {
     <p id="pageLoaderText" class="mt-4 text-gray-600 text-sm">Loading…</p>
   </div>
 
-  <!-- New bot modal -->
-  <div id="newBotModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="newBotModalTitle">
-    <div class="modal-panel">
-      <h2 id="newBotModalTitle" class="modal-title">Name for the new bot?</h2>
-      <p class="modal-subtitle">Choose a friendly name to identify it across your workspace.</p>
-      <form id="newBotForm" class="space-y-4">
-        <input id="newBotNameInput" type="text" class="modal-input" placeholder="Example: Front desk concierge" autocomplete="off" />
-        <div class="modal-actions">
-          <button id="newBotCancel" type="button" class="modal-btn modal-secondary">Cancel</button>
-          <button id="newBotConfirm" type="submit" class="modal-btn modal-primary">Create bot</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
   <!-- Header minimal -->
 <header class="fixed top-0 left-0 w-full bg-white backdrop-blur border-b z-50 shadow-sm">
   <div class="max-w-7xl mx-auto px-5 py-3 flex items-center justify-between">
@@ -675,13 +455,11 @@ body.login-view #appContainer {
 
     <!-- Empresa + Email + Logout -->
     <div class="flex items-center gap-4">
-      <div class="flex items-center" id="botSelectorWrap">
-        <div class="bot-select-wrapper">
-          <select id="botSelect" class="bot-select-control">
-            <option value="" disabled selected>Loading bots…</option>
-          </select>
-        </div>
-        <button id="btnNewBot">
+      <div class="flex items-center gap-2" id="botSelectorWrap">
+        <select id="botSelect" class="border border-gray-200 rounded-md px-2 py-1 text-xs leading-tight bg-white focus:outline-none focus:ring-1 focus:ring-black/40 min-w-[110px] h-8">
+          <option value="" disabled selected>Loading bots…</option>
+        </select>
+        <button id="btnNewBot" class="inline-flex items-center justify-center px-2.5 h-8 text-xs leading-tight border border-gray-200 rounded-md bg-white hover:bg-gray-100 transition">
           + New Bot
         </button>
       </div>
@@ -689,7 +467,7 @@ body.login-view #appContainer {
         <span id="empresaBadge" class="text-[8px] bg-black text-white px-1 py-[1px] rounded mb-[2px]">
           —
         </span>
-        <span class="bot-badge text-[10px] text-gray-500 leading-tight">—</span>
+        <span id="botBadge" class="text-[10px] text-gray-500 leading-tight">—</span>
         <span id="authEmail" class="text-xs text-gray-500">—</span>
       </div>
       <button id="btnLogout" class="px-3 py-1.5 bg-red-600 text-white rounded-md hidden">
@@ -1662,7 +1440,7 @@ if (empresaTextEl) empresaTextEl.textContent = EMPRESA;
 
 function updateBotLabels(label) {
   const text = (label || '').trim() || BOT;
-  const botBadge = document.querySelector('.bot-badge');
+  const botBadge = $('botBadge');
   if (botBadge) botBadge.textContent = text;
   const botText = $('botText');
   if (botText) botText.textContent = text;
@@ -1814,135 +1592,37 @@ function initBotSelector() {
   });
 
   if (createBtn) {
-    const modal = $('newBotModal');
-    const modalForm = $('newBotForm');
-    const modalInput = $('newBotNameInput');
-    const modalCancel = $('newBotCancel');
-    const modalConfirm = $('newBotConfirm');
-    const defaultConfirmText = modalConfirm?.textContent || '';
-    let modalKeyListener = null;
-    let modalHideTimeout = null;
-
-    const toggleModal = (open) => {
-      if (!modal) return;
-      if (open) {
-        if (modalHideTimeout) {
-          clearTimeout(modalHideTimeout);
-          modalHideTimeout = null;
-        }
-        modal.classList.remove('hidden');
-        requestAnimationFrame(() => {
-          modal.classList.add('modal-open');
-        });
-        if (modalInput) {
-          modalInput.value = '';
-          setTimeout(() => modalInput.focus(), 120);
-        }
-        modalKeyListener = (event) => {
-          if (event.key === 'Escape') {
-            toggleModal(false);
-          }
-        };
-        window.addEventListener('keydown', modalKeyListener);
-      } else {
-        modal.classList.remove('modal-open');
-        if (modalKeyListener) {
-          window.removeEventListener('keydown', modalKeyListener);
-          modalKeyListener = null;
-        }
-        modalHideTimeout = setTimeout(() => {
-          modal.classList.add('hidden');
-          modalHideTimeout = null;
-        }, 220);
-      }
-    };
-
-    const setModalLoading = (isLoading) => {
-      if (!modalConfirm) return;
-      modalConfirm.disabled = isLoading;
-      if (isLoading) {
-        modalConfirm.textContent = t('Creating…');
-      } else {
-        modalConfirm.textContent = defaultConfirmText;
-      }
-    };
-
-    const persistNewBot = async (trimmed) => {
-      try {
-        const baseSlug = slugifyBotId(trimmed);
-        let candidate = baseSlug || `bot-${Date.now().toString(36)}`;
-        let suffix = 2;
-        while (cachedBots[candidate]) {
-          candidate = `${baseSlug || 'bot'}-${suffix++}`;
-        }
-
-        const currentSnapshot = await db.ref(getBotBasePath()).once('value');
-        const payload = JSON.parse(JSON.stringify(currentSnapshot.val() || {}));
-        payload.config = payload.config || {};
-        payload.config.hotelName = trimmed;
-
-        await botsRef.child(candidate).set(payload);
-        localStorage.setItem(storageKey, candidate);
-        const url = new URL(window.location.href);
-        url.searchParams.set('bot', candidate);
-        window.location.href = url.toString();
-        return true;
-      } catch (err) {
-        console.error('No se pudo crear el bot', err);
-        toast('⚠ Could not create the bot');
-        return false;
-      }
-    };
-
-    if (modal && modalForm && modalInput && modalCancel && modalConfirm) {
-      createBtn.addEventListener('click', (event) => {
-        event.preventDefault();
-        toggleModal(true);
-      });
-
-      modalCancel.addEventListener('click', (event) => {
-        event.preventDefault();
-        toggleModal(false);
-      });
-
-      modal.addEventListener('click', (event) => {
-        if (event.target === modal) {
-          toggleModal(false);
-        }
-      });
-
-      modalForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        if (!modalInput) return;
-        const trimmed = modalInput.value.trim();
-        if (!trimmed) {
-          modalInput.focus();
-          modalInput.select();
-          return;
-        }
-
-        setModalLoading(true);
-        try {
-          await canWrite(async () => {
-            const created = await persistNewBot(trimmed);
-            if (created) {
-              toggleModal(false);
-            }
-          });
-        } finally {
-          setModalLoading(false);
-        }
-      });
-    } else {
-      createBtn.addEventListener('click', () => {
+    createBtn.addEventListener('click', () => {
+      canWrite(async () => {
         const name = prompt('Name for the new bot?');
-        const trimmed = (name || '').trim();
+        if (!name) return;
+        const trimmed = name.trim();
         if (!trimmed) return;
-        canWrite(async () => {
-          await persistNewBot(trimmed);
-        });
+
+        try {
+          const baseSlug = slugifyBotId(trimmed);
+          let candidate = baseSlug || `bot-${Date.now().toString(36)}`;
+          let suffix = 2;
+          while (cachedBots[candidate]) {
+            candidate = `${baseSlug || 'bot'}-${suffix++}`;
+          }
+
+          const currentSnapshot = await db.ref(getBotBasePath()).once('value');
+          const payload = JSON.parse(JSON.stringify(currentSnapshot.val() || {}));
+          payload.config = payload.config || {};
+          payload.config.hotelName = trimmed;
+
+          await botsRef.child(candidate).set(payload);
+          localStorage.setItem(storageKey, candidate);
+          const url = new URL(window.location.href);
+          url.searchParams.set('bot', candidate);
+          window.location.href = url.toString();
+        } catch (err) {
+          console.error('No se pudo crear el bot', err);
+          toast('⚠ Could not create the bot');
+        }
       });
-    }
+    });
   }
 }
 
