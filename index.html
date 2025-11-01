@@ -1312,7 +1312,6 @@ if (window.translationManager) {
     languageSelectEl.value = translationManager.getCurrentLanguage();
     languageSelectEl.addEventListener('change', (event) => {
       translationManager.applyLanguage(event.target.value);
-      updateLoaderText(currentLoaderLabel || BOT);
     });
 
     const languageOptionMap = {
@@ -1434,27 +1433,10 @@ async function resolveBotStoragePaths() {
   }
 }
 
-let currentLoaderLabel = '';
-
 const empresaBadgeEl = $('empresaBadge');
 if (empresaBadgeEl) empresaBadgeEl.textContent = EMPRESA;
 const empresaTextEl = $('empresaText');
 if (empresaTextEl) empresaTextEl.textContent = EMPRESA;
-
-function updateLoaderText(label) {
-  const loaderTextEl = $('pageLoaderText');
-  if (!loaderTextEl) return;
-  const baseLoading = (typeof t === 'function' ? t('Loading…') : 'Loading…') || 'Loading…';
-  const cleanedBase = baseLoading.replace(/(…|\.{1,3})$/, '').trim();
-  const cleanedLabel = ((label || '').toString()).replace(/(…|\.{1,3})$/, '').trim();
-  currentLoaderLabel = cleanedLabel;
-  if (cleanedLabel) {
-    const prefix = cleanedBase ? `${cleanedBase} ` : '';
-    loaderTextEl.textContent = `${prefix}${cleanedLabel}…`;
-  } else {
-    loaderTextEl.textContent = baseLoading;
-  }
-}
 
 function updateBotLabels(label) {
   const text = (label || '').trim() || BOT;
@@ -1462,7 +1444,6 @@ function updateBotLabels(label) {
   if (botBadge) botBadge.textContent = text;
   const botText = $('botText');
   if (botText) botText.textContent = text;
-  updateLoaderText(text);
 }
 
 updateBotLabels(BOT);
@@ -1595,7 +1576,13 @@ function initBotSelector() {
     const selectedLabel = (selectedOption?.textContent || '').trim() || nextBot;
     const loader = $('pageLoader');
     if (loader) {
-      updateLoaderText(selectedLabel);
+      const loaderTextEl = $('pageLoaderText');
+      if (loaderTextEl) {
+        const baseLoading = (typeof t === 'function' ? t('Loading…') : 'Loading…') || 'Loading…';
+        const cleanedBase = baseLoading.replace(/(…|\.{1,3})$/, '').trim();
+        const prefix = cleanedBase ? `${cleanedBase} ` : '';
+        loaderTextEl.textContent = `${prefix}${selectedLabel}…`;
+      }
       loader.style.display = 'flex';
     }
     const url = new URL(window.location.href);
