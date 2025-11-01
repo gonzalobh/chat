@@ -1357,38 +1357,24 @@ body.login-view #appContainer {
 
 <!-- Modal: Create new bot -->
 <div id="newBotModal" class="app-modal-overlay hidden px-4">
-  <div class="app-modal w-full max-w-md space-y-6 relative overflow-hidden">
-    <div class="absolute inset-x-6 top-0 h-24 bg-gradient-to-br from-slate-900/6 via-slate-900/4 to-transparent pointer-events-none"></div>
+  <div class="app-modal w-full max-w-md space-y-5 relative">
     <button id="closeNewBotModal" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
       <i data-lucide="x" class="w-5 h-5"></i>
     </button>
-    <div class="flex items-start gap-4 pr-8">
-      <div class="shrink-0 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-900/10 text-slate-900">
-        <i data-lucide="bot" class="w-6 h-6"></i>
-      </div>
-      <div class="space-y-1">
-        <h3 id="newBotModalTitle" class="text-[1.25rem] leading-tight">Create a new bot</h3>
-        <p id="newBotModalDescription" class="text-sm leading-relaxed text-slate-500">Give it a friendly name so you can identify it later.</p>
-      </div>
+    <div class="space-y-1 pr-8">
+      <h3 id="newBotModalTitle">Create a new bot</h3>
+      <p id="newBotModalDescription" class="text-sm">Give it a friendly name so you can identify it later.</p>
     </div>
-    <form id="newBotForm" class="space-y-5">
+    <form id="newBotForm" class="space-y-4">
       <div class="space-y-2">
-        <label id="newBotNameLabel" for="newBotName" class="text-xs font-semibold tracking-[0.18em] uppercase text-slate-500">Bot name</label>
-        <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-[0_10px_30px_rgba(15,23,42,0.05)] focus-within:border-slate-900/60 focus-within:ring-4 focus-within:ring-slate-900/10 transition-all">
-          <input id="newBotName" type="text" maxlength="60" placeholder="e.g. Boutique Paris" class="w-full border-none bg-transparent p-0 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none" />
-        </div>
+        <label id="newBotNameLabel" for="newBotName" class="text-xs font-semibold tracking-wide uppercase text-slate-500">Bot name</label>
+        <input id="newBotName" type="text" maxlength="60" placeholder="e.g. Boutique Paris" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/20" />
         <p id="newBotError" class="text-sm text-red-600 hidden"></p>
       </div>
-      <div class="app-modal-actions pt-2">
+      <div class="app-modal-actions pt-1">
         <button type="button" id="cancelNewBot" class="app-modal-secondary">Cancel</button>
-        <button type="submit" id="confirmNewBot" class="app-modal-primary min-w-[130px]">
-          <span class="flex items-center justify-center gap-2">
-            <svg id="newBotConfirmSpinner" class="hidden h-4 w-4 animate-spin text-white" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <circle class="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-              <path d="M22 12a10 10 0 0 0-10-10" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
-            </svg>
-            <span id="newBotConfirmLabel">Create bot</span>
-          </span>
+        <button type="submit" id="confirmNewBot" class="app-modal-primary">
+          <span>Create bot</span>
         </button>
       </div>
     </form>
@@ -1716,8 +1702,6 @@ function initBotSelector() {
   const newBotError = $('newBotError');
   const newBotCancel = $('cancelNewBot');
   const newBotConfirm = $('confirmNewBot');
-  const newBotConfirmLabel = $('newBotConfirmLabel');
-  const newBotConfirmSpinner = $('newBotConfirmSpinner');
   const newBotClose = $('closeNewBotModal');
   const newBotTitle = $('newBotModalTitle');
   const newBotDescription = $('newBotModalDescription');
@@ -1739,7 +1723,6 @@ function initBotSelector() {
   const resetNewBotModal = () => {
     if (newBotInput) newBotInput.value = '';
     resetNewBotError();
-    setNewBotModalLoading(false);
   };
 
   const openNewBotModal = () => {
@@ -1760,15 +1743,8 @@ function initBotSelector() {
       el.disabled = loading;
       if (el === newBotConfirm) {
         el.classList.toggle('opacity-60', loading);
-        el.classList.toggle('cursor-wait', loading);
       }
     });
-    if (newBotConfirmSpinner) {
-      newBotConfirmSpinner.classList.toggle('hidden', !loading);
-    }
-    if (newBotConfirmLabel) {
-      newBotConfirmLabel.classList.toggle('opacity-60', loading);
-    }
   };
 
   if (newBotModal) {
@@ -1784,7 +1760,7 @@ function initBotSelector() {
   registerTranslationTarget(newBotNameLabel, 'Bot name');
   registerTranslationTarget(newBotInput, 'e.g. Boutique Paris', 'placeholder');
   registerTranslationTarget(newBotCancel, 'Cancel');
-  registerTranslationTarget(newBotConfirmLabel, 'Create bot');
+  registerTranslationTarget(newBotConfirm, 'Create bot');
 
   const createBotFromName = async (trimmedName) => {
     const baseSlug = slugifyBotId(trimmedName);
@@ -1905,10 +1881,29 @@ function initBotSelector() {
 
   if (createBtn) {
     createBtn.addEventListener('click', () => {
-      if (!newBotModal || !newBotForm || !newBotInput) return;
+      if (newBotModal && newBotForm && newBotInput) {
+        canWrite(async () => {
+          openNewBotModal();
+        });
+        return;
+      }
 
       canWrite(async () => {
-        openNewBotModal();
+        const name = prompt('Name for the new bot?');
+        if (!name) return;
+        const trimmed = name.trim();
+        if (!trimmed) return;
+
+        try {
+          const candidate = await createBotFromName(trimmed);
+          showBotLoadingState(candidate, trimmed);
+          const url = new URL(window.location.href);
+          url.searchParams.set('bot', candidate);
+          window.location.href = url.toString();
+        } catch (err) {
+          console.error('No se pudo crear el bot', err);
+          toast('⚠ Could not create the bot');
+        }
       });
     });
   }
