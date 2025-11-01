@@ -1383,6 +1383,56 @@ function getBot() {
 
 let BOT = getBot();
 
+let BOT_COLLECTION_PATH = null;
+let BOT_LEGACY_PATH = null;
+
+function getDefaultBotCollectionPath() {
+  return `empresas/${EMPRESA}/bots`;
+}
+
+function getConfigBotCollectionPath() {
+  return `empresas/${EMPRESA}/config/bots`;
+}
+
+function getLegacyBotCollectionPath() {
+  return `${EMPRESA}/bots`;
+}
+
+function getLegacySingleBotPath() {
+  return `${EMPRESA}`;
+}
+
+async function resolveBotStoragePaths() {
+  BOT_COLLECTION_PATH = null;
+  BOT_LEGACY_PATH = null;
+
+  const candidates = [
+    getDefaultBotCollectionPath(),
+    getConfigBotCollectionPath(),
+    getLegacyBotCollectionPath()
+  ];
+
+  for (const path of candidates) {
+    try {
+      await db.ref(path).limitToFirst(1).once('value');
+      BOT_COLLECTION_PATH = path;
+      return;
+    } catch (err) {
+      if (err?.code === 'PERMISSION_DENIED') {
+        continue;
+      }
+      console.warn('No se pudo acceder a la ruta de bots', path, err);
+    }
+  }
+
+  try {
+    await db.ref(getLegacySingleBotPath()).limitToFirst(1).once('value');
+    BOT_LEGACY_PATH = getLegacySingleBotPath();
+  } catch (err) {
+    console.warn('No se pudo acceder a la ruta legacy del bot', err);
+  }
+}
+
 const empresaBadgeEl = $('empresaBadge');
 if (empresaBadgeEl) empresaBadgeEl.textContent = EMPRESA;
 const empresaTextEl = $('empresaText');
@@ -1399,7 +1449,13 @@ function updateBotLabels(label) {
 updateBotLabels(BOT);
 
 function getBotBasePath(botId = BOT) {
-  return `empresas/${EMPRESA}/bots/${botId}`;
+  if (BOT_COLLECTION_PATH) {
+    return `${BOT_COLLECTION_PATH}/${botId}`;
+  }
+  if (BOT_LEGACY_PATH) {
+    return BOT_LEGACY_PATH;
+  }
+  return `${getConfigBotCollectionPath()}/${botId}`;
 }
 
 function eref(path) {
@@ -1407,7 +1463,13 @@ function eref(path) {
 }
 
 function getBotsRef() {
-  return db.ref(`empresas/${EMPRESA}/bots`);
+  if (BOT_COLLECTION_PATH) {
+    return db.ref(BOT_COLLECTION_PATH);
+  }
+  if (BOT_LEGACY_PATH) {
+    return db.ref(BOT_LEGACY_PATH);
+  }
+  return db.ref(getConfigBotCollectionPath());
 }
 
 function slugifyBotId(name = '') {
@@ -1448,6 +1510,22 @@ function initBotSelector() {
   const storageKey = `bot:${EMPRESA}`;
   const botsRef = getBotsRef();
   let cachedBots = {};
+
+  if (!BOT_COLLECTION_PATH) {
+    select.innerHTML = '';
+    const option = document.createElement('option');
+    option.value = BOT;
+    option.textContent = BOT;
+    option.selected = true;
+    select.appendChild(option);
+    select.disabled = true;
+    if (createBtn) {
+      createBtn.classList.add('hidden');
+      createBtn.disabled = true;
+    }
+    updateBotLabels(BOT);
+    return;
+  }
 
   botsRef.on('value', (snap) => {
     cachedBots = snap.val() || {};
@@ -2046,7 +2124,7 @@ auth.onAuthStateChanged(async (u) => {
       const empresasSnap = await db.ref('empresas').once('value');
       const empresasData = empresasSnap.val() || {};
       outer: for (const [empresaId, empresaData] of Object.entries(empresasData)) {
-        const bots = empresaData?.bots || {};
+        const bots = empresaData?.bots || empresaData?.config?.bots || {};
         for (const [botId, botData] of Object.entries(bots)) {
           const adminEmail = (botData?.config?.adminEmail || '').toLowerCase();
           if (adminEmail && adminEmail === email) {
@@ -2063,8 +2141,17 @@ auth.onAuthStateChanged(async (u) => {
         for (const [empresaId, empresaData] of Object.entries(legacyData)) {
           if (empresaId === 'empresas' || empresaId === 'globalAdmins') continue;
           const adminEmail = (empresaData?.config?.adminEmail || '').toLowerCase();
+          const configBots = empresaData?.config?.bots || {};
+          const matchingBot = Object.entries(configBots).find(([, botData]) => {
+            const botAdmin = (botData?.config?.adminEmail || '').toLowerCase();
+            return botAdmin && botAdmin === email;
+          });
           if (adminEmail && adminEmail === email) {
             empresaDetectada = empresaId;
+            break;
+          } else if (matchingBot) {
+            empresaDetectada = empresaId;
+            botDetectado = matchingBot[0];
             break;
           }
         }
@@ -2092,6 +2179,7 @@ auth.onAuthStateChanged(async (u) => {
     currentUrl.searchParams.set('bot', BOT);
     window.history.replaceState({}, '', currentUrl);
 
+    await resolveBotStoragePaths();
     await ensureBotDataExists();
 
     showAppView();
