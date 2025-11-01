@@ -1387,11 +1387,11 @@ let BOT_COLLECTION_PATH = null;
 let BOT_LEGACY_PATH = null;
 
 function getDefaultBotCollectionPath() {
-  return `empresas/${EMPRESA}/bots`;
+  return `${EMPRESA}/bots`;
 }
 
 function getConfigBotCollectionPath() {
-  return `empresas/${EMPRESA}/config/bots`;
+  return `${EMPRESA}/config/bots`;
 }
 
 function getLegacyBotCollectionPath() {
@@ -1992,7 +1992,7 @@ async function refreshPermissions() {
   if (botAdminEmail) adminEmails.add(botAdminEmail);
 
   try {
-    const companyAdminSnap = await db.ref(`empresas/${EMPRESA}/config/adminEmail`).once('value');
+    const companyAdminSnap = await db.ref(`${EMPRESA}/config/adminEmail`).once('value');
     const companyAdminEmail = (companyAdminSnap.val() || '').toLowerCase();
     if (companyAdminEmail) adminEmails.add(companyAdminEmail);
   } catch (err) {

@@ -183,11 +183,11 @@ let useLegacyBotPath = false;
 let botCollectionPath = null;
 
 function getDefaultBotCollectionPath() {
-  return `empresas/${EMPRESA}/bots`;
+  return `${EMPRESA}/bots`;
 }
 
 function getConfigBotCollectionPath() {
-  return `empresas/${EMPRESA}/config/bots`;
+  return `${EMPRESA}/config/bots`;
 }
 
 function getLegacyBotCollectionPath() {
@@ -198,7 +198,7 @@ function getBotBasePath() {
   if (botCollectionPath) {
     return `${botCollectionPath}/${BOT}`;
   }
-  return useLegacyBotPath ? `${EMPRESA}` : `empresas/${EMPRESA}/bots/${BOT}`;
+  return useLegacyBotPath ? `${EMPRESA}` : `${EMPRESA}/bots/${BOT}`;
 }
 
 function eref(path){ return db.ref(`${getBotBasePath()}/${path}`); }
