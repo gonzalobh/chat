@@ -1,14 +1,30 @@
 (() => {
   const script = document.currentScript;
   let scriptUrl = null;
+  let pageUrl = null;
   try {
     scriptUrl = script?.src ? new URL(script.src, window.location.href) : null;
   } catch (err) {
     scriptUrl = null;
   }
+  try {
+    pageUrl = new URL(window.location.href);
+  } catch (err) {
+    pageUrl = null;
+  }
 
-  const empresaAttr = (script?.dataset?.empresa || scriptUrl?.searchParams.get("empresa") || "Boletum").trim();
-  const botAttr = (script?.dataset?.bot || scriptUrl?.searchParams.get("bot") || "").trim();
+  const empresaAttr = (
+    script?.dataset?.empresa ||
+    scriptUrl?.searchParams.get("empresa") ||
+    pageUrl?.searchParams.get("empresa") ||
+    "Boletum"
+  ).trim();
+  const botAttr = (
+    script?.dataset?.bot ||
+    scriptUrl?.searchParams.get("bot") ||
+    pageUrl?.searchParams.get("bot") ||
+    ""
+  ).trim();
   const empresa = empresaAttr || "Boletum";
   const params = new URLSearchParams({ empresa });
   if (botAttr) params.set("bot", botAttr);
