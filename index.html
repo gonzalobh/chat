@@ -2166,7 +2166,8 @@ function initBotSelector() {
         delete payload.config.mesas;
       }
 
-      await botsRef.child(candidate).set(payload);
+      const newBotRef = db.ref(getBotBasePath(candidate));
+      await newBotRef.set(payload);
       localStorage.setItem(storageKey, candidate);
       hideNewBotModal(true);
       const url = new URL(window.location.href);
