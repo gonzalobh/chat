@@ -147,7 +147,7 @@
 
   <script>
 /* =========================
-   FIREBASE + HELPERS
+   FIREBASE CONFIG
 ========================= */
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyC2c3S_NtouIjHPrk5LM5c0DQoTWyBrzH4",
@@ -158,8 +158,20 @@ const FIREBASE_CONFIG = {
   messagingSenderId: "127064655657",
   appId: "1:127064655657:web:a4e99dcbc6ab33f32c1938"
 };
-if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
-const db = firebase.database();
+
+let app;
+let db;
+
+try {
+  app = firebase.app(); // reuse existing app if already initialized
+} catch (e) {
+  app = firebase.initializeApp(FIREBASE_CONFIG);
+}
+db = firebase.database(app);
+
+function dbRef(path) {
+  return db.ref(path);
+}
 
 function getEmpresa(){
   const url = new URL(window.location.href);
@@ -180,12 +192,10 @@ function getBot() {
 let BOT = getBot();
 
 const CHAT_SESSION_KEY = `chatId:${EMPRESA}:${BOT}`;
-let CHAT_ID = sessionStorage.getItem(CHAT_SESSION_KEY);
-if (!CHAT_ID) {
-  CHAT_ID = `${Date.now()}`;
-  sessionStorage.setItem(CHAT_SESSION_KEY, CHAT_ID);
-}
-const chatLogBaseRef = firebase.database().ref(`empresas/${EMPRESA}/bots/${BOT}/conversaciones/${CHAT_ID}`);
+let CHAT_ID = sessionStorage.getItem(CHAT_SESSION_KEY) || `${Date.now()}`;
+sessionStorage.setItem(CHAT_SESSION_KEY, CHAT_ID);
+
+const chatLogBaseRef = dbRef(`empresas/${EMPRESA}/bots/${BOT}/conversaciones/${CHAT_ID}`);
 const chatMessagesRef = chatLogBaseRef.child('messages');
 const chatMetaRef = chatLogBaseRef.child('meta');
 let chatMetaCache = null;
