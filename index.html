@@ -452,18 +452,23 @@ body.login-view #appContainer {
 
   <!-- Header minimal -->
 <header class="fixed top-0 left-0 w-full bg-white backdrop-blur border-b z-50 shadow-sm">
-  <div class="max-w-7xl mx-auto px-5 py-3 flex items-center gap-4">
+  <div class="max-w-7xl mx-auto px-5 py-3 flex items-center justify-between">
 
     <!-- Logo -->
     <div class="flex items-center gap-3">
       <img src="logo.png" alt="Tomos Logo" class="h-8 w-auto rounded-lg " />
     </div>
 
-    <!-- Spacer to balance header layout -->
-    <div class="flex-1"></div>
-
     <!-- Empresa + Email + Logout -->
-    <div class="flex items-center gap-4 ml-auto">
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-2" id="botSelectorWrap">
+        <select id="botSelect" class="border border-gray-200 rounded-md px-2 py-1 text-xs leading-tight bg-white focus:outline-none focus:ring-1 focus:ring-black/40 min-w-[110px] h-8">
+          <option value="" disabled selected>Loading bots…</option>
+        </select>
+        <button id="btnNewBot" class="inline-flex items-center justify-center px-2.5 h-8 text-xs leading-tight border border-gray-200 rounded-md bg-white hover:bg-gray-100 transition">
+          + New Bot
+        </button>
+      </div>
       <div class="flex flex-col items-end text-right leading-tight">
         <span id="empresaBadge" class="text-[8px] bg-black text-white px-1 py-[1px] rounded mb-[2px]">
           —
@@ -537,16 +542,6 @@ body.login-view #appContainer {
         <div id="tabs" class="hidden">
 <!-- Chat -->
 <section id="tab-chat" class="space-y-8">
-  <div class="flex justify-center mb-2">
-    <div class="flex flex-wrap items-center justify-center gap-2" id="botSelectorWrap">
-      <select id="botSelect" class="border border-gray-200 rounded-md px-2 py-1 text-xs leading-tight bg-white focus:outline-none focus:ring-1 focus:ring-black/40 min-w-[110px] h-8">
-        <option value="" disabled selected>Loading bots…</option>
-      </select>
-      <button id="btnNewBot" class="inline-flex items-center justify-center px-2.5 h-8 text-xs leading-tight border border-gray-200 rounded-md bg-white hover:bg-gray-100 transition">
-        + New Bot
-      </button>
-    </div>
-  </div>
   <div class="flex justify-center">
     <div id="chatPanelTabs" class="flex flex-wrap items-center gap-2 p-1">
       <button class="chat-panel-tab active" data-chat-panel-tab="bot">
