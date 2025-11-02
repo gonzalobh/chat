@@ -733,7 +733,7 @@ body.login-view #appContainer {
 <div id="headerSpacer" class="h-[57px]"></div>
 <div class="flex min-h-screen">
       <!-- Sidebar -->
-<aside class="group fixed top-[57px] left-0 h-[calc(100vh-57px)] bg-white border-r overflow-y-auto transition-all duration-300 w-[72px] hover:w-[260px]">
+<aside class="peer group fixed top-[57px] left-0 h-[calc(100vh-57px)] bg-white border-r overflow-y-auto transition-all duration-300 w-[72px] hover:w-[260px]">
   <nav class="space-y-2 mt-4 px-2">
     <button class="sidebar-btn active flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="chat">
       <i data-lucide="message-circle" class="w-5 h-5 shrink-0"></i>
@@ -761,7 +761,7 @@ body.login-view #appContainer {
 
 
 <!-- Content -->
-<main class="flex-1 w-full ml-0 lg:ml-[72px] transition-all duration-300 lg:group-hover:ml-[260px] flex justify-center">
+<main class="flex-1 w-full ml-0 lg:ml-[72px] transition-all duration-300 lg:peer-hover:ml-[260px] flex justify-center">
 <div id="appContainer" class="w-full max-w-6xl pt-8 px-8 pb-8">
               <!-- Login card -->
 <div id="login" class="hidden w-full max-w-sm mx-auto mt-10 card p-6 text-center">
