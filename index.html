@@ -5121,13 +5121,34 @@ function initMensajes() {
 
       const top = document.createElement('div');
       top.className = 'flex items-center justify-between gap-2';
+
+      const metaRow = document.createElement('div');
+      metaRow.className = 'flex items-center gap-2 text-xs';
+
+      const idNumeric = Number.parseInt(chat.chatId, 10);
+      let formattedDate = '';
+      if (!Number.isNaN(idNumeric)) {
+        const dateFromId = new Date(idNumeric);
+        if (!Number.isNaN(dateFromId.getTime())) {
+          formattedDate = dateFromId.toLocaleDateString();
+        }
+      }
+
+      const dateEl = document.createElement('div');
+      dateEl.className = `${isActive ? 'text-white/70' : 'text-gray-500'}`;
+      dateEl.textContent = formattedDate;
+
       const idEl = document.createElement('div');
-      idEl.className = 'text-sm font-semibold truncate';
-      idEl.textContent = chat.chatId;
+      idEl.className = `truncate text-xs ${isActive ? 'text-white/70' : 'text-gray-400'}`;
+      idEl.textContent = `#${chat.chatId}`;
+
+      metaRow.append(dateEl, idEl);
+
       const timeEl = document.createElement('div');
       timeEl.className = `text-xs ${isActive ? 'text-white/70' : 'text-gray-400'}`;
       timeEl.textContent = chat.lastUpdated ? formatTimestamp(chat.lastUpdated) : '';
-      top.append(idEl, timeEl);
+
+      top.append(metaRow, timeEl);
 
       const preview = document.createElement('div');
       preview.className = `mt-1 text-xs ${isActive ? 'text-white/80' : 'text-gray-500'} truncate`;
