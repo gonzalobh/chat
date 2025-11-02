@@ -109,6 +109,13 @@ aside::-webkit-scrollbar-thumb {
   color: #000 !important;
 }
 
+#messagesBotFilter:disabled {
+  background-color: #f9fafb;
+  color: #111;
+  cursor: default;
+  opacity: 1;
+}
+
 button.bg-black {
   background: linear-gradient(to bottom, #f7f7f7, #eaeaea) !important; /* degradado suave */
   color: #111 !important;
@@ -1255,7 +1262,7 @@ body.login-view #appContainer {
       <div class="flex flex-col gap-3">
         <div>
           <label for="messagesBotFilter" class="text-xs font-semibold text-gray-500 uppercase tracking-wide block mb-1">Bot</label>
-          <select id="messagesBotFilter" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-black/60"></select>
+          <select id="messagesBotFilter" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-black/60" disabled></select>
         </div>
         <div class="relative">
           <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>
@@ -1720,6 +1727,16 @@ let messagesTabInitialized = false;
 let messagesCurrentBot = BOT;
 let messagesSelectedChatId = null;
 let messagesConversations = [];
+
+function getActiveMessagesBot() {
+  const stored = (localStorage.getItem('currentBot') || '').trim();
+  if (stored && stored !== 'null' && stored !== 'undefined') {
+    return stored;
+  }
+  return BOT;
+}
+
+messagesCurrentBot = getActiveMessagesBot();
 
 function getDefaultBotCollectionPath() {
   return `${EMPRESA}/bots`;
@@ -5243,55 +5260,36 @@ function initMensajes() {
   }
 
   function populateBotOptions() {
-    return firebase.database().ref(`empresas/${EMPRESA}/bots`).once('value')
+    const activeBotId = getActiveMessagesBot();
+    const fallbackLabel = activeBotId || BOT;
+
+    messagesCurrentBot = activeBotId;
+
+    if (!botSelect) {
+      return Promise.resolve();
+    }
+
+    botSelect.innerHTML = '';
+
+    const option = document.createElement('option');
+    option.value = activeBotId;
+    option.textContent = fallbackLabel;
+    botSelect.appendChild(option);
+
+    botSelect.value = activeBotId;
+    botSelect.disabled = true;
+
+    return firebase.database()
+      .ref(`empresas/${EMPRESA}/bots/${activeBotId}/config/hotelName`)
+      .once('value')
       .then((snap) => {
-        const data = snap.val() || {};
-        const entries = Object.entries(data).map(([botId, botData]) => {
-          if (!botId) return null;
-          const label = botData?.config?.hotelName || botId;
-          return [botId, label];
-        }).filter(Boolean);
-
-        if (!entries.length && messagesCurrentBot) {
-          entries.push([messagesCurrentBot, messagesCurrentBot]);
-        }
-
-        entries.sort((a, b) => (a[1] || '').localeCompare(b[1] || '', undefined, { sensitivity: 'base' }));
-
-        botSelect.innerHTML = '';
-        entries.forEach(([value, label]) => {
-          const option = document.createElement('option');
-          option.value = value;
-          option.textContent = label || value;
-          botSelect.appendChild(option);
-        });
-
-        if (!entries.length) {
-          const option = document.createElement('option');
-          option.value = messagesCurrentBot || BOT;
-          option.textContent = messagesCurrentBot || BOT;
-          botSelect.appendChild(option);
-        }
-
-        botSelect.disabled = botSelect.options.length <= 1;
-
-        if (botSelect.options.length) {
-          const desired = Array.from(botSelect.options).find(opt => opt.value === messagesCurrentBot);
-          botSelect.value = desired ? desired.value : botSelect.options[0].value;
-          messagesCurrentBot = botSelect.value;
-        } else {
-          messagesCurrentBot = botSelect.value || messagesCurrentBot || BOT;
+        const name = snap.val();
+        if (name) {
+          option.textContent = name;
         }
       })
       .catch((err) => {
-        console.warn('No se pudieron cargar los bots', err);
-        botSelect.innerHTML = '';
-        const option = document.createElement('option');
-        option.value = messagesCurrentBot || BOT;
-        option.textContent = messagesCurrentBot || BOT;
-        botSelect.appendChild(option);
-        botSelect.disabled = true;
-        messagesCurrentBot = option.value;
+        console.warn('No se pudo cargar el nombre del bot activo', err);
       });
   }
 
@@ -5299,25 +5297,18 @@ function initMensajes() {
     if (searchInput) {
       searchInput.addEventListener('input', () => renderConversations());
     }
-    botSelect.addEventListener('change', (event) => {
-      const nextBot = event.target.value || BOT;
-      if (!nextBot) return;
-      if (nextBot === messagesCurrentBot) {
-        renderConversations();
-        return;
-      }
-      messagesCurrentBot = nextBot;
-      loadConversations(messagesCurrentBot);
-    });
     messagesTabInitialized = true;
   }
 
-  messagesCurrentBot = botSelect.value || messagesCurrentBot || BOT;
   resetConversationView();
   renderConversations();
 
   populateBotOptions().then(() => {
-    messagesCurrentBot = botSelect.value || messagesCurrentBot || BOT;
+    const activeBotId = getActiveMessagesBot();
+    messagesCurrentBot = activeBotId;
+    if (botSelect) {
+      botSelect.value = activeBotId;
+    }
     return loadConversations(messagesCurrentBot);
   });
 }
