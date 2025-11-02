@@ -1720,12 +1720,6 @@ let messagesTabInitialized = false;
 let messagesCurrentBot = BOT;
 let messagesSelectedChatId = null;
 let messagesConversations = [];
-let messagesListQuery = null;
-let messagesListCallback = null;
-let messagesMetaRef = null;
-let messagesMetaCallback = null;
-let messagesMessagesRef = null;
-let messagesMessagesCallback = null;
 
 function getDefaultBotCollectionPath() {
   return `${EMPRESA}/bots`;
@@ -5033,26 +5027,7 @@ function initMensajes() {
     return date.toLocaleDateString([], { day: '2-digit', month: 'short' });
   };
 
-  function cleanupConversationListeners() {
-    if (messagesMetaRef && messagesMetaCallback) {
-      messagesMetaRef.off('value', messagesMetaCallback);
-    }
-    if (messagesMessagesRef && messagesMessagesCallback) {
-      messagesMessagesRef.off('value', messagesMessagesCallback);
-    }
-    messagesMetaRef = null;
-    messagesMetaCallback = null;
-    messagesMessagesRef = null;
-    messagesMessagesCallback = null;
-  }
-
-  function detachListListener() {
-    if (messagesListQuery && messagesListCallback) {
-      messagesListQuery.off('value', messagesListCallback);
-    }
-    messagesListQuery = null;
-    messagesListCallback = null;
-  }
+  const getConversationsRef = (botId = BOT) => firebase.database().ref(`empresas/${EMPRESA}/bots/${botId}/conversaciones`);
 
   function updateHeader(meta = {}) {
     const displayName = (meta.userName || '').trim() || 'Guest';
@@ -5066,7 +5041,6 @@ function initMensajes() {
 
   function resetConversationView() {
     messagesSelectedChatId = null;
-    cleanupConversationListeners();
     detailEl.innerHTML = '';
     detailEl.classList.add('hidden');
     placeholderEl.classList.remove('hidden');
@@ -5078,7 +5052,7 @@ function initMensajes() {
     }
   }
 
-  function renderConversationMessages(data) {
+  function renderConversationMessages(data = {}) {
     const entries = Object.entries(data || {}).sort((a, b) => {
       const timeA = a[1]?.time || 0;
       const timeB = b[1]?.time || 0;
@@ -5094,20 +5068,20 @@ function initMensajes() {
     }
     entries.forEach(([, message]) => {
       const sender = (message?.sender || '').toLowerCase();
-      const isBot = sender === 'bot';
-      const wrapper = document.createElement('div');
-      wrapper.className = `flex flex-col gap-1 ${isBot ? 'items-end' : 'items-start'}`;
+      const isUser = ['user', 'cliente', 'customer', 'visitor'].includes(sender);
+      const row = document.createElement('div');
+      row.className = `flex flex-col gap-1 ${isUser ? 'items-end text-right' : 'items-start text-left'}`;
       const bubble = document.createElement('div');
-      bubble.className = `${isBot ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-800'} px-3 py-2 rounded-2xl max-w-[80%] text-sm leading-relaxed shadow-sm`;
+      bubble.className = `${isUser ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-800'} px-4 py-2 rounded-2xl max-w-[85%] text-sm leading-relaxed shadow-sm`;
       bubble.textContent = message?.text || '';
-      wrapper.appendChild(bubble);
+      row.appendChild(bubble);
       if (message?.time) {
         const timeEl = document.createElement('span');
         timeEl.className = 'text-[11px] text-gray-400';
         timeEl.textContent = formatTimestamp(message.time);
-        wrapper.appendChild(timeEl);
+        row.appendChild(timeEl);
       }
-      detailEl.appendChild(wrapper);
+      detailEl.appendChild(row);
     });
     detailEl.scrollTop = detailEl.scrollHeight;
   }
@@ -5121,35 +5095,45 @@ function initMensajes() {
         })
       : messagesConversations.slice();
 
+    base.sort((a, b) => (b.lastUpdated || 0) - (a.lastUpdated || 0));
     listEl.innerHTML = '';
-    if (!base.length) {
-      if (emptyState) {
-        emptyState.textContent = term ? 'Sin resultados' : 'No hay conversaciones';
-        emptyState.classList.remove('hidden');
-      }
+
+    if (!messagesConversations.length) {
+      emptyState?.classList.remove('hidden');
       return;
     }
-    if (emptyState) emptyState.classList.add('hidden');
+
+    emptyState?.classList.add('hidden');
+
+    if (!base.length) {
+      const emptyResult = document.createElement('div');
+      emptyResult.className = 'text-xs text-gray-400 text-center py-6';
+      emptyResult.textContent = 'Sin resultados';
+      listEl.appendChild(emptyResult);
+      return;
+    }
 
     base.forEach(chat => {
-      const isActive = chat.chatId === messagesSelectedChatId;
       const item = document.createElement('button');
       item.type = 'button';
-      item.dataset.chatId = chat.chatId;
-      item.className = `w-full text-left px-3 py-3 rounded-xl border transition flex flex-col gap-1 ${isActive ? 'bg-black text-white border-black shadow-sm' : 'bg-white border-transparent hover:bg-gray-100 text-gray-700'}`;
-      const topRow = document.createElement('div');
-      topRow.className = 'flex items-center justify-between gap-2';
-      const nameEl = document.createElement('span');
-      nameEl.className = `font-semibold text-sm truncate ${isActive ? 'text-white' : 'text-gray-800'}`;
-      nameEl.textContent = chat.userName || 'Guest';
-      const timeEl = document.createElement('span');
+      const isActive = chat.chatId === messagesSelectedChatId;
+      item.className = `w-full text-left border rounded-xl px-3 py-3 transition ${isActive ? 'bg-gray-900 text-white border-gray-900 shadow-sm' : 'bg-white border-gray-200 hover:border-gray-300'}`;
+
+      const top = document.createElement('div');
+      top.className = 'flex items-center justify-between gap-2';
+      const idEl = document.createElement('div');
+      idEl.className = 'text-sm font-semibold truncate';
+      idEl.textContent = chat.chatId;
+      const timeEl = document.createElement('div');
       timeEl.className = `text-xs ${isActive ? 'text-white/70' : 'text-gray-400'}`;
       timeEl.textContent = chat.lastUpdated ? formatTimestamp(chat.lastUpdated) : '';
-      topRow.append(nameEl, timeEl);
-      const preview = document.createElement('span');
-      preview.className = `text-xs truncate ${isActive ? 'text-white/80' : 'text-gray-500'}`;
-      preview.textContent = chat.lastMessage || '—';
-      item.append(topRow, preview);
+      top.append(idEl, timeEl);
+
+      const preview = document.createElement('div');
+      preview.className = `mt-1 text-xs ${isActive ? 'text-white/80' : 'text-gray-500'} truncate`;
+      preview.textContent = chat.lastMessage || 'Sin mensajes';
+
+      item.append(top, preview);
       item.addEventListener('click', () => {
         if (chat.chatId === messagesSelectedChatId) return;
         selectConversation(chat.chatId);
@@ -5158,30 +5142,39 @@ function initMensajes() {
     });
   }
 
-  function handleListSnapshot(snapshot) {
-    const data = snapshot.val() || {};
-    messagesConversations = Object.entries(data).map(([chatId, payload]) => {
-      const meta = payload?.meta || {};
-      const name = (meta.userName || '').trim() || 'Guest';
-      const lastMessage = meta.lastMessage || '';
-      const lastUpdated = meta.lastUpdated || 0;
-      return { chatId, meta, userName: name, lastMessage, lastUpdated };
-    }).sort((a, b) => b.lastUpdated - a.lastUpdated);
-
-    if (messagesSelectedChatId && !messagesConversations.some(item => item.chatId === messagesSelectedChatId)) {
-      resetConversationView();
-    }
-    renderConversations();
-  }
-
-  function attachListListener(botId) {
-    detachListListener();
+  function loadConversations(botId) {
+    const targetBot = botId || BOT;
+    messagesSelectedChatId = null;
     messagesConversations = [];
-    renderConversations();
-    const ref = firebase.database().ref(`messages/${EMPRESA}/${botId || ''}`);
-    messagesListQuery = ref.orderByChild('meta/lastUpdated');
-    messagesListCallback = handleListSnapshot;
-    messagesListQuery.on('value', messagesListCallback);
+    listEl.innerHTML = '';
+    resetConversationView();
+    if (emptyState) emptyState.classList.add('hidden');
+
+    return getConversationsRef(targetBot).once('value')
+      .then((snap) => {
+        const data = snap.val() || {};
+        messagesConversations = Object.entries(data).map(([chatId, payload]) => {
+          const meta = payload?.meta || {};
+          return {
+            chatId,
+            lastMessage: meta.lastMessage || '',
+            lastUpdated: meta.lastUpdated || 0,
+            userName: meta.userName || '',
+            meta,
+          };
+        });
+        messagesConversations.sort((a, b) => (b.lastUpdated || 0) - (a.lastUpdated || 0));
+      })
+      .catch((err) => {
+        console.warn('No se pudieron cargar las conversaciones', err);
+        messagesConversations = [];
+      })
+      .finally(() => {
+        renderConversations();
+        if (!messagesConversations.length) {
+          emptyState?.classList.remove('hidden');
+        }
+      });
   }
 
   function selectConversation(chatId) {
@@ -5190,81 +5183,95 @@ function initMensajes() {
       renderConversations();
       return;
     }
-    messagesSelectedChatId = chatId;
-    cleanupConversationListeners();
-    const baseRef = firebase.database().ref(`messages/${EMPRESA}/${messagesCurrentBot}/${chatId}`);
-    messagesMetaRef = baseRef.child('meta');
-    messagesMetaCallback = (snap) => {
-      const meta = snap.val() || {};
-      updateHeader(meta);
-    };
-    messagesMetaRef.on('value', messagesMetaCallback);
-    messagesMessagesRef = baseRef.child('messages');
-    messagesMessagesCallback = (snap) => {
-      renderConversationMessages(snap.val() || {});
-    };
-    messagesMessagesRef.on('value', messagesMessagesCallback);
 
-    placeholderEl.classList.add('hidden');
-    detailEl.classList.remove('hidden');
+    messagesSelectedChatId = chatId;
+    const existing = messagesConversations.find(item => item.chatId === chatId);
+    if (existing) {
+      updateHeader(existing.meta || existing);
+    }
     if (headerEl) headerEl.classList.remove('hidden');
-    updateHeader({ userName: '', lastUpdated: null });
-    renderConversations();
+
+    detailEl.innerHTML = '<div class="text-sm text-gray-400 text-center mt-10">Cargando mensajes...</div>';
+    detailEl.classList.remove('hidden');
+    placeholderEl.classList.add('hidden');
+
+    const baseRef = getConversationsRef(messagesCurrentBot).child(chatId);
+    const metaPromise = baseRef.child('meta').once('value').catch((err) => {
+      console.warn('No se pudo cargar el meta de la conversación', err);
+      return null;
+    });
+    const messagesPromise = baseRef.child('messages').once('value').catch((err) => {
+      console.warn('No se pudieron cargar los mensajes', err);
+      return null;
+    });
+
+    Promise.all([metaPromise, messagesPromise]).then(([metaSnap, messagesSnap]) => {
+      const meta = metaSnap?.val() || existing?.meta || {};
+      updateHeader(meta);
+      const messages = messagesSnap?.val() || {};
+      renderConversationMessages(messages);
+      if (headerEl) headerEl.classList.remove('hidden');
+      detailEl.classList.remove('hidden');
+      placeholderEl.classList.add('hidden');
+    }).catch((err) => {
+      console.warn('No se pudo mostrar la conversación', err);
+      detailEl.innerHTML = '<div class="text-sm text-red-500 text-center mt-10">No se pudieron cargar los mensajes.</div>';
+    }).finally(() => {
+      renderConversations();
+    });
   }
 
   function populateBotOptions() {
-    const labels = {};
-    const tasks = [];
-    try {
-      const botsRef = getBotsRef();
-      if (botsRef) {
-        tasks.push(botsRef.once('value').then((snap) => {
-          const data = snap.val() || {};
-          Object.entries(data).forEach(([botId, botData]) => {
-            if (!botId) return;
-            const label = botData?.config?.hotelName || botId;
-            labels[botId] = label;
-          });
-        }).catch(err => console.warn('No se pudieron cargar los bots', err)));
-      }
-    } catch (err) {
-      console.warn('No se pudo obtener la referencia de bots', err);
-    }
+    return firebase.database().ref(`empresas/${EMPRESA}/bots`).once('value')
+      .then((snap) => {
+        const data = snap.val() || {};
+        const entries = Object.entries(data).map(([botId, botData]) => {
+          if (!botId) return null;
+          const label = botData?.config?.hotelName || botId;
+          return [botId, label];
+        }).filter(Boolean);
 
-    tasks.push(firebase.database().ref(`messages/${EMPRESA}`).once('value').then((snap) => {
-      const data = snap.val() || {};
-      Object.keys(data).forEach(botId => {
-        if (!labels[botId]) labels[botId] = botId;
-      });
-    }).catch(err => console.warn('No se pudo cargar la lista de conversaciones', err)));
+        if (!entries.length && messagesCurrentBot) {
+          entries.push([messagesCurrentBot, messagesCurrentBot]);
+        }
 
-    return Promise.all(tasks).then(() => {
-      if (messagesCurrentBot && !labels[messagesCurrentBot]) {
-        labels[messagesCurrentBot] = messagesCurrentBot;
-      }
-      const entries = Object.entries(labels);
-      entries.sort((a, b) => (a[1] || '').localeCompare(b[1] || '', undefined, { sensitivity: 'base' }));
-      botSelect.innerHTML = '';
-      if (!entries.length) {
-        const option = document.createElement('option');
-        option.value = messagesCurrentBot || BOT;
-        option.textContent = messagesCurrentBot || BOT;
-        botSelect.appendChild(option);
-        botSelect.disabled = true;
-        messagesCurrentBot = option.value;
-      } else {
+        entries.sort((a, b) => (a[1] || '').localeCompare(b[1] || '', undefined, { sensitivity: 'base' }));
+
+        botSelect.innerHTML = '';
         entries.forEach(([value, label]) => {
           const option = document.createElement('option');
           option.value = value;
           option.textContent = label || value;
           botSelect.appendChild(option);
         });
-        botSelect.disabled = entries.length <= 1;
-        const desired = entries.find(([value]) => value === messagesCurrentBot)?.[0] || entries[0][0];
-        botSelect.value = desired;
-        messagesCurrentBot = desired;
-      }
-    });
+
+        if (!entries.length) {
+          const option = document.createElement('option');
+          option.value = messagesCurrentBot || BOT;
+          option.textContent = messagesCurrentBot || BOT;
+          botSelect.appendChild(option);
+        }
+
+        botSelect.disabled = botSelect.options.length <= 1;
+
+        if (botSelect.options.length) {
+          const desired = Array.from(botSelect.options).find(opt => opt.value === messagesCurrentBot);
+          botSelect.value = desired ? desired.value : botSelect.options[0].value;
+          messagesCurrentBot = botSelect.value;
+        } else {
+          messagesCurrentBot = botSelect.value || messagesCurrentBot || BOT;
+        }
+      })
+      .catch((err) => {
+        console.warn('No se pudieron cargar los bots', err);
+        botSelect.innerHTML = '';
+        const option = document.createElement('option');
+        option.value = messagesCurrentBot || BOT;
+        option.textContent = messagesCurrentBot || BOT;
+        botSelect.appendChild(option);
+        botSelect.disabled = true;
+        messagesCurrentBot = option.value;
+      });
   }
 
   if (!messagesTabInitialized) {
@@ -5273,13 +5280,13 @@ function initMensajes() {
     }
     botSelect.addEventListener('change', (event) => {
       const nextBot = event.target.value || BOT;
-      if (!nextBot || nextBot === messagesCurrentBot) {
+      if (!nextBot) return;
+      if (nextBot === messagesCurrentBot) {
         renderConversations();
         return;
       }
       messagesCurrentBot = nextBot;
-      resetConversationView();
-      attachListListener(messagesCurrentBot);
+      loadConversations(messagesCurrentBot);
     });
     messagesTabInitialized = true;
   }
@@ -5287,8 +5294,10 @@ function initMensajes() {
   messagesCurrentBot = botSelect.value || messagesCurrentBot || BOT;
   resetConversationView();
   renderConversations();
+
   populateBotOptions().then(() => {
-    attachListListener(messagesCurrentBot);
+    messagesCurrentBot = botSelect.value || messagesCurrentBot || BOT;
+    return loadConversations(messagesCurrentBot);
   });
 }
 
