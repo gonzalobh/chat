@@ -179,6 +179,84 @@ function getBot() {
 }
 let BOT = getBot();
 
+const CHAT_SESSION_KEY = `chatId:${EMPRESA}:${BOT}`;
+let CHAT_ID = sessionStorage.getItem(CHAT_SESSION_KEY);
+if (!CHAT_ID) {
+  CHAT_ID = `${Date.now()}`;
+  sessionStorage.setItem(CHAT_SESSION_KEY, CHAT_ID);
+}
+const chatLogBaseRef = firebase.database().ref(`messages/${EMPRESA}/${BOT}/${CHAT_ID}`);
+const chatMessagesRef = chatLogBaseRef.child('messages');
+const chatMetaRef = chatLogBaseRef.child('meta');
+let chatMetaCache = null;
+let chatStartedAt = null;
+
+chatMetaRef.once('value').then(snapshot => {
+  chatMetaCache = snapshot.val() || {};
+  if (chatMetaCache.startedAt) {
+    chatStartedAt = chatMetaCache.startedAt;
+  }
+}).catch(err => console.warn('No se pudo cargar la metadata del chat', err));
+
+function getChatUserName() {
+  const candidates = [
+    `chatUserName:${EMPRESA}:${BOT}`,
+    'chatUserName',
+    'userName',
+    'guestName',
+    'name'
+  ];
+  for (const key of candidates) {
+    const fromSession = sessionStorage.getItem(key);
+    if (fromSession && fromSession.trim()) return fromSession.trim();
+    const fromLocal = localStorage.getItem(key);
+    if (fromLocal && fromLocal.trim()) return fromLocal.trim();
+  }
+  return 'Guest';
+}
+
+function stripHtml(html) {
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html || '';
+  return tmp.textContent || tmp.innerText || '';
+}
+
+function updateChatMeta(lastMessage, timestamp) {
+  if (!chatMetaRef) return;
+  const updates = {
+    userName: getChatUserName(),
+    lastMessage: lastMessage || '',
+    lastUpdated: timestamp
+  };
+  if (!chatStartedAt) {
+    chatStartedAt = chatMetaCache?.startedAt || timestamp;
+  }
+  if (!chatMetaCache?.startedAt) {
+    updates.startedAt = chatStartedAt;
+  }
+  chatMetaRef.update(updates).then(() => {
+    chatMetaCache = { ...(chatMetaCache || {}), ...updates };
+  }).catch(err => console.warn('No se pudo actualizar la metadata del chat', err));
+}
+
+function logChatMessage(sender, text) {
+  if (!chatMessagesRef || !sender) return;
+  const now = Date.now();
+  const safeText = text == null ? '' : String(text);
+  const payload = {
+    sender,
+    text: safeText,
+    time: now
+  };
+  try {
+    const newRef = chatMessagesRef.push();
+    newRef.set(payload).catch(err => console.warn('No se pudo guardar el mensaje del chat', err));
+  } catch (err) {
+    console.warn('No se pudo registrar la referencia del mensaje', err);
+  }
+  updateChatMeta(payload.text, now);
+}
+
 let useLegacyBotPath = false;
 let botCollectionPath = null;
 
@@ -270,7 +348,7 @@ function linkify(text){
 /* =========================
    RENDER MENSAJES
 ========================= */
-function addAssistantMessageHTML(html, {avatarUrl}={}){
+function addAssistantMessageHTML(html, {avatarUrl, rawText}={}){
   const wrap = document.createElement('div');
   wrap.className = 'chat-bubble chat-assistant';
   const avatar = document.createElement('img');
@@ -285,10 +363,12 @@ msg.style.color = getComputedStyle(document.documentElement)
   wrap.appendChild(msg);
   chatBox.appendChild(wrap);
   chatBox.scrollTop = chatBox.scrollHeight;
+  const plain = rawText != null ? rawText : stripHtml(html);
+  logChatMessage('bot', plain);
 }
 function addAssistantMessage(text, opts={}){
   const md = marked.parse(text || "");
-  addAssistantMessageHTML(md, opts);
+  addAssistantMessageHTML(md, { ...opts, rawText: text });
 }
 function addUserMessage(text){
   const bubble = document.createElement('div');
@@ -296,6 +376,7 @@ function addUserMessage(text){
   bubble.textContent = text;
   chatBox.appendChild(bubble);
   chatBox.scrollTop = chatBox.scrollHeight;
+  logChatMessage('user', text);
 }
 function addTyping(){
   const el = document.createElement('div');
