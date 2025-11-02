@@ -727,6 +727,10 @@ body.login-view #appContainer {
       <i data-lucide="message-circle" class="w-5 h-5 shrink-0"></i>
       <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Chat</span>
     </button>
+    <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="mensajes">
+      <i data-lucide="inbox" class="w-5 h-5 shrink-0"></i>
+      <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Mensajes</span>
+    </button>
     <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="knowledge">
       <i data-lucide="book-open" class="w-5 h-5 shrink-0"></i>
       <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Knowledge</span>
@@ -1244,6 +1248,38 @@ body.login-view #appContainer {
   </div>
 </section>
 
+<!-- MENSAJES TAB -->
+<section id="tab-mensajes" class="hidden">
+  <div class="grid gap-6 lg:grid-cols-[320px,1fr]">
+    <div class="card p-4 flex flex-col h-[620px]">
+      <div class="flex flex-col gap-3">
+        <div>
+          <label for="messagesBotFilter" class="text-xs font-semibold text-gray-500 uppercase tracking-wide block mb-1">Bot</label>
+          <select id="messagesBotFilter" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-black/60"></select>
+        </div>
+        <div class="relative">
+          <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>
+          <input id="messagesSearchInput" type="text" placeholder="Buscar conversaciones" class="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black/60" />
+        </div>
+      </div>
+      <div id="messagesEmpty" class="text-sm text-gray-500 text-center mt-6 hidden">No hay conversaciones</div>
+      <div id="messagesList" class="mt-4 flex-1 overflow-y-auto space-y-2 pr-1"></div>
+    </div>
+    <div class="card p-4 h-[620px] flex flex-col">
+      <div id="messagesConversationHeader" class="pb-3 border-b border-gray-200 mb-3 hidden">
+        <div class="flex items-center justify-between gap-2">
+          <div id="messagesUserName" class="text-lg font-semibold text-gray-800 truncate"></div>
+          <div id="messagesUpdatedAt" class="text-xs text-gray-500"></div>
+        </div>
+      </div>
+      <div id="messagesPlaceholder" class="flex-1 flex items-center justify-center text-sm text-gray-500 text-center px-6">
+        Selecciona una conversación para ver los mensajes.
+      </div>
+      <div id="messagesDetail" class="flex-1 overflow-y-auto space-y-3 hidden"></div>
+    </div>
+  </div>
+</section>
+
 <!-- KNOWLEDGE TAB -->
           <section id="tab-knowledge" class="hidden space-y-6 max-w-3xl">
   <div class="card p-5 space-y-4">
@@ -1679,6 +1715,17 @@ let BOT = getBot();
 
 let BOT_COLLECTION_PATH = null;
 let BOT_LEGACY_PATH = null;
+
+let messagesTabInitialized = false;
+let messagesCurrentBot = BOT;
+let messagesSelectedChatId = null;
+let messagesConversations = [];
+let messagesListQuery = null;
+let messagesListCallback = null;
+let messagesMetaRef = null;
+let messagesMetaCallback = null;
+let messagesMessagesRef = null;
+let messagesMessagesCallback = null;
 
 function getDefaultBotCollectionPath() {
   return `${EMPRESA}/bots`;
@@ -2990,7 +3037,7 @@ function setWriteEnabled(enabled) {
   }
 }
 
-const TAB_KEYS = ['chat','knowledge','respuestas'];
+const TAB_KEYS = ['chat','mensajes','knowledge','respuestas'];
 let tabsInitialized = false;
 
 function setActiveTab(tab) {
@@ -3193,8 +3240,9 @@ async function initAll(){
   initTabs();
   applyPreview(); 
   await refreshPermissions();
-  initApariencia(); 
-  initSettingsTab(); 
+  initApariencia();
+  initSettingsTab();
+  initMensajes();
   initKnowledge();
   initIntegration();
   initRespuestas();
@@ -4956,6 +5004,293 @@ function initSchedule() {
   });
 }
 
+
+function initMensajes() {
+  const listEl = $('messagesList');
+  const botSelect = $('messagesBotFilter');
+  const searchInput = $('messagesSearchInput');
+  const emptyState = $('messagesEmpty');
+  const detailEl = $('messagesDetail');
+  const placeholderEl = $('messagesPlaceholder');
+  const headerEl = $('messagesConversationHeader');
+  const userNameEl = $('messagesUserName');
+  const updatedEl = $('messagesUpdatedAt');
+
+  if (!listEl || !botSelect || !detailEl || !placeholderEl) {
+    setTimeout(initMensajes, 400);
+    return;
+  }
+
+  const formatTimestamp = (value) => {
+    if (!value) return '';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '';
+    const now = new Date();
+    const sameDay = date.toDateString() === now.toDateString();
+    if (sameDay) {
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+    return date.toLocaleDateString([], { day: '2-digit', month: 'short' });
+  };
+
+  function cleanupConversationListeners() {
+    if (messagesMetaRef && messagesMetaCallback) {
+      messagesMetaRef.off('value', messagesMetaCallback);
+    }
+    if (messagesMessagesRef && messagesMessagesCallback) {
+      messagesMessagesRef.off('value', messagesMessagesCallback);
+    }
+    messagesMetaRef = null;
+    messagesMetaCallback = null;
+    messagesMessagesRef = null;
+    messagesMessagesCallback = null;
+  }
+
+  function detachListListener() {
+    if (messagesListQuery && messagesListCallback) {
+      messagesListQuery.off('value', messagesListCallback);
+    }
+    messagesListQuery = null;
+    messagesListCallback = null;
+  }
+
+  function updateHeader(meta = {}) {
+    const displayName = (meta.userName || '').trim() || 'Guest';
+    if (userNameEl) userNameEl.textContent = displayName;
+    if (updatedEl) {
+      const formatted = meta.lastUpdated ? formatTimestamp(meta.lastUpdated) : '';
+      updatedEl.textContent = formatted;
+      updatedEl.classList.toggle('hidden', !formatted);
+    }
+  }
+
+  function resetConversationView() {
+    messagesSelectedChatId = null;
+    cleanupConversationListeners();
+    detailEl.innerHTML = '';
+    detailEl.classList.add('hidden');
+    placeholderEl.classList.remove('hidden');
+    if (headerEl) headerEl.classList.add('hidden');
+    if (userNameEl) userNameEl.textContent = '';
+    if (updatedEl) {
+      updatedEl.textContent = '';
+      updatedEl.classList.add('hidden');
+    }
+  }
+
+  function renderConversationMessages(data) {
+    const entries = Object.entries(data || {}).sort((a, b) => {
+      const timeA = a[1]?.time || 0;
+      const timeB = b[1]?.time || 0;
+      return timeA - timeB;
+    });
+    detailEl.innerHTML = '';
+    if (!entries.length) {
+      const empty = document.createElement('div');
+      empty.className = 'text-sm text-gray-400 text-center mt-10';
+      empty.textContent = 'No hay mensajes';
+      detailEl.appendChild(empty);
+      return;
+    }
+    entries.forEach(([, message]) => {
+      const sender = (message?.sender || '').toLowerCase();
+      const isBot = sender === 'bot';
+      const wrapper = document.createElement('div');
+      wrapper.className = `flex flex-col gap-1 ${isBot ? 'items-end' : 'items-start'}`;
+      const bubble = document.createElement('div');
+      bubble.className = `${isBot ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-800'} px-3 py-2 rounded-2xl max-w-[80%] text-sm leading-relaxed shadow-sm`;
+      bubble.textContent = message?.text || '';
+      wrapper.appendChild(bubble);
+      if (message?.time) {
+        const timeEl = document.createElement('span');
+        timeEl.className = 'text-[11px] text-gray-400';
+        timeEl.textContent = formatTimestamp(message.time);
+        wrapper.appendChild(timeEl);
+      }
+      detailEl.appendChild(wrapper);
+    });
+    detailEl.scrollTop = detailEl.scrollHeight;
+  }
+
+  function renderConversations() {
+    const term = (searchInput?.value || '').toLowerCase().trim();
+    const base = term
+      ? messagesConversations.filter(item => {
+          const haystack = `${item.userName} ${item.lastMessage} ${item.chatId}`.toLowerCase();
+          return haystack.includes(term);
+        })
+      : messagesConversations.slice();
+
+    listEl.innerHTML = '';
+    if (!base.length) {
+      if (emptyState) {
+        emptyState.textContent = term ? 'Sin resultados' : 'No hay conversaciones';
+        emptyState.classList.remove('hidden');
+      }
+      return;
+    }
+    if (emptyState) emptyState.classList.add('hidden');
+
+    base.forEach(chat => {
+      const isActive = chat.chatId === messagesSelectedChatId;
+      const item = document.createElement('button');
+      item.type = 'button';
+      item.dataset.chatId = chat.chatId;
+      item.className = `w-full text-left px-3 py-3 rounded-xl border transition flex flex-col gap-1 ${isActive ? 'bg-black text-white border-black shadow-sm' : 'bg-white border-transparent hover:bg-gray-100 text-gray-700'}`;
+      const topRow = document.createElement('div');
+      topRow.className = 'flex items-center justify-between gap-2';
+      const nameEl = document.createElement('span');
+      nameEl.className = `font-semibold text-sm truncate ${isActive ? 'text-white' : 'text-gray-800'}`;
+      nameEl.textContent = chat.userName || 'Guest';
+      const timeEl = document.createElement('span');
+      timeEl.className = `text-xs ${isActive ? 'text-white/70' : 'text-gray-400'}`;
+      timeEl.textContent = chat.lastUpdated ? formatTimestamp(chat.lastUpdated) : '';
+      topRow.append(nameEl, timeEl);
+      const preview = document.createElement('span');
+      preview.className = `text-xs truncate ${isActive ? 'text-white/80' : 'text-gray-500'}`;
+      preview.textContent = chat.lastMessage || '—';
+      item.append(topRow, preview);
+      item.addEventListener('click', () => {
+        if (chat.chatId === messagesSelectedChatId) return;
+        selectConversation(chat.chatId);
+      });
+      listEl.appendChild(item);
+    });
+  }
+
+  function handleListSnapshot(snapshot) {
+    const data = snapshot.val() || {};
+    messagesConversations = Object.entries(data).map(([chatId, payload]) => {
+      const meta = payload?.meta || {};
+      const name = (meta.userName || '').trim() || 'Guest';
+      const lastMessage = meta.lastMessage || '';
+      const lastUpdated = meta.lastUpdated || 0;
+      return { chatId, meta, userName: name, lastMessage, lastUpdated };
+    }).sort((a, b) => b.lastUpdated - a.lastUpdated);
+
+    if (messagesSelectedChatId && !messagesConversations.some(item => item.chatId === messagesSelectedChatId)) {
+      resetConversationView();
+    }
+    renderConversations();
+  }
+
+  function attachListListener(botId) {
+    detachListListener();
+    messagesConversations = [];
+    renderConversations();
+    const ref = firebase.database().ref(`messages/${EMPRESA}/${botId || ''}`);
+    messagesListQuery = ref.orderByChild('meta/lastUpdated');
+    messagesListCallback = handleListSnapshot;
+    messagesListQuery.on('value', messagesListCallback);
+  }
+
+  function selectConversation(chatId) {
+    if (!chatId) {
+      resetConversationView();
+      renderConversations();
+      return;
+    }
+    messagesSelectedChatId = chatId;
+    cleanupConversationListeners();
+    const baseRef = firebase.database().ref(`messages/${EMPRESA}/${messagesCurrentBot}/${chatId}`);
+    messagesMetaRef = baseRef.child('meta');
+    messagesMetaCallback = (snap) => {
+      const meta = snap.val() || {};
+      updateHeader(meta);
+    };
+    messagesMetaRef.on('value', messagesMetaCallback);
+    messagesMessagesRef = baseRef.child('messages');
+    messagesMessagesCallback = (snap) => {
+      renderConversationMessages(snap.val() || {});
+    };
+    messagesMessagesRef.on('value', messagesMessagesCallback);
+
+    placeholderEl.classList.add('hidden');
+    detailEl.classList.remove('hidden');
+    if (headerEl) headerEl.classList.remove('hidden');
+    updateHeader({ userName: '', lastUpdated: null });
+    renderConversations();
+  }
+
+  function populateBotOptions() {
+    const labels = {};
+    const tasks = [];
+    try {
+      const botsRef = getBotsRef();
+      if (botsRef) {
+        tasks.push(botsRef.once('value').then((snap) => {
+          const data = snap.val() || {};
+          Object.entries(data).forEach(([botId, botData]) => {
+            if (!botId) return;
+            const label = botData?.config?.hotelName || botId;
+            labels[botId] = label;
+          });
+        }).catch(err => console.warn('No se pudieron cargar los bots', err)));
+      }
+    } catch (err) {
+      console.warn('No se pudo obtener la referencia de bots', err);
+    }
+
+    tasks.push(firebase.database().ref(`messages/${EMPRESA}`).once('value').then((snap) => {
+      const data = snap.val() || {};
+      Object.keys(data).forEach(botId => {
+        if (!labels[botId]) labels[botId] = botId;
+      });
+    }).catch(err => console.warn('No se pudo cargar la lista de conversaciones', err)));
+
+    return Promise.all(tasks).then(() => {
+      if (messagesCurrentBot && !labels[messagesCurrentBot]) {
+        labels[messagesCurrentBot] = messagesCurrentBot;
+      }
+      const entries = Object.entries(labels);
+      entries.sort((a, b) => (a[1] || '').localeCompare(b[1] || '', undefined, { sensitivity: 'base' }));
+      botSelect.innerHTML = '';
+      if (!entries.length) {
+        const option = document.createElement('option');
+        option.value = messagesCurrentBot || BOT;
+        option.textContent = messagesCurrentBot || BOT;
+        botSelect.appendChild(option);
+        botSelect.disabled = true;
+        messagesCurrentBot = option.value;
+      } else {
+        entries.forEach(([value, label]) => {
+          const option = document.createElement('option');
+          option.value = value;
+          option.textContent = label || value;
+          botSelect.appendChild(option);
+        });
+        botSelect.disabled = entries.length <= 1;
+        const desired = entries.find(([value]) => value === messagesCurrentBot)?.[0] || entries[0][0];
+        botSelect.value = desired;
+        messagesCurrentBot = desired;
+      }
+    });
+  }
+
+  if (!messagesTabInitialized) {
+    if (searchInput) {
+      searchInput.addEventListener('input', () => renderConversations());
+    }
+    botSelect.addEventListener('change', (event) => {
+      const nextBot = event.target.value || BOT;
+      if (!nextBot || nextBot === messagesCurrentBot) {
+        renderConversations();
+        return;
+      }
+      messagesCurrentBot = nextBot;
+      resetConversationView();
+      attachListListener(messagesCurrentBot);
+    });
+    messagesTabInitialized = true;
+  }
+
+  messagesCurrentBot = botSelect.value || messagesCurrentBot || BOT;
+  resetConversationView();
+  renderConversations();
+  populateBotOptions().then(() => {
+    attachListListener(messagesCurrentBot);
+  });
+}
 
 // === Function to initialize Integration tab ===
 function initIntegration(){
