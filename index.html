@@ -643,7 +643,11 @@ body.login-view #appContainer {
       <!-- Sidebar -->
 <aside class="group fixed top-[57px] left-0 h-[calc(100vh-57px)] bg-white border-r overflow-y-auto transition-all duration-300 w-[72px] hover:w-[260px]">
   <nav class="space-y-2 mt-4 px-2">
-    <button class="sidebar-btn active flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="chat">
+    <button class="sidebar-btn active flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="dashboard">
+      <i data-lucide="layout-dashboard" class="w-5 h-5 shrink-0"></i>
+      <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Dashboard</span>
+    </button>
+    <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="chat">
       <i data-lucide="message-circle" class="w-5 h-5 shrink-0"></i>
       <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Chat</span>
     </button>
@@ -687,8 +691,202 @@ body.login-view #appContainer {
 
         <!-- Tabs container -->
         <div id="tabs" class="hidden">
+<section id="tab-dashboard" class="space-y-8">
+  <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <h1 class="text-2xl font-semibold text-gray-900">Dashboard</h1>
+      <p class="text-sm text-gray-500">Global overview across every bot.</p>
+    </div>
+    <div class="flex items-center gap-3 text-sm text-gray-500">
+      <span class="inline-flex items-center gap-2 rounded-full border border-gray-200 px-3 py-1 bg-white shadow-sm">
+        <i data-lucide="globe-2" class="w-4 h-4"></i>
+        Live status
+      </span>
+    </div>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+    <div class="card border border-gray-200 p-5 shadow-sm">
+      <div class="flex items-start justify-between">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Messages today</p>
+          <div class="mt-2 text-2xl font-semibold text-gray-900" id="dashboardMessagesToday">—</div>
+          <p class="mt-1 text-xs text-gray-500">All bots combined.</p>
+        </div>
+        <div class="rounded-full bg-gray-100 p-2 text-gray-500">
+          <i data-lucide="message-circle" class="w-4 h-4"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="card border border-gray-200 p-5 shadow-sm">
+      <div class="flex items-start justify-between">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Messages this month</p>
+          <div class="mt-2 text-2xl font-semibold text-gray-900" id="dashboardMessagesMonth">—</div>
+          <p class="mt-1 text-xs text-gray-500">Rolling 30 days.</p>
+        </div>
+        <div class="rounded-full bg-gray-100 p-2 text-gray-500">
+          <i data-lucide="calendar" class="w-4 h-4"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="card border border-gray-200 p-5 shadow-sm">
+      <div class="flex items-start justify-between">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Unique users</p>
+          <div class="mt-2 text-2xl font-semibold text-gray-900" id="dashboardUniqueUsers">—</div>
+          <p class="mt-1 text-xs text-gray-500">Distinct conversations.</p>
+        </div>
+        <div class="rounded-full bg-gray-100 p-2 text-gray-500">
+          <i data-lucide="users" class="w-4 h-4"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="card border border-gray-200 p-5 shadow-sm">
+      <div class="flex items-start justify-between">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Active bots</p>
+          <div class="mt-2 text-2xl font-semibold text-gray-900" id="dashboardActiveBots">—</div>
+          <p class="mt-1 text-xs text-gray-500">Bots receiving traffic.</p>
+        </div>
+        <div class="rounded-full bg-gray-100 p-2 text-gray-500">
+          <i data-lucide="bot" class="w-4 h-4"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="card border border-gray-200 p-5 shadow-sm">
+      <div class="flex items-start justify-between">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Active auto-replies</p>
+          <div class="mt-2 text-2xl font-semibold text-gray-900" id="dashboardActiveAutoReplies">—</div>
+          <p class="mt-1 text-xs text-gray-500">Across all bots.</p>
+        </div>
+        <div class="rounded-full bg-gray-100 p-2 text-gray-500">
+          <i data-lucide="sparkles" class="w-4 h-4"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card border border-gray-200 p-6 shadow-sm space-y-6">
+    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div>
+        <div class="flex items-center gap-2 text-gray-800 font-semibold">
+          <i data-lucide="bot" class="w-5 h-5"></i>
+          <span>Bot insights</span>
+        </div>
+        <p class="text-sm text-gray-500">Inspect key stats per assistant.</p>
+      </div>
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <span class="text-xs font-semibold uppercase tracking-wide text-gray-500">Select bot</span>
+        <select id="dashboardBotFilter" class="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-black/70 min-w-[180px]">
+          <option value="all">All bots</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="dashboardBotSummary" class="hidden rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm text-gray-600">
+      Showing insights for <span id="dashboardBotName" class="font-semibold text-gray-900"></span>
+    </div>
+
+    <div id="dashboardBotEmpty" class="rounded-xl border border-dashed border-gray-300 bg-gray-50 px-4 py-5 text-sm text-gray-500">
+      Select a bot to display its statistics.
+    </div>
+
+    <div id="dashboardBotDetails" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 hidden">
+      <div class="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Messages</p>
+            <div class="mt-2 text-2xl font-semibold text-gray-900" id="dashboardBotMessages">—</div>
+            <p class="mt-1 text-xs text-gray-500">Today's volume</p>
+          </div>
+          <div class="rounded-full bg-gray-100 p-2 text-gray-500">
+            <i data-lucide="message-square" class="w-4 h-4"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Users</p>
+            <div class="mt-2 text-2xl font-semibold text-gray-900" id="dashboardBotUsers">—</div>
+            <p class="mt-1 text-xs text-gray-500">Unique contacts</p>
+          </div>
+          <div class="rounded-full bg-gray-100 p-2 text-gray-500">
+            <i data-lucide="users" class="w-4 h-4"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Last activity</p>
+            <div class="mt-2 text-base font-semibold text-gray-900" id="dashboardBotLastActivity">—</div>
+            <p class="mt-1 text-xs text-gray-500">Most recent interaction</p>
+          </div>
+          <div class="rounded-full bg-gray-100 p-2 text-gray-500">
+            <i data-lucide="clock" class="w-4 h-4"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Active auto-replies</p>
+            <div class="mt-2 text-2xl font-semibold text-gray-900" id="dashboardBotAutoReplies">—</div>
+            <p class="mt-1 text-xs text-gray-500">Currently enabled</p>
+          </div>
+          <div class="rounded-full bg-gray-100 p-2 text-gray-500">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm xl:col-span-2">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Average session duration</p>
+            <div class="mt-2 text-base font-semibold text-gray-900" id="dashboardBotAvgSession">—</div>
+            <p class="mt-1 text-xs text-gray-500">Tracker reported value (seconds/minutes).</p>
+          </div>
+          <div class="rounded-full bg-gray-100 p-2 text-gray-500">
+            <i data-lucide="timer" class="w-4 h-4"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid gap-6 lg:grid-cols-2">
+    <div class="card border border-gray-200 p-6 shadow-sm space-y-4">
+      <div class="flex items-center gap-2 text-gray-800 font-semibold">
+        <i data-lucide="activity" class="w-5 h-5"></i>
+        <span>Latest conversations</span>
+      </div>
+      <p class="text-sm text-gray-500">Monitor recent chats and visitors.</p>
+      <div id="dashboardRecentChats" class="space-y-3"></div>
+    </div>
+
+    <div class="card border border-gray-200 p-6 shadow-sm space-y-4">
+      <div class="flex items-center gap-2 text-gray-800 font-semibold">
+        <i data-lucide="history" class="w-5 h-5"></i>
+        <span>Recent updates</span>
+      </div>
+      <p class="text-sm text-gray-500">Keep track of configuration changes.</p>
+      <div id="dashboardRecentUpdates" class="space-y-3"></div>
+    </div>
+  </div>
+</section>
 <!-- Chat -->
-<section id="tab-chat" class="space-y-8">
+<section id="tab-chat" class="space-y-8 hidden">
   <div class="flex justify-center">
     <div id="chatPanelTabs" class="flex flex-wrap items-center gap-2 p-1">
       <button class="chat-panel-tab active" data-chat-panel-tab="bot">
@@ -2086,11 +2284,13 @@ function initBotSelector() {
       createBtn.disabled = true;
     }
     updateBotLabels(BOT);
+    onBotsDataUpdated({ [BOT]: cachedBotsData?.[BOT] || {} });
     return;
   }
 
   botsRef.on('value', (snap) => {
     cachedBots = snap.val() || {};
+    onBotsDataUpdated(cachedBots);
     updateNewBotSlugPreview();
     const entries = Object.entries(cachedBots);
     select.innerHTML = '';
@@ -2604,11 +2804,546 @@ function setWriteEnabled(enabled) {
   }
 }
 
-const TAB_KEYS = ['chat','knowledge','respuestas'];
+let cachedBotsData = {};
+let dashboardInitialized = false;
+let dashboardAnalyticsRef = null;
+let dashboardAnalyticsRaw = null;
+let dashboardEffectiveData = { general: {}, bots: {}, recent: { chats: [], updates: [] } };
+let dashboardSelectedBot = 'all';
+let dashboardElements = null;
+const dashboardNumberFormatter = new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 });
+
+function safeNumber(value) {
+  if (value === null || value === undefined) return null;
+  const num = Number(value);
+  return Number.isFinite(num) ? num : null;
+}
+
+function formatNumber(value) {
+  const num = safeNumber(value);
+  if (num === null) return '—';
+  return dashboardNumberFormatter.format(num);
+}
+
+function toDate(value) {
+  if (!value) return null;
+  if (value instanceof Date) {
+    return Number.isNaN(value.getTime()) ? null : value;
+  }
+  if (typeof value === 'number') {
+    let num = value;
+    if (num < 1e12) {
+      if (num > 1e9) {
+        num = num;
+      } else {
+        num = num * 1000;
+      }
+    }
+    const date = new Date(num);
+    return Number.isNaN(date.getTime()) ? null : date;
+  }
+  const parsed = Date.parse(value);
+  if (!Number.isNaN(parsed)) {
+    return new Date(parsed);
+  }
+  return null;
+}
+
+function formatTimestamp(value) {
+  const date = toDate(value);
+  if (!date) return '—';
+  const diff = Date.now() - date.getTime();
+  const abs = Math.abs(diff);
+  let relative;
+  if (abs < 60 * 1000) {
+    relative = diff >= 0 ? 'just now' : 'in a moment';
+  } else if (abs < 60 * 60 * 1000) {
+    const minutes = Math.round(abs / (60 * 1000));
+    relative = diff >= 0 ? `${minutes}m ago` : `in ${minutes}m`;
+  } else if (abs < 24 * 60 * 60 * 1000) {
+    const hours = Math.round(abs / (60 * 60 * 1000));
+    relative = diff >= 0 ? `${hours}h ago` : `in ${hours}h`;
+  } else {
+    const days = Math.round(abs / (24 * 60 * 60 * 1000));
+    relative = diff >= 0 ? `${days}d ago` : `in ${days}d`;
+  }
+  const exact = date.toLocaleString();
+  return `${relative} • ${exact}`;
+}
+
+function formatDuration(value) {
+  const num = safeNumber(value);
+  if (num === null || num <= 0) return '—';
+  return dashboardNumberFormatter.format(num);
+}
+
+function setTextContent(el, value) {
+  if (!el) return;
+  el.textContent = value;
+}
+
+function countAutoResponses(config = {}) {
+  const source = config?.autoResponses;
+  if (!source) return 0;
+  if (Array.isArray(source)) {
+    return source.filter(Boolean).length;
+  }
+  if (typeof source === 'object') {
+    return Object.values(source).filter(Boolean).length;
+  }
+  return 0;
+}
+
+function getBotDisplayName(botId) {
+  if (!botId) return '—';
+  const data = cachedBotsData?.[botId];
+  const label = data?.config?.hotelName;
+  return (label && label.trim()) || botId;
+}
+
+function pickNumber(source, paths) {
+  if (!source || typeof source !== 'object') return null;
+  for (const path of paths) {
+    const segments = path.split('.');
+    let current = source;
+    for (const segment of segments) {
+      if (current && typeof current === 'object' && segment in current) {
+        current = current[segment];
+      } else {
+        current = undefined;
+        break;
+      }
+    }
+    const num = safeNumber(current);
+    if (num !== null) return num;
+  }
+  return null;
+}
+
+function normalizeBotAnalytics(raw) {
+  if (!raw || typeof raw !== 'object') return {};
+  const analytics = raw.analytics && typeof raw.analytics === 'object' ? raw.analytics : raw;
+  const general = analytics.general && typeof analytics.general === 'object' ? analytics.general : {};
+  return {
+    messagesToday: pickNumber(analytics, ['messagesToday','today','messages_today','metrics.today']) ?? pickNumber(general, ['messagesToday','today']),
+    messagesThisMonth: pickNumber(analytics, ['messagesThisMonth','month','messages_month','metrics.month']) ?? pickNumber(general, ['messagesThisMonth','month']),
+    uniqueUsers: pickNumber(analytics, ['uniqueUsers','users','activeUsers','metrics.uniqueUsers']) ?? pickNumber(general, ['uniqueUsers','users']),
+    lastActivity: analytics.lastActivity || analytics.lastSeen || analytics.last || general.lastActivity || general.lastSeen,
+    activeAutoReplies: pickNumber(analytics, ['activeAutoReplies','autoReplies','autoResponses']),
+    avgSessionDuration: pickNumber(analytics, ['avgSessionDuration','averageSession','avgSession','avgSessionSeconds','avgSessionMs'])
+  };
+}
+
+function normalizeRecentItems(items, type) {
+  if (!Array.isArray(items)) return [];
+  return items.map(item => {
+    if (!item) return null;
+    if (typeof item === 'string') {
+      return { title: item, subtitle: '', bot: null, botId: null, time: null, type };
+    }
+    if (typeof item === 'object') {
+      const title = item.title || item.user || item.name || item.email || item.summary || item.action || item.id || '—';
+      const subtitle = item.message || item.description || item.status || item.preview || '';
+      const botId = item.botId || item.bot_id || null;
+      const bot = item.bot || item.botName || item.assistant || item.botLabel || null;
+      const time = item.time || item.timestamp || item.date || item.updatedAt || item.createdAt || null;
+      return { title, subtitle, bot, botId, time, type };
+    }
+    return null;
+  }).filter(Boolean);
+}
+
+function normalizeDashboardData(raw) {
+  if (!raw || typeof raw !== 'object') {
+    return { general: {}, bots: {}, recent: { chats: [], updates: [] } };
+  }
+  const generalRaw = raw.general || raw.overview || raw.metrics || raw.summary || {};
+  const botsRaw = raw.bots || raw.byBot || raw.perBot || raw.botMetrics || {};
+  const recentRaw = raw.recent || {};
+  const general = {
+    messagesToday: pickNumber(generalRaw, ['messagesToday','today','messages_today']),
+    messagesThisMonth: pickNumber(generalRaw, ['messagesThisMonth','month','messages_month']),
+    uniqueUsers: pickNumber(generalRaw, ['uniqueUsers','users','activeUsers']),
+    activeBots: pickNumber(generalRaw, ['activeBots','botsActive','bots']),
+    activeAutoReplies: pickNumber(generalRaw, ['activeAutoReplies','autoReplies','autoResponses'])
+  };
+  const bots = {};
+  Object.entries(botsRaw || {}).forEach(([botId, value]) => {
+    const normalized = normalizeBotAnalytics(value);
+    const name = value?.name || value?.label || value?.title || value?.botName || null;
+    bots[botId] = { name, ...normalized };
+  });
+  const chats = normalizeRecentItems(recentRaw.chats || recentRaw.messages || raw.recentChats || [], 'chat');
+  const updates = normalizeRecentItems(recentRaw.updates || recentRaw.config || raw.recentUpdates || [], 'update');
+  return { general, bots, recent: { chats, updates } };
+}
+
+function buildDashboardFallback() {
+  const bots = {};
+  let totalMessagesToday = 0;
+  let totalMessagesMonth = 0;
+  let totalUniqueUsers = 0;
+  let totalAutoReplies = 0;
+  const recentChats = [];
+  const recentUpdates = [];
+
+  Object.entries(cachedBotsData || {}).forEach(([botId, botData]) => {
+    const analytics = normalizeBotAnalytics(botData?.analytics || botData?.stats || botData?.config?.analytics || {});
+    const name = botData?.config?.hotelName || botId;
+    const messagesToday = safeNumber(analytics.messagesToday);
+    const messagesThisMonth = safeNumber(analytics.messagesThisMonth);
+    const uniqueUsers = safeNumber(analytics.uniqueUsers);
+    const autoReplies = countAutoResponses(botData?.config);
+    const lastActivity = analytics.lastActivity || botData?.activity?.last || botData?.lastActivity || null;
+    const avgSession = analytics.avgSessionDuration;
+
+    bots[botId] = {
+      name,
+      messagesToday,
+      messagesThisMonth,
+      uniqueUsers,
+      lastActivity,
+      activeAutoReplies: autoReplies,
+      avgSessionDuration: avgSession
+    };
+
+    if (messagesToday !== null) totalMessagesToday += messagesToday;
+    if (messagesThisMonth !== null) totalMessagesMonth += messagesThisMonth;
+    if (uniqueUsers !== null) totalUniqueUsers += uniqueUsers;
+    totalAutoReplies += autoReplies;
+
+    if (Array.isArray(botData?.analytics?.recentChats)) {
+      normalizeRecentItems(botData.analytics.recentChats, 'chat').forEach(item => {
+        recentChats.push({ ...item, bot: item.bot || name });
+      });
+    }
+    if (Array.isArray(botData?.analytics?.recentUpdates)) {
+      normalizeRecentItems(botData.analytics.recentUpdates, 'update').forEach(item => {
+        recentUpdates.push({ ...item, bot: item.bot || name });
+      });
+    }
+  });
+
+  return {
+    general: {
+      messagesToday: Object.keys(bots).length ? totalMessagesToday : null,
+      messagesThisMonth: Object.keys(bots).length ? totalMessagesMonth : null,
+      uniqueUsers: Object.keys(bots).length ? totalUniqueUsers : null,
+      activeBots: Object.keys(bots).length,
+      activeAutoReplies: totalAutoReplies
+    },
+    bots,
+    recent: {
+      chats: recentChats.slice(0, 10),
+      updates: recentUpdates.slice(0, 10)
+    }
+  };
+}
+
+function mergeDashboardData(normalized, fallback) {
+  const general = { ...fallback.general, ...normalized.general };
+  const bots = { ...fallback.bots };
+  Object.entries(normalized.bots || {}).forEach(([botId, data]) => {
+    const base = bots[botId] || {};
+    bots[botId] = { ...base, ...data };
+    if (!bots[botId].name) {
+      bots[botId].name = getBotDisplayName(botId);
+    }
+  });
+
+  if (general.activeBots === null || general.activeBots === undefined) {
+    general.activeBots = Object.keys(bots).length;
+  }
+
+  const sumMetric = (keys) => {
+    let total = 0;
+    let hasValue = false;
+    Object.values(bots).forEach(bot => {
+      for (const key of keys) {
+        const value = safeNumber(bot[key]);
+        if (value !== null) {
+          total += value;
+          hasValue = true;
+          break;
+        }
+      }
+    });
+    return hasValue ? total : null;
+  };
+
+  if (general.messagesToday === null || general.messagesToday === undefined) {
+    const total = sumMetric(['messagesToday','messages']);
+    if (total !== null) general.messagesToday = total;
+  }
+  if (general.messagesThisMonth === null || general.messagesThisMonth === undefined) {
+    const total = sumMetric(['messagesThisMonth','messagesMonth']);
+    if (total !== null) general.messagesThisMonth = total;
+  }
+  if (general.uniqueUsers === null || general.uniqueUsers === undefined) {
+    const total = sumMetric(['uniqueUsers']);
+    if (total !== null) general.uniqueUsers = total;
+  }
+  if (general.activeAutoReplies === null || general.activeAutoReplies === undefined) {
+    const total = sumMetric(['activeAutoReplies']);
+    if (total !== null) general.activeAutoReplies = total;
+  }
+
+  const recentChats = normalized.recent?.chats?.length ? normalized.recent.chats : fallback.recent.chats;
+  const recentUpdates = normalized.recent?.updates?.length ? normalized.recent.updates : fallback.recent.updates;
+
+  const enrichRecent = (items) => (items || []).map(item => {
+    const existing = (item.bot || '').toString().trim();
+    const candidateId = (item.botId || '').toString().trim();
+    let resolved = existing;
+    if (!resolved && candidateId) {
+      resolved = getBotDisplayName(candidateId);
+    } else if (resolved && cachedBotsData && cachedBotsData[resolved]) {
+      resolved = getBotDisplayName(resolved);
+    }
+    return {
+      ...item,
+      bot: resolved || null
+    };
+  });
+
+  return {
+    general,
+    bots,
+    recent: {
+      chats: enrichRecent(recentChats),
+      updates: enrichRecent(recentUpdates)
+    }
+  };
+}
+
+function ensureDashboardElements() {
+  if (dashboardElements) return dashboardElements;
+  const general = {
+    messagesToday: $('dashboardMessagesToday'),
+    messagesMonth: $('dashboardMessagesMonth'),
+    uniqueUsers: $('dashboardUniqueUsers'),
+    activeBots: $('dashboardActiveBots'),
+    activeAutoReplies: $('dashboardActiveAutoReplies')
+  };
+  const bot = {
+    filter: $('dashboardBotFilter'),
+    summary: $('dashboardBotSummary'),
+    name: $('dashboardBotName'),
+    details: $('dashboardBotDetails'),
+    empty: $('dashboardBotEmpty'),
+    messages: $('dashboardBotMessages'),
+    users: $('dashboardBotUsers'),
+    lastActivity: $('dashboardBotLastActivity'),
+    autoReplies: $('dashboardBotAutoReplies'),
+    avgSession: $('dashboardBotAvgSession')
+  };
+  const lists = {
+    chats: $('dashboardRecentChats'),
+    updates: $('dashboardRecentUpdates')
+  };
+  dashboardElements = { general, bot, lists };
+  return dashboardElements;
+}
+
+function updateDashboardGeneral(metrics) {
+  if (!dashboardElements) return;
+  setTextContent(dashboardElements.general.messagesToday, formatNumber(metrics.messagesToday));
+  setTextContent(dashboardElements.general.messagesMonth, formatNumber(metrics.messagesThisMonth));
+  setTextContent(dashboardElements.general.uniqueUsers, formatNumber(metrics.uniqueUsers));
+  setTextContent(dashboardElements.general.activeBots, formatNumber(metrics.activeBots));
+  setTextContent(dashboardElements.general.activeAutoReplies, formatNumber(metrics.activeAutoReplies));
+}
+
+function updateDashboardBotOptions() {
+  if (!dashboardElements) return;
+  const filter = dashboardElements.bot.filter;
+  if (!filter) return;
+  const botsEntries = Object.entries(dashboardEffectiveData?.bots || {});
+  const previous = dashboardSelectedBot;
+  const fragment = document.createDocumentFragment();
+  const optionAll = document.createElement('option');
+  optionAll.value = 'all';
+  optionAll.textContent = 'All bots';
+  fragment.appendChild(optionAll);
+
+  botsEntries
+    .map(([id, data]) => ({ id, label: data?.name || getBotDisplayName(id) }))
+    .sort((a, b) => a.label.localeCompare(b.label))
+    .forEach(item => {
+      const option = document.createElement('option');
+      option.value = item.id;
+      option.textContent = item.label;
+      fragment.appendChild(option);
+    });
+
+  filter.innerHTML = '';
+  filter.appendChild(fragment);
+  filter.disabled = !botsEntries.length;
+
+  const desired = botsEntries.some(([id]) => id === previous) ? previous : 'all';
+  dashboardSelectedBot = desired;
+  filter.value = desired;
+  if (filter.value !== desired) {
+    filter.value = 'all';
+    dashboardSelectedBot = 'all';
+  }
+}
+
+function updateDashboardBotSummary() {
+  if (!dashboardElements) return;
+  const { summary, name, details, empty, messages, users, lastActivity, autoReplies, avgSession } = dashboardElements.bot;
+  const botId = dashboardSelectedBot;
+  const info = botId && botId !== 'all' ? dashboardEffectiveData?.bots?.[botId] : null;
+  const hasInfo = !!info;
+
+  summary?.classList.toggle('hidden', !hasInfo);
+  details?.classList.toggle('hidden', !hasInfo);
+  empty?.classList.toggle('hidden', hasInfo);
+
+  if (!hasInfo) {
+    setTextContent(name, '');
+    [messages, users, lastActivity, autoReplies, avgSession].forEach(el => setTextContent(el, '—'));
+    return;
+  }
+
+  const displayName = info.name || getBotDisplayName(botId);
+  setTextContent(name, displayName);
+  setTextContent(messages, formatNumber(info.messagesToday ?? info.messages ?? info.messagesThisMonth));
+  setTextContent(users, formatNumber(info.uniqueUsers));
+  setTextContent(lastActivity, formatTimestamp(info.lastActivity));
+  setTextContent(autoReplies, formatNumber(info.activeAutoReplies));
+  setTextContent(avgSession, formatDuration(info.avgSessionDuration));
+}
+
+function renderDashboardRecentList(container, items, emptyText, icon) {
+  if (!container) return;
+  container.innerHTML = '';
+  if (!items || !items.length) {
+    const empty = document.createElement('div');
+    empty.className = 'rounded-xl border border-dashed border-gray-300 bg-gray-50 px-4 py-5 text-sm text-gray-500';
+    empty.textContent = emptyText;
+    container.appendChild(empty);
+    return;
+  }
+
+  items.slice(0, 6).forEach(item => {
+    const row = document.createElement('div');
+    row.className = 'flex items-start gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm';
+
+    const iconWrap = document.createElement('div');
+    iconWrap.className = 'rounded-full bg-gray-100 p-2 text-gray-500 flex items-center justify-center';
+    const iconEl = document.createElement('i');
+    iconEl.setAttribute('data-lucide', icon);
+    iconEl.className = 'w-4 h-4';
+    iconWrap.appendChild(iconEl);
+
+    const body = document.createElement('div');
+    body.className = 'flex-1 min-w-0';
+
+    const title = document.createElement('div');
+    title.className = 'text-sm font-semibold text-gray-800 truncate';
+    title.textContent = item.title || '—';
+
+    const meta = document.createElement('div');
+    meta.className = 'mt-1 text-xs text-gray-500 flex flex-wrap gap-x-2 gap-y-1';
+    const metaParts = [];
+    if ((item.subtitle || '').trim()) metaParts.push(item.subtitle.trim());
+    const botLabel = item.bot || null;
+    if (botLabel) metaParts.push(botLabel);
+    const timestamp = formatTimestamp(item.time);
+    if (timestamp !== '—') metaParts.push(timestamp);
+    if (metaParts.length) {
+      meta.textContent = metaParts.join(' • ');
+    }
+
+    body.appendChild(title);
+    if (metaParts.length) body.appendChild(meta);
+
+    row.append(iconWrap, body);
+    container.appendChild(row);
+  });
+}
+
+function renderDashboardRecentSections(recent) {
+  if (!dashboardElements) return;
+  renderDashboardRecentList(dashboardElements.lists.chats, recent.chats, 'No recent conversations yet.', 'message-circle');
+  renderDashboardRecentList(dashboardElements.lists.updates, recent.updates, 'No configuration changes recorded yet.', 'history');
+}
+
+function renderDashboard() {
+  if (!dashboardInitialized || !dashboardElements) return;
+  const normalized = normalizeDashboardData(dashboardAnalyticsRaw);
+  const fallback = buildDashboardFallback();
+  dashboardEffectiveData = mergeDashboardData(normalized, fallback);
+  updateDashboardGeneral(dashboardEffectiveData.general);
+  updateDashboardBotOptions();
+  updateDashboardBotSummary();
+  renderDashboardRecentSections(dashboardEffectiveData.recent);
+  if (window.lucide) {
+    lucide.createIcons();
+  }
+}
+
+async function initDashboard() {
+  if (dashboardInitialized) return;
+  const filterEl = $('dashboardBotFilter');
+  if (!filterEl) {
+    setTimeout(initDashboard, 200);
+    return;
+  }
+
+  ensureDashboardElements();
+  dashboardInitialized = true;
+
+  filterEl.addEventListener('change', () => {
+    dashboardSelectedBot = filterEl.value || 'all';
+    updateDashboardBotSummary();
+  });
+
+  updateDashboardBotOptions();
+  updateDashboardBotSummary();
+  renderDashboard();
+
+  const candidates = [
+    `${EMPRESA}/analytics/dashboard`,
+    `${EMPRESA}/analytics`,
+    `${EMPRESA}/dashboard`
+  ];
+
+  for (const path of candidates) {
+    try {
+      const snap = await db.ref(path).once('value');
+      if (!snap.exists()) continue;
+      dashboardAnalyticsRef = db.ref(path);
+      dashboardAnalyticsRaw = snap.val();
+      renderDashboard();
+      dashboardAnalyticsRef.on('value', snapshot => {
+        dashboardAnalyticsRaw = snapshot.val();
+        renderDashboard();
+      });
+      break;
+    } catch (err) {
+      console.warn('Could not load dashboard analytics from', path, err);
+    }
+  }
+
+  if (!dashboardAnalyticsRef) {
+    renderDashboard();
+  }
+}
+
+function onBotsDataUpdated(data) {
+  cachedBotsData = data || {};
+  if (dashboardInitialized) {
+    renderDashboard();
+  }
+}
+
+const TAB_KEYS = ['dashboard','chat','knowledge','respuestas'];
 let tabsInitialized = false;
 
 function setActiveTab(tab) {
-  const targetTab = TAB_KEYS.includes(tab) ? tab : 'chat';
+  const targetTab = TAB_KEYS.includes(tab) ? tab : 'dashboard';
 
   $$('.sidebar-btn').forEach(btn => {
     const btnTab = btn.getAttribute('data-tab');
@@ -2651,7 +3386,7 @@ function showLoginView() {
   $('btnLogout').classList.add('hidden');
   document.body.classList.add('login-view');
   document.body.classList.remove('app-view');
-  setActiveTab('chat');
+  setActiveTab('dashboard');
 }
 
 async function canWrite(fn) {
@@ -2771,12 +3506,12 @@ auth.onAuthStateChanged(async (u) => {
 // ====== Tabs ======
 function initTabs() {
   if (tabsInitialized) {
-    setActiveTab('chat');
+    setActiveTab('dashboard');
     return;
   }
 
   tabsInitialized = true;
-  setActiveTab('chat');
+  setActiveTab('dashboard');
 
   $$('.sidebar-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -2804,9 +3539,10 @@ async function initAll(){
   lucide.createIcons();
   initBotSelector();
   initTabs();
-  applyPreview(); 
+  await initDashboard();
+  applyPreview();
   await refreshPermissions();
-  initApariencia(); 
+  initApariencia();
   initSettingsTab(); 
   initKnowledge();
   initIntegration();
