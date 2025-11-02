@@ -1491,8 +1491,8 @@ body.login-view #appContainer {
       </span>
     </div>
     <div class="modal-options">
-      <label class="modal-option-card" data-mode-card="scratch">
-        <input class="modal-option-radio" type="radio" name="newBotMode" value="scratch" checked>
+      <label class="modal-option-card" data-mode-card="new">
+        <input class="modal-option-radio" type="radio" name="newBotMode" value="new" checked>
         <span class="modal-option-icon">
           <i data-lucide="sparkles" class="w-5 h-5"></i>
         </span>
@@ -1991,9 +1991,56 @@ function initBotSelector() {
   let cachedBots = {};
   let creatingNewBot = false;
 
+  const rebuildBotOptions = (activeId = BOT) => {
+    if (!select) return;
+    const entries = Object.entries(cachedBots);
+
+    select.innerHTML = '';
+    select.disabled = false;
+
+    if (!entries.length) {
+      const option = document.createElement('option');
+      option.value = BOT;
+      option.textContent = BOT;
+      option.selected = true;
+      select.appendChild(option);
+      select.disabled = true;
+      syncCustomBotDropdownState();
+      updateBotLabels(BOT);
+      return;
+    }
+
+    entries
+      .sort((a, b) => {
+        const nameA = (a[1]?.config?.hotelName || a[0] || '').toString().toLowerCase();
+        const nameB = (b[1]?.config?.hotelName || b[0] || '').toString().toLowerCase();
+        if (nameA < nameB) return -1;
+        if (nameA > nameB) return 1;
+        return 0;
+      })
+      .forEach(([id, data]) => {
+        const option = document.createElement('option');
+        option.value = id;
+        option.textContent = data?.config?.hotelName || id;
+        select.appendChild(option);
+      });
+
+    if (!cachedBots[activeId]) {
+      const fallbackOption = document.createElement('option');
+      fallbackOption.value = activeId;
+      fallbackOption.textContent = activeId;
+      select.appendChild(fallbackOption);
+    }
+
+    select.value = activeId;
+    const activeBot = cachedBots[activeId];
+    updateBotLabels(activeBot?.config?.hotelName || activeId);
+    syncCustomBotDropdownState();
+  };
+
   const getSelectedNewBotMode = () => {
     const active = newBotModeRadios.find((radio) => radio.checked && !radio.disabled);
-    return active ? active.value : 'scratch';
+    return active ? active.value : 'new';
   };
 
   const syncNewBotModeCards = () => {
@@ -2092,7 +2139,7 @@ function initBotSelector() {
     newBotError.classList.remove('hidden');
   };
 
-  const handleNewBotCreate = async () => {
+  const handleNewBotCreate = async (mode) => {
     if (creatingNewBot) return;
     if (!newBotNameInput) return;
     const raw = newBotNameInput.value || '';
@@ -2110,6 +2157,8 @@ function initBotSelector() {
       return;
     }
 
+    const creationMode = mode === 'duplicate' ? 'duplicate' : 'new';
+
     creatingNewBot = true;
     try {
       await refreshPermissions();
@@ -2126,32 +2175,22 @@ function initBotSelector() {
         candidate = `${baseSlug}-${suffix++}`;
       }
 
-      const mode = getSelectedNewBotMode();
       let payload;
 
-      if (mode === 'duplicate') {
+      if (creationMode === 'duplicate') {
         const currentSnapshot = await db.ref(getBotBasePath()).once('value');
-        let cloneSource = currentSnapshot.val();
-        if (!cloneSource || typeof cloneSource !== 'object') {
-          const fallbackSource = cachedBots?.[BOT];
-          cloneSource = fallbackSource && typeof fallbackSource === 'object'
-            ? fallbackSource
-            : {};
-        }
-        payload = JSON.parse(JSON.stringify(cloneSource));
-        if (!payload || typeof payload !== 'object') {
+        const cloneSource = currentSnapshot.val();
+        if (cloneSource && typeof cloneSource === 'object') {
+          payload = JSON.parse(JSON.stringify(cloneSource));
+        } else {
           payload = {};
         }
-        payload.config = payload.config || {};
       } else {
-        payload = {
-          config: {
-            hotelName: trimmed,
-            contextPages: {},
-            contextInfo: '',
-            autoResponses: {}
-          }
-        };
+        payload = { config: {} };
+      }
+
+      if (!payload || typeof payload !== 'object') {
+        payload = {};
       }
 
       payload.config = payload.config || {};
@@ -2166,8 +2205,10 @@ function initBotSelector() {
         delete payload.config.mesas;
       }
 
-      const newBotRef = db.ref(getBotBasePath(candidate));
-      await newBotRef.set(payload);
+      await botsRef.child(candidate).set(payload);
+      cachedBots = { ...cachedBots, [candidate]: payload };
+      updateNewBotSlugPreview();
+      rebuildBotOptions(candidate);
       localStorage.setItem(storageKey, candidate);
       hideNewBotModal(true);
       const url = new URL(window.location.href);
@@ -2201,7 +2242,7 @@ function initBotSelector() {
 
   newBotConfirm?.addEventListener('click', (event) => {
     event.preventDefault();
-    handleNewBotCreate();
+    handleNewBotCreate(getSelectedNewBotMode());
   });
 
   newBotNameInput?.addEventListener('input', () => {
@@ -2227,7 +2268,7 @@ function initBotSelector() {
     if (event.key === 'Enter' && event.target === newBotNameInput) {
       event.preventDefault();
       if (creatingNewBot) return;
-      handleNewBotCreate();
+      handleNewBotCreate(getSelectedNewBotMode());
     }
   });
 
@@ -2251,47 +2292,7 @@ function initBotSelector() {
   botsRef.on('value', (snap) => {
     cachedBots = snap.val() || {};
     updateNewBotSlugPreview();
-    const entries = Object.entries(cachedBots);
-    select.innerHTML = '';
-    select.disabled = false;
-
-    if (!entries.length) {
-      const option = document.createElement('option');
-      option.value = BOT;
-      option.textContent = BOT;
-      option.selected = true;
-      select.appendChild(option);
-      syncCustomBotDropdownState();
-      updateBotLabels(BOT);
-      return;
-    }
-
-    entries
-      .sort((a, b) => {
-        const nameA = (a[1]?.config?.hotelName || a[0] || '').toString().toLowerCase();
-        const nameB = (b[1]?.config?.hotelName || b[0] || '').toString().toLowerCase();
-        if (nameA < nameB) return -1;
-        if (nameA > nameB) return 1;
-        return 0;
-      })
-      .forEach(([id, data]) => {
-        const option = document.createElement('option');
-        option.value = id;
-        option.textContent = data?.config?.hotelName || id;
-        select.appendChild(option);
-      });
-
-    if (!cachedBots[BOT]) {
-      const fallbackOption = document.createElement('option');
-      fallbackOption.value = BOT;
-      fallbackOption.textContent = BOT;
-      select.appendChild(fallbackOption);
-    }
-
-    select.value = BOT;
-    const activeBot = cachedBots[BOT];
-    updateBotLabels(activeBot?.config?.hotelName || BOT);
-    syncCustomBotDropdownState();
+    rebuildBotOptions(BOT);
   });
 
   select.addEventListener('change', (event) => {
