@@ -1706,6 +1706,181 @@ function initBotSelector() {
   if (!select) return;
 
   botSelectorInitialized = true;
+  let customBotDropdown = null;
+
+  const ensureCustomBotDropdown = () => {
+    if (customBotDropdown) return customBotDropdown;
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'relative min-w-[150px]';
+
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white text-left flex items-center justify-between gap-2 text-gray-700 shadow-sm transition focus:outline-none focus:ring-2 focus:ring-black/70 focus:border-black/50 hover:border-gray-300';
+    button.setAttribute('aria-haspopup', 'listbox');
+    button.setAttribute('aria-expanded', 'false');
+
+    const label = document.createElement('span');
+    label.className = 'truncate';
+    label.textContent = select.options[select.selectedIndex]?.textContent?.trim() || select.value || '—';
+
+    const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    icon.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+    icon.setAttribute('viewBox', '0 0 24 24');
+    icon.setAttribute('fill', 'none');
+    icon.setAttribute('stroke', 'currentColor');
+    icon.classList.add('w-4', 'h-4', 'text-gray-500', 'shrink-0');
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('stroke-linecap', 'round');
+    path.setAttribute('stroke-linejoin', 'round');
+    path.setAttribute('stroke-width', '2');
+    path.setAttribute('d', 'M19 9l-7 7-7-7');
+    icon.appendChild(path);
+
+    const list = document.createElement('div');
+    list.className = 'absolute left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-40 hidden max-h-60 overflow-y-auto py-1';
+    list.setAttribute('role', 'listbox');
+
+    button.appendChild(label);
+    button.appendChild(icon);
+    wrapper.appendChild(button);
+    wrapper.appendChild(list);
+
+    select.insertAdjacentElement('afterend', wrapper);
+    select.style.display = 'none';
+    select.classList.add('hidden');
+
+    const closeList = () => {
+      list.classList.add('hidden');
+      button.setAttribute('aria-expanded', 'false');
+    };
+
+    button.addEventListener('click', (event) => {
+      event.preventDefault();
+      if (select.disabled) return;
+      list.classList.toggle('hidden');
+      const expanded = !list.classList.contains('hidden');
+      button.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!wrapper.contains(event.target)) {
+        closeList();
+      }
+    });
+
+    customBotDropdown = {
+      wrapper,
+      button,
+      label,
+      icon,
+      list,
+      closeList,
+    };
+    return customBotDropdown;
+  };
+
+  const syncCustomBotDropdownState = () => {
+    const dropdown = ensureCustomBotDropdown();
+    if (!dropdown) return;
+
+    const { button, label, list } = dropdown;
+
+    const selectedOption = select.options[select.selectedIndex];
+    const activeLabel = (selectedOption?.textContent || '').trim() || select.value || button.dataset.placeholder || '—';
+    label.textContent = activeLabel;
+
+    button.disabled = !!select.disabled;
+    button.classList.toggle('bg-gray-100', !!select.disabled);
+    button.classList.toggle('text-gray-400', !!select.disabled);
+    button.classList.toggle('cursor-not-allowed', !!select.disabled);
+    button.classList.toggle('hover:border-gray-300', !select.disabled);
+    if (select.disabled) {
+      dropdown.closeList();
+    }
+
+    list.innerHTML = '';
+
+    Array.from(select.options).forEach((option, index) => {
+      const optionLabel = (option.textContent || '').trim();
+      const item = document.createElement('button');
+      item.type = 'button';
+      item.className = 'flex w-full items-center justify-between px-3 py-2 text-sm text-left text-gray-700 hover:bg-gray-100 transition';
+      item.setAttribute('role', 'option');
+      item.dataset.value = option.value;
+      item.disabled = option.disabled || option.value === '';
+
+      const valueSpan = document.createElement('span');
+      valueSpan.className = 'truncate';
+      valueSpan.textContent = optionLabel || option.value || '—';
+      item.appendChild(valueSpan);
+
+      const isSelected = index === select.selectedIndex;
+      if (isSelected) {
+        item.classList.add('bg-gray-50', 'font-medium');
+        const checkIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        checkIcon.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+        checkIcon.setAttribute('viewBox', '0 0 24 24');
+        checkIcon.setAttribute('fill', 'none');
+        checkIcon.setAttribute('stroke', 'currentColor');
+        checkIcon.classList.add('w-4', 'h-4', 'text-emerald-500');
+        const checkPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        checkPath.setAttribute('stroke-linecap', 'round');
+        checkPath.setAttribute('stroke-linejoin', 'round');
+        checkPath.setAttribute('stroke-width', '2');
+        checkPath.setAttribute('d', 'M5 13l4 4L19 7');
+        checkIcon.appendChild(checkPath);
+        item.appendChild(checkIcon);
+      }
+
+      if (item.disabled) {
+        item.classList.add('opacity-50', 'cursor-not-allowed');
+      } else {
+        item.addEventListener('click', (event) => {
+          event.preventDefault();
+          if (option.value === select.value) {
+            dropdown.closeList();
+            return;
+          }
+          select.value = option.value;
+          const changeEvent = new Event('change', { bubbles: true });
+          select.dispatchEvent(changeEvent);
+          dropdown.closeList();
+        });
+      }
+
+      list.appendChild(item);
+    });
+  };
+
+  const valueDescriptor = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(select), 'value');
+  if (valueDescriptor && valueDescriptor.configurable) {
+    Object.defineProperty(select, 'value', {
+      configurable: true,
+      enumerable: true,
+      get() {
+        return valueDescriptor.get.call(this);
+      },
+      set(newValue) {
+        valueDescriptor.set.call(this, newValue);
+        syncCustomBotDropdownState();
+      }
+    });
+  }
+
+  syncCustomBotDropdownState();
+
+  const dropdownObserver = new MutationObserver(() => {
+    syncCustomBotDropdownState();
+  });
+  dropdownObserver.observe(select, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['disabled']
+  });
+
   const createBtn = $('btnNewBot');
   const newBotModal = $('newBotModal');
   const newBotNameInput = $('newBotNameInput');
@@ -1905,6 +2080,7 @@ function initBotSelector() {
     option.selected = true;
     select.appendChild(option);
     select.disabled = true;
+    syncCustomBotDropdownState();
     if (createBtn) {
       createBtn.classList.add('hidden');
       createBtn.disabled = true;
@@ -1918,6 +2094,7 @@ function initBotSelector() {
     updateNewBotSlugPreview();
     const entries = Object.entries(cachedBots);
     select.innerHTML = '';
+    select.disabled = false;
 
     if (!entries.length) {
       const option = document.createElement('option');
@@ -1925,6 +2102,7 @@ function initBotSelector() {
       option.textContent = BOT;
       option.selected = true;
       select.appendChild(option);
+      syncCustomBotDropdownState();
       updateBotLabels(BOT);
       return;
     }
@@ -1954,9 +2132,11 @@ function initBotSelector() {
     select.value = BOT;
     const activeBot = cachedBots[BOT];
     updateBotLabels(activeBot?.config?.hotelName || BOT);
+    syncCustomBotDropdownState();
   });
 
   select.addEventListener('change', (event) => {
+    syncCustomBotDropdownState();
     const nextBot = event.target.value;
     if (!nextBot || nextBot === BOT) return;
     const selectedOption = event.target.options[event.target.selectedIndex];
