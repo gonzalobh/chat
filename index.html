@@ -2131,7 +2131,13 @@ function initBotSelector() {
 
       if (mode === 'duplicate') {
         const currentSnapshot = await db.ref(getBotBasePath()).once('value');
-        const cloneSource = currentSnapshot.val() || {};
+        let cloneSource = currentSnapshot.val();
+        if (!cloneSource || typeof cloneSource !== 'object') {
+          const fallbackSource = cachedBots?.[BOT];
+          cloneSource = fallbackSource && typeof fallbackSource === 'object'
+            ? fallbackSource
+            : {};
+        }
         payload = JSON.parse(JSON.stringify(cloneSource));
         if (!payload || typeof payload !== 'object') {
           payload = {};
