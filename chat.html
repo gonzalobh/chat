@@ -185,7 +185,7 @@ if (!CHAT_ID) {
   CHAT_ID = `${Date.now()}`;
   sessionStorage.setItem(CHAT_SESSION_KEY, CHAT_ID);
 }
-const chatLogBaseRef = firebase.database().ref(`messages/${EMPRESA}/${BOT}/${CHAT_ID}`);
+const chatLogBaseRef = firebase.database().ref(`${EMPRESA}/bots/${BOT}/conversaciones/${CHAT_ID}`);
 const chatMessagesRef = chatLogBaseRef.child('messages');
 const chatMetaRef = chatLogBaseRef.child('meta');
 let chatMetaCache = null;
