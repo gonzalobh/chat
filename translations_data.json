@@ -1448,6 +1448,198 @@
     "pt": "Atraso: {seconds}s"
   },
   {
+    "key": "Cerrar",
+    "en": "Close",
+    "fr": "Fermer",
+    "es": "Cerrar",
+    "de": "Schließen",
+    "pt": "Fechar"
+  },
+  {
+    "key": "Crear un nuevo bot",
+    "en": "Create a new bot",
+    "fr": "Créer un nouveau bot",
+    "es": "Crear un nuevo bot",
+    "de": "Neuen Bot erstellen",
+    "pt": "Criar um novo bot"
+  },
+  {
+    "key": "Elige si quieres empezar desde cero o duplicar el bot actual antes de nombrarlo.",
+    "en": "Choose whether to start from scratch or duplicate the current bot before naming it.",
+    "fr": "Choisissez de repartir de zéro ou de dupliquer le bot actuel avant de le nommer.",
+    "es": "Elige si quieres empezar desde cero o duplicar el bot actual antes de nombrarlo.",
+    "de": "Wähle, ob du von Grund auf neu beginnen oder den aktuellen Bot duplizieren möchtest, bevor du ihn benennst.",
+    "pt": "Escolha se deseja começar do zero ou duplicar o bot atual antes de nomeá-lo."
+  },
+  {
+    "key": "Crear desde cero",
+    "en": "Start from scratch",
+    "fr": "Commencer de zéro",
+    "es": "Crear desde cero",
+    "de": "Von Grund auf neu",
+    "pt": "Começar do zero"
+  },
+  {
+    "key": "Genera un bot vacío con la configuración básica para empezar rápidamente.",
+    "en": "Create an empty bot with the basic configuration to get started quickly.",
+    "fr": "Créez un bot vide avec la configuration de base pour démarrer rapidement.",
+    "es": "Genera un bot vacío con la configuración básica para empezar rápidamente.",
+    "de": "Erstelle einen leeren Bot mit der Basiskonfiguration, um schnell loszulegen.",
+    "pt": "Crie um bot vazio com a configuração básica para começar rapidamente."
+  },
+  {
+    "key": "Duplicar bot actual",
+    "en": "Duplicate current bot",
+    "fr": "Dupliquer le bot actuel",
+    "es": "Duplicar bot actual",
+    "de": "Aktuellen Bot duplizieren",
+    "pt": "Duplicar bot atual"
+  },
+  {
+    "key": "Copia el contenido del bot activo y continúa personalizándolo.",
+    "en": "Copy the active bot's content and keep customizing it.",
+    "fr": "Copiez le contenu du bot actif et continuez à le personnaliser.",
+    "es": "Copia el contenido del bot activo y continúa personalizándolo.",
+    "de": "Kopiere den Inhalt des aktiven Bots und passe ihn weiter an.",
+    "pt": "Copie o conteúdo do bot ativo e continue personalizando-o."
+  },
+  {
+    "key": "Nombre del bot",
+    "en": "Bot name",
+    "fr": "Nom du bot",
+    "es": "Nombre del bot",
+    "de": "Bot-Name",
+    "pt": "Nome do bot"
+  },
+  {
+    "key": "Ej. Bot conserjería",
+    "en": "E.g. Concierge bot",
+    "fr": "Ex. Bot conciergerie",
+    "es": "Ej. Bot conserjería",
+    "de": "Z.\u202fB. Concierge-Bot",
+    "pt": "Ex.: Bot concierge"
+  },
+  {
+    "key": "Cancelar",
+    "en": "Cancel",
+    "fr": "Annuler",
+    "es": "Cancelar",
+    "de": "Abbrechen",
+    "pt": "Cancelar"
+  },
+  {
+    "key": "Por favor, escribe un nombre para el bot.",
+    "en": "Please enter a name for the bot.",
+    "fr": "Veuillez saisir un nom pour le bot.",
+    "es": "Por favor, escribe un nombre para el bot.",
+    "de": "Bitte gib einen Namen für den Bot ein.",
+    "pt": "Insira um nome para o bot."
+  },
+  {
+    "key": "El nombre debe incluir caracteres alfanuméricos.",
+    "en": "The name must include alphanumeric characters.",
+    "fr": "Le nom doit contenir des caractères alphanumériques.",
+    "es": "El nombre debe incluir caracteres alfanuméricos.",
+    "de": "Der Name muss alphanumerische Zeichen enthalten.",
+    "pt": "O nome deve incluir caracteres alfanuméricos."
+  },
+  {
+    "key": "No se pudo crear el bot. Inténtalo de nuevo.",
+    "en": "The bot could not be created. Please try again.",
+    "fr": "Impossible de créer le bot. Veuillez réessayer.",
+    "es": "No se pudo crear el bot. Inténtalo de nuevo.",
+    "de": "Der Bot konnte nicht erstellt werden. Bitte versuche es erneut.",
+    "pt": "Não foi possível criar o bot. Tente novamente."
+  },
+  {
+    "key": "Plantillas del chat",
+    "en": "Chat templates",
+    "fr": "Modèles de chat",
+    "es": "Plantillas del chat",
+    "de": "Chat-Vorlagen",
+    "pt": "Modelos de chat"
+  },
+  {
+    "key": "Selecciona una plantilla para aplicar rápidamente una combinación de colores. Luego podrás personalizar los detalles.",
+    "en": "Choose a template to quickly apply a color combination. You can customize the details afterward.",
+    "fr": "Sélectionnez un modèle pour appliquer rapidement une palette de couleurs. Vous pourrez ensuite personnaliser les détails.",
+    "es": "Selecciona una plantilla para aplicar rápidamente una combinación de colores. Luego podrás personalizar los detalles.",
+    "de": "Wähle eine Vorlage, um schnell eine Farbkombination anzuwenden. Anschließend kannst du die Details anpassen.",
+    "pt": "Selecione um modelo para aplicar rapidamente uma combinação de cores. Depois você poderá personalizar os detalhes."
+  },
+  {
+    "key": "Selecciona una conversación para ver los mensajes.",
+    "en": "Select a conversation to view the messages.",
+    "fr": "Sélectionnez une conversation pour voir les messages.",
+    "es": "Selecciona una conversación para ver los mensajes.",
+    "de": "Wähle eine Unterhaltung aus, um die Nachrichten anzuzeigen.",
+    "pt": "Selecione uma conversa para ver as mensagens."
+  },
+  {
+    "key": "No hay templates disponibles aún.",
+    "en": "No templates available yet.",
+    "fr": "Aucun modèle disponible pour le moment.",
+    "es": "No hay templates disponibles aún.",
+    "de": "Noch keine Vorlagen verfügbar.",
+    "pt": "Nenhum template disponível ainda."
+  },
+  {
+    "key": "Oscuro con matices grafito y gris humo.",
+    "en": "Dark with graphite and smokey gray tones.",
+    "fr": "Sombre avec des nuances de graphite et de gris fumé.",
+    "es": "Oscuro con matices grafito y gris humo.",
+    "de": "Dunkel mit Graphit- und Rauchgrau-Nuancen.",
+    "pt": "Escuro, com nuances grafite e cinza fumê."
+  },
+  {
+    "key": "Limpio y suave con tonos gris-azulados.",
+    "en": "Clean and soft with bluish-gray tones.",
+    "fr": "Épuré et doux avec des tons gris bleuté.",
+    "es": "Limpio y suave con tonos gris-azulados.",
+    "de": "Klar und sanft mit blaugrauen Tönen.",
+    "pt": "Limpo e suave, com tons cinza-azulados."
+  },
+  {
+    "key": "Cálido pero discreto, en tonos arena y cobre.",
+    "en": "Warm yet subtle, in sandy and copper tones.",
+    "fr": "Chaleureux mais discret, dans des tons sable et cuivre.",
+    "es": "Cálido pero discreto, en tonos arena y cobre.",
+    "de": "Warm, aber dezent, in Sand- und Kupfertönen.",
+    "pt": "Quente porém discreto, em tons de areia e cobre."
+  },
+  {
+    "key": "Verde musgo con acentos naturales.",
+    "en": "Moss green with natural accents.",
+    "fr": "Vert mousse avec des accents naturels.",
+    "es": "Verde musgo con acentos naturales.",
+    "de": "Moosgrün mit natürlichen Akzenten.",
+    "pt": "Verde musgo com acentos naturais."
+  },
+  {
+    "key": "Grises suaves y negros tenues.",
+    "en": "Soft grays and muted blacks.",
+    "fr": "Gris doux et noirs atténués.",
+    "es": "Grises suaves y negros tenues.",
+    "de": "Sanfte Grautöne und gedämpftes Schwarz.",
+    "pt": "Cinzas suaves e pretos discretos."
+  },
+  {
+    "key": "Elegante, con toques malva y gris lavanda.",
+    "en": "Elegant, with touches of mauve and lavender gray.",
+    "fr": "Élégant, avec des touches de mauve et de gris lavande.",
+    "es": "Elegante, con toques malva y gris lavanda.",
+    "de": "Elegant, mit Akzenten in Mauve und Lavendelgrau.",
+    "pt": "Elegante, com toques de malva e cinza lavanda."
+  },
+  {
+    "key": "⚠ No se pudo aplicar el template",
+    "en": "⚠ Failed to apply the template",
+    "fr": "⚠ Impossible d'appliquer le modèle",
+    "es": "⚠ No se pudo aplicar el template",
+    "de": "⚠ Vorlage konnte nicht angewendet werden",
+    "pt": "⚠ Não foi possível aplicar o template"
+  },
+  {
     "key": "language.english",
     "en": "English",
     "fr": "Anglais",
