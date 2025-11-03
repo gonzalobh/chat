@@ -271,11 +271,11 @@ let useLegacyBotPath = false;
 let botCollectionPath = null;
 
 function getDefaultBotCollectionPath() {
-  return `${EMPRESA}/bots`;
+  return `empresas/${EMPRESA}/bots`;
 }
 
 function getConfigBotCollectionPath() {
-  return `${EMPRESA}/config/bots`;
+  return `empresas/${EMPRESA}/config/bots`;
 }
 
 function getLegacyBotCollectionPath() {
@@ -284,9 +284,12 @@ function getLegacyBotCollectionPath() {
 
 function getBotBasePath() {
   if (botCollectionPath) {
-    return `${botCollectionPath}/${BOT}`;
+    const basePath = botCollectionPath.startsWith('empresas/')
+      ? botCollectionPath
+      : `empresas/${botCollectionPath}`;
+    return `${basePath}/${BOT}`;
   }
-  return useLegacyBotPath ? `${EMPRESA}` : `${EMPRESA}/bots/${BOT}`;
+  return useLegacyBotPath ? `empresas/${EMPRESA}` : `empresas/${EMPRESA}/bots/${BOT}`;
 }
 
 function eref(path){ return db.ref(`${getBotBasePath()}/${path}`); }
@@ -313,7 +316,7 @@ async function prepareBotPath() {
   }
 
   try {
-    const legacySnap = await db.ref(`${EMPRESA}`).once('value');
+    const legacySnap = await db.ref(`empresas/${EMPRESA}`).once('value');
     if (legacySnap.exists()) {
       botCollectionPath = null;
       useLegacyBotPath = true;
