@@ -109,18 +109,6 @@ aside::-webkit-scrollbar-thumb {
   color: #000 !important;
 }
 
-#messagesBotFilter:disabled {
-  background-color: #f9fafb;
-  color: #111;
-  cursor: default;
-  opacity: 1;
-}
-
-#messagesBotFilter,
-label[for="messagesBotFilter"] {
-  display: none;
-}
-
 button.bg-black {
   background: linear-gradient(to bottom, #f7f7f7, #eaeaea) !important; /* degradado suave */
   color: #111 !important;
@@ -261,7 +249,7 @@ header {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #232323;
+  background: linear-gradient(135deg, #111827, #0f172a);
   color: #f8fafc;
   box-shadow: 0 12px 30px rgba(15, 23, 42, 0.25);
 }
@@ -314,86 +302,6 @@ header {
   letter-spacing: 0.01em;
 }
 
-#newBotModal .modal-options {
-  display: grid;
-  gap: 0.75rem;
-  position: relative;
-  z-index: 1;
-}
-
-#newBotModal .modal-option-card {
-  position: relative;
-  border-radius: 16px;
-  border: 1px solid rgba(148, 163, 184, 0.45);
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(248, 250, 252, 0.88));
-  box-shadow: 0 14px 28px -18px rgba(15, 23, 42, 0.25);
-  padding: 1rem 1.1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  cursor: pointer;
-  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
-}
-
-#newBotModal .modal-option-card:hover {
-  border-color: rgba(15, 23, 42, 0.35);
-  box-shadow: 0 18px 34px -20px rgba(15, 23, 42, 0.28);
-}
-
-#newBotModal .modal-option-card.active {
-  border-color: rgba(17, 24, 39, 0.75);
-  box-shadow: 0 20px 38px -18px rgba(17, 24, 39, 0.32);
-  background: #232323;
-  transform: translateY(-2px);
-}
-
-#newBotModal .modal-option-card.active .modal-option-title,
-#newBotModal .modal-option-card.active .modal-option-description {
-  color: rgba(248, 250, 252, 0.95);
-}
-
-#newBotModal .modal-option-icon {
-  flex-shrink: 0;
-  width: 42px;
-  height: 42px;
-  border-radius: 14px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: #232323;
-  color: rgba(248, 250, 252, 0.95);
-  box-shadow: 0 10px 24px rgba(30, 64, 175, 0.25);
-}
-
-#newBotModal .modal-option-card.active .modal-option-icon {
-  background: linear-gradient(145deg, rgba(248, 250, 252, 0.95), rgba(226, 232, 240, 0.95));
-  color: #111827;
-  box-shadow: 0 12px 28px rgba(248, 250, 252, 0.25);
-}
-
-#newBotModal .modal-option-content {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-}
-
-#newBotModal .modal-option-title {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #0f172a;
-}
-
-#newBotModal .modal-option-description {
-  font-size: 0.8rem;
-  color: #64748b;
-}
-
-#newBotModal .modal-option-radio {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-
 #newBotModal .modal-actions button {
   border-radius: 12px;
   font-weight: 500;
@@ -420,7 +328,7 @@ header {
 }
 
 #newBotModal .modal-actions .modal-primary {
-  background: #232323;
+  background: linear-gradient(135deg, #111111, #1f2937);
   color: #f8fafc;
   box-shadow: 0 12px 22px rgba(15, 23, 42, 0.18);
 }
@@ -704,7 +612,7 @@ body.login-view #appContainer {
         <select id="botSelect" class="border border-gray-200 rounded-md px-2 py-1 text-xs leading-tight bg-white focus:outline-none focus:ring-1 focus:ring-black/40 min-w-[110px] h-8">
           <option value="" disabled selected>Loading bots…</option>
         </select>
-        <button id="btnNewBot" class="text-gray-700 inline-flex items-center justify-center px-3 h-9 text-xs leading-tight border border-gray-200 rounded-md bg-white hover:bg-gray-100 transition">
+        <button id="btnNewBot" class="inline-flex items-center justify-center px-2.5 h-8 text-xs leading-tight border border-gray-200 rounded-md bg-white hover:bg-gray-100 transition">
           + New Bot
         </button>
       </div>
@@ -733,15 +641,11 @@ body.login-view #appContainer {
 <div id="headerSpacer" class="h-[57px]"></div>
 <div class="flex min-h-screen">
       <!-- Sidebar -->
-<aside class="peer group fixed top-[57px] left-0 h-[calc(100vh-57px)] bg-white border-r overflow-y-auto transition-all duration-300 w-[72px] hover:w-[260px]">
+<aside class="group fixed top-[57px] left-0 h-[calc(100vh-57px)] bg-white border-r overflow-y-auto transition-all duration-300 w-[72px] hover:w-[260px]">
   <nav class="space-y-2 mt-4 px-2">
     <button class="sidebar-btn active flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="chat">
       <i data-lucide="message-circle" class="w-5 h-5 shrink-0"></i>
       <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Chat</span>
-    </button>
-    <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="mensajes">
-      <i data-lucide="inbox" class="w-5 h-5 shrink-0"></i>
-      <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Mensajes</span>
     </button>
     <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="knowledge">
       <i data-lucide="book-open" class="w-5 h-5 shrink-0"></i>
@@ -761,7 +665,7 @@ body.login-view #appContainer {
 
 
 <!-- Content -->
-<main class="flex-1 w-full ml-0 lg:ml-[72px] transition-all duration-300 lg:peer-hover:ml-[260px] flex justify-center">
+<main class="flex-1 w-full ml-0 lg:ml-[72px] transition-all duration-300 lg:group-hover:ml-[260px] flex justify-center">
 <div id="appContainer" class="w-full max-w-6xl pt-8 px-8 pb-8">
               <!-- Login card -->
 <div id="login" class="hidden w-full max-w-sm mx-auto mt-10 card p-6 text-center">
@@ -1260,38 +1164,6 @@ body.login-view #appContainer {
   </div>
 </section>
 
-<!-- MENSAJES TAB -->
-<section id="tab-mensajes" class="hidden">
-  <div class="grid gap-6 lg:grid-cols-[320px,1fr]">
-    <div class="card p-4 flex flex-col h-[620px]">
-      <div class="flex flex-col gap-3">
-        <div>
-          <label for="messagesBotFilter" class="text-xs font-semibold text-gray-500 uppercase tracking-wide block mb-1">Bot</label>
-          <select id="messagesBotFilter" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-black/60" disabled></select>
-        </div>
-        <div class="relative">
-          <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>
-          <input id="messagesSearchInput" type="text" placeholder="Buscar conversaciones" class="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black/60" />
-        </div>
-      </div>
-      <div id="messagesEmpty" class="text-sm text-gray-500 text-center mt-6 hidden">No hay conversaciones</div>
-      <div id="messagesList" class="mt-4 flex-1 overflow-y-auto space-y-2 pr-1"></div>
-    </div>
-    <div class="card p-4 h-[620px] flex flex-col">
-      <div id="messagesConversationHeader" class="pb-3 border-b border-gray-200 mb-3 hidden">
-        <div class="flex items-center justify-between gap-2">
-          <div id="messagesUserName" class="text-lg font-semibold text-gray-800 truncate"></div>
-          <div id="messagesUpdatedAt" class="text-xs text-gray-500"></div>
-        </div>
-      </div>
-      <div id="messagesPlaceholder" class="flex-1 flex items-center justify-center text-sm text-gray-500 text-center px-6">
-        Selecciona una conversación para ver los mensajes.
-      </div>
-      <div id="messagesDetail" class="flex-1 overflow-y-auto space-y-3 hidden"></div>
-    </div>
-  </div>
-</section>
-
 <!-- KNOWLEDGE TAB -->
           <section id="tab-knowledge" class="hidden space-y-6 max-w-3xl">
   <div class="card p-5 space-y-4">
@@ -1530,46 +1402,37 @@ body.login-view #appContainer {
         </span>
         <div class="space-y-1">
           <h3 id="newBotModalTitle">Crear un nuevo bot</h3>
-          <p id="newBotModalDescription" class="text-sm">Elige si quieres empezar desde cero o duplicar el bot actual antes de nombrarlo.</p>
+          <p id="newBotModalDescription" class="text-sm">Genera un asistente desde una copia del bot actual y personalízalo más tarde.</p>
         </div>
       </div>
-     
+      <span class="modal-badge">
+        <i data-lucide="sparkles" class="w-4 h-4"></i>
+        Personalización rápida
+      </span>
     </div>
-    <div class="modal-options">
-      <label class="modal-option-card" data-mode-card="new">
-        <input class="modal-option-radio" type="radio" name="newBotMode" value="new" checked>
-        <span class="modal-option-icon">
-          <i data-lucide="sparkles" class="w-5 h-5"></i>
-        </span>
-        <div class="modal-option-content">
-          <span class="modal-option-title">Crear desde cero</span>
-          <span class="modal-option-description">Genera un bot vacío con la configuración básica para empezar rápidamente.</span>
+    <div class="modal-header space-y-3">
+      <div class="space-y-1">
+        <label for="newBotNameInput" class="text-xs font-semibold text-slate-500 uppercase tracking-[0.12em]">Nombre del bot</label>
+        <input id="newBotNameInput" type="text" class="modal-input w-full px-4 py-2.5 text-sm focus:outline-none" placeholder="Ej. Bot conserjería" autocomplete="off" />
+      </div>
+      <div class="modal-preview flex items-center justify-between px-4 py-3 text-slate-500">
+        <div class="flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-slate-400">
+          <i data-lucide="link" class="w-4 h-4"></i>
+          ID sugerido
         </div>
-      </label>
-      <label class="modal-option-card" data-mode-card="duplicate">
-        <input class="modal-option-radio" type="radio" name="newBotMode" value="duplicate">
-        <span class="modal-option-icon">
-          <i data-lucide="copy" class="w-5 h-5"></i>
-        </span>
-        <div class="modal-option-content">
-          <span class="modal-option-title">Duplicar bot actual</span>
-          <span class="modal-option-description">Copia el contenido del bot activo y continúa personalizándolo.</span>
-        </div>
-      </label>
-    </div>
-
-    <div class="relative z-[1] space-y-1">
-      <label for="newBotNameInput" class="text-xs font-semibold text-slate-500 uppercase tracking-[0.12em]">Nombre del bot</label>
-      <input id="newBotNameInput" type="text" class="modal-input w-full px-4 py-2.5 text-sm focus:outline-none" placeholder="Ej. Bot conserjería" autocomplete="off" />
+        <span id="newBotSlugPreview" class="text-sm font-medium text-slate-600">pendiente</span>
+      </div>
     </div>
     <p id="newBotError" class="modal-error hidden"></p>
     <div class="modal-actions flex items-center justify-end gap-3 pt-1">
       <button id="cancelNewBot" class="modal-secondary px-4 py-2.5 text-sm">Cancelar</button>
       <button id="confirmNewBot" class="modal-primary px-4 py-2.5 text-sm flex items-center gap-2">
         <i data-lucide="plus" class="w-4 h-4"></i>
-        Create
+        Crear bot
       </button>
     </div>
+    <p class="modal-footer-note text-center">Podrás editar la identidad, los colores y el conocimiento en cualquier momento.</p>
+    <div class="modal-gradient-bar"></div>
   </div>
 </div>
 
@@ -1687,105 +1550,17 @@ const db = firebase.database();
 const auth = firebase.auth();
 const storage = firebase.storage();
 
-const TRIAL_ENDED_MESSAGE = 'Tu prueba gratuita ha terminado';
-
-async function isEmpresaTrialActive(empresaId) {
-  if (!empresaId) return true;
-  try {
-    const configSnap = await db.ref(`empresas/${empresaId}/config`).once('value');
-    const configData = configSnap.val() || {};
-    const expiresAt = Number(configData.expiresAt);
-    if (expiresAt && expiresAt < Date.now()) {
-      return false;
-    }
-  } catch (error) {
-    console.error('Error verifying trial status for company', empresaId, error);
-  }
-  return true;
-}
-
-let firebaseAuthModulePromise = null;
-function loadFirebaseAuthModule() {
-  if (!firebaseAuthModulePromise) {
-    firebaseAuthModulePromise = import('https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js');
-  }
-  return firebaseAuthModulePromise;
-}
-
-async function signOutFromFirebase() {
-  const { signOut } = await loadFirebaseAuthModule();
-  try {
-    await signOut(auth);
-  } catch (error) {
-    if (auth?._delegate) {
-      await signOut(auth._delegate);
-    } else {
-      throw error;
-    }
-  }
-}
-
-function ref(database, path) {
-  return database.ref(path);
-}
-
-function get(reference) {
-  return reference.get();
-}
-
 const DEFAULT_WIDGET_ICON = 'widgets/1.png';
 let currentWidgetIcon = DEFAULT_WIDGET_ICON;
 
 // ====== Helpers ======
 const $ = (id) => document.getElementById(id);
 const $$ = (sel) => Array.from(document.querySelectorAll(sel));
-
-const loginErrorEl = $('loginError');
-const defaultLoginErrorMessage = loginErrorEl?.textContent || '';
 function toast(msg){
   const t = $('toast');
   t.textContent = msg;
   t.classList.remove('opacity-0');
   setTimeout(() => t.classList.add('opacity-0'), 2500);
-}
-
-async function findEmpresaByAdminEmail(email) {
-  if (!email) return null;
-  try {
-    const snapshot = await get(ref(db, 'empresas'));
-    if (!snapshot || !snapshot.exists()) {
-      return null;
-    }
-    let empresaMatch = null;
-    snapshot.forEach((empresaSnap) => {
-      const adminEmail = (empresaSnap.child('config/adminEmail').val() || '').toLowerCase();
-      if (adminEmail && adminEmail === email) {
-        empresaMatch = empresaSnap.key;
-        return true;
-      }
-      return false;
-    });
-    return empresaMatch;
-  } catch (error) {
-    console.error('Error fetching empresas for admin detection', error);
-    return null;
-  }
-}
-
-async function autoSelectEmpresaForUser(email) {
-  const empresaName = await findEmpresaByAdminEmail(email);
-  if (!empresaName) {
-    return { empresa: null, redirected: false };
-  }
-
-  const currentUrl = new URL(window.location.href);
-  const currentEmpresa = (currentUrl.searchParams.get('empresa') || '').trim();
-  if (currentEmpresa !== empresaName) {
-    window.location.href = `index.html?empresa=${encodeURIComponent(empresaName)}`;
-    return { empresa: empresaName, redirected: true };
-  }
-
-  return { empresa: empresaName, redirected: false };
 }
 
 function getEmpresa() {
@@ -1811,27 +1586,12 @@ let BOT = getBot();
 let BOT_COLLECTION_PATH = null;
 let BOT_LEGACY_PATH = null;
 
-let messagesTabInitialized = false;
-let messagesCurrentBot = BOT;
-let messagesSelectedChatId = null;
-let messagesConversations = [];
-
-function getActiveMessagesBot() {
-  const stored = (localStorage.getItem('currentBot') || '').trim();
-  if (stored && stored !== 'null' && stored !== 'undefined') {
-    return stored;
-  }
-  return BOT;
-}
-
-messagesCurrentBot = getActiveMessagesBot();
-
 function getDefaultBotCollectionPath() {
-  return `empresas/${EMPRESA}/bots`;
+  return `${EMPRESA}/bots`;
 }
 
 function getConfigBotCollectionPath() {
-  return `empresas/${EMPRESA}/config/bots`;
+  return `${EMPRESA}/config/bots`;
 }
 
 function getLegacyBotCollectionPath() {
@@ -1928,7 +1688,7 @@ async function ensureBotDataExists() {
     const botSnap = await botRef.once('value');
     if (botSnap.exists()) return;
 
-    const legacySnap = await db.ref(getLegacySingleBotPath()).once('value');
+    const legacySnap = await db.ref(`${EMPRESA}`).once('value');
     if (legacySnap.exists()) {
       await botRef.set(legacySnap.val());
     } else {
@@ -2129,74 +1889,11 @@ function initBotSelector() {
   const newBotConfirm = $('confirmNewBot');
   const newBotCancel = $('cancelNewBot');
   const newBotClose = $('closeNewBotModal');
-  const newBotModeRadios = Array.from(document.querySelectorAll('input[name="newBotMode"]'));
-  const newBotModeCards = newBotModeRadios.map((radio) => radio.closest('[data-mode-card]'));
   const confirmBtnDefaultHTML = newBotConfirm ? newBotConfirm.innerHTML : '';
   const storageKey = `bot:${EMPRESA}`;
   const botsRef = getBotsRef();
   let cachedBots = {};
   let creatingNewBot = false;
-
-  const rebuildBotOptions = (activeId = BOT) => {
-    if (!select) return;
-    const entries = Object.entries(cachedBots);
-
-    select.innerHTML = '';
-    select.disabled = false;
-
-    if (!entries.length) {
-      const option = document.createElement('option');
-      option.value = BOT;
-      option.textContent = BOT;
-      option.selected = true;
-      select.appendChild(option);
-      select.disabled = true;
-      syncCustomBotDropdownState();
-      updateBotLabels(BOT);
-      return;
-    }
-
-    entries
-      .sort((a, b) => {
-        const nameA = (a[1]?.config?.hotelName || a[0] || '').toString().toLowerCase();
-        const nameB = (b[1]?.config?.hotelName || b[0] || '').toString().toLowerCase();
-        if (nameA < nameB) return -1;
-        if (nameA > nameB) return 1;
-        return 0;
-      })
-      .forEach(([id, data]) => {
-        const option = document.createElement('option');
-        option.value = id;
-        option.textContent = data?.config?.hotelName || id;
-        select.appendChild(option);
-      });
-
-    if (!cachedBots[activeId]) {
-      const fallbackOption = document.createElement('option');
-      fallbackOption.value = activeId;
-      fallbackOption.textContent = activeId;
-      select.appendChild(fallbackOption);
-    }
-
-    select.value = activeId;
-    const activeBot = cachedBots[activeId];
-    updateBotLabels(activeBot?.config?.hotelName || activeId);
-    syncCustomBotDropdownState();
-  };
-
-  const getSelectedNewBotMode = () => {
-    const active = newBotModeRadios.find((radio) => radio.checked && !radio.disabled);
-    return active ? active.value : 'new';
-  };
-
-  const syncNewBotModeCards = () => {
-    newBotModeRadios.forEach((radio, idx) => {
-      const card = newBotModeCards[idx];
-      if (!card) return;
-      card.classList.toggle('active', !!radio.checked);
-      card.setAttribute('aria-pressed', radio.checked ? 'true' : 'false');
-    });
-  };
 
   const setNewBotLoading = (loading) => {
     if (newBotConfirm) {
@@ -2215,9 +1912,6 @@ function initBotSelector() {
         newBotNameInput.disabled = true;
       }
     }
-    newBotModeRadios.forEach((radio) => {
-      radio.disabled = loading;
-    });
     if (newBotClose) {
       newBotClose.classList.toggle('pointer-events-none', loading);
       newBotClose.classList.toggle('opacity-50', loading);
@@ -2252,10 +1946,6 @@ function initBotSelector() {
       newBotError.textContent = '';
       newBotError.classList.add('hidden');
     }
-    newBotModeRadios.forEach((radio, idx) => {
-      radio.checked = idx === 0;
-    });
-    syncNewBotModeCards();
     updateNewBotSlugPreview();
     setNewBotLoading(false);
   };
@@ -2285,7 +1975,7 @@ function initBotSelector() {
     newBotError.classList.remove('hidden');
   };
 
-  const handleNewBotCreate = async (mode) => {
+  const handleNewBotCreate = async () => {
     if (creatingNewBot) return;
     if (!newBotNameInput) return;
     const raw = newBotNameInput.value || '';
@@ -2303,8 +1993,6 @@ function initBotSelector() {
       return;
     }
 
-    const creationMode = mode === 'duplicate' ? 'duplicate' : 'new';
-
     creatingNewBot = true;
     try {
       await refreshPermissions();
@@ -2321,40 +2009,12 @@ function initBotSelector() {
         candidate = `${baseSlug}-${suffix++}`;
       }
 
-      let payload;
-
-      if (creationMode === 'duplicate') {
-        const currentSnapshot = await db.ref(getBotBasePath()).once('value');
-        const cloneSource = currentSnapshot.val();
-        if (cloneSource && typeof cloneSource === 'object') {
-          payload = JSON.parse(JSON.stringify(cloneSource));
-        } else {
-          payload = {};
-        }
-      } else {
-        payload = { config: {} };
-      }
-
-      if (!payload || typeof payload !== 'object') {
-        payload = {};
-      }
-
+      const currentSnapshot = await db.ref(getBotBasePath()).once('value');
+      const payload = JSON.parse(JSON.stringify(currentSnapshot.val() || {}));
       payload.config = payload.config || {};
       payload.config.hotelName = trimmed;
 
-      delete payload.calls;
-      delete payload.connections;
-      delete payload.mesas;
-      if (payload.config && typeof payload.config === 'object') {
-        delete payload.config.calls;
-        delete payload.config.connections;
-        delete payload.config.mesas;
-      }
-
       await botsRef.child(candidate).set(payload);
-      cachedBots = { ...cachedBots, [candidate]: payload };
-      updateNewBotSlugPreview();
-      rebuildBotOptions(candidate);
       localStorage.setItem(storageKey, candidate);
       hideNewBotModal(true);
       const url = new URL(window.location.href);
@@ -2388,7 +2048,7 @@ function initBotSelector() {
 
   newBotConfirm?.addEventListener('click', (event) => {
     event.preventDefault();
-    handleNewBotCreate(getSelectedNewBotMode());
+    handleNewBotCreate();
   });
 
   newBotNameInput?.addEventListener('input', () => {
@@ -2397,12 +2057,6 @@ function initBotSelector() {
       newBotError.classList.add('hidden');
     }
     updateNewBotSlugPreview();
-  });
-
-  newBotModeRadios.forEach((radio) => {
-    radio.addEventListener('change', () => {
-      syncNewBotModeCards();
-    });
   });
 
   document.addEventListener('keydown', (event) => {
@@ -2414,7 +2068,7 @@ function initBotSelector() {
     if (event.key === 'Enter' && event.target === newBotNameInput) {
       event.preventDefault();
       if (creatingNewBot) return;
-      handleNewBotCreate(getSelectedNewBotMode());
+      handleNewBotCreate();
     }
   });
 
@@ -2438,7 +2092,47 @@ function initBotSelector() {
   botsRef.on('value', (snap) => {
     cachedBots = snap.val() || {};
     updateNewBotSlugPreview();
-    rebuildBotOptions(BOT);
+    const entries = Object.entries(cachedBots);
+    select.innerHTML = '';
+    select.disabled = false;
+
+    if (!entries.length) {
+      const option = document.createElement('option');
+      option.value = BOT;
+      option.textContent = BOT;
+      option.selected = true;
+      select.appendChild(option);
+      syncCustomBotDropdownState();
+      updateBotLabels(BOT);
+      return;
+    }
+
+    entries
+      .sort((a, b) => {
+        const nameA = (a[1]?.config?.hotelName || a[0] || '').toString().toLowerCase();
+        const nameB = (b[1]?.config?.hotelName || b[0] || '').toString().toLowerCase();
+        if (nameA < nameB) return -1;
+        if (nameA > nameB) return 1;
+        return 0;
+      })
+      .forEach(([id, data]) => {
+        const option = document.createElement('option');
+        option.value = id;
+        option.textContent = data?.config?.hotelName || id;
+        select.appendChild(option);
+      });
+
+    if (!cachedBots[BOT]) {
+      const fallbackOption = document.createElement('option');
+      fallbackOption.value = BOT;
+      fallbackOption.textContent = BOT;
+      select.appendChild(fallbackOption);
+    }
+
+    select.value = BOT;
+    const activeBot = cachedBots[BOT];
+    updateBotLabels(activeBot?.config?.hotelName || BOT);
+    syncCustomBotDropdownState();
   });
 
   select.addEventListener('change', (event) => {
@@ -2480,232 +2174,6 @@ function initBotSelector() {
       updateNewBotSlugPreview();
     });
   }
-}
-
-
-
-
-let languageSelectorInitialized = false;
-function initLanguageSelector() {
-  if (languageSelectorInitialized) return;
-
-  const select = $('languageSelect');
-  if (!select) return;
-
-  languageSelectorInitialized = true;
-  let customLangDropdown = null;
-
-  const ensureCustomLangDropdown = () => {
-    if (customLangDropdown) return customLangDropdown;
-
-    // wrapper externo
-    const wrapper = document.createElement('div');
-    wrapper.className = 'relative min-w-[130px]';
-
-    // botón visible (igual estilo que el selector de bots)
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className =
-      'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white text-left ' +
-      'flex items-center justify-between gap-2 text-gray-700 shadow-sm transition ' +
-      'focus:outline-none focus:ring-2 focus:ring-black/70 focus:border-black/50 ' +
-      'hover:border-gray-300 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed';
-    button.setAttribute('aria-haspopup', 'listbox');
-    button.setAttribute('aria-expanded', 'false');
-
-    // label con el idioma activo
-    const label = document.createElement('span');
-    label.className = 'truncate';
-    label.textContent =
-      select.options[select.selectedIndex]?.textContent?.trim() ||
-      select.value ||
-      '—';
-
-    // iconito ▼
-    const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    icon.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-    icon.setAttribute('viewBox', '0 0 24 24');
-    icon.setAttribute('fill', 'none');
-    icon.setAttribute('stroke', 'currentColor');
-    icon.classList.add('w-4', 'h-4', 'text-gray-500', 'shrink-0');
-
-    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    path.setAttribute('stroke-linecap', 'round');
-    path.setAttribute('stroke-linejoin', 'round');
-    path.setAttribute('stroke-width', '2');
-    path.setAttribute('d', 'M19 9l-7 7-7-7');
-    icon.appendChild(path);
-
-    // lista desplegable
-    const list = document.createElement('div');
-    list.className =
-      'absolute left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl ' +
-      'shadow-lg z-40 hidden max-h-60 overflow-y-auto py-1';
-    list.setAttribute('role', 'listbox');
-
-    // armar DOM
-    button.appendChild(label);
-    button.appendChild(icon);
-    wrapper.appendChild(button);
-    wrapper.appendChild(list);
-
-    // insertar después del <select>
-    select.insertAdjacentElement('afterend', wrapper);
-
-    // esconder el <select> nativo
-    select.classList.add('hidden');
-
-    // helpers de apertura/cierre
-    const closeList = () => {
-      list.classList.add('hidden');
-      button.setAttribute('aria-expanded', 'false');
-    };
-
-    button.addEventListener('click', (event) => {
-      event.preventDefault();
-      if (select.disabled) return;
-      list.classList.toggle('hidden');
-      const expanded = !list.classList.contains('hidden');
-      button.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-    });
-
-    document.addEventListener('click', (event) => {
-      if (!wrapper.contains(event.target)) {
-        closeList();
-      }
-    });
-
-    customLangDropdown = { wrapper, button, label, icon, list, closeList };
-    return customLangDropdown;
-  };
-
-  // sincroniza botón + lista con el <select>
-  const syncCustomLangDropdownState = () => {
-    const dropdown = ensureCustomLangDropdown();
-    if (!dropdown) return;
-
-    const { button, label, list } = dropdown;
-
-    const selectedOption = select.options[select.selectedIndex];
-    const activeLabel =
-      (selectedOption?.textContent || '').trim() ||
-      select.value ||
-      button.dataset.placeholder ||
-      '—';
-    label.textContent = activeLabel;
-
-    // estado disabled
-    button.disabled = !!select.disabled;
-    button.classList.toggle('bg-gray-100', !!select.disabled);
-    button.classList.toggle('text-gray-400', !!select.disabled);
-    button.classList.toggle('cursor-not-allowed', !!select.disabled);
-    button.classList.toggle('hover:border-gray-300', !select.disabled);
-    if (select.disabled) dropdown.closeList();
-
-    // reset lista
-    list.innerHTML = '';
-
-    Array.from(select.options).forEach((option, index) => {
-      const optionLabel = (option.textContent || '').trim();
-
-      const item = document.createElement('button');
-      item.type = 'button';
-      item.className =
-        'flex w-full items-center justify-between px-3 py-2 text-sm text-left ' +
-        'text-gray-700 hover:bg-gray-100 transition';
-      item.setAttribute('role', 'option');
-      item.dataset.value = option.value;
-      item.disabled = option.disabled || option.value === '';
-
-      // texto del idioma
-      const valueSpan = document.createElement('span');
-      valueSpan.className = 'truncate';
-      valueSpan.textContent = optionLabel || option.value || '—';
-      item.appendChild(valueSpan);
-
-      // check verde en el seleccionado
-      const isSelected = index === select.selectedIndex;
-      if (isSelected) {
-        item.classList.add('bg-gray-50', 'font-medium');
-
-        const checkIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        checkIcon.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-        checkIcon.setAttribute('viewBox', '0 0 24 24');
-        checkIcon.setAttribute('fill', 'none');
-        checkIcon.setAttribute('stroke', 'currentColor');
-        checkIcon.classList.add('w-4', 'h-4', 'text-emerald-500');
-
-        const checkPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        checkPath.setAttribute('stroke-linecap', 'round');
-        checkPath.setAttribute('stroke-linejoin', 'round');
-        checkPath.setAttribute('stroke-width', '2');
-        checkPath.setAttribute('d', 'M5 13l4 4L19 7');
-        checkIcon.appendChild(checkPath);
-
-        item.appendChild(checkIcon);
-      }
-
-      if (item.disabled) {
-        item.classList.add('opacity-50', 'cursor-not-allowed');
-      } else {
-        item.addEventListener('click', (event) => {
-          event.preventDefault();
-          if (option.value === select.value) {
-            dropdown.closeList();
-            return;
-          }
-          // cambia el valor "real"
-          select.value = option.value;
-
-          // dispara el onChange original (traducción)
-          const changeEvent = new Event('change', { bubbles: true });
-          select.dispatchEvent(changeEvent);
-
-          dropdown.closeList();
-        });
-      }
-
-      list.appendChild(item);
-    });
-  };
-
-  // hack: cuando cambie select.value desde código (ej: translationManager.init())
-  const valueDescriptor = Object.getOwnPropertyDescriptor(
-    Object.getPrototypeOf(select),
-    'value'
-  );
-  if (valueDescriptor && valueDescriptor.configurable) {
-    Object.defineProperty(select, 'value', {
-      configurable: true,
-      enumerable: true,
-      get() {
-        return valueDescriptor.get.call(this);
-      },
-      set(newValue) {
-        valueDescriptor.set.call(this, newValue);
-        syncCustomLangDropdownState();
-      }
-    });
-  }
-
-  // primera sync
-  syncCustomLangDropdownState();
-
-  // observar cambios (disabled, opciones nuevas, etc)
-  const dropdownObserver = new MutationObserver(() => {
-    syncCustomLangDropdownState();
-  });
-  dropdownObserver.observe(select, {
-    childList: true,
-    subtree: true,
-    attributes: true,
-    attributeFilter: ['disabled']
-  });
-
-  // cuando el <select> cambie manualmente (por código externo que dispare change)
-  select.addEventListener('change', () => {
-    syncCustomLangDropdownState();
-  });
 }
 
 const DEFAULT_CHAT_TEMPLATES = {
@@ -3087,7 +2555,7 @@ async function refreshPermissions() {
   if (botAdminEmail) adminEmails.add(botAdminEmail);
 
   try {
-    const companyAdminSnap = await db.ref(`empresas/${EMPRESA}/config/adminEmail`).once('value');
+    const companyAdminSnap = await db.ref(`${EMPRESA}/config/adminEmail`).once('value');
     const companyAdminEmail = (companyAdminSnap.val() || '').toLowerCase();
     if (companyAdminEmail) adminEmails.add(companyAdminEmail);
   } catch (err) {
@@ -3096,7 +2564,7 @@ async function refreshPermissions() {
 
   if (!adminEmails.size) {
     try {
-      const legacyAdminSnap = await db.ref(`${getLegacySingleBotPath()}/config/adminEmail`).once('value');
+      const legacyAdminSnap = await db.ref(`${EMPRESA}/config/adminEmail`).once('value');
       const legacyAdminEmail = (legacyAdminSnap.val() || '').toLowerCase();
       if (legacyAdminEmail) adminEmails.add(legacyAdminEmail);
     } catch (err) {
@@ -3136,7 +2604,7 @@ function setWriteEnabled(enabled) {
   }
 }
 
-const TAB_KEYS = ['chat','mensajes','knowledge','respuestas'];
+const TAB_KEYS = ['chat','knowledge','respuestas'];
 let tabsInitialized = false;
 
 function setActiveTab(tab) {
@@ -3200,70 +2668,33 @@ $('btnLogin').addEventListener('click', async () => {
   const email = $('emailInput').value.trim();
   const pass = $('passwordInput').value.trim();
   if (!email || !pass) return alert(t('Please enter your credentials.'));
-  if (loginErrorEl) {
-    loginErrorEl.textContent = defaultLoginErrorMessage;
-    loginErrorEl.classList.add('hidden');
-  }
   try {
     await auth.signInWithEmailAndPassword(email, pass);
   } catch (e) {
     console.error(e);
-    if (loginErrorEl) {
-      loginErrorEl.textContent = defaultLoginErrorMessage;
-      loginErrorEl.classList.remove('hidden');
-    }
+    $('loginError').classList.remove('hidden');
   }
 });
 
-$('btnLogout').addEventListener('click', async () => {
-  try {
-    await signOutFromFirebase();
-    window.location.href = "https://tomos.bot/";
-  } catch (error) {
-    console.error(error);
-  }
-});
+$('btnLogout').addEventListener('click', () => auth.signOut());
 
 auth.onAuthStateChanged(async (u) => {
   if (u) {
     const email = (u.email || '').toLowerCase();
-    const { empresa: empresaEncontrada, redirected } = await autoSelectEmpresaForUser(email);
-    if (redirected) {
-      return;
-    }
-
-    if (!empresaEncontrada) {
-      if (loginErrorEl) {
-        loginErrorEl.textContent = 'Tu cuenta no está asociada a ninguna empresa';
-        loginErrorEl.classList.remove('hidden');
-      } else {
-        alert('Tu cuenta no está asociada a ninguna empresa');
-      }
-      await signOutFromFirebase();
-      return;
-    }
-
-    if (loginErrorEl) {
-      loginErrorEl.textContent = defaultLoginErrorMessage;
-      loginErrorEl.classList.add('hidden');
-    }
-
-    let empresaDetectada = empresaEncontrada;
+    let empresaDetectada = null;
     let botDetectado = null;
 
     try {
-      if (!empresaDetectada) {
-        const empresasSnap = await db.ref('empresas').once('value');
-        const empresasData = empresasSnap.val() || {};
-        outer: for (const [empresaId, empresaData] of Object.entries(empresasData)) {
-          const bots = empresaData?.bots || empresaData?.config?.bots || {};
-          for (const [botId, botData] of Object.entries(bots)) {
-            const adminEmail = (botData?.config?.adminEmail || '').toLowerCase();
-            if (adminEmail && adminEmail === email) {
-              empresaDetectada = empresaId;
-              botDetectado = botId;
-              break outer;
-            }
+      const empresasSnap = await db.ref('empresas').once('value');
+      const empresasData = empresasSnap.val() || {};
+      outer: for (const [empresaId, empresaData] of Object.entries(empresasData)) {
+        const bots = empresaData?.bots || empresaData?.config?.bots || {};
+        for (const [botId, botData] of Object.entries(bots)) {
+          const adminEmail = (botData?.config?.adminEmail || '').toLowerCase();
+          if (adminEmail && adminEmail === email) {
+            empresaDetectada = empresaId;
+            botDetectado = botId;
+            break outer;
           }
         }
       }
@@ -3311,18 +2742,6 @@ auth.onAuthStateChanged(async (u) => {
     currentUrl.searchParams.set('empresa', EMPRESA);
     currentUrl.searchParams.set('bot', BOT);
     window.history.replaceState({}, '', currentUrl);
-
-    const trialActive = await isEmpresaTrialActive(EMPRESA);
-    if (!trialActive) {
-      if (loginErrorEl) {
-        loginErrorEl.textContent = TRIAL_ENDED_MESSAGE;
-        loginErrorEl.classList.remove('hidden');
-      } else {
-        alert(TRIAL_ENDED_MESSAGE);
-      }
-      await signOutFromFirebase();
-      return;
-    }
 
     await resolveBotStoragePaths();
     await ensureBotDataExists();
@@ -3384,18 +2803,20 @@ function getTimeZones(){
 async function initAll(){
   lucide.createIcons();
   initBotSelector();
-  initLanguageSelector(); // <-- 🔥 nuevo
   initTabs();
   applyPreview(); 
   await refreshPermissions();
-  initApariencia();
-  initSettingsTab();
-  initMensajes();
+  initApariencia(); 
+  initSettingsTab(); 
   initKnowledge();
   initIntegration();
   initRespuestas();
   initWelcome();
   initSchedule();
+
+
+
+
 }
 
 
@@ -5152,303 +4573,6 @@ function initSchedule() {
   });
 }
 
-
-function initMensajes() {
-  const listEl = $('messagesList');
-  const botSelect = $('messagesBotFilter');
-  const searchInput = $('messagesSearchInput');
-  const emptyState = $('messagesEmpty');
-  const detailEl = $('messagesDetail');
-  const placeholderEl = $('messagesPlaceholder');
-  const headerEl = $('messagesConversationHeader');
-  const userNameEl = $('messagesUserName');
-  const updatedEl = $('messagesUpdatedAt');
-
-  if (!listEl || !botSelect || !detailEl || !placeholderEl) {
-    setTimeout(initMensajes, 400);
-    return;
-  }
-
-  const formatTimestamp = (value) => {
-    if (!value) return '';
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return '';
-    const now = new Date();
-    const sameDay = date.toDateString() === now.toDateString();
-    if (sameDay) {
-      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    }
-    return date.toLocaleDateString([], { day: '2-digit', month: 'short' });
-  };
-
-  const getConversationsRef = (botId = BOT) => firebase.database().ref(`empresas/${EMPRESA}/bots/${botId}/conversaciones`);
-
-  function updateHeader(meta = {}) {
-    const displayName = (meta.userName || '').trim() || 'Guest';
-    if (userNameEl) userNameEl.textContent = displayName;
-    if (updatedEl) {
-      const formatted = meta.lastUpdated ? formatTimestamp(meta.lastUpdated) : '';
-      updatedEl.textContent = formatted;
-      updatedEl.classList.toggle('hidden', !formatted);
-    }
-  }
-
-  function resetConversationView() {
-    messagesSelectedChatId = null;
-    detailEl.innerHTML = '';
-    detailEl.classList.add('hidden');
-    placeholderEl.classList.remove('hidden');
-    if (headerEl) headerEl.classList.add('hidden');
-    if (userNameEl) userNameEl.textContent = '';
-    if (updatedEl) {
-      updatedEl.textContent = '';
-      updatedEl.classList.add('hidden');
-    }
-  }
-
-  function renderConversationMessages(data = {}) {
-    const entries = Object.entries(data || {}).sort((a, b) => {
-      const timeA = a[1]?.time || 0;
-      const timeB = b[1]?.time || 0;
-      return timeA - timeB;
-    });
-    detailEl.innerHTML = '';
-    if (!entries.length) {
-      const empty = document.createElement('div');
-      empty.className = 'text-sm text-gray-400 text-center mt-10';
-      empty.textContent = 'No hay mensajes';
-      detailEl.appendChild(empty);
-      return;
-    }
-    entries.forEach(([, message]) => {
-      const sender = (message?.sender || '').toLowerCase();
-      const isUser = ['user', 'cliente', 'customer', 'visitor'].includes(sender);
-      const row = document.createElement('div');
-      row.className = `flex flex-col gap-1 ${isUser ? 'items-end text-right' : 'items-start text-left'}`;
-      const bubble = document.createElement('div');
-      bubble.className = `${isUser ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-800'} px-4 py-2 rounded-2xl max-w-[85%] text-sm leading-relaxed shadow-sm`;
-      bubble.textContent = message?.text || '';
-      row.appendChild(bubble);
-      if (message?.time) {
-        const timeEl = document.createElement('span');
-        timeEl.className = 'text-[11px] text-gray-400';
-        timeEl.textContent = formatTimestamp(message.time);
-        row.appendChild(timeEl);
-      }
-      detailEl.appendChild(row);
-    });
-    detailEl.scrollTop = detailEl.scrollHeight;
-  }
-
-  function renderConversations() {
-    const term = (searchInput?.value || '').toLowerCase().trim();
-    const base = term
-      ? messagesConversations.filter(item => {
-          const haystack = `${item.userName} ${item.lastMessage} ${item.chatId}`.toLowerCase();
-          return haystack.includes(term);
-        })
-      : messagesConversations.slice();
-
-    base.sort((a, b) => (b.lastUpdated || 0) - (a.lastUpdated || 0));
-    listEl.innerHTML = '';
-
-    if (!messagesConversations.length) {
-      emptyState?.classList.remove('hidden');
-      return;
-    }
-
-    emptyState?.classList.add('hidden');
-
-    if (!base.length) {
-      const emptyResult = document.createElement('div');
-      emptyResult.className = 'text-xs text-gray-400 text-center py-6';
-      emptyResult.textContent = 'Sin resultados';
-      listEl.appendChild(emptyResult);
-      return;
-    }
-
-    base.forEach(chat => {
-      const item = document.createElement('button');
-      item.type = 'button';
-      const isActive = chat.chatId === messagesSelectedChatId;
-      item.className = `w-full text-left border rounded-xl px-3 py-3 transition ${isActive ? 'bg-gray-900 text-white border-gray-900 shadow-sm' : 'bg-white border-gray-200 hover:border-gray-300'}`;
-
-      const top = document.createElement('div');
-      top.className = 'flex items-center justify-between gap-2';
-
-      const metaRow = document.createElement('div');
-      metaRow.className = 'flex items-center gap-2 text-xs';
-
-      const idNumeric = Number.parseInt(chat.chatId, 10);
-      let formattedDate = '';
-      if (!Number.isNaN(idNumeric)) {
-        const dateFromId = new Date(idNumeric);
-        if (!Number.isNaN(dateFromId.getTime())) {
-          formattedDate = dateFromId.toLocaleDateString();
-        }
-      }
-
-      const dateEl = document.createElement('div');
-      dateEl.className = `${isActive ? 'text-white/70' : 'text-gray-500'}`;
-      dateEl.textContent = formattedDate;
-
-      const idEl = document.createElement('div');
-      idEl.className = `truncate text-xs ${isActive ? 'text-white/70' : 'text-gray-400'}`;
-      idEl.textContent = `#${chat.chatId}`;
-
-      metaRow.append(dateEl, idEl);
-
-      const timeEl = document.createElement('div');
-      timeEl.className = `text-xs ${isActive ? 'text-white/70' : 'text-gray-400'}`;
-      timeEl.textContent = chat.lastUpdated ? formatTimestamp(chat.lastUpdated) : '';
-
-      top.append(metaRow, timeEl);
-
-      const preview = document.createElement('div');
-      preview.className = `mt-1 text-xs ${isActive ? 'text-white/80' : 'text-gray-500'} truncate`;
-      preview.textContent = chat.lastMessage || 'Sin mensajes';
-
-      item.append(top, preview);
-      item.addEventListener('click', () => {
-        if (chat.chatId === messagesSelectedChatId) return;
-        selectConversation(chat.chatId);
-      });
-      listEl.appendChild(item);
-    });
-  }
-
-  function loadConversations(botId) {
-    const targetBot = botId || BOT;
-    messagesSelectedChatId = null;
-    messagesConversations = [];
-    listEl.innerHTML = '';
-    resetConversationView();
-    if (emptyState) emptyState.classList.add('hidden');
-
-    return getConversationsRef(targetBot).once('value')
-      .then((snap) => {
-        const data = snap.val() || {};
-        messagesConversations = Object.entries(data).map(([chatId, payload]) => {
-          const meta = payload?.meta || {};
-          return {
-            chatId,
-            lastMessage: meta.lastMessage || '',
-            lastUpdated: meta.lastUpdated || 0,
-            userName: meta.userName || '',
-            meta,
-          };
-        });
-        messagesConversations.sort((a, b) => (b.lastUpdated || 0) - (a.lastUpdated || 0));
-      })
-      .catch((err) => {
-        console.warn('No se pudieron cargar las conversaciones', err);
-        messagesConversations = [];
-      })
-      .finally(() => {
-        renderConversations();
-        if (!messagesConversations.length) {
-          emptyState?.classList.remove('hidden');
-        }
-      });
-  }
-
-  function selectConversation(chatId) {
-    if (!chatId) {
-      resetConversationView();
-      renderConversations();
-      return;
-    }
-
-    messagesSelectedChatId = chatId;
-    const existing = messagesConversations.find(item => item.chatId === chatId);
-    if (existing) {
-      updateHeader(existing.meta || existing);
-    }
-    if (headerEl) headerEl.classList.remove('hidden');
-
-    detailEl.innerHTML = '<div class="text-sm text-gray-400 text-center mt-10">Cargando mensajes...</div>';
-    detailEl.classList.remove('hidden');
-    placeholderEl.classList.add('hidden');
-
-    const baseRef = getConversationsRef(messagesCurrentBot).child(chatId);
-    const metaPromise = baseRef.child('meta').once('value').catch((err) => {
-      console.warn('No se pudo cargar el meta de la conversación', err);
-      return null;
-    });
-    const messagesPromise = baseRef.child('messages').once('value').catch((err) => {
-      console.warn('No se pudieron cargar los mensajes', err);
-      return null;
-    });
-
-    Promise.all([metaPromise, messagesPromise]).then(([metaSnap, messagesSnap]) => {
-      const meta = metaSnap?.val() || existing?.meta || {};
-      updateHeader(meta);
-      const messages = messagesSnap?.val() || {};
-      renderConversationMessages(messages);
-      if (headerEl) headerEl.classList.remove('hidden');
-      detailEl.classList.remove('hidden');
-      placeholderEl.classList.add('hidden');
-    }).catch((err) => {
-      console.warn('No se pudo mostrar la conversación', err);
-      detailEl.innerHTML = '<div class="text-sm text-red-500 text-center mt-10">No se pudieron cargar los mensajes.</div>';
-    }).finally(() => {
-      renderConversations();
-    });
-  }
-
-  function populateBotOptions() {
-    const activeBotId = getActiveMessagesBot();
-    const fallbackLabel = activeBotId || BOT;
-
-    messagesCurrentBot = activeBotId;
-
-    if (!botSelect) {
-      return Promise.resolve();
-    }
-
-    botSelect.innerHTML = '';
-
-    const option = document.createElement('option');
-    option.value = activeBotId;
-    option.textContent = fallbackLabel;
-    botSelect.appendChild(option);
-
-    botSelect.value = activeBotId;
-    botSelect.disabled = true;
-
-    return firebase.database()
-      .ref(`empresas/${EMPRESA}/bots/${activeBotId}/config/hotelName`)
-      .once('value')
-      .then((snap) => {
-        const name = snap.val();
-        if (name) {
-          option.textContent = name;
-        }
-      })
-      .catch((err) => {
-        console.warn('No se pudo cargar el nombre del bot activo', err);
-      });
-  }
-
-  if (!messagesTabInitialized) {
-    if (searchInput) {
-      searchInput.addEventListener('input', () => renderConversations());
-    }
-    messagesTabInitialized = true;
-  }
-
-  resetConversationView();
-  renderConversations();
-
-  populateBotOptions().then(() => {
-    const activeBotId = getActiveMessagesBot();
-    messagesCurrentBot = activeBotId;
-    if (botSelect) {
-      botSelect.value = activeBotId;
-    }
-    return loadConversations(messagesCurrentBot);
-  });
-}
 
 // === Function to initialize Integration tab ===
 function initIntegration(){
