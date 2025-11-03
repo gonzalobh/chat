@@ -1687,17 +1687,67 @@ const db = firebase.database();
 const auth = firebase.auth();
 const storage = firebase.storage();
 
+function ref(database, path) {
+  return database.ref(path);
+}
+
+function get(reference) {
+  return reference.get();
+}
+
 const DEFAULT_WIDGET_ICON = 'widgets/1.png';
 let currentWidgetIcon = DEFAULT_WIDGET_ICON;
 
 // ====== Helpers ======
 const $ = (id) => document.getElementById(id);
 const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+
+const loginErrorEl = $('loginError');
+const defaultLoginErrorMessage = loginErrorEl?.textContent || '';
 function toast(msg){
   const t = $('toast');
   t.textContent = msg;
   t.classList.remove('opacity-0');
   setTimeout(() => t.classList.add('opacity-0'), 2500);
+}
+
+async function findEmpresaByAdminEmail(email) {
+  if (!email) return null;
+  try {
+    const snapshot = await get(ref(db, 'empresas'));
+    if (!snapshot || !snapshot.exists()) {
+      return null;
+    }
+    let empresaMatch = null;
+    snapshot.forEach((empresaSnap) => {
+      const adminEmail = (empresaSnap.child('config/adminEmail').val() || '').toLowerCase();
+      if (adminEmail && adminEmail === email) {
+        empresaMatch = empresaSnap.key;
+        return true;
+      }
+      return false;
+    });
+    return empresaMatch;
+  } catch (error) {
+    console.error('Error fetching empresas for admin detection', error);
+    return null;
+  }
+}
+
+async function autoSelectEmpresaForUser(email) {
+  const empresaName = await findEmpresaByAdminEmail(email);
+  if (!empresaName) {
+    return { empresa: null, redirected: false };
+  }
+
+  const currentUrl = new URL(window.location.href);
+  const currentEmpresa = (currentUrl.searchParams.get('empresa') || '').trim();
+  if (currentEmpresa !== empresaName) {
+    window.location.href = `index.html?empresa=${encodeURIComponent(empresaName)}`;
+    return { empresa: empresaName, redirected: true };
+  }
+
+  return { empresa: empresaName, redirected: false };
 }
 
 function getEmpresa() {
@@ -3112,11 +3162,18 @@ $('btnLogin').addEventListener('click', async () => {
   const email = $('emailInput').value.trim();
   const pass = $('passwordInput').value.trim();
   if (!email || !pass) return alert(t('Please enter your credentials.'));
+  if (loginErrorEl) {
+    loginErrorEl.textContent = defaultLoginErrorMessage;
+    loginErrorEl.classList.add('hidden');
+  }
   try {
     await auth.signInWithEmailAndPassword(email, pass);
   } catch (e) {
     console.error(e);
-    $('loginError').classList.remove('hidden');
+    if (loginErrorEl) {
+      loginErrorEl.textContent = defaultLoginErrorMessage;
+      loginErrorEl.classList.remove('hidden');
+    }
   }
 });
 
@@ -3125,20 +3182,43 @@ $('btnLogout').addEventListener('click', () => auth.signOut());
 auth.onAuthStateChanged(async (u) => {
   if (u) {
     const email = (u.email || '').toLowerCase();
-    let empresaDetectada = null;
+    const { empresa: empresaEncontrada, redirected } = await autoSelectEmpresaForUser(email);
+    if (redirected) {
+      return;
+    }
+
+    if (!empresaEncontrada) {
+      if (loginErrorEl) {
+        loginErrorEl.textContent = 'Tu cuenta no está asociada a ninguna empresa';
+        loginErrorEl.classList.remove('hidden');
+      } else {
+        alert('Tu cuenta no está asociada a ninguna empresa');
+      }
+      await auth.signOut();
+      return;
+    }
+
+    if (loginErrorEl) {
+      loginErrorEl.textContent = defaultLoginErrorMessage;
+      loginErrorEl.classList.add('hidden');
+    }
+
+    let empresaDetectada = empresaEncontrada;
     let botDetectado = null;
 
     try {
-      const empresasSnap = await db.ref('empresas').once('value');
-      const empresasData = empresasSnap.val() || {};
-      outer: for (const [empresaId, empresaData] of Object.entries(empresasData)) {
-        const bots = empresaData?.bots || empresaData?.config?.bots || {};
-        for (const [botId, botData] of Object.entries(bots)) {
-          const adminEmail = (botData?.config?.adminEmail || '').toLowerCase();
-          if (adminEmail && adminEmail === email) {
-            empresaDetectada = empresaId;
-            botDetectado = botId;
-            break outer;
+      if (!empresaDetectada) {
+        const empresasSnap = await db.ref('empresas').once('value');
+        const empresasData = empresasSnap.val() || {};
+        outer: for (const [empresaId, empresaData] of Object.entries(empresasData)) {
+          const bots = empresaData?.bots || empresaData?.config?.bots || {};
+          for (const [botId, botData] of Object.entries(bots)) {
+            const adminEmail = (botData?.config?.adminEmail || '').toLowerCase();
+            if (adminEmail && adminEmail === email) {
+              empresaDetectada = empresaId;
+              botDetectado = botId;
+              break outer;
+            }
           }
         }
       }
