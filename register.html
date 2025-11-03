@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registro · Tomos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-database-compat.js"></script>
+  </head>
+  <body class="min-h-screen bg-slate-100 text-slate-900">
+    <main class="flex min-h-screen items-center justify-center px-4">
+      <div class="w-full max-w-md">
+        <div class="mb-6 text-center">
+          <h1 class="text-3xl font-semibold">Crear cuenta de prueba</h1>
+          <p class="mt-2 text-sm text-slate-500">
+            Regístrate para obtener acceso gratuito por 7 días.
+          </p>
+        </div>
+        <div class="rounded-2xl bg-white p-8 shadow">
+          <form id="registerForm" class="space-y-5">
+            <div>
+              <label for="email" class="block text-sm font-medium text-slate-600">Correo electrónico</label>
+              <input
+                id="email"
+                type="email"
+                required
+                autocomplete="email"
+                class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="tu@correo.com"
+              />
+            </div>
+            <div>
+              <label for="password" class="block text-sm font-medium text-slate-600">Contraseña</label>
+              <input
+                id="password"
+                type="password"
+                required
+                minlength="6"
+                autocomplete="new-password"
+                class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Mínimo 6 caracteres"
+              />
+            </div>
+            <div>
+              <label for="confirmPassword" class="block text-sm font-medium text-slate-600">Confirmar contraseña</label>
+              <input
+                id="confirmPassword"
+                type="password"
+                required
+                minlength="6"
+                autocomplete="new-password"
+                class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Repite tu contraseña"
+              />
+            </div>
+            <button
+              id="submitBtn"
+              type="submit"
+              class="w-full rounded-lg bg-blue-600 py-2 text-white font-medium transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              Crear cuenta
+            </button>
+          </form>
+          <p id="message" class="mt-4 hidden rounded-lg border px-4 py-3 text-sm"></p>
+        </div>
+        <p class="mt-6 text-center text-xs text-slate-400">
+          ¿Ya tienes una cuenta? <a href="index.html" class="font-medium text-blue-600 hover:text-blue-700">Inicia sesión</a>
+        </p>
+      </div>
+    </main>
+
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyC2c3S_NtouIjHPrk5LM5c0DQoTWyBrzH4",
+        authDomain: "timbre-c9547.firebaseapp.com",
+        databaseURL: "https://timbre-c9547-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "timbre-c9547",
+        storageBucket: "timbre-c9547.firebasestorage.app",
+        messagingSenderId: "127064655657",
+        appId: "1:127064655657:web:a4e99dcbc6ab33f32c1938"
+      };
+
+      if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+      }
+
+      const auth = firebase.auth();
+      const db = firebase.database();
+
+      const registerForm = document.getElementById('registerForm');
+      const emailInput = document.getElementById('email');
+      const passwordInput = document.getElementById('password');
+      const confirmInput = document.getElementById('confirmPassword');
+      const submitBtn = document.getElementById('submitBtn');
+      const messageEl = document.getElementById('message');
+
+      function showMessage(type, text) {
+        if (!text) {
+          messageEl.classList.add('hidden');
+          messageEl.textContent = '';
+          return;
+        }
+
+        const baseClasses = 'mt-4 rounded-lg border px-4 py-3 text-sm';
+        let colorClasses = 'border-slate-200 bg-slate-50 text-slate-600';
+
+        if (type === 'success') {
+          colorClasses = 'border-green-200 bg-green-50 text-green-700';
+        } else if (type === 'error') {
+          colorClasses = 'border-red-200 bg-red-50 text-red-600';
+        }
+
+        messageEl.className = `${baseClasses} ${colorClasses}`;
+        messageEl.textContent = text;
+        messageEl.classList.remove('hidden');
+      }
+
+      function setLoading(isLoading) {
+        submitBtn.disabled = isLoading;
+        submitBtn.textContent = isLoading ? 'Creando cuenta...' : 'Crear cuenta';
+      }
+
+      registerForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const email = emailInput.value.trim();
+        const password = passwordInput.value.trim();
+        const confirmPassword = confirmInput.value.trim();
+
+        if (!email || !password) {
+          showMessage('error', 'Debes completar todos los campos.');
+          return;
+        }
+
+        if (password !== confirmPassword) {
+          showMessage('error', 'Las contraseñas no coinciden.');
+          return;
+        }
+
+        setLoading(true);
+        showMessage();
+
+        try {
+          const credential = await auth.createUserWithEmailAndPassword(email, password);
+          const uid = credential.user.uid;
+          const empresaId = `demo_${uid}`;
+          const now = Date.now();
+          const expiresAt = now + 7 * 24 * 60 * 60 * 1000;
+
+          await db.ref(`empresas/${empresaId}`).set({
+            config: {
+              adminEmail: email,
+              createdAt: now,
+              expiresAt
+            }
+          });
+
+          showMessage('success', 'Cuenta creada correctamente. Redirigiendo...');
+
+          setTimeout(() => {
+            window.location.href = `index.html?empresa=${encodeURIComponent(empresaId)}`;
+          }, 1200);
+        } catch (error) {
+          console.error('Error al registrar usuario', error);
+          let errorMessage = 'No se pudo completar el registro. Inténtalo nuevamente.';
+          if (error.code === 'auth/email-already-in-use') {
+            errorMessage = 'Este correo ya está registrado. Intenta iniciar sesión.';
+          } else if (error.code === 'auth/weak-password') {
+            errorMessage = 'La contraseña debe tener al menos 6 caracteres.';
+          } else if (error.message) {
+            errorMessage = error.message;
+          }
+          showMessage('error', errorMessage);
+        } finally {
+          setLoading(false);
+        }
+      });
+    </script>
+  </body>
+</html>
