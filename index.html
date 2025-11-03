@@ -1687,6 +1687,27 @@ const db = firebase.database();
 const auth = firebase.auth();
 const storage = firebase.storage();
 
+let firebaseAuthModulePromise = null;
+function loadFirebaseAuthModule() {
+  if (!firebaseAuthModulePromise) {
+    firebaseAuthModulePromise = import('https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js');
+  }
+  return firebaseAuthModulePromise;
+}
+
+async function signOutFromFirebase() {
+  const { signOut } = await loadFirebaseAuthModule();
+  try {
+    await signOut(auth);
+  } catch (error) {
+    if (auth?._delegate) {
+      await signOut(auth._delegate);
+    } else {
+      throw error;
+    }
+  }
+}
+
 function ref(database, path) {
   return database.ref(path);
 }
@@ -3177,7 +3198,14 @@ $('btnLogin').addEventListener('click', async () => {
   }
 });
 
-$('btnLogout').addEventListener('click', () => auth.signOut());
+$('btnLogout').addEventListener('click', async () => {
+  try {
+    await signOutFromFirebase();
+    window.location.href = "https://tomos.bot/";
+  } catch (error) {
+    console.error(error);
+  }
+});
 
 auth.onAuthStateChanged(async (u) => {
   if (u) {
@@ -3194,7 +3222,7 @@ auth.onAuthStateChanged(async (u) => {
       } else {
         alert('Tu cuenta no está asociada a ninguna empresa');
       }
-      await auth.signOut();
+      await signOutFromFirebase();
       return;
     }
 
