@@ -62,7 +62,7 @@
 
         <section class="bg-white rounded-2xl shadow p-6">
           <h2 class="text-xl font-semibold mb-4">Crear empresa</h2>
-          <form id="create-form" class="grid gap-4 md:grid-cols-4">
+          <form id="create-form" class="grid gap-4 md:grid-cols-3">
             <div class="md:col-span-1">
               <label for="company-name" class="block text-sm font-medium text-slate-600">Nombre de la empresa</label>
               <input
@@ -79,16 +79,6 @@
                 id="admin-email"
                 type="email"
                 placeholder="admin@empresa.com"
-                class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div class="md:col-span-1">
-              <label for="admin-password" class="block text-sm font-medium text-slate-600">Clave inicial</label>
-              <input
-                id="admin-password"
-                type="password"
-                placeholder="ej: 1234abcd"
                 class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
@@ -179,16 +169,16 @@
     </div>
 
     <script>
-      // TODO: Reemplaza con tu configuración de Firebase
-      const firebaseConfig = {
-        apiKey: "YOUR_API_KEY",
-        authDomain: "YOUR_AUTH_DOMAIN",
-        databaseURL: "YOUR_DATABASE_URL",
-        projectId: "YOUR_PROJECT_ID",
-        storageBucket: "YOUR_STORAGE_BUCKET",
-        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-        appId: "YOUR_APP_ID",
-      };
+const firebaseConfig = {
+  apiKey: "AIzaSyC2c3S_NtouIjHPrk5LM5c0DQoTWyBrzH4",
+  authDomain: "timbre-c9547.firebaseapp.com",
+  databaseURL: "https://timbre-c9547-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "timbre-c9547",
+  storageBucket: "timbre-c9547.firebasestorage.app",
+  messagingSenderId: "127064655657",
+  appId: "1:127064655657:web:a4e99dcbc6ab33f32c1938"
+};
+
 
       firebase.initializeApp(firebaseConfig);
       const auth = firebase.auth();
@@ -325,7 +315,6 @@
         hideMessage(createMessage);
         const companyRaw = document.getElementById("company-name").value.trim();
         const adminEmail = document.getElementById("admin-email").value.trim();
-        const adminPassword = document.getElementById("admin-password").value.trim();
 
         if (!companyRaw) {
           showMessage(createMessage, "El nombre de la empresa es obligatorio.", "error");
@@ -345,7 +334,6 @@
         const updates = {};
         updates[`empresas/${companyKey}/config/adminEmail`] = adminEmail;
         updates[`empresas/${companyKey}/config/hotelName`] = companyRaw;
-        updates[`empresas/${companyKey}/config/adminPassword`] = adminPassword;
         updates[`empresas/${companyKey}/bots`] = {};
 
         db.ref()
