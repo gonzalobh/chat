@@ -16,35 +16,34 @@
         <p class="text-slate-500 text-sm">Cargando...</p>
       </div>
 
-      <div id="login" class="hidden max-w-md mx-auto bg-white rounded-2xl shadow p-8">
-        <h1 class="text-2xl font-semibold text-center mb-6">Acceso Superadministrador</h1>
-        <form id="login-form" class="space-y-4">
-          <div>
-            <label for="login-email" class="block text-sm font-medium text-slate-600">Correo</label>
-            <input
-              type="email"
-              id="login-email"
-              class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-          <div>
-            <label for="login-password" class="block text-sm font-medium text-slate-600">Contraseña</label>
-            <input
-              type="password"
-              id="login-password"
-              class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-          <button
-            type="submit"
-            class="w-full rounded-lg bg-blue-600 text-white py-2 font-medium hover:bg-blue-700 transition"
-          >
-            Iniciar sesión
-          </button>
-        </form>
-        <p id="login-error" class="mt-4 text-sm text-red-500 text-center hidden"></p>
+      <div id="login" class="hidden max-w-md mx-auto bg-white rounded-2xl shadow p-8 text-center space-y-6">
+        <div>
+          <h1 class="text-2xl font-semibold mb-2">Acceso Superadministrador</h1>
+          <p class="text-sm text-slate-500">
+            Inicia sesión con tu cuenta de Google autorizada para administrar empresas.
+          </p>
+        </div>
+        <button
+          id="google-login"
+          class="flex w-full items-center justify-center gap-3 rounded-lg bg-blue-600 py-2 text-white font-medium hover:bg-blue-700 transition"
+        >
+          <span class="text-lg">🔐</span>
+          Acceder con Google
+        </button>
+        <p id="login-error" class="mt-2 text-sm text-red-500 text-center hidden"></p>
+      </div>
+
+      <div id="unauthorized" class="hidden max-w-md mx-auto bg-white rounded-2xl shadow p-8 text-center space-y-4">
+        <h2 class="text-2xl font-semibold">Acceso denegado</h2>
+        <p id="unauthorized-message" class="text-sm text-slate-500">
+          Tu cuenta no tiene permisos para acceder a este panel.
+        </p>
+        <button
+          id="unauthorized-logout"
+          class="w-full rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-200 transition"
+        >
+          Cerrar sesión
+        </button>
       </div>
 
       <div id="dashboard" class="hidden space-y-8">
@@ -187,8 +186,11 @@
 
       const loader = document.getElementById("loader");
       const loginCard = document.getElementById("login");
-      const loginForm = document.getElementById("login-form");
+      const loginButton = document.getElementById("google-login");
       const loginError = document.getElementById("login-error");
+      const unauthorizedCard = document.getElementById("unauthorized");
+      const unauthorizedMessage = document.getElementById("unauthorized-message");
+      const unauthorizedLogoutBtn = document.getElementById("unauthorized-logout");
       const dashboard = document.getElementById("dashboard");
       const createForm = document.getElementById("create-form");
       const createMessage = document.getElementById("create-message");
@@ -291,19 +293,20 @@
         setVisible(editModal, false);
       };
 
-      loginForm.addEventListener("submit", (event) => {
-        event.preventDefault();
+      const provider = new firebase.auth.GoogleAuthProvider();
+
+      loginButton.addEventListener("click", () => {
         hideMessage(loginError);
-        const email = event.target[0].value.trim();
-        const password = event.target[1].value;
-        auth
-          .signInWithEmailAndPassword(email, password)
-          .catch((error) => {
-            showMessage(loginError, error.message, "error");
-          });
+        auth.signInWithPopup(provider).catch((error) => {
+          showMessage(loginError, error.message, "error");
+        });
       });
 
       logoutBtn.addEventListener("click", () => {
+        auth.signOut();
+      });
+
+      unauthorizedLogoutBtn.addEventListener("click", () => {
         auth.signOut();
       });
 
@@ -407,12 +410,15 @@
         if (!user) {
           detachCompaniesListener();
           setVisible(dashboard, false);
+          setVisible(unauthorizedCard, false);
           setVisible(loginCard, true);
           setVisible(loader, false);
           return;
         }
 
         setVisible(loader, true);
+        setVisible(loginCard, false);
+        setVisible(unauthorizedCard, false);
         db.ref(`globalAdmins/${user.uid}`)
           .once("value")
           .then((snapshot) => {
@@ -424,20 +430,20 @@
               companiesRef = db.ref("empresas");
               companiesRef.on("value", renderCompanies);
             } else {
-              auth.signOut();
-              showMessage(
-                loginError,
-                "No tienes permiso para acceder a este panel.",
-                "error"
-              );
+              detachCompaniesListener();
+              unauthorizedMessage.textContent =
+                "Tu cuenta no tiene permisos para acceder a este panel.";
+              hideMessage(loginError);
               setVisible(loader, false);
-              setVisible(loginCard, true);
+              setVisible(dashboard, false);
+              setVisible(unauthorizedCard, true);
             }
           })
           .catch((error) => {
-            auth.signOut();
             showMessage(loginError, error.message, "error");
             setVisible(loader, false);
+            setVisible(dashboard, false);
+            setVisible(unauthorizedCard, false);
             setVisible(loginCard, true);
           });
       });
