@@ -647,6 +647,10 @@ body.login-view #appContainer {
       <i data-lucide="message-circle" class="w-5 h-5 shrink-0"></i>
       <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Chat</span>
     </button>
+    <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="mensajes">
+      <i data-lucide="inbox" class="w-5 h-5 shrink-0"></i>
+      <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Mensajes</span>
+    </button>
     <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="knowledge">
       <i data-lucide="book-open" class="w-5 h-5 shrink-0"></i>
       <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Knowledge</span>
@@ -687,6 +691,44 @@ body.login-view #appContainer {
 
         <!-- Tabs container -->
         <div id="tabs" class="hidden">
+<!-- Mensajes TAB -->
+<section id="tab-mensajes" class="hidden space-y-6">
+  <div class="card p-6 space-y-6">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <div class="flex items-center gap-2 font-semibold text-gray-800">
+          <i data-lucide="messages-square" class="w-5 h-5"></i>
+          Mensajes
+        </div>
+        <p class="text-sm text-gray-500">Gestiona y revisa las conversaciones recibidas.</p>
+      </div>
+      <button id="deleteOldMessages" class="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-300 text-sm text-gray-600 hover:bg-gray-100 transition">
+        <i data-lucide="trash-2" class="w-4 h-4"></i>
+        Eliminar &gt;30 días
+      </button>
+    </div>
+
+    <div class="grid gap-6 lg:grid-cols-[320px,1fr]">
+      <div class="flex flex-col gap-3">
+        <div class="relative">
+          <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+          <input id="messagesSearch" type="text" placeholder="Buscar por texto o nombre..."
+            class="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black/60" />
+        </div>
+        <div id="messagesLoading" class="text-sm text-gray-500 text-center py-4 hidden">Cargando conversaciones…</div>
+        <div id="messagesEmpty" class="text-sm text-gray-500 text-center py-6 hidden">No hay conversaciones registradas.</div>
+        <div id="messagesList" class="space-y-2 max-h-[520px] overflow-y-auto pr-1"></div>
+        <button id="loadMoreMessages" class="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 hover:bg-gray-100 transition hidden">Cargar más</button>
+      </div>
+      <div id="messageDetailContainer" class="min-h-[520px] rounded-2xl border border-dashed border-gray-300 bg-white">
+        <div id="messageDetail" class="h-full flex items-center justify-center text-sm text-gray-500 text-center px-6 py-10">
+          Selecciona una conversación para ver los mensajes.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- Chat -->
 <section id="tab-chat" class="space-y-8">
   <div class="flex justify-center">
@@ -1552,6 +1594,35 @@ const storage = firebase.storage();
 
 const DEFAULT_WIDGET_ICON = 'widgets/1.png';
 let currentWidgetIcon = DEFAULT_WIDGET_ICON;
+
+const MESSAGES_PAGE_SIZE = 20;
+let messagesTabInitialized = false;
+let messagesRef = null;
+let messagesListEl = null;
+let messagesLoadingEl = null;
+let messagesEmptyEl = null;
+let messagesSearchEl = null;
+let messagesLoadMoreBtn = null;
+let messagesDetailEl = null;
+let messagesDetailContainerEl = null;
+let messagesDeleteOldBtn = null;
+
+let messagesLoading = false;
+let messagesLoadingMore = false;
+let messagesReachedEnd = false;
+let messagesHasMore = false;
+
+const messagesConversationsMap = new Map();
+let messagesConversations = [];
+let messagesCursor = null;
+let messagesSearchTerm = '';
+let messagesActiveChatId = null;
+let messagesActiveChatRef = null;
+let messagesActiveChatHandler = null;
+let messagesChildAddedQuery = null;
+let messagesChildAddedHandler = null;
+let messagesChildChangedHandler = null;
+let messagesChildRemovedHandler = null;
 
 // ====== Helpers ======
 const $ = (id) => document.getElementById(id);
@@ -2604,7 +2675,7 @@ function setWriteEnabled(enabled) {
   }
 }
 
-const TAB_KEYS = ['chat','knowledge','respuestas'];
+const TAB_KEYS = ['chat','mensajes','knowledge','respuestas'];
 let tabsInitialized = false;
 
 function setActiveTab(tab) {
@@ -2807,7 +2878,8 @@ async function initAll(){
   applyPreview(); 
   await refreshPermissions();
   initApariencia(); 
-  initSettingsTab(); 
+  initSettingsTab();
+  initMessagesTab(); 
   initKnowledge();
   initIntegration();
   initRespuestas();
@@ -2817,6 +2889,740 @@ async function initAll(){
 
 
 
+}
+
+
+
+// ====== Messages Tab ======
+function initMessagesTab() {
+  if (messagesTabInitialized) return;
+  messagesListEl = $('messagesList');
+  messagesDetailEl = $('messageDetail');
+  messagesDetailContainerEl = $('messageDetailContainer');
+  if (!messagesListEl || !messagesDetailEl || !messagesDetailContainerEl) return;
+
+  messagesTabInitialized = true;
+
+  messagesLoadingEl = $('messagesLoading');
+  messagesEmptyEl = $('messagesEmpty');
+  messagesSearchEl = $('messagesSearch');
+  messagesLoadMoreBtn = $('loadMoreMessages');
+  messagesDeleteOldBtn = $('deleteOldMessages');
+
+  renderConversationPlaceholder();
+
+  if (messagesSearchEl) {
+    messagesSearchEl.addEventListener('input', (event) => {
+      messagesSearchTerm = (event.target.value || '').toLowerCase();
+      renderMessagesList();
+    });
+  }
+
+  if (messagesLoadMoreBtn) {
+    messagesLoadMoreBtn.addEventListener('click', handleLoadMoreMessages);
+  }
+
+  if (messagesDeleteOldBtn) {
+    messagesDeleteOldBtn.addEventListener('click', handleDeleteOldMessages);
+  }
+
+  messagesRef = firebase.database().ref(`empresas/${EMPRESA}/mensajes`);
+
+  messagesLoading = true;
+  renderMessagesList();
+
+  loadInitialMessages().catch((err) => {
+    console.error('No se pudieron cargar las conversaciones', err);
+    messagesLoading = false;
+    renderMessagesList();
+  });
+}
+
+async function loadInitialMessages() {
+  if (!messagesRef) return;
+  messagesLoading = true;
+  renderMessagesList();
+  try {
+    const snapshot = await messagesRef.orderByChild('updatedAt').limitToLast(MESSAGES_PAGE_SIZE).once('value');
+    const conversations = snapshotToConversations(snapshot);
+    messagesConversationsMap.clear();
+    messagesConversations = [];
+    conversations.forEach((conversation) => {
+      if (!conversation) return;
+      messagesConversationsMap.set(conversation.chatId, conversation);
+      messagesConversations.push(conversation);
+    });
+    sortMessagesConversations();
+    messagesReachedEnd = conversations.length < MESSAGES_PAGE_SIZE;
+    recalcMessagesPagination();
+  } catch (err) {
+    console.error('No se pudieron cargar las conversaciones', err);
+  } finally {
+    messagesLoading = false;
+    renderMessagesList();
+    attachMessagesRealtimeListeners();
+  }
+}
+
+function attachMessagesRealtimeListeners() {
+  if (!messagesRef) return;
+  if (!messagesChildChangedHandler) {
+    messagesChildChangedHandler = (snapshot) => {
+      const conversation = normalizeConversationSnapshot(snapshot.key, snapshot.val());
+      upsertConversation(conversation);
+    };
+    messagesRef.on('child_changed', messagesChildChangedHandler);
+  }
+  if (!messagesChildRemovedHandler) {
+    messagesChildRemovedHandler = (snapshot) => {
+      removeConversation(snapshot.key);
+    };
+    messagesRef.on('child_removed', messagesChildRemovedHandler);
+  }
+  if (!messagesChildAddedHandler) {
+    messagesChildAddedQuery = messagesRef.orderByChild('updatedAt').limitToLast(MESSAGES_PAGE_SIZE);
+    messagesChildAddedHandler = (snapshot) => {
+      const conversation = normalizeConversationSnapshot(snapshot.key, snapshot.val());
+      upsertConversation(conversation);
+    };
+    messagesChildAddedQuery.on('child_added', messagesChildAddedHandler);
+  }
+}
+
+function detachActiveConversationListener() {
+  if (messagesActiveChatRef && messagesActiveChatHandler) {
+    messagesActiveChatRef.off('value', messagesActiveChatHandler);
+  }
+  messagesActiveChatRef = null;
+  messagesActiveChatHandler = null;
+}
+
+function clearActiveConversation() {
+  detachActiveConversationListener();
+  messagesActiveChatId = null;
+  renderConversationPlaceholder();
+}
+
+function renderConversationPlaceholder() {
+  if (!messagesDetailEl) return;
+  messagesDetailEl.className = 'h-full flex items-center justify-center text-sm text-gray-500 text-center px-6 py-10';
+  messagesDetailEl.textContent = 'Selecciona una conversación para ver los mensajes.';
+  if (messagesDetailContainerEl) {
+    messagesDetailContainerEl.classList.add('border-dashed', 'border-gray-300');
+    messagesDetailContainerEl.classList.remove('border-gray-200');
+  }
+}
+
+function renderMessagesList() {
+  if (!messagesListEl) return;
+  messagesListEl.innerHTML = '';
+  if (messagesLoadingEl) {
+    messagesLoadingEl.classList.toggle('hidden', !messagesLoading);
+  }
+  if (messagesLoading) {
+    if (messagesEmptyEl) messagesEmptyEl.classList.add('hidden');
+    updateLoadMoreButton();
+    if (window.lucide) lucide.createIcons();
+    return;
+  }
+  const search = messagesSearchTerm;
+  const filtered = !search
+    ? [...messagesConversations]
+    : messagesConversations.filter((conversation) => matchesMessagesSearch(conversation, search));
+  if (!filtered.length) {
+    if (messagesEmptyEl) {
+      messagesEmptyEl.textContent = search ? 'No se encontraron conversaciones.' : 'No hay conversaciones registradas.';
+      messagesEmptyEl.classList.remove('hidden');
+    }
+    updateLoadMoreButton();
+    if (window.lucide) lucide.createIcons();
+    return;
+  }
+  if (messagesEmptyEl) messagesEmptyEl.classList.add('hidden');
+  filtered.forEach((conversation) => {
+    messagesListEl.appendChild(buildConversationRow(conversation));
+  });
+  if (window.lucide) lucide.createIcons();
+  updateLoadMoreButton();
+}
+
+function updateLoadMoreButton() {
+  if (!messagesLoadMoreBtn) return;
+  const shouldShow = messagesHasMore && !messagesSearchTerm;
+  messagesLoadMoreBtn.classList.toggle('hidden', !shouldShow);
+  if (!shouldShow) return;
+  if (messagesLoadingMore) {
+    messagesLoadMoreBtn.disabled = true;
+    messagesLoadMoreBtn.innerHTML = '<span class="flex items-center justify-center gap-2"><span class="h-4 w-4 rounded-full border-2 border-gray-300 border-t-transparent animate-spin"></span>Cargando…</span>';
+  } else {
+    messagesLoadMoreBtn.disabled = false;
+    messagesLoadMoreBtn.textContent = 'Cargar más';
+  }
+}
+
+function matchesMessagesSearch(conversation, searchTerm) {
+  if (!searchTerm) return true;
+  const value = searchTerm.toLowerCase();
+  return [
+    conversation?.userName,
+    conversation?.lastMessage,
+    conversation?.chatId,
+  ].some((field) => (field || '').toString().toLowerCase().includes(value));
+}
+
+function buildConversationRow(conversation) {
+  const isActive = messagesActiveChatId === conversation.chatId;
+  const container = document.createElement('div');
+  container.className = [
+    'flex items-center justify-between gap-3 p-3 rounded-xl border transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-black/40',
+    isActive ? 'bg-black/5 border-black/20' : 'bg-white border-transparent hover:border-gray-200 shadow-sm'
+  ].join(' ');
+  container.dataset.chatId = conversation.chatId;
+  container.tabIndex = 0;
+  container.setAttribute('role', 'button');
+  container.addEventListener('click', () => selectConversation(conversation.chatId));
+  container.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      selectConversation(conversation.chatId);
+    }
+  });
+
+  const content = document.createElement('div');
+  content.className = 'flex-1 min-w-0 space-y-1';
+  const nameEl = document.createElement('p');
+  nameEl.className = 'text-sm font-semibold text-gray-800 truncate';
+  nameEl.textContent = conversation.userName || 'Sin nombre';
+  const metaEl = document.createElement('div');
+  metaEl.className = 'text-xs text-gray-500';
+  const relative = formatRelativeTime(conversation.sortValue);
+  metaEl.textContent = relative || formatDateTime(conversation.sortValue);
+  const previewEl = document.createElement('p');
+  previewEl.className = 'text-xs text-gray-500 truncate';
+  previewEl.textContent = conversation.lastMessage || '—';
+  content.appendChild(nameEl);
+  content.appendChild(metaEl);
+  content.appendChild(previewEl);
+
+  const actions = document.createElement('div');
+  actions.className = 'flex items-center gap-1';
+  const deleteBtn = document.createElement('button');
+  deleteBtn.type = 'button';
+  deleteBtn.className = 'p-2 rounded-full hover:bg-red-50 transition shrink-0';
+  deleteBtn.innerHTML = '<i data-lucide="trash" class="w-4 h-4 text-gray-500 hover:text-red-600 transition"></i>';
+  deleteBtn.addEventListener('click', (event) => {
+    event.stopPropagation();
+    handleDeleteConversation(conversation.chatId);
+  });
+  actions.appendChild(deleteBtn);
+
+  container.appendChild(content);
+  container.appendChild(actions);
+  return container;
+}
+
+function formatRelativeTime(timestamp) {
+  const value = toNumber(timestamp);
+  if (value == null) return '';
+  const diff = Date.now() - value;
+  if (!Number.isFinite(diff)) return '';
+  if (typeof Intl !== 'undefined' && typeof Intl.RelativeTimeFormat === 'function') {
+    const locale = (navigator.language || 'es').toString();
+    const rtf = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' });
+    const minute = 60 * 1000;
+    const hour = 60 * minute;
+    const day = 24 * hour;
+    const month = 30 * day;
+    if (Math.abs(diff) < minute) {
+      return rtf.format(-Math.round(diff / 1000), 'second');
+    }
+    if (Math.abs(diff) < hour) {
+      return rtf.format(-Math.round(diff / minute), 'minute');
+    }
+    if (Math.abs(diff) < day) {
+      return rtf.format(-Math.round(diff / hour), 'hour');
+    }
+    if (Math.abs(diff) < month) {
+      return rtf.format(-Math.round(diff / day), 'day');
+    }
+    if (Math.abs(diff) < 12 * month) {
+      return rtf.format(-Math.round(diff / month), 'month');
+    }
+    return rtf.format(-Math.round(diff / (12 * month)), 'year');
+  }
+  return formatDateTime(value);
+}
+
+function formatDateTime(timestamp) {
+  const value = toNumber(timestamp);
+  if (value == null) return '';
+  const locale = (navigator.language || 'es').toString();
+  try {
+    return new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value));
+  } catch (err) {
+    return new Date(value).toLocaleString(locale);
+  }
+}
+
+function compareConversations(a, b) {
+  const diff = (toNumber(b?.sortValue) || 0) - (toNumber(a?.sortValue) || 0);
+  if (diff !== 0) return diff;
+  const aId = (a?.chatId || '').toString();
+  const bId = (b?.chatId || '').toString();
+  if (aId < bId) return -1;
+  if (aId > bId) return 1;
+  return 0;
+}
+
+function upsertConversation(conversation, options = {}) {
+  if (!conversation || !conversation.chatId) return false;
+  const previous = messagesConversationsMap.get(conversation.chatId);
+  messagesConversationsMap.set(conversation.chatId, conversation);
+  if (previous) {
+    const index = messagesConversations.findIndex((item) => item.chatId === conversation.chatId);
+    if (index >= 0) messagesConversations[index] = conversation;
+  } else {
+    messagesConversations.push(conversation);
+  }
+  sortMessagesConversations();
+  recalcMessagesPagination();
+  const changed = !previous
+    || previous.sortValue !== conversation.sortValue
+    || previous.userName !== conversation.userName
+    || previous.lastMessage !== conversation.lastMessage;
+  if (!options.silent && (changed || !previous)) {
+    renderMessagesList();
+  }
+  return changed;
+}
+
+function sortMessagesConversations() {
+  messagesConversations.sort(compareConversations);
+}
+
+function recalcMessagesPagination() {
+  if (!messagesConversations.length) {
+    messagesCursor = null;
+  } else {
+    messagesCursor = messagesConversations[messagesConversations.length - 1];
+  }
+  messagesHasMore = !messagesReachedEnd && !!messagesCursor;
+  updateLoadMoreButton();
+}
+
+function snapshotToConversations(snapshot) {
+  const list = [];
+  if (!snapshot) return list;
+  snapshot.forEach((child) => {
+    const conversation = normalizeConversationSnapshot(child.key, child.val());
+    if (conversation) list.push(conversation);
+  });
+  list.sort(compareConversations);
+  return list;
+}
+
+function normalizeConversationSnapshot(chatId, raw) {
+  if (!chatId) return null;
+  const data = raw && typeof raw === 'object' ? raw : {};
+  const mensajesData = data.mensajes || data.messages || {};
+  const lastEntry = getLastMessageEntry(mensajesData, data.lastMessage, data);
+  const updatedAt = extractConversationTimestamp(data, lastEntry);
+  const sortValue = toNumber(updatedAt) || toNumber(lastEntry?.timestamp) || 0;
+  return {
+    chatId,
+    userName: extractConversationUserName(data),
+    lastMessage: lastEntry?.text ? String(lastEntry.text) : '',
+    lastMessageTimestamp: toNumber(lastEntry?.timestamp),
+    updatedAt: sortValue,
+    sortValue,
+  };
+}
+
+function extractConversationUserName(raw) {
+  const candidates = [
+    raw?.userName,
+    raw?.usuario,
+    raw?.nombre,
+    raw?.clientName,
+    raw?.guestName,
+    raw?.name,
+    raw?.meta?.userName,
+    raw?.meta?.nombre,
+  ];
+  for (const candidate of candidates) {
+    if (candidate == null) continue;
+    const text = String(candidate).trim();
+    if (text) return text;
+  }
+  return 'Sin nombre';
+}
+
+function getLastMessageEntry(mensajesData, fallbackText, conversationRaw) {
+  const entries = [];
+  Object.entries(mensajesData || {}).forEach(([messageId, value]) => {
+    const normalized = normalizeMessageEntry(messageId, value);
+    if (normalized) entries.push(normalized);
+  });
+  if (entries.length) {
+    entries.sort((a, b) => (toNumber(a.timestamp) || 0) - (toNumber(b.timestamp) || 0));
+    return entries[entries.length - 1];
+  }
+  if (fallbackText) {
+    const sender = conversationRaw?.lastSender || conversationRaw?.lastMessageSender || '';
+    const isAgent = determineAgentFromRaw(sender, conversationRaw || {});
+    return {
+      id: null,
+      text: String(fallbackText),
+      timestamp: toNumber(conversationRaw?.updatedAt) || toNumber(conversationRaw?.timestamp) || null,
+      sender,
+      senderLabel: buildSenderLabel(sender, isAgent),
+      isAgent,
+    };
+  }
+  return null;
+}
+
+function normalizeMessageEntry(messageId, raw) {
+  if (raw == null) return null;
+  const payload = typeof raw === 'object' ? raw : { text: raw };
+  const textCandidates = [payload.text, payload.mensaje, payload.message, payload.body, payload.content];
+  let text = '';
+  for (const candidate of textCandidates) {
+    if (candidate != null && String(candidate).trim()) {
+      text = String(candidate);
+      break;
+    }
+  }
+  if (!text && payload.text != null) text = String(payload.text);
+  const timestamp = extractMessageTimestamp(payload);
+  const sender = payload.sender ?? payload.autor ?? payload.author ?? payload.from ?? payload.role ?? payload.user ?? '';
+  const isAgent = determineAgentFromRaw(sender, payload);
+  const senderLabel = buildSenderLabel(sender, isAgent);
+  return {
+    id: messageId,
+    text,
+    timestamp,
+    sender,
+    senderLabel,
+    isAgent,
+  };
+}
+
+function extractMessageTimestamp(raw) {
+  const candidates = [
+    raw?.timestamp,
+    raw?.time,
+    raw?.createdAt,
+    raw?.fecha,
+    raw?.date,
+    raw?.updatedAt,
+    raw?.sentAt,
+  ];
+  for (const candidate of candidates) {
+    const num = toNumber(candidate);
+    if (num != null) return num;
+  }
+  return null;
+}
+
+function determineAgentFromRaw(sender, raw) {
+  if (raw && typeof raw === 'object') {
+    if (typeof raw.isBot === 'boolean') return raw.isBot;
+    if (typeof raw.isAssistant === 'boolean') return raw.isAssistant;
+    if (typeof raw.isUser === 'boolean') return !raw.isUser;
+    if (typeof raw.role === 'string') {
+      const role = raw.role.toLowerCase();
+      if (['assistant', 'bot', 'ai', 'agente', 'system'].includes(role)) return true;
+      if (['user', 'cliente', 'guest', 'usuario', 'visitante'].includes(role)) return false;
+    }
+    if (typeof raw.from === 'string') {
+      const from = raw.from.toLowerCase();
+      if (['assistant', 'bot', 'ai', 'agente', 'system'].includes(from)) return true;
+      if (['user', 'cliente', 'guest', 'usuario', 'visitante'].includes(from)) return false;
+    }
+    if (typeof raw.type === 'string') {
+      const type = raw.type.toLowerCase();
+      if (['assistant', 'bot', 'ai', 'agente', 'system'].includes(type)) return true;
+    }
+  }
+  const normalized = (sender || '').toString().toLowerCase();
+  if (!normalized) return false;
+  if (['assistant', 'bot', 'agente', 'ai', 'system'].some((token) => normalized.includes(token))) return true;
+  return false;
+}
+
+function buildSenderLabel(sender, isAgent) {
+  const normalized = (sender || '').toString().trim();
+  if (!normalized) return isAgent ? 'Asistente' : 'Usuario';
+  const lower = normalized.toLowerCase();
+  if (['assistant', 'bot', 'ai', 'agente', 'system'].some((token) => lower.includes(token))) return 'Asistente';
+  if (['user', 'cliente', 'guest', 'usuario', 'visitante'].some((token) => lower.includes(token))) return 'Usuario';
+  return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+}
+
+function extractConversationTimestamp(raw, lastEntry) {
+  const candidates = [
+    raw?.updatedAt,
+    raw?.lastUpdated,
+    raw?.timestamp,
+    raw?.updated_at,
+    raw?.meta?.lastUpdated,
+    raw?.meta?.updatedAt,
+    lastEntry?.timestamp,
+  ];
+  for (const candidate of candidates) {
+    const num = toNumber(candidate);
+    if (num != null) return num;
+  }
+  return 0;
+}
+
+function toNumber(value) {
+  if (value == null) return null;
+  if (value instanceof Date) {
+    const time = value.getTime();
+    return Number.isFinite(time) ? time : null;
+  }
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? value : null;
+  }
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (!trimmed) return null;
+    const num = Number(trimmed);
+    return Number.isFinite(num) ? num : null;
+  }
+  return null;
+}
+
+async function handleLoadMoreMessages(event) {
+  event?.preventDefault();
+  if (messagesLoadingMore || !messagesRef || !messagesCursor) return;
+  messagesLoadingMore = true;
+  updateLoadMoreButton();
+  try {
+    const { conversations } = await fetchMoreConversations();
+    let changed = false;
+    conversations.forEach((conversation) => {
+      const result = upsertConversation(conversation, { silent: true });
+      if (result) changed = true;
+    });
+    if (!conversations.length || conversations.length < MESSAGES_PAGE_SIZE) {
+      messagesReachedEnd = true;
+    }
+    sortMessagesConversations();
+    recalcMessagesPagination();
+    if (changed || conversations.length) {
+      renderMessagesList();
+    } else {
+      updateLoadMoreButton();
+    }
+  } catch (err) {
+    console.error('No se pudieron cargar más conversaciones', err);
+  } finally {
+    messagesLoadingMore = false;
+    updateLoadMoreButton();
+  }
+}
+
+async function fetchMoreConversations() {
+  if (!messagesRef || !messagesCursor) return { conversations: [] };
+  const cursor = messagesCursor;
+  const cursorValue = toNumber(cursor.sortValue);
+  if (cursorValue != null) {
+    const snapshot = await messagesRef
+      .orderByChild('updatedAt')
+      .endAt(cursorValue - 1)
+      .limitToLast(MESSAGES_PAGE_SIZE)
+      .once('value');
+    return { conversations: snapshotToConversations(snapshot) };
+  }
+  let query = messagesRef.orderByKey();
+  if (typeof query.endBefore === 'function') {
+    const snapshot = await query.endBefore(cursor.chatId).limitToLast(MESSAGES_PAGE_SIZE).once('value');
+    return { conversations: snapshotToConversations(snapshot) };
+  }
+  const snapshot = await messagesRef
+    .orderByKey()
+    .endAt(cursor.chatId)
+    .limitToLast(MESSAGES_PAGE_SIZE + 1)
+    .once('value');
+  const conversations = snapshotToConversations(snapshot)
+    .filter((conversation) => conversation.chatId !== cursor.chatId)
+    .slice(-MESSAGES_PAGE_SIZE);
+  return { conversations };
+}
+
+function selectConversation(chatId) {
+  if (!chatId) {
+    clearActiveConversation();
+    renderMessagesList();
+    return;
+  }
+  if (messagesActiveChatId === chatId) return;
+  detachActiveConversationListener();
+  messagesActiveChatId = chatId;
+  if (messagesDetailEl) {
+    messagesDetailEl.className = 'h-full flex items-center justify-center text-sm text-gray-500 text-center px-6 py-10';
+    messagesDetailEl.textContent = 'Cargando conversación…';
+    if (messagesDetailContainerEl) {
+      messagesDetailContainerEl.classList.remove('border-dashed', 'border-gray-300');
+      messagesDetailContainerEl.classList.add('border-gray-200');
+    }
+  }
+  renderMessagesList();
+  const ref = firebase.database().ref(`empresas/${EMPRESA}/mensajes/${chatId}`);
+  messagesActiveChatRef = ref;
+  messagesActiveChatHandler = (snapshot) => {
+    const data = snapshot.val();
+    if (!data) {
+      removeConversation(chatId);
+      return;
+    }
+    const conversation = normalizeConversationSnapshot(chatId, data);
+    const changed = upsertConversation(conversation, { silent: true });
+    if (changed) {
+      renderMessagesList();
+    } else {
+      recalcMessagesPagination();
+    }
+    renderConversationDetail(chatId, data);
+  };
+  ref.on('value', messagesActiveChatHandler);
+}
+
+function renderConversationDetail(chatId, data) {
+  if (!messagesDetailEl || !messagesDetailContainerEl) return;
+  if (!data) {
+    clearActiveConversation();
+    return;
+  }
+  messagesDetailContainerEl.classList.remove('border-dashed', 'border-gray-300');
+  messagesDetailContainerEl.classList.add('border-gray-200');
+  messagesDetailEl.className = 'h-full flex flex-col';
+  messagesDetailEl.innerHTML = '';
+
+  const conversation = messagesConversationsMap.get(chatId) || normalizeConversationSnapshot(chatId, data);
+
+  const header = document.createElement('div');
+  header.className = 'flex items-center justify-between gap-3 border-b border-gray-200 px-5 py-4';
+  const headerInfo = document.createElement('div');
+  headerInfo.className = 'min-w-0';
+  const title = document.createElement('h3');
+  title.className = 'text-lg font-semibold text-gray-800 truncate';
+  title.textContent = conversation?.userName || extractConversationUserName(data);
+  const subtitle = document.createElement('p');
+  subtitle.className = 'text-sm text-gray-500';
+  subtitle.textContent = formatDateTime(conversation?.sortValue || extractConversationTimestamp(data, null));
+  headerInfo.appendChild(title);
+  headerInfo.appendChild(subtitle);
+  header.appendChild(headerInfo);
+  messagesDetailEl.appendChild(header);
+
+  const body = document.createElement('div');
+  body.className = 'flex-1 overflow-y-auto px-5 py-4 space-y-4';
+  const messages = buildConversationMessages(data);
+  if (!messages.length) {
+    const empty = document.createElement('div');
+    empty.className = 'text-sm text-gray-500 text-center py-10';
+    empty.textContent = 'No hay mensajes en esta conversación.';
+    body.appendChild(empty);
+  } else {
+    messages.forEach((message) => {
+      body.appendChild(buildMessageItem(message));
+    });
+  }
+  messagesDetailEl.appendChild(body);
+}
+
+function buildConversationMessages(data) {
+  const mensajesData = data?.mensajes || data?.messages || {};
+  const entries = [];
+  Object.entries(mensajesData).forEach(([messageId, value]) => {
+    const normalized = normalizeMessageEntry(messageId, value);
+    if (normalized) entries.push(normalized);
+  });
+  entries.sort((a, b) => (toNumber(a.timestamp) || 0) - (toNumber(b.timestamp) || 0));
+  return entries;
+}
+
+function buildMessageItem(message) {
+  const wrapper = document.createElement('div');
+  wrapper.className = `flex flex-col ${message.isAgent ? 'items-start' : 'items-end'} gap-1`;
+  const bubble = document.createElement('div');
+  bubble.className = `max-w-[80%] rounded-2xl px-4 py-2 text-sm shadow-sm ${message.isAgent ? 'bg-white border border-gray-200 text-gray-700' : 'bg-black text-white'}`;
+  bubble.textContent = message.text || '—';
+  const meta = document.createElement('div');
+  meta.className = `text-[11px] text-gray-400 ${message.isAgent ? 'text-left' : 'text-right'}`;
+  const timeText = message.timestamp ? formatDateTime(message.timestamp) : '';
+  const senderLabel = message.senderLabel || '';
+  meta.textContent = senderLabel && timeText ? `${senderLabel} · ${timeText}` : (senderLabel || timeText || '');
+  wrapper.appendChild(bubble);
+  wrapper.appendChild(meta);
+  return wrapper;
+}
+
+function removeConversation(chatId) {
+  if (!chatId) return;
+  messagesConversationsMap.delete(chatId);
+  const index = messagesConversations.findIndex((item) => item.chatId === chatId);
+  if (index >= 0) messagesConversations.splice(index, 1);
+  if (messagesActiveChatId === chatId) {
+    clearActiveConversation();
+  }
+  sortMessagesConversations();
+  recalcMessagesPagination();
+  renderMessagesList();
+}
+
+async function handleDeleteConversation(chatId) {
+  if (!chatId) return;
+  if (!confirm('¿Eliminar esta conversación?')) return;
+  const path = `empresas/${EMPRESA}/mensajes/${chatId}`;
+  try {
+    await canWrite(async () => {
+      await firebase.database().ref(path).remove();
+      toast('✔ Conversación eliminada');
+    });
+  } catch (err) {
+    console.error('No se pudo eliminar la conversación', err);
+    toast('No se pudo eliminar la conversación.');
+  }
+}
+
+async function handleDeleteOldMessages(event) {
+  event?.preventDefault();
+  if (!messagesDeleteOldBtn || !messagesRef) return;
+  if (!confirm('¿Eliminar todas las conversaciones con más de 30 días?')) return;
+  const original = messagesDeleteOldBtn.innerHTML;
+  messagesDeleteOldBtn.disabled = true;
+  messagesDeleteOldBtn.innerHTML = '<span class="flex items-center gap-2"><span class="h-4 w-4 rounded-full border-2 border-gray-300 border-t-transparent animate-spin"></span>Eliminando…</span>';
+  try {
+    await canWrite(async () => {
+      const threshold = Date.now() - (30 * 24 * 60 * 60 * 1000);
+      const snapshot = await messagesRef.once('value');
+      const removals = [];
+      snapshot.forEach((child) => {
+        const conversation = normalizeConversationSnapshot(child.key, child.val());
+        const sortValue = toNumber(conversation?.sortValue);
+        if (sortValue != null && sortValue < threshold) {
+          removals.push(messagesRef.child(child.key).remove());
+        }
+      });
+      if (!removals.length) {
+        toast('No se encontraron conversaciones antiguas.');
+        return;
+      }
+      await Promise.allSettled(removals);
+      toast('✔ Conversaciones antiguas eliminadas');
+    });
+  } catch (err) {
+    console.error('No se pudieron eliminar las conversaciones antiguas', err);
+    toast('No se pudieron eliminar las conversaciones antiguas.');
+  } finally {
+    messagesDeleteOldBtn.disabled = false;
+    messagesDeleteOldBtn.innerHTML = original;
+  }
 }
 
 
