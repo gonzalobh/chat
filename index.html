@@ -1687,6 +1687,23 @@ const db = firebase.database();
 const auth = firebase.auth();
 const storage = firebase.storage();
 
+const TRIAL_ENDED_MESSAGE = 'Tu prueba gratuita ha terminado';
+
+async function isEmpresaTrialActive(empresaId) {
+  if (!empresaId) return true;
+  try {
+    const configSnap = await db.ref(`empresas/${empresaId}/config`).once('value');
+    const configData = configSnap.val() || {};
+    const expiresAt = Number(configData.expiresAt);
+    if (expiresAt && expiresAt < Date.now()) {
+      return false;
+    }
+  } catch (error) {
+    console.error('Error verifying trial status for company', empresaId, error);
+  }
+  return true;
+}
+
 let firebaseAuthModulePromise = null;
 function loadFirebaseAuthModule() {
   if (!firebaseAuthModulePromise) {
@@ -3294,6 +3311,18 @@ auth.onAuthStateChanged(async (u) => {
     currentUrl.searchParams.set('empresa', EMPRESA);
     currentUrl.searchParams.set('bot', BOT);
     window.history.replaceState({}, '', currentUrl);
+
+    const trialActive = await isEmpresaTrialActive(EMPRESA);
+    if (!trialActive) {
+      if (loginErrorEl) {
+        loginErrorEl.textContent = TRIAL_ENDED_MESSAGE;
+        loginErrorEl.classList.remove('hidden');
+      } else {
+        alert(TRIAL_ENDED_MESSAGE);
+      }
+      await signOutFromFirebase();
+      return;
+    }
 
     await resolveBotStoragePaths();
     await ensureBotDataExists();
