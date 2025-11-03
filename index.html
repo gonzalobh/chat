@@ -1739,11 +1739,11 @@ function getActiveMessagesBot() {
 messagesCurrentBot = getActiveMessagesBot();
 
 function getDefaultBotCollectionPath() {
-  return `${EMPRESA}/bots`;
+  return `empresas/${EMPRESA}/bots`;
 }
 
 function getConfigBotCollectionPath() {
-  return `${EMPRESA}/config/bots`;
+  return `empresas/${EMPRESA}/config/bots`;
 }
 
 function getLegacyBotCollectionPath() {
@@ -1840,7 +1840,7 @@ async function ensureBotDataExists() {
     const botSnap = await botRef.once('value');
     if (botSnap.exists()) return;
 
-    const legacySnap = await db.ref(`${EMPRESA}`).once('value');
+    const legacySnap = await db.ref(getLegacySingleBotPath()).once('value');
     if (legacySnap.exists()) {
       await botRef.set(legacySnap.val());
     } else {
@@ -2999,7 +2999,7 @@ async function refreshPermissions() {
   if (botAdminEmail) adminEmails.add(botAdminEmail);
 
   try {
-    const companyAdminSnap = await db.ref(`${EMPRESA}/config/adminEmail`).once('value');
+    const companyAdminSnap = await db.ref(`empresas/${EMPRESA}/config/adminEmail`).once('value');
     const companyAdminEmail = (companyAdminSnap.val() || '').toLowerCase();
     if (companyAdminEmail) adminEmails.add(companyAdminEmail);
   } catch (err) {
@@ -3008,7 +3008,7 @@ async function refreshPermissions() {
 
   if (!adminEmails.size) {
     try {
-      const legacyAdminSnap = await db.ref(`${EMPRESA}/config/adminEmail`).once('value');
+      const legacyAdminSnap = await db.ref(`${getLegacySingleBotPath()}/config/adminEmail`).once('value');
       const legacyAdminEmail = (legacyAdminSnap.val() || '').toLowerCase();
       if (legacyAdminEmail) adminEmails.add(legacyAdminEmail);
     } catch (err) {
