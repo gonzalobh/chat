@@ -19,6 +19,7 @@
   <!-- UI -->
   <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/lucide@0.292.0/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -735,7 +736,11 @@ body.login-view #appContainer {
       <!-- Sidebar -->
 <aside class="peer group fixed top-[57px] left-0 h-[calc(100vh-57px)] bg-white border-r overflow-y-auto transition-all duration-300 w-[72px] hover:w-[260px]">
   <nav class="space-y-2 mt-4 px-2">
-    <button class="sidebar-btn active flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="chat">
+    <button class="sidebar-btn active flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="dashboard">
+      <i data-lucide="layout-dashboard" class="w-5 h-5 shrink-0"></i>
+      <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Dashboard</span>
+    </button>
+    <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="chat">
       <i data-lucide="message-circle" class="w-5 h-5 shrink-0"></i>
       <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Chat</span>
     </button>
@@ -783,6 +788,75 @@ body.login-view #appContainer {
 
         <!-- Tabs container -->
         <div id="tabs" class="hidden">
+<!-- Dashboard -->
+<section id="tab-dashboard" class="hidden space-y-6">
+  <div class="card p-5 space-y-4">
+    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div class="flex items-center gap-2 text-sm font-medium text-gray-700">
+        <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
+        <span>Filtrar por bot</span>
+      </div>
+      <select id="dashboardBotFilter" class="w-full md:w-60 border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-black/70">
+        <option value="__all__">Todos los bots</option>
+      </select>
+    </div>
+    <p id="dashboardSummary" class="text-sm text-gray-500">Cargando datos…</p>
+  </div>
+
+  <div class="grid gap-4 sm:grid-cols-3">
+    <div class="card p-5">
+      <div class="text-xs font-semibold uppercase tracking-wide text-gray-500">Hoy</div>
+      <div id="dashboardMetricToday" class="mt-2 text-2xl font-semibold text-gray-900">—</div>
+    </div>
+    <div class="card p-5">
+      <div class="text-xs font-semibold uppercase tracking-wide text-gray-500">Semana</div>
+      <div id="dashboardMetricWeek" class="mt-2 text-2xl font-semibold text-gray-900">—</div>
+    </div>
+    <div class="card p-5">
+      <div class="text-xs font-semibold uppercase tracking-wide text-gray-500">Mes</div>
+      <div id="dashboardMetricMonth" class="mt-2 text-2xl font-semibold text-gray-900">—</div>
+    </div>
+  </div>
+
+  <div class="card p-6">
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-2 text-sm font-semibold text-gray-700">
+        <i data-lucide="activity" class="w-4 h-4"></i>
+        <span>Conversaciones (últimos 30 días)</span>
+      </div>
+      <span id="dashboardChartLegend" class="text-xs text-gray-400"></span>
+    </div>
+    <div class="h-64">
+      <canvas id="dashboardConversationsChart" class="w-full h-full"></canvas>
+    </div>
+  </div>
+
+  <div class="card overflow-hidden">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+      <div class="flex items-center gap-2 text-sm font-semibold text-gray-700">
+        <i data-lucide="bot" class="w-4 h-4"></i>
+        <span>Bots activos</span>
+      </div>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-100">
+        <thead class="bg-gray-50 text-xs font-semibold uppercase tracking-wide text-gray-500">
+          <tr>
+            <th scope="col" class="px-5 py-3 text-left">Bot</th>
+            <th scope="col" class="px-5 py-3 text-left">Estado</th>
+            <th scope="col" class="px-5 py-3 text-right">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="dashboardBotsTableBody" class="divide-y divide-gray-100 text-sm bg-white">
+          <tr>
+            <td colspan="3" class="px-5 py-6 text-center text-gray-400 text-sm">Cargando bots…</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
 <!-- Chat -->
 <section id="tab-chat" class="space-y-8">
   <div class="flex justify-center">
@@ -1811,6 +1885,602 @@ let messagesIsLoadingConversations = false;
 const messagesConversationSubscriptions = new Map();
 let messagesActiveDetailRef = null;
 let messagesActiveDetailHandler = null;
+
+let dashboardInitialized = false;
+let dashboardSelectedBotId = '__all__';
+let dashboardBotsData = {};
+let dashboardConfigBotsData = {};
+let dashboardActiveRepliesCount = 0;
+let dashboardChartInstance = null;
+let dashboardRefreshScheduled = false;
+let dashboardMessagesLoading = false;
+let dashboardLastMetrics = { conversations: 0, messages: 0 };
+
+const DAY_IN_MS = 24 * 60 * 60 * 1000;
+
+function normalizeDashboardTimestamp(value) {
+  if (value === null || value === undefined) return null;
+  if (typeof value === 'number') {
+    if (!Number.isFinite(value) || value <= 0) return null;
+    return value < 1e12 ? value * 1000 : value;
+  }
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (!trimmed) return null;
+    const numeric = Number(trimmed);
+    if (Number.isFinite(numeric) && numeric > 0) {
+      return numeric < 1e12 ? numeric * 1000 : numeric;
+    }
+    const parsed = Date.parse(trimmed);
+    if (!Number.isNaN(parsed)) return parsed;
+  }
+  return null;
+}
+
+function extractDashboardTimestamp(source) {
+  if (!source || typeof source !== 'object') return null;
+  const candidates = ['timestamp', 'time', 'createdAt', 'updatedAt', 'date', 'sentAt', 'firstMessageAt'];
+  for (const key of candidates) {
+    const value = source[key];
+    const normalized = normalizeDashboardTimestamp(value);
+    if (normalized) return normalized;
+  }
+  return null;
+}
+
+function getDashboardBotIds() {
+  const ids = new Set();
+  Object.keys(dashboardBotsData || {}).forEach(id => { if (id) ids.add(id); });
+  Object.keys(dashboardConfigBotsData || {}).forEach(id => { if (id) ids.add(id); });
+  return Array.from(ids);
+}
+
+function getDashboardBotName(botId) {
+  if (!botId) return '';
+  const botNode = dashboardBotsData?.[botId];
+  const configNode = dashboardConfigBotsData?.[botId];
+  const label = botNode?.config?.hotelName
+    || botNode?.name
+    || configNode?.config?.hotelName
+    || configNode?.name
+    || botId;
+  return (label || botId).toString();
+}
+
+function formatDashboardNumber(value) {
+  const numeric = Number(value) || 0;
+  try {
+    return new Intl.NumberFormat('es-ES').format(numeric);
+  } catch (err) {
+    return numeric.toString();
+  }
+}
+
+function updateDashboardSummaryText() {
+  const summaryEl = $('dashboardSummary');
+  if (!summaryEl) return;
+  if (dashboardMessagesLoading) {
+    summaryEl.textContent = 'Cargando datos…';
+    return;
+  }
+  const conversations = dashboardLastMetrics?.conversations || 0;
+  const messages = dashboardLastMetrics?.messages || 0;
+  const replies = dashboardActiveRepliesCount || 0;
+  summaryEl.textContent = `Este mes: ${formatDashboardNumber(conversations)} conversaciones · ${formatDashboardNumber(messages)} mensajes · ${formatDashboardNumber(replies)} respuestas automáticas activas`;
+}
+
+function updateDashboardMetricCards({ today = 0, week = 0, month = 0 } = {}) {
+  const todayEl = $('dashboardMetricToday');
+  const weekEl = $('dashboardMetricWeek');
+  const monthEl = $('dashboardMetricMonth');
+  if (todayEl) todayEl.textContent = formatDashboardNumber(today);
+  if (weekEl) weekEl.textContent = formatDashboardNumber(week);
+  if (monthEl) monthEl.textContent = formatDashboardNumber(month);
+}
+
+function updateDashboardChart(labels, dataset) {
+  const canvas = $('dashboardConversationsChart');
+  if (!canvas || typeof Chart === 'undefined') return;
+  const context = canvas.getContext('2d');
+  if (!context) return;
+  if (!dashboardChartInstance) {
+    dashboardChartInstance = new Chart(context, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Conversaciones',
+            data: dataset,
+            borderColor: '#111827',
+            backgroundColor: 'rgba(17, 24, 39, 0.12)',
+            fill: true,
+            tension: 0.4,
+            pointRadius: 3,
+            pointBackgroundColor: '#111827'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            mode: 'index',
+            intersect: false
+          }
+        },
+        interaction: {
+          mode: 'nearest',
+          intersect: false
+        },
+        scales: {
+          x: {
+            grid: { display: false }
+          },
+          y: {
+            beginAtZero: true,
+            ticks: {
+              precision: 0
+            }
+          }
+        }
+      }
+    });
+  } else {
+    dashboardChartInstance.data.labels = labels;
+    dashboardChartInstance.data.datasets[0].data = dataset;
+    dashboardChartInstance.update('none');
+  }
+}
+
+function buildDashboardChart(conversationStarts) {
+  const labels = [];
+  const data = [];
+  const now = new Date();
+  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  start.setDate(start.getDate() - 29);
+  for (let i = 0; i < 15; i += 1) {
+    const bucketStart = new Date(start.getTime() + i * 2 * DAY_IN_MS);
+    const bucketEnd = new Date(bucketStart.getTime() + 2 * DAY_IN_MS);
+    labels.push(bucketStart.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }));
+    const count = conversationStarts.filter(ts => ts >= bucketStart.getTime() && ts < bucketEnd.getTime()).length;
+    data.push(count);
+  }
+  updateDashboardChart(labels, data);
+}
+
+function scheduleDashboardRefresh() {
+  if (!dashboardInitialized) return;
+  if (dashboardRefreshScheduled) return;
+  dashboardRefreshScheduled = true;
+  setTimeout(() => {
+    dashboardRefreshScheduled = false;
+    refreshDashboardData();
+  }, 80);
+}
+
+function populateDashboardFilterOptions() {
+  const select = $('dashboardBotFilter');
+  if (!select) return;
+  const availableIds = getDashboardBotIds();
+  const previousValue = dashboardSelectedBotId;
+  select.innerHTML = '';
+
+  const allOption = document.createElement('option');
+  allOption.value = '__all__';
+  allOption.textContent = 'Todos los bots';
+  select.appendChild(allOption);
+
+  availableIds
+    .sort((a, b) => getDashboardBotName(a).toLowerCase().localeCompare(getDashboardBotName(b).toLowerCase()))
+    .forEach((id) => {
+      const option = document.createElement('option');
+      option.value = id;
+      option.textContent = getDashboardBotName(id) || id;
+      select.appendChild(option);
+    });
+
+  if (previousValue && previousValue !== '__all__' && !availableIds.includes(previousValue)) {
+    dashboardSelectedBotId = '__all__';
+  }
+  select.value = dashboardSelectedBotId;
+  select.disabled = availableIds.length === 0;
+}
+
+function renderDashboardBotsTable() {
+  const tbody = $('dashboardBotsTableBody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+
+  const entries = Object.entries(dashboardConfigBotsData || {});
+  if (!entries.length) {
+    const emptyRow = document.createElement('tr');
+    const emptyCell = document.createElement('td');
+    emptyCell.colSpan = 3;
+    emptyCell.className = 'px-5 py-6 text-center text-gray-400 text-sm';
+    emptyCell.textContent = 'No hay bots configurados';
+    emptyRow.appendChild(emptyCell);
+    tbody.appendChild(emptyRow);
+    return;
+  }
+
+  entries
+    .sort((a, b) => getDashboardBotName(a[0]).toLowerCase().localeCompare(getDashboardBotName(b[0]).toLowerCase()))
+    .forEach(([botId, botData]) => {
+      const row = document.createElement('tr');
+
+      const botCell = document.createElement('td');
+      botCell.className = 'px-5 py-4';
+      const botWrapper = document.createElement('div');
+      botWrapper.className = 'flex items-center gap-3';
+
+      const iconWrapper = document.createElement('span');
+      iconWrapper.className = 'inline-flex h-9 w-9 items-center justify-center rounded-full bg-gray-100 text-gray-600';
+      const icon = document.createElement('i');
+      icon.setAttribute('data-lucide', 'brain');
+      icon.className = 'w-4 h-4';
+      iconWrapper.appendChild(icon);
+
+      const textWrapper = document.createElement('div');
+      const nameEl = document.createElement('div');
+      nameEl.className = 'font-semibold text-gray-900';
+      nameEl.textContent = getDashboardBotName(botId);
+      const idEl = document.createElement('div');
+      idEl.className = 'text-xs text-gray-400 truncate';
+      idEl.textContent = botId;
+      textWrapper.append(nameEl, idEl);
+
+      botWrapper.append(iconWrapper, textWrapper);
+      botCell.appendChild(botWrapper);
+
+      const statusCell = document.createElement('td');
+      statusCell.className = 'px-5 py-4';
+      const statusWrapper = document.createElement('div');
+      statusWrapper.className = 'inline-flex items-center gap-2';
+      const statusDot = document.createElement('span');
+      const isActive = botData?.tgChatVisible === true;
+      statusDot.className = `h-2.5 w-2.5 rounded-full ${isActive ? 'bg-emerald-500' : 'bg-rose-500'}`;
+      const statusLabel = document.createElement('span');
+      statusLabel.className = 'text-sm text-gray-600';
+      statusLabel.textContent = isActive ? 'Activo' : 'Inactivo';
+      statusWrapper.append(statusDot, statusLabel);
+      statusCell.appendChild(statusWrapper);
+
+      const actionsCell = document.createElement('td');
+      actionsCell.className = 'px-5 py-4';
+      const actionsWrapper = document.createElement('div');
+      actionsWrapper.className = 'flex items-center justify-end gap-2';
+
+      const editBtn = document.createElement('button');
+      editBtn.type = 'button';
+      editBtn.className = 'p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition';
+      editBtn.setAttribute('data-dashboard-action', 'edit');
+      editBtn.setAttribute('data-bot-id', botId);
+      editBtn.setAttribute('aria-label', 'Editar bot');
+      editBtn.innerHTML = '<i data-lucide="pencil" class="w-4 h-4"></i>';
+
+      const cloneBtn = document.createElement('button');
+      cloneBtn.type = 'button';
+      cloneBtn.className = 'p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition';
+      cloneBtn.setAttribute('data-dashboard-action', 'clone');
+      cloneBtn.setAttribute('data-bot-id', botId);
+      cloneBtn.setAttribute('aria-label', 'Clonar bot');
+      cloneBtn.innerHTML = '<i data-lucide="copy" class="w-4 h-4"></i>';
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.type = 'button';
+      deleteBtn.className = 'p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition';
+      deleteBtn.setAttribute('data-dashboard-action', 'delete');
+      deleteBtn.setAttribute('data-bot-id', botId);
+      deleteBtn.setAttribute('aria-label', 'Eliminar bot');
+      deleteBtn.innerHTML = '<i data-lucide="trash-2" class="w-4 h-4"></i>';
+
+      actionsWrapper.append(editBtn, cloneBtn, deleteBtn);
+      actionsCell.appendChild(actionsWrapper);
+
+      row.append(botCell, statusCell, actionsCell);
+      tbody.appendChild(row);
+    });
+
+  if (window.lucide) {
+    lucide.createIcons();
+  }
+}
+
+function attachDashboardTableListeners() {
+  const tbody = $('dashboardBotsTableBody');
+  if (!tbody || tbody.dataset.listenerAttached === 'true') return;
+  tbody.addEventListener('click', (event) => {
+    const actionButton = event.target.closest('[data-dashboard-action]');
+    if (!actionButton) return;
+    const action = actionButton.getAttribute('data-dashboard-action');
+    const botId = actionButton.getAttribute('data-bot-id');
+    if (!botId || !action) return;
+    if (action === 'edit') {
+      handleDashboardEdit(botId);
+    } else if (action === 'clone') {
+      handleDashboardClone(botId, actionButton);
+    } else if (action === 'delete') {
+      handleDashboardDelete(botId, actionButton);
+    }
+  });
+  tbody.dataset.listenerAttached = 'true';
+}
+
+function countActiveChatReplies(data) {
+  if (!data || typeof data !== 'object') return 0;
+  let total = 0;
+  Object.values(data).forEach(reply => {
+    if (!reply || typeof reply !== 'object') return;
+    const isActive = reply.active === true || reply.enabled === true || reply.isActive === true || reply.status === 'active';
+    if (isActive) total += 1;
+  });
+  return total;
+}
+
+function generateDashboardCloneId(baseId = '') {
+  const availableIds = new Set(getDashboardBotIds());
+  const base = slugifyBotId ? slugifyBotId(`${baseId}-copy`) : `${baseId}-copy`.replace(/[^a-zA-Z0-9-]+/g, '-');
+  let candidate = base || `${baseId}-copy` || 'bot-copy';
+  let index = 2;
+  while (availableIds.has(candidate)) {
+    candidate = `${base}-${index++}`;
+  }
+  return candidate;
+}
+
+function handleDashboardEdit(botId) {
+  if (!botId) return;
+  setActiveTab('chat');
+  const botSelect = $('botSelect');
+  if (botSelect) {
+    const hasOption = Array.from(botSelect.options || []).some(opt => opt.value === botId);
+    if (hasOption) {
+      if (botSelect.value !== botId) {
+        botSelect.value = botId;
+        botSelect.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      return;
+    }
+  }
+  const url = new URL(window.location.href);
+  url.searchParams.set('bot', botId);
+  window.location.href = url.toString();
+}
+
+async function handleDashboardClone(botId, trigger) {
+  if (!botId) return;
+  if (trigger) {
+    trigger.disabled = true;
+    trigger.classList.add('opacity-50', 'pointer-events-none');
+  }
+  try {
+    const [configSnap, botSnap] = await Promise.all([
+      firebase.database().ref(`empresas/${EMPRESA}/config/bots/${botId}`).once('value'),
+      firebase.database().ref(`empresas/${EMPRESA}/bots/${botId}`).once('value').catch(err => {
+        console.warn('No se pudo leer el bot para clonar', err);
+        return null;
+      })
+    ]);
+    const configData = configSnap.exists() ? configSnap.val() : null;
+    const botData = botSnap && typeof botSnap.exists === 'function' && botSnap.exists()
+      ? botSnap.val()
+      : dashboardBotsData?.[botId] || null;
+    if (configData === null && botData === null) {
+      toast('⚠ No se encontró la configuración del bot');
+      return;
+    }
+    const newId = generateDashboardCloneId(botId);
+    const updates = {};
+    if (configData !== null) {
+      updates[`empresas/${EMPRESA}/config/bots/${newId}`] = configData;
+    }
+    if (botData !== null) {
+      updates[`empresas/${EMPRESA}/bots/${newId}`] = botData;
+    }
+    await firebase.database().ref().update(updates);
+    toast('✔ Bot clonado');
+  } catch (err) {
+    console.error('No se pudo clonar el bot', err);
+    toast('⚠ No se pudo clonar el bot');
+  } finally {
+    if (trigger) {
+      trigger.disabled = false;
+      trigger.classList.remove('opacity-50', 'pointer-events-none');
+    }
+  }
+}
+
+async function handleDashboardDelete(botId, trigger) {
+  if (!botId) return;
+  if (!confirm('¿Eliminar este bot?')) return;
+  if (trigger) {
+    trigger.disabled = true;
+    trigger.classList.add('opacity-50', 'pointer-events-none');
+  }
+  try {
+    const updates = {};
+    updates[`empresas/${EMPRESA}/config/bots/${botId}`] = null;
+    updates[`empresas/${EMPRESA}/bots/${botId}`] = null;
+    await firebase.database().ref().update(updates);
+    toast('✔ Bot eliminado');
+    if (dashboardSelectedBotId === botId) {
+      dashboardSelectedBotId = '__all__';
+      populateDashboardFilterOptions();
+      scheduleDashboardRefresh();
+    }
+  } catch (err) {
+    console.error('No se pudo eliminar el bot', err);
+    toast('⚠ No se pudo eliminar el bot');
+  } finally {
+    if (trigger) {
+      trigger.disabled = false;
+      trigger.classList.remove('opacity-50', 'pointer-events-none');
+    }
+  }
+}
+
+function computeDashboardMessageMetrics(timestamps = []) {
+  const now = Date.now();
+  const startToday = new Date().setHours(0, 0, 0, 0);
+  const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).getTime();
+  const weekBoundary = now - 7 * DAY_IN_MS;
+  const today = timestamps.filter(ts => ts >= startToday).length;
+  const week = timestamps.filter(ts => ts >= weekBoundary).length;
+  const month = timestamps.filter(ts => ts >= startOfMonth).length;
+  updateDashboardMetricCards({ today, week, month });
+}
+
+async function refreshDashboardData() {
+  if (!dashboardInitialized) return;
+  const select = $('dashboardBotFilter');
+  if (!select) return;
+
+  const legendEl = $('dashboardChartLegend');
+  const label = dashboardSelectedBotId === '__all__'
+    ? 'Todos los bots'
+    : getDashboardBotName(dashboardSelectedBotId) || dashboardSelectedBotId;
+  if (legendEl) legendEl.textContent = label;
+
+  const availableIds = getDashboardBotIds();
+  const targetIds = dashboardSelectedBotId === '__all__' ? availableIds : availableIds.includes(dashboardSelectedBotId) ? [dashboardSelectedBotId] : availableIds;
+
+  if (!targetIds.length) {
+    dashboardLastMetrics = { conversations: 0, messages: 0 };
+    updateDashboardMetricCards({ today: 0, week: 0, month: 0 });
+    buildDashboardChart([]);
+    dashboardMessagesLoading = false;
+    updateDashboardSummaryText();
+    return;
+  }
+
+  dashboardMessagesLoading = true;
+  updateDashboardSummaryText();
+
+  try {
+    const snapshots = await Promise.all(targetIds.map(async (botId) => {
+      try {
+        const snap = await firebase.database().ref(`mensajes/${EMPRESA}/${botId}`).once('value');
+        return { botId, data: snap.val() || {} };
+      } catch (err) {
+        console.warn('No se pudieron leer los mensajes del bot', botId, err);
+        return { botId, data: {} };
+      }
+    }));
+
+    let conversations = 0;
+    let messages = 0;
+    const messageTimestamps = [];
+    const conversationStartTimestamps = [];
+
+    snapshots.forEach(({ data }) => {
+      Object.values(data || {}).forEach((chatPayload) => {
+        if (!chatPayload || typeof chatPayload !== 'object') return;
+        conversations += 1;
+        const collection = chatPayload.messages || chatPayload.mensajes || {};
+        const messagesArray = Array.isArray(collection) ? collection : Object.values(collection || {});
+        let firstMessageTs = null;
+        if (messagesArray && messagesArray.length) {
+          messagesArray.forEach((msg) => {
+            if (!msg) return;
+            messages += 1;
+            const ts = extractDashboardTimestamp(msg);
+            if (ts) {
+              messageTimestamps.push(ts);
+              if (!firstMessageTs || ts < firstMessageTs) {
+                firstMessageTs = ts;
+              }
+            }
+          });
+        }
+        if (!messagesArray || !messagesArray.length) {
+          const fallbackMessages = chatPayload.mensajes || chatPayload.messages || {};
+          const values = Array.isArray(fallbackMessages) ? fallbackMessages : Object.values(fallbackMessages || {});
+          values.forEach((msg) => {
+            if (!msg) return;
+            messages += 1;
+            const ts = extractDashboardTimestamp(msg);
+            if (ts) {
+              messageTimestamps.push(ts);
+              if (!firstMessageTs || ts < firstMessageTs) {
+                firstMessageTs = ts;
+              }
+            }
+          });
+        }
+        if (!firstMessageTs) {
+          const fallbackTs = extractDashboardTimestamp(chatPayload);
+          if (fallbackTs) {
+            firstMessageTs = fallbackTs;
+          }
+        }
+        if (firstMessageTs) {
+          conversationStartTimestamps.push(firstMessageTs);
+        }
+      });
+    });
+
+    dashboardLastMetrics = { conversations, messages };
+    dashboardMessagesLoading = false;
+    updateDashboardSummaryText();
+    computeDashboardMessageMetrics(messageTimestamps);
+    buildDashboardChart(conversationStartTimestamps);
+  } catch (err) {
+    console.error('No se pudo actualizar el dashboard', err);
+    dashboardMessagesLoading = false;
+    updateDashboardSummaryText();
+  }
+}
+
+function initDashboard() {
+  if (dashboardInitialized) return;
+  const filterSelect = $('dashboardBotFilter');
+  const botsTable = $('dashboardBotsTableBody');
+  if (!filterSelect || !botsTable) {
+    setTimeout(initDashboard, 300);
+    return;
+  }
+
+  dashboardInitialized = true;
+
+  attachDashboardTableListeners();
+
+  filterSelect.addEventListener('change', (event) => {
+    dashboardSelectedBotId = event.target.value || '__all__';
+    scheduleDashboardRefresh();
+  });
+
+  const botsRef = firebase.database().ref(`empresas/${EMPRESA}/bots`);
+  botsRef.on('value', (snap) => {
+    dashboardBotsData = snap.val() || {};
+    populateDashboardFilterOptions();
+    scheduleDashboardRefresh();
+    if (Object.keys(dashboardConfigBotsData || {}).length === 0) {
+      renderDashboardBotsTable();
+    }
+  });
+
+  const configBotsRef = firebase.database().ref(`empresas/${EMPRESA}/config/bots`);
+  configBotsRef.on('value', (snap) => {
+    dashboardConfigBotsData = snap.val() || {};
+    populateDashboardFilterOptions();
+    renderDashboardBotsTable();
+    scheduleDashboardRefresh();
+  });
+
+  const repliesRef = firebase.database().ref(`empresas/${EMPRESA}/config/chatReplies`);
+  repliesRef.on('value', (snap) => {
+    dashboardActiveRepliesCount = countActiveChatReplies(snap.val());
+    updateDashboardSummaryText();
+  });
+
+  populateDashboardFilterOptions();
+  dashboardMessagesLoading = true;
+  updateDashboardSummaryText();
+  scheduleDashboardRefresh();
+}
 
 function getActiveMessagesBot() {
   const stored = (localStorage.getItem('currentBot') || '').trim();
@@ -3138,11 +3808,11 @@ function setWriteEnabled(enabled) {
   }
 }
 
-const TAB_KEYS = ['chat','mensajes','knowledge','respuestas'];
+const TAB_KEYS = ['dashboard','chat','mensajes','knowledge','respuestas'];
 let tabsInitialized = false;
 
 function setActiveTab(tab) {
-  const targetTab = TAB_KEYS.includes(tab) ? tab : 'chat';
+  const targetTab = TAB_KEYS.includes(tab) ? tab : 'dashboard';
 
   $$('.sidebar-btn').forEach(btn => {
     const btnTab = btn.getAttribute('data-tab');
@@ -3185,7 +3855,7 @@ function showLoginView() {
   $('btnLogout').classList.add('hidden');
   document.body.classList.add('login-view');
   document.body.classList.remove('app-view');
-  setActiveTab('chat');
+  setActiveTab('dashboard');
 }
 
 async function canWrite(fn) {
@@ -3342,12 +4012,12 @@ auth.onAuthStateChanged(async (u) => {
 // ====== Tabs ======
 function initTabs() {
   if (tabsInitialized) {
-    setActiveTab('chat');
+    setActiveTab('dashboard');
     return;
   }
 
   tabsInitialized = true;
-  setActiveTab('chat');
+  setActiveTab('dashboard');
 
   $$('.sidebar-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -3376,7 +4046,8 @@ async function initAll(){
   initBotSelector();
   initLanguageSelector(); // <-- 🔥 nuevo
   initTabs();
-  applyPreview(); 
+  initDashboard();
+  applyPreview();
   await refreshPermissions();
   initApariencia();
   initSettingsTab();
