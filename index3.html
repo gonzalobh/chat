@@ -6265,22 +6265,24 @@ function initMensajes() {
 
       const infoCol = document.createElement('div');
       infoCol.className = 'flex-1 min-w-0';
+      const updatedAtValue = Number(chat.updatedAt) || 0;
+      const updatedAtDate = updatedAtValue ? new Date(updatedAtValue) : null;
+
       const nameEl = document.createElement('div');
       nameEl.className = `text-sm font-semibold truncate ${isActive ? 'text-white' : 'text-gray-800'}`;
-      nameEl.textContent = (chat.userName || 'Guest').trim() || 'Guest';
+      nameEl.textContent = updatedAtDate
+        ? updatedAtDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })
+        : 'Sin fecha';
       infoCol.appendChild(nameEl);
 
       const metaRow = document.createElement('div');
       metaRow.className = `flex items-center gap-2 text-[11px] ${isActive ? 'text-white/70' : 'text-gray-500'}`;
-      if (chat.updatedAt) {
-        const dateEl = document.createElement('span');
-        dateEl.textContent = new Date(chat.updatedAt).toLocaleDateString();
-        metaRow.appendChild(dateEl);
-      }
-      const idEl = document.createElement('span');
-      idEl.className = 'truncate';
-      idEl.textContent = `#${chat.chatId}`;
-      metaRow.appendChild(idEl);
+      const timeMetaEl = document.createElement('span');
+      timeMetaEl.className = 'truncate';
+      timeMetaEl.textContent = updatedAtDate
+        ? updatedAtDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+        : 'Sin hora';
+      metaRow.appendChild(timeMetaEl);
       infoCol.appendChild(metaRow);
 
       const actions = document.createElement('div');
