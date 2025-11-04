@@ -789,87 +789,88 @@ body.login-view #appContainer {
         <!-- Tabs container -->
         <div id="tabs" class="hidden">
 <!-- Dashboard -->
-<section id="tab-dashboard" class="hidden space-y-6">
-  <div class="card p-5 space-y-4">
-    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-      <div class="flex items-center gap-2 text-sm font-medium text-gray-700">
-        <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
-        <span>Filtrar por bot</span>
+<section id="tab-dashboard" class="hidden">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <div class="col-span-1 lg:col-span-2 card p-4 space-y-4">
+      <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div class="flex flex-col gap-1 text-sm text-gray-600">
+          <span class="font-semibold text-gray-800">Filtrar por bot</span>
+          <select id="dashboardBotFilter" class="w-full lg:w-64 border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-black/70">
+            <option value="__all__">Todos los bots</option>
+          </select>
+        </div>
+        <p id="dashboardSummary" class="text-sm text-gray-500 lg:text-right">Cargando datos…</p>
       </div>
-      <select id="dashboardBotFilter" class="w-full md:w-60 border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-black/70">
-        <option value="__all__">Todos los bots</option>
-      </select>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div class="card p-3">
+          <div class="text-[11px] font-semibold uppercase tracking-wide text-gray-500">Hoy</div>
+          <div id="dashboardMetricToday" class="mt-2 text-xl font-semibold text-gray-900">—</div>
+        </div>
+        <div class="card p-3">
+          <div class="text-[11px] font-semibold uppercase tracking-wide text-gray-500">Semana</div>
+          <div id="dashboardMetricWeek" class="mt-2 text-xl font-semibold text-gray-900">—</div>
+        </div>
+        <div class="card p-3">
+          <div class="text-[11px] font-semibold uppercase tracking-wide text-gray-500">Mes</div>
+          <div id="dashboardMetricMonth" class="mt-2 text-xl font-semibold text-gray-900">—</div>
+        </div>
+      </div>
     </div>
-    <p id="dashboardSummary" class="text-sm text-gray-500">Cargando datos…</p>
-  </div>
 
-  <div class="grid gap-4 sm:grid-cols-3">
-    <div class="card p-5">
-      <div class="text-xs font-semibold uppercase tracking-wide text-gray-500">Hoy</div>
-      <div id="dashboardMetricToday" class="mt-2 text-2xl font-semibold text-gray-900">—</div>
+    <div class="card p-4 flex flex-col gap-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2 text-sm font-semibold text-gray-700">
+          <i data-lucide="activity" class="w-4 h-4"></i>
+          <span>Conversaciones (últimos 30 días)</span>
+        </div>
+        <span id="dashboardChartLegend" class="text-xs text-gray-400"></span>
+      </div>
+      <div class="h-[180px]">
+        <canvas id="dashboardConversationsChart" class="w-full h-full"></canvas>
+      </div>
     </div>
-    <div class="card p-5">
-      <div class="text-xs font-semibold uppercase tracking-wide text-gray-500">Semana</div>
-      <div id="dashboardMetricWeek" class="mt-2 text-2xl font-semibold text-gray-900">—</div>
-    </div>
-    <div class="card p-5">
-      <div class="text-xs font-semibold uppercase tracking-wide text-gray-500">Mes</div>
-      <div id="dashboardMetricMonth" class="mt-2 text-2xl font-semibold text-gray-900">—</div>
-    </div>
-  </div>
 
-  <div class="card p-6">
-    <div class="flex items-center justify-between mb-4">
-      <div class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-        <i data-lucide="activity" class="w-4 h-4"></i>
-        <span>Conversaciones (últimos 30 días)</span>
+    <div class="card p-4 space-y-3">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-2 text-sm font-semibold text-gray-700">
+          <i data-lucide="trophy" class="w-4 h-4"></i>
+          <span>Ranking de bots por mensajes</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button type="button" class="chip dashboard-ranking-filter" data-dashboard-ranking="day">Hoy</button>
+          <button type="button" class="chip dashboard-ranking-filter active" data-dashboard-ranking="month">Mes</button>
+          <button type="button" class="chip dashboard-ranking-filter" data-dashboard-ranking="year">Año</button>
+        </div>
       </div>
-      <span id="dashboardChartLegend" class="text-xs text-gray-400"></span>
+      <div id="dashboardBotsRankingList" class="space-y-3 text-sm text-gray-600">
+        <p class="text-sm text-gray-400">Cargando ranking…</p>
+      </div>
     </div>
-    <div class="h-64">
-      <canvas id="dashboardConversationsChart" class="w-full h-full"></canvas>
-    </div>
-  </div>
 
-  <div class="card overflow-hidden">
-    <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-      <div class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-        <i data-lucide="bot" class="w-4 h-4"></i>
-        <span>Bots activos</span>
+    <div class="col-span-1 lg:col-span-2 card overflow-hidden">
+      <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+        <div class="flex items-center gap-2 text-sm font-semibold text-gray-700">
+          <i data-lucide="bot" class="w-4 h-4"></i>
+          <span>Bots activos</span>
+        </div>
       </div>
-    </div>
-    <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-100">
-        <thead class="bg-gray-50 text-xs font-semibold uppercase tracking-wide text-gray-500">
-          <tr>
-            <th scope="col" class="px-5 py-3 text-left">Bot</th>
-            <th scope="col" class="px-5 py-3 text-left">Estado</th>
-            <th scope="col" class="px-5 py-3 text-right">Acciones</th>
-          </tr>
-        </thead>
-        <tbody id="dashboardBotsTableBody" class="divide-y divide-gray-100 text-sm bg-white">
-          <tr>
-            <td colspan="3" class="px-5 py-6 text-center text-gray-400 text-sm">Cargando bots…</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="card p-6 space-y-4">
-    <div class="flex flex-wrap items-center justify-between gap-3">
-      <div class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-        <i data-lucide="trophy" class="w-4 h-4"></i>
-        <span>Ranking de bots por mensajes</span>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-100 text-sm">
+          <thead class="bg-gray-50 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
+            <tr>
+              <th scope="col" class="px-4 py-2 text-left">Bot</th>
+              <th scope="col" class="px-4 py-2 text-left">Estado</th>
+              <th scope="col" class="px-4 py-2 text-right">Mensajes</th>
+              <th scope="col" class="px-4 py-2 text-right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="dashboardBotsTableBody" class="divide-y divide-gray-100 bg-white text-sm">
+            <tr>
+              <td colspan="4" class="px-4 py-6 text-center text-gray-400 text-sm">Cargando bots…</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <div class="flex items-center gap-2">
-        <button type="button" class="chip dashboard-ranking-filter" data-dashboard-ranking="day">Hoy</button>
-        <button type="button" class="chip dashboard-ranking-filter active" data-dashboard-ranking="month">Mes</button>
-        <button type="button" class="chip dashboard-ranking-filter" data-dashboard-ranking="year">Año</button>
-      </div>
-    </div>
-    <div id="dashboardBotsRankingList" class="space-y-3 text-sm text-gray-600">
-      <p class="text-sm text-gray-400">Cargando ranking…</p>
     </div>
   </div>
 </section>
@@ -1913,6 +1914,7 @@ let dashboardRefreshScheduled = false;
 let dashboardMessagesLoading = false;
 let dashboardLastMetrics = { conversations: 0, messages: 0 };
 let dashboardBotsRankingData = null;
+let dashboardAnalysesByBot = {};
 let dashboardBotsRankingRange = 'month';
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
@@ -2117,8 +2119,8 @@ function renderDashboardBotsTable() {
   if (!ids.length) {
     const emptyRow = document.createElement('tr');
     const emptyCell = document.createElement('td');
-    emptyCell.colSpan = 3;
-    emptyCell.className = 'px-5 py-6 text-center text-gray-400 text-sm';
+    emptyCell.colSpan = 4;
+    emptyCell.className = 'px-4 py-6 text-center text-gray-400 text-sm';
     emptyCell.textContent = 'No hay bots configurados';
     emptyRow.appendChild(emptyCell);
     tbody.appendChild(emptyRow);
@@ -2138,7 +2140,7 @@ function renderDashboardBotsTable() {
       const row = document.createElement('tr');
 
       const botCell = document.createElement('td');
-      botCell.className = 'px-5 py-4';
+      botCell.className = 'px-4 py-2 align-middle';
       const botWrapper = document.createElement('div');
       botWrapper.className = 'flex items-center gap-3';
 
@@ -2151,7 +2153,7 @@ function renderDashboardBotsTable() {
 
       const textWrapper = document.createElement('div');
       const nameEl = document.createElement('div');
-      nameEl.className = 'font-semibold text-gray-900';
+      nameEl.className = 'font-semibold text-gray-900 text-sm';
       nameEl.textContent = getDashboardBotName(botId);
       const idEl = document.createElement('div');
       idEl.className = 'text-xs text-gray-400 truncate';
@@ -2162,14 +2164,14 @@ function renderDashboardBotsTable() {
       botCell.appendChild(botWrapper);
 
       const statusCell = document.createElement('td');
-      statusCell.className = 'px-5 py-4';
+      statusCell.className = 'px-4 py-2 align-middle';
       const statusWrapper = document.createElement('div');
       statusWrapper.className = 'inline-flex items-center gap-2';
       const statusDot = document.createElement('span');
-const isActive =
-  botData?.config?.chatVisible === true ||
-  botData?.chatVisible === true ||
-  botData?.tgChatVisible === true;
+      const isActive =
+        botData?.config?.chatVisible === true ||
+        botData?.chatVisible === true ||
+        botData?.tgChatVisible === true;
       statusDot.className = `h-2.5 w-2.5 rounded-full ${isActive ? 'bg-emerald-500' : 'bg-rose-500'}`;
       const statusLabel = document.createElement('span');
       statusLabel.className = 'text-sm text-gray-600';
@@ -2177,39 +2179,44 @@ const isActive =
       statusWrapper.append(statusDot, statusLabel);
       statusCell.appendChild(statusWrapper);
 
+      const messagesCell = document.createElement('td');
+      messagesCell.className = 'px-4 py-2 text-right text-sm font-semibold text-gray-800 align-middle';
+      const messageCount = dashboardAnalysesByBot?.[botId]?.messageCount;
+      messagesCell.textContent = typeof messageCount === 'number' ? formatDashboardNumber(messageCount) : '—';
+
       const actionsCell = document.createElement('td');
-      actionsCell.className = 'px-5 py-4';
+      actionsCell.className = 'px-4 py-2 align-middle';
       const actionsWrapper = document.createElement('div');
-      actionsWrapper.className = 'flex items-center justify-end gap-2';
+      actionsWrapper.className = 'flex items-center justify-end gap-1.5';
 
       const editBtn = document.createElement('button');
       editBtn.type = 'button';
-      editBtn.className = 'p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition';
+      editBtn.className = 'p-1 rounded-lg hover:bg-gray-100 text-sm transition';
       editBtn.setAttribute('data-dashboard-action', 'edit');
       editBtn.setAttribute('data-bot-id', botId);
       editBtn.setAttribute('aria-label', 'Editar bot');
-      editBtn.innerHTML = '<i data-lucide="pencil" class="w-4 h-4"></i>';
+      editBtn.textContent = '✏️';
 
       const cloneBtn = document.createElement('button');
       cloneBtn.type = 'button';
-      cloneBtn.className = 'p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition';
+      cloneBtn.className = 'p-1 rounded-lg hover:bg-gray-100 text-sm transition';
       cloneBtn.setAttribute('data-dashboard-action', 'clone');
       cloneBtn.setAttribute('data-bot-id', botId);
       cloneBtn.setAttribute('aria-label', 'Clonar bot');
-      cloneBtn.innerHTML = '<i data-lucide="copy" class="w-4 h-4"></i>';
+      cloneBtn.textContent = '🗐';
 
       const deleteBtn = document.createElement('button');
       deleteBtn.type = 'button';
-      deleteBtn.className = 'p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition';
+      deleteBtn.className = 'p-1 rounded-lg hover:bg-gray-100 text-sm transition';
       deleteBtn.setAttribute('data-dashboard-action', 'delete');
       deleteBtn.setAttribute('data-bot-id', botId);
       deleteBtn.setAttribute('aria-label', 'Eliminar bot');
-      deleteBtn.innerHTML = '<i data-lucide="trash-2" class="w-4 h-4"></i>';
+      deleteBtn.textContent = '🗑️';
 
       actionsWrapper.append(editBtn, cloneBtn, deleteBtn);
       actionsCell.appendChild(actionsWrapper);
 
-      row.append(botCell, statusCell, actionsCell);
+      row.append(botCell, statusCell, messagesCell, actionsCell);
       tbody.appendChild(row);
     });
 
@@ -2578,7 +2585,9 @@ async function refreshDashboardData() {
     buildDashboardChart([]);
     dashboardMessagesLoading = false;
     updateDashboardSummaryText();
+    dashboardAnalysesByBot = {};
     updateDashboardBotsRankingData({});
+    renderDashboardBotsTable();
     return;
   }
 
@@ -2620,12 +2629,16 @@ const snap = await firebase.database().ref(`empresas/${EMPRESA}/bots/${botId}/co
     updateDashboardSummaryText();
     computeDashboardMessageMetrics(metricTimestamps);
     buildDashboardChart(conversationStartTimestamps);
+    dashboardAnalysesByBot = analysesByBot;
     updateDashboardBotsRankingData(analysesByBot);
+    renderDashboardBotsTable();
   } catch (err) {
     console.error('No se pudo actualizar el dashboard', err);
     dashboardMessagesLoading = false;
     updateDashboardSummaryText();
+    dashboardAnalysesByBot = {};
     updateDashboardBotsRankingData(null);
+    renderDashboardBotsTable();
   }
 }
 
