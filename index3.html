@@ -2195,7 +2195,7 @@ function renderDashboardBotsTable() {
       editBtn.setAttribute('data-dashboard-action', 'edit');
       editBtn.setAttribute('data-bot-id', botId);
       editBtn.setAttribute('aria-label', 'Editar bot');
-      editBtn.textContent = '✏️';
+      editBtn.innerHTML = '<i data-lucide="pencil" class="w-4 h-4"></i>';
 
       const cloneBtn = document.createElement('button');
       cloneBtn.type = 'button';
@@ -2203,7 +2203,7 @@ function renderDashboardBotsTable() {
       cloneBtn.setAttribute('data-dashboard-action', 'clone');
       cloneBtn.setAttribute('data-bot-id', botId);
       cloneBtn.setAttribute('aria-label', 'Clonar bot');
-      cloneBtn.textContent = '🗐';
+      cloneBtn.innerHTML = '<i data-lucide="copy" class="w-4 h-4"></i>';
 
       const deleteBtn = document.createElement('button');
       deleteBtn.type = 'button';
@@ -2211,7 +2211,7 @@ function renderDashboardBotsTable() {
       deleteBtn.setAttribute('data-dashboard-action', 'delete');
       deleteBtn.setAttribute('data-bot-id', botId);
       deleteBtn.setAttribute('aria-label', 'Eliminar bot');
-      deleteBtn.textContent = '🗑️';
+      deleteBtn.innerHTML = '<i data-lucide="trash-2" class="w-4 h-4"></i>';
 
       actionsWrapper.append(editBtn, cloneBtn, deleteBtn);
       actionsCell.appendChild(actionsWrapper);
