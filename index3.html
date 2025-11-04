@@ -992,39 +992,7 @@ body.login-view #appContainer {
               </div>
               <div class="space-y-3">
                 <label for="personalitySelect" class="block text-xs font-semibold text-gray-600 uppercase tracking-wide">Personality</label>
-                <div class="grid gap-2">
-                  <button type="button" class="personality-option" data-personality-option="friendly" aria-pressed="false">
-                    <span class="personality-option-icon">
-                      <i data-lucide="smile" class="w-4 h-4"></i>
-                    </span>
-                    <span class="personality-option-label">Friendly</span>
-                  </button>
-                  <button type="button" class="personality-option" data-personality-option="professional" aria-pressed="false">
-                    <span class="personality-option-icon">
-                      <i data-lucide="briefcase" class="w-4 h-4"></i>
-                    </span>
-                    <span class="personality-option-label">Professional</span>
-                  </button>
-                  <button type="button" class="personality-option" data-personality-option="informal" aria-pressed="false">
-                    <span class="personality-option-icon">
-                      <i data-lucide="shirt" class="w-4 h-4"></i>
-                    </span>
-                    <span class="personality-option-label">Informal</span>
-                  </button>
-                  <button type="button" class="personality-option" data-personality-option="informative" aria-pressed="false">
-                    <span class="personality-option-icon">
-                      <i data-lucide="info" class="w-4 h-4"></i>
-                    </span>
-                    <span class="personality-option-label">Informative</span>
-                  </button>
-                  <button type="button" class="personality-option" data-personality-option="empathetic" aria-pressed="false">
-                    <span class="personality-option-icon">
-                      <i data-lucide="heart" class="w-4 h-4"></i>
-                    </span>
-                    <span class="personality-option-label">Empathetic</span>
-                  </button>
-                </div>
-                <select id="personalitySelect" class="hidden">
+                <select id="personalitySelect" class="mt-2 w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-black/70 bg-white">
                   <option value="friendly">Friendly</option>
                   <option value="professional">Professional</option>
                   <option value="informal">Informal</option>
@@ -6196,8 +6164,38 @@ function initMensajes() {
     return fallback;
   }
 
+  function getLastMessageTimestamp(payload = {}) {
+    const directSources = [
+      payload.updatedAt,
+      payload.timestamp,
+      payload.lastUpdated,
+      payload.lastMessageTime,
+      payload.lastMessageTimestamp,
+      payload.lastMessage?.time,
+      payload.lastMessage?.timestamp,
+    ];
+    let latest = 0;
+    directSources.forEach((value) => {
+      const numeric = Number(value);
+      if (Number.isFinite(numeric) && numeric > latest) {
+        latest = numeric;
+      }
+    });
+    const collection = payload.mensajes || payload.messages;
+    if (collection && typeof collection === 'object') {
+      Object.values(collection).forEach((message) => {
+        if (!message) return;
+        const numeric = Number(message.time ?? message.timestamp ?? message.createdAt ?? message.updatedAt ?? 0);
+        if (Number.isFinite(numeric) && numeric > latest) {
+          latest = numeric;
+        }
+      });
+    }
+    return latest;
+  }
+
   function mapConversation(chatId, payload = {}) {
-    const updatedAt = Number(payload.updatedAt ?? payload.timestamp ?? payload.lastUpdated ?? 0);
+    const updatedAt = getLastMessageTimestamp(payload);
     return {
       chatId,
       userName: payload.userName || payload.name || '',
