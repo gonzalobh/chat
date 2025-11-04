@@ -80,12 +80,19 @@
     .chat-columns > .chat-column{height:640px;}
     .chat-column-secondary{background:#fff;border-radius:26px;padding:24px;box-shadow:0 10px 24px rgba(15,23,42,.08);border:1px solid rgba(15,23,42,.08);}
     .appearance-chip{min-width:94px;justify-content:center;font-weight:500}
-    .personality-option{display:flex;align-items:center;gap:12px;width:100%;padding:12px 16px;border-radius:16px;border:1px solid #e5e7eb;background:#fff;color:#374151;font-size:14px;font-weight:500;transition:all .2s ease;text-align:left}
-    .personality-option:hover{border-color:#d1d5db;box-shadow:0 4px 12px rgba(15,23,42,.08);color:#111}
-    .personality-option-icon{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:999px;background:#f3f4f6;color:#4b5563;flex-shrink:0}
-    .personality-option-label{flex:1}
-    .personality-option-active{border-color:#111;background:#111;color:#fff;box-shadow:0 0 0 2px rgba(17,17,17,.12)}
-    .personality-option-active .personality-option-icon{background:rgba(255,255,255,.16);color:#fff}
+    .personality-option{display:flex;align-items:center;gap:12px;width:100%;padding:10px 14px;border-radius:12px;background:transparent;color:#374151;font-size:14px;font-weight:500;transition:all .2s ease;text-align:left}
+    .personality-option:hover{background:#f3f4f6;color:#111}
+    .personality-option-icon{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:999px;background:#f3f4f6;color:#4b5563;flex-shrink:0}
+    .personality-option-label{flex:1;display:flex;align-items:center}
+    .personality-option-check{opacity:0;transition:opacity .2s ease;color:#10b981}
+    .personality-option-active{background:#eef2ff;color:#111;font-weight:600}
+    .personality-option-active .personality-option-icon{background:#e0e7ff;color:#1f2937}
+    .personality-option-active .personality-option-check{opacity:1}
+    .personality-dropdown-button{width:100%;border:1px solid #e5e7eb;border-radius:12px;padding:10px 14px;background:#fff;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 8px 18px rgba(15,23,42,.04);transition:all .2s ease;color:#1f2937}
+    .personality-dropdown-button:hover{border-color:#d1d5db;box-shadow:0 10px 24px rgba(15,23,42,.08)}
+    .personality-dropdown-button:focus{outline:none;box-shadow:0 0 0 3px rgba(17,17,17,.08)}
+    .personality-dropdown-label{display:flex;align-items:center;gap:12px;flex:1;min-width:0}
+    .personality-dropdown-menu{position:absolute;left:0;right:0;margin-top:8px;padding:8px;border-radius:14px;border:1px solid #e5e7eb;background:#fff;box-shadow:0 18px 38px rgba(15,23,42,.12);z-index:40;display:flex;flex-direction:column;gap:4px}
 aside {
   scrollbar-width: thin;
   scrollbar-color: #ccc transparent;
@@ -992,13 +999,53 @@ body.login-view #appContainer {
               </div>
               <div class="space-y-3">
                 <label for="personalitySelect" class="block text-xs font-semibold text-gray-600 uppercase tracking-wide">Personality</label>
-                <select id="personalitySelect" class="mt-2 w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-black/70 bg-white">
-                  <option value="friendly">Friendly</option>
-                  <option value="professional">Professional</option>
-                  <option value="informal">Informal</option>
-                  <option value="informative">Informative</option>
-                  <option value="empathetic">Empathetic</option>
-                </select>
+                <div class="mt-2 relative">
+                  <select id="personalitySelect" class="hidden">
+                    <option value="friendly">Friendly</option>
+                    <option value="professional">Professional</option>
+                    <option value="informal">Informal</option>
+                    <option value="informative">Informative</option>
+                    <option value="empathetic">Empathetic</option>
+                  </select>
+                  <div id="personalityDropdown" class="relative">
+                    <button type="button" id="personalityDropdownButton" class="personality-dropdown-button" aria-haspopup="listbox" aria-expanded="false">
+                      <span class="personality-dropdown-label">
+                        <span id="personalityDropdownIcon" class="personality-option-icon">
+                          <i data-lucide="smile" class="w-4 h-4"></i>
+                        </span>
+                        <span id="personalityDropdownLabel" class="truncate">Friendly</span>
+                      </span>
+                      <i id="personalityDropdownChevron" data-lucide="chevron-down" class="w-4 h-4 text-gray-400"></i>
+                    </button>
+                    <div id="personalityDropdownMenu" class="personality-dropdown-menu hidden" role="listbox">
+                      <button type="button" class="personality-option" data-personality-option="friendly" aria-pressed="false" role="option">
+                        <span class="personality-option-icon"><i data-lucide="smile" class="w-5 h-5"></i></span>
+                        <span class="personality-option-label">Friendly</span>
+                        <i data-lucide="check" class="personality-option-check w-4 h-4"></i>
+                      </button>
+                      <button type="button" class="personality-option" data-personality-option="professional" aria-pressed="false" role="option">
+                        <span class="personality-option-icon"><i data-lucide="briefcase" class="w-5 h-5"></i></span>
+                        <span class="personality-option-label">Professional</span>
+                        <i data-lucide="check" class="personality-option-check w-4 h-4"></i>
+                      </button>
+                      <button type="button" class="personality-option" data-personality-option="informal" aria-pressed="false" role="option">
+                        <span class="personality-option-icon"><i data-lucide="shirt" class="w-5 h-5"></i></span>
+                        <span class="personality-option-label">Informal</span>
+                        <i data-lucide="check" class="personality-option-check w-4 h-4"></i>
+                      </button>
+                      <button type="button" class="personality-option" data-personality-option="informative" aria-pressed="false" role="option">
+                        <span class="personality-option-icon"><i data-lucide="info" class="w-5 h-5"></i></span>
+                        <span class="personality-option-label">Informative</span>
+                        <i data-lucide="check" class="personality-option-check w-4 h-4"></i>
+                      </button>
+                      <button type="button" class="personality-option" data-personality-option="empathetic" aria-pressed="false" role="option">
+                        <span class="personality-option-icon"><i data-lucide="heart" class="w-5 h-5"></i></span>
+                        <span class="personality-option-label">Empathetic</span>
+                        <i data-lucide="check" class="personality-option-check w-4 h-4"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div class="flex items-center justify-between gap-4 border border-gray-200 rounded-2xl px-4 py-3 bg-gray-50">
@@ -5333,6 +5380,11 @@ function initSettingsTab(){
   // Assistant personality
   const personalitySelect = $('personalitySelect');
   const personalityButtons = Array.from(document.querySelectorAll('[data-personality-option]'));
+  const personalityDropdown = $('personalityDropdown');
+  const personalityDropdownButton = $('personalityDropdownButton');
+  const personalityDropdownMenu = $('personalityDropdownMenu');
+  const personalityDropdownIcon = $('personalityDropdownIcon');
+  const personalityDropdownLabel = $('personalityDropdownLabel');
   const persRef = eref('config/personality');
   const personalityValues = Array.from(personalitySelect?.options || []).map(opt => opt.value);
   const personalityAliases = {
@@ -5351,6 +5403,42 @@ function initSettingsTab(){
     return personalityValues[0] || '';
   };
 
+  const closePersonalityMenu = () => {
+    if (!personalityDropdownMenu) return;
+    personalityDropdownMenu.classList.add('hidden');
+    personalityDropdownButton?.setAttribute('aria-expanded', 'false');
+  };
+
+  const openPersonalityMenu = () => {
+    if (!personalityDropdownMenu) return;
+    personalityDropdownMenu.classList.remove('hidden');
+    personalityDropdownButton?.setAttribute('aria-expanded', 'true');
+  };
+
+  const updatePersonalityDropdownDisplay = (value) => {
+    if (!personalityDropdownMenu) return;
+    const activeBtn = personalityDropdownMenu.querySelector(`[data-personality-option="${value}"]`);
+    const labelText = activeBtn?.querySelector('.personality-option-label')?.textContent?.trim() || value;
+    if (personalityDropdownLabel) {
+      personalityDropdownLabel.textContent = labelText;
+    }
+    if (personalityDropdownIcon) {
+      personalityDropdownIcon.innerHTML = '';
+      const iconSource = activeBtn?.querySelector('svg') || activeBtn?.querySelector('[data-lucide]');
+      if (iconSource) {
+        const clone = iconSource.cloneNode(true);
+        if (clone.classList) {
+          clone.classList.remove('w-5', 'h-5');
+          clone.classList.add('w-4', 'h-4');
+        }
+        personalityDropdownIcon.appendChild(clone);
+        if (clone.tagName && clone.tagName.toLowerCase() === 'i' && window.lucide) {
+          window.lucide.createIcons();
+        }
+      }
+    }
+  };
+
   const applyPersonalitySelection = (value) => {
     if (!personalitySelect) return;
     const normalized = normalizePersonality(value);
@@ -5360,6 +5448,7 @@ function initSettingsTab(){
       btn.classList.toggle('personality-option-active', isActive);
       btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
     });
+    updatePersonalityDropdownDisplay(normalized);
   };
 
   persRef.once('value', s=>{
@@ -5376,7 +5465,31 @@ function initSettingsTab(){
     applyPersonalitySelection(personalitySelect.value);
     await persRef.set(personalitySelect.value);
     toast(t('✔ Personality updated'));
+    closePersonalityMenu();
   }));
+
+  if (personalityDropdownButton && !personalityDropdownButton.dataset.bound) {
+    personalityDropdownButton.addEventListener('click', (event) => {
+      event.preventDefault();
+      if (!personalityDropdownMenu) return;
+      if (personalityDropdownMenu.classList.contains('hidden')) {
+        openPersonalityMenu();
+      } else {
+        closePersonalityMenu();
+      }
+    });
+    personalityDropdownButton.dataset.bound = 'true';
+  }
+
+  if (!window.__personalityDropdownCloseListener) {
+    window.__personalityDropdownCloseListener = (event) => {
+      if (!personalityDropdown) return;
+      if (!personalityDropdown.contains(event.target)) {
+        closePersonalityMenu();
+      }
+    };
+    document.addEventListener('click', window.__personalityDropdownCloseListener);
+  }
 
   personalityButtons.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -5390,6 +5503,7 @@ function initSettingsTab(){
       }
       personalitySelect.value = normalized;
       personalitySelect.dispatchEvent(new Event('change', { bubbles: true }));
+      closePersonalityMenu();
     });
   });
   
