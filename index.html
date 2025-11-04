@@ -1898,6 +1898,8 @@ let dashboardLastMetrics = { conversations: 0, messages: 0 };
 let dashboardMensajesRef = null;
 let dashboardMessagesCache = {};
 let dashboardMessagesReady = false;
+let dashboardUseBotConversations = false;
+const dashboardBotConversationRefs = {};
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
 
@@ -1957,6 +1959,62 @@ function formatDashboardNumber(value) {
   } catch (err) {
     return numeric.toString();
   }
+}
+
+function detachDashboardBotConversationListeners() {
+  Object.values(dashboardBotConversationRefs).forEach(({ ref, handler }) => {
+    ref.off('value', handler);
+  });
+  Object.keys(dashboardBotConversationRefs).forEach((key) => {
+    delete dashboardBotConversationRefs[key];
+  });
+}
+
+function updateDashboardBotConversationListeners(botIds = []) {
+  if (!dashboardUseBotConversations) return;
+  const desired = new Set(botIds.filter(Boolean));
+
+  Object.entries(dashboardBotConversationRefs).forEach(([botId, entry]) => {
+    if (!desired.has(botId)) {
+      entry.ref.off('value', entry.handler);
+      delete dashboardBotConversationRefs[botId];
+      delete dashboardMessagesCache[botId];
+    }
+  });
+
+  botIds.forEach((botId) => {
+    if (!botId || dashboardBotConversationRefs[botId]) return;
+    const ref = firebase.database().ref(`empresas/${EMPRESA}/bots/${botId}/conversaciones`);
+    const handler = (snap) => {
+      dashboardMessagesCache[botId] = snap.val() || {};
+      dashboardMessagesReady = true;
+      scheduleDashboardRefresh();
+    };
+    const errorHandler = (err) => {
+      console.warn(`No se pudieron escuchar las conversaciones del bot ${botId}`, err);
+    };
+    ref.on('value', handler, errorHandler);
+    dashboardBotConversationRefs[botId] = { ref, handler };
+  });
+}
+
+function disableDashboardBotConversationFallback() {
+  if (!dashboardUseBotConversations) return;
+  dashboardUseBotConversations = false;
+  detachDashboardBotConversationListeners();
+}
+
+function enableDashboardBotConversationFallback() {
+  if (dashboardUseBotConversations) return;
+  dashboardUseBotConversations = true;
+  if (dashboardMensajesRef) {
+    dashboardMensajesRef.off();
+    dashboardMensajesRef = null;
+  }
+  dashboardMessagesCache = {};
+  updateDashboardBotConversationListeners(getDashboardBotIds());
+  dashboardMessagesReady = true;
+  scheduleDashboardRefresh();
 }
 
 function updateDashboardSummaryText() {
@@ -2465,6 +2523,9 @@ function initDashboard() {
     if (Object.keys(dashboardConfigBotsData || {}).length === 0) {
       renderDashboardBotsTable();
     }
+    if (dashboardUseBotConversations) {
+      updateDashboardBotConversationListeners(getDashboardBotIds());
+    }
   });
 
   const configBotsRef = firebase.database().ref(`empresas/${EMPRESA}/config/bots`);
@@ -2473,6 +2534,9 @@ function initDashboard() {
     populateDashboardFilterOptions();
     renderDashboardBotsTable();
     scheduleDashboardRefresh();
+    if (dashboardUseBotConversations) {
+      updateDashboardBotConversationListeners(getDashboardBotIds());
+    }
   });
 
   const repliesRef = firebase.database().ref(`empresas/${EMPRESA}/config/chatReplies`);
@@ -2481,15 +2545,20 @@ function initDashboard() {
     updateDashboardSummaryText();
   });
 
-  if (!dashboardMensajesRef) {
+  if (!dashboardMensajesRef && !dashboardUseBotConversations) {
     dashboardMensajesRef = firebase.database().ref(`mensajes/${EMPRESA}`);
     dashboardMensajesRef.on('value', (snap) => {
       dashboardMessagesCache = snap.val() || {};
       dashboardMessagesReady = true;
+      disableDashboardBotConversationFallback();
       scheduleDashboardRefresh();
     }, (err) => {
       console.warn('No se pudieron escuchar los mensajes del dashboard', err);
+      dashboardMessagesReady = true;
+      enableDashboardBotConversationFallback();
     });
+  } else if (dashboardUseBotConversations) {
+    updateDashboardBotConversationListeners(getDashboardBotIds());
   }
 
   populateDashboardFilterOptions();
