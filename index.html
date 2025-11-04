@@ -1895,11 +1895,6 @@ let dashboardChartInstance = null;
 let dashboardRefreshScheduled = false;
 let dashboardMessagesLoading = false;
 let dashboardLastMetrics = { conversations: 0, messages: 0 };
-let dashboardMensajesRef = null;
-let dashboardMessagesCache = {};
-let dashboardMessagesReady = false;
-let dashboardUseBotConversations = false;
-const dashboardBotConversationRefs = {};
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
 
@@ -1959,62 +1954,6 @@ function formatDashboardNumber(value) {
   } catch (err) {
     return numeric.toString();
   }
-}
-
-function detachDashboardBotConversationListeners() {
-  Object.values(dashboardBotConversationRefs).forEach(({ ref, handler }) => {
-    ref.off('value', handler);
-  });
-  Object.keys(dashboardBotConversationRefs).forEach((key) => {
-    delete dashboardBotConversationRefs[key];
-  });
-}
-
-function updateDashboardBotConversationListeners(botIds = []) {
-  if (!dashboardUseBotConversations) return;
-  const desired = new Set(botIds.filter(Boolean));
-
-  Object.entries(dashboardBotConversationRefs).forEach(([botId, entry]) => {
-    if (!desired.has(botId)) {
-      entry.ref.off('value', entry.handler);
-      delete dashboardBotConversationRefs[botId];
-      delete dashboardMessagesCache[botId];
-    }
-  });
-
-  botIds.forEach((botId) => {
-    if (!botId || dashboardBotConversationRefs[botId]) return;
-    const ref = firebase.database().ref(`empresas/${EMPRESA}/bots/${botId}/conversaciones`);
-    const handler = (snap) => {
-      dashboardMessagesCache[botId] = snap.val() || {};
-      dashboardMessagesReady = true;
-      scheduleDashboardRefresh();
-    };
-    const errorHandler = (err) => {
-      console.warn(`No se pudieron escuchar las conversaciones del bot ${botId}`, err);
-    };
-    ref.on('value', handler, errorHandler);
-    dashboardBotConversationRefs[botId] = { ref, handler };
-  });
-}
-
-function disableDashboardBotConversationFallback() {
-  if (!dashboardUseBotConversations) return;
-  dashboardUseBotConversations = false;
-  detachDashboardBotConversationListeners();
-}
-
-function enableDashboardBotConversationFallback() {
-  if (dashboardUseBotConversations) return;
-  dashboardUseBotConversations = true;
-  if (dashboardMensajesRef) {
-    dashboardMensajesRef.off();
-    dashboardMensajesRef = null;
-  }
-  dashboardMessagesCache = {};
-  updateDashboardBotConversationListeners(getDashboardBotIds());
-  dashboardMessagesReady = true;
-  scheduleDashboardRefresh();
 }
 
 function updateDashboardSummaryText() {
@@ -2151,13 +2090,12 @@ function populateDashboardFilterOptions() {
 }
 
 function renderDashboardBotsTable() {
-  // Llenar tabla de bots
   const tbody = $('dashboardBotsTableBody');
   if (!tbody) return;
   tbody.innerHTML = '';
 
-  const entries = Object.entries(dashboardConfigBotsData || {});
-  if (!entries.length) {
+  const ids = getDashboardBotIds();
+  if (!ids.length) {
     const emptyRow = document.createElement('tr');
     const emptyCell = document.createElement('td');
     emptyCell.colSpan = 3;
@@ -2167,6 +2105,13 @@ function renderDashboardBotsTable() {
     tbody.appendChild(emptyRow);
     return;
   }
+
+  const entries = ids.map((botId) => [
+    botId,
+    (dashboardConfigBotsData && dashboardConfigBotsData[botId]) ||
+    (dashboardBotsData && dashboardBotsData[botId]) ||
+    {}
+  ]);
 
   entries
     .sort((a, b) => getDashboardBotName(a[0]).toLowerCase().localeCompare(getDashboardBotName(b[0]).toLowerCase()))
@@ -2202,7 +2147,10 @@ function renderDashboardBotsTable() {
       const statusWrapper = document.createElement('div');
       statusWrapper.className = 'inline-flex items-center gap-2';
       const statusDot = document.createElement('span');
-      const isActive = botData?.tgChatVisible === true;
+const isActive =
+  botData?.config?.chatVisible === true ||
+  botData?.chatVisible === true ||
+  botData?.tgChatVisible === true;
       statusDot.className = `h-2.5 w-2.5 rounded-full ${isActive ? 'bg-emerald-500' : 'bg-rose-500'}`;
       const statusLabel = document.createElement('span');
       statusLabel.className = 'text-sm text-gray-600';
@@ -2421,29 +2369,39 @@ async function refreshDashboardData() {
   dashboardMessagesLoading = true;
   updateDashboardSummaryText();
 
-  if (!dashboardMessagesReady) {
-    return;
-  }
-
   try {
-    // Cargar métricas
-    const snapshots = targetIds.map((botId) => ({
-      botId,
-      data: dashboardMessagesCache?.[botId] || {}
+    const snapshots = await Promise.all(targetIds.map(async (botId) => {
+      try {
+const snap = await firebase.database().ref(`empresas/${EMPRESA}/bots/${botId}/conversaciones`).once('value');
+        return { botId, data: snap.val() || {} };
+      } catch (err) {
+        console.warn('No se pudieron leer los mensajes del bot', botId, err);
+        return { botId, data: {} };
+      }
     }));
 
+    let conversations = 0;
+    let messages = 0;
     const messageTimestamps = [];
     const conversationStartTimestamps = [];
 
     snapshots.forEach(({ data }) => {
       Object.values(data || {}).forEach((chatPayload) => {
         if (!chatPayload || typeof chatPayload !== 'object') return;
+        conversations += 1;
+        const fallbackTs = extractDashboardTimestamp(chatPayload);
+if (fallbackTs) {
+  messageTimestamps.push(fallbackTs);
+  conversationStartTimestamps.push(fallbackTs);
+}
+
         const collection = chatPayload.messages || chatPayload.mensajes || {};
         const messagesArray = Array.isArray(collection) ? collection : Object.values(collection || {});
         let firstMessageTs = null;
         if (messagesArray && messagesArray.length) {
           messagesArray.forEach((msg) => {
             if (!msg) return;
+            messages += 1;
             const ts = extractDashboardTimestamp(msg);
             if (ts) {
               messageTimestamps.push(ts);
@@ -2458,6 +2416,7 @@ async function refreshDashboardData() {
           const values = Array.isArray(fallbackMessages) ? fallbackMessages : Object.values(fallbackMessages || {});
           values.forEach((msg) => {
             if (!msg) return;
+            messages += 1;
             const ts = extractDashboardTimestamp(msg);
             if (ts) {
               messageTimestamps.push(ts);
@@ -2479,16 +2438,10 @@ async function refreshDashboardData() {
       });
     });
 
-    const currentDate = new Date();
-    const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getTime();
-    const monthConversations = conversationStartTimestamps.filter(ts => ts >= startOfMonth).length;
-    const monthMessages = messageTimestamps.filter(ts => ts >= startOfMonth).length;
-
-    dashboardLastMetrics = { conversations: monthConversations, messages: monthMessages };
+    dashboardLastMetrics = { conversations, messages };
     dashboardMessagesLoading = false;
     updateDashboardSummaryText();
     computeDashboardMessageMetrics(messageTimestamps);
-    // Actualizar gráfico
     buildDashboardChart(conversationStartTimestamps);
   } catch (err) {
     console.error('No se pudo actualizar el dashboard', err);
@@ -2523,9 +2476,6 @@ function initDashboard() {
     if (Object.keys(dashboardConfigBotsData || {}).length === 0) {
       renderDashboardBotsTable();
     }
-    if (dashboardUseBotConversations) {
-      updateDashboardBotConversationListeners(getDashboardBotIds());
-    }
   });
 
   const configBotsRef = firebase.database().ref(`empresas/${EMPRESA}/config/bots`);
@@ -2534,9 +2484,6 @@ function initDashboard() {
     populateDashboardFilterOptions();
     renderDashboardBotsTable();
     scheduleDashboardRefresh();
-    if (dashboardUseBotConversations) {
-      updateDashboardBotConversationListeners(getDashboardBotIds());
-    }
   });
 
   const repliesRef = firebase.database().ref(`empresas/${EMPRESA}/config/chatReplies`);
@@ -2544,22 +2491,6 @@ function initDashboard() {
     dashboardActiveRepliesCount = countActiveChatReplies(snap.val());
     updateDashboardSummaryText();
   });
-
-  if (!dashboardMensajesRef && !dashboardUseBotConversations) {
-    dashboardMensajesRef = firebase.database().ref(`mensajes/${EMPRESA}`);
-    dashboardMensajesRef.on('value', (snap) => {
-      dashboardMessagesCache = snap.val() || {};
-      dashboardMessagesReady = true;
-      disableDashboardBotConversationFallback();
-      scheduleDashboardRefresh();
-    }, (err) => {
-      console.warn('No se pudieron escuchar los mensajes del dashboard', err);
-      dashboardMessagesReady = true;
-      enableDashboardBotConversationFallback();
-    });
-  } else if (dashboardUseBotConversations) {
-    updateDashboardBotConversationListeners(getDashboardBotIds());
-  }
 
   populateDashboardFilterOptions();
   dashboardMessagesLoading = true;
