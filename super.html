@@ -95,6 +95,74 @@
           <p id="create-message" class="mt-3 text-sm hidden"></p>
         </section>
 
+        <section id="bot-ranking-card" class="bg-white rounded-2xl shadow p-6 space-y-5">
+          <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+            <div>
+              <h2 class="text-xl font-semibold">Ranking de bots por mensajes</h2>
+              <p class="text-sm text-slate-500">
+                Consulta los 5 bots con más mensajes enviados en el periodo seleccionado.
+              </p>
+            </div>
+            <div class="flex flex-wrap items-end gap-3">
+              <div>
+                <label for="bot-ranking-filter" class="block text-xs font-medium uppercase tracking-wide text-slate-500">
+                  Periodo
+                </label>
+                <select
+                  id="bot-ranking-filter"
+                  class="mt-1 w-40 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="day">Día</option>
+                  <option value="month" selected>Mes</option>
+                  <option value="year">Año</option>
+                </select>
+              </div>
+              <div id="bot-ranking-day-wrapper" class="hidden">
+                <label for="bot-ranking-day" class="block text-xs font-medium uppercase tracking-wide text-slate-500">
+                  Fecha
+                </label>
+                <input
+                  type="date"
+                  id="bot-ranking-day"
+                  class="mt-1 w-44 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div id="bot-ranking-month-wrapper" class="hidden">
+                <label for="bot-ranking-month" class="block text-xs font-medium uppercase tracking-wide text-slate-500">
+                  Mes
+                </label>
+                <input
+                  type="month"
+                  id="bot-ranking-month"
+                  class="mt-1 w-44 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div id="bot-ranking-year-wrapper" class="hidden">
+                <label for="bot-ranking-year" class="block text-xs font-medium uppercase tracking-wide text-slate-500">
+                  Año
+                </label>
+                <input
+                  type="number"
+                  min="2000"
+                  max="2100"
+                  step="1"
+                  id="bot-ranking-year"
+                  class="mt-1 w-28 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div id="bot-ranking-loader" class="flex items-center gap-3 text-sm text-slate-500">
+            <div class="h-5 w-5 border-2 border-slate-200 border-t-blue-500 rounded-full animate-spin"></div>
+            Cargando ranking...
+          </div>
+
+          <p id="bot-ranking-empty" class="text-sm text-slate-500 hidden"></p>
+
+          <ol id="bot-ranking-list" class="space-y-3 hidden"></ol>
+        </section>
+
         <section class="bg-white rounded-2xl shadow p-6">
           <div class="flex items-center justify-between mb-4">
             <h2 class="text-xl font-semibold">Empresas registradas</h2>
@@ -199,6 +267,18 @@ const firebaseConfig = {
       const companyCount = document.getElementById("company-count");
       const logoutBtn = document.getElementById("logout-btn");
 
+      const rankingCard = document.getElementById("bot-ranking-card");
+      const rankingFilter = document.getElementById("bot-ranking-filter");
+      const rankingDayWrapper = document.getElementById("bot-ranking-day-wrapper");
+      const rankingMonthWrapper = document.getElementById("bot-ranking-month-wrapper");
+      const rankingYearWrapper = document.getElementById("bot-ranking-year-wrapper");
+      const rankingDayInput = document.getElementById("bot-ranking-day");
+      const rankingMonthInput = document.getElementById("bot-ranking-month");
+      const rankingYearInput = document.getElementById("bot-ranking-year");
+      const rankingList = document.getElementById("bot-ranking-list");
+      const rankingEmpty = document.getElementById("bot-ranking-empty");
+      const rankingLoader = document.getElementById("bot-ranking-loader");
+
       const editModal = document.getElementById("edit-modal");
       const editForm = document.getElementById("edit-form");
       const editAdminEmail = document.getElementById("edit-admin-email");
@@ -211,7 +291,313 @@ const firebaseConfig = {
       let companiesRef = null;
       let currentEditCompany = null;
 
+      let botRankingRef = null;
+      let botRankingData = null;
+      let botRankingLoaded = false;
+
       const invalidKeyChars = /[.#$\[\]]/;
+
+      const DAY_IN_MS = 24 * 60 * 60 * 1000;
+
+      const setRankingMessage = (message) => {
+        if (!rankingEmpty) return;
+        if (message) {
+          rankingEmpty.textContent = message;
+          rankingEmpty.classList.remove("hidden");
+        } else {
+          rankingEmpty.textContent = "";
+          rankingEmpty.classList.add("hidden");
+        }
+      };
+
+      const setRankingLoading = (loading) => {
+        if (!rankingLoader) return;
+        rankingLoader.classList.toggle("hidden", !loading);
+        if (loading) {
+          if (rankingList) rankingList.classList.add("hidden");
+          setRankingMessage("");
+        }
+      };
+
+      const formatRankingNumber = (value) => {
+        const numeric = Number(value) || 0;
+        try {
+          return new Intl.NumberFormat("es-ES").format(numeric);
+        } catch (error) {
+          return numeric.toString();
+        }
+      };
+
+      const normalizeRankingTimestamp = (value) => {
+        if (value === null || value === undefined) return null;
+        if (typeof value === "number") {
+          if (!Number.isFinite(value) || value <= 0) return null;
+          return value < 1e12 ? value * 1000 : value;
+        }
+        if (typeof value === "string") {
+          const trimmed = value.trim();
+          if (!trimmed) return null;
+          const numeric = Number(trimmed);
+          if (Number.isFinite(numeric) && numeric > 0) {
+            return numeric < 1e12 ? numeric * 1000 : numeric;
+          }
+          const parsed = Date.parse(trimmed);
+          if (!Number.isNaN(parsed)) return parsed;
+        }
+        return null;
+      };
+
+      const extractRankingTimestamp = (source) => {
+        if (!source || typeof source !== "object") return null;
+        const candidates = [
+          "timestamp",
+          "time",
+          "createdAt",
+          "updatedAt",
+          "date",
+          "sentAt",
+          "firstMessageAt",
+        ];
+        for (const key of candidates) {
+          const normalized = normalizeRankingTimestamp(source[key]);
+          if (normalized) return normalized;
+        }
+        return null;
+      };
+
+      const countMessagesInRange = (botNode, start, end) => {
+        if (!botNode || typeof botNode !== "object") return 0;
+        const conversations = botNode.conversaciones || botNode.conversations || {};
+        let total = 0;
+        Object.values(conversations || {}).forEach((conversation) => {
+          if (!conversation || typeof conversation !== "object") return;
+          const rawCollection = conversation.mensajes || conversation.messages || {};
+          const messages = Array.isArray(rawCollection)
+            ? rawCollection
+            : Object.values(rawCollection || {});
+          if (messages.length) {
+            messages.forEach((message) => {
+              const ts = extractRankingTimestamp(message);
+              if (ts && ts >= start && ts < end) {
+                total += 1;
+              }
+            });
+          } else {
+            const fallbackTs = extractRankingTimestamp(conversation);
+            if (fallbackTs && fallbackTs >= start && fallbackTs < end) {
+              total += 1;
+            }
+          }
+        });
+        return total;
+      };
+
+      const getBotDisplayName = (botId, botNode, configNode) => {
+        const label =
+          botNode?.config?.hotelName ||
+          botNode?.name ||
+          configNode?.config?.hotelName ||
+          configNode?.name ||
+          botId;
+        return label ? label.toString() : botId;
+      };
+
+      const getRankingRange = () => {
+        if (!rankingFilter) return null;
+        const mode = rankingFilter.value;
+        if (mode === "day") {
+          const value = rankingDayInput?.value;
+          if (!value) return null;
+          const start = new Date(`${value}T00:00:00`).getTime();
+          if (!Number.isFinite(start)) return null;
+          return { start, end: start + DAY_IN_MS };
+        }
+        if (mode === "month") {
+          const value = rankingMonthInput?.value;
+          if (!value) return null;
+          const [yearStr, monthStr] = value.split("-");
+          const year = Number(yearStr);
+          const month = Number(monthStr);
+          if (!Number.isFinite(year) || !Number.isFinite(month)) return null;
+          const start = new Date(year, month - 1, 1).getTime();
+          const end = new Date(year, month, 1).getTime();
+          if (!Number.isFinite(start) || !Number.isFinite(end)) return null;
+          return { start, end };
+        }
+        if (mode === "year") {
+          const rawYear = rankingYearInput?.value;
+          const year = Number(rawYear);
+          if (!Number.isFinite(year)) return null;
+          const start = new Date(year, 0, 1).getTime();
+          const end = new Date(year + 1, 0, 1).getTime();
+          if (!Number.isFinite(start) || !Number.isFinite(end)) return null;
+          return { start, end };
+        }
+        return null;
+      };
+
+      const updateRankingInputsVisibility = () => {
+        if (!rankingFilter) return;
+        const mode = rankingFilter.value;
+        if (rankingDayWrapper)
+          rankingDayWrapper.classList.toggle("hidden", mode !== "day");
+        if (rankingMonthWrapper)
+          rankingMonthWrapper.classList.toggle("hidden", mode !== "month");
+        if (rankingYearWrapper)
+          rankingYearWrapper.classList.toggle("hidden", mode !== "year");
+      };
+
+      const renderBotRanking = () => {
+        if (!rankingCard || !botRankingLoaded) return;
+        const range = getRankingRange();
+        if (!range) {
+          if (rankingList) rankingList.classList.add("hidden");
+          setRankingMessage("Selecciona un periodo válido para ver el ranking.");
+          return;
+        }
+        if (!botRankingData || !Object.keys(botRankingData).length) {
+          if (rankingList) rankingList.classList.add("hidden");
+          setRankingMessage("No hay datos de bots disponibles.");
+          return;
+        }
+
+        const entries = [];
+        Object.entries(botRankingData || {}).forEach(([companyName, companyData]) => {
+          if (!companyData || typeof companyData !== "object") return;
+          const bots = companyData.bots || {};
+          const configBots = companyData.config?.bots || {};
+          const botIds = new Set([
+            ...Object.keys(bots || {}),
+            ...Object.keys(configBots || {}),
+          ]);
+          botIds.forEach((botId) => {
+            const botNode = bots?.[botId];
+            const configNode = configBots?.[botId];
+            if (!botNode && !configNode) return;
+            const count = countMessagesInRange(botNode, range.start, range.end);
+            entries.push({
+              company: companyName,
+              botId,
+              label: getBotDisplayName(botId, botNode, configNode),
+              count,
+            });
+          });
+        });
+
+        if (!entries.length) {
+          if (rankingList) rankingList.classList.add("hidden");
+          setRankingMessage("No hay bots registrados en la base de datos.");
+          return;
+        }
+
+        entries.sort((a, b) => {
+          if (b.count !== a.count) return b.count - a.count;
+          return a.label.localeCompare(b.label);
+        });
+
+        const topEntries = entries.slice(0, 5);
+        if (rankingList) {
+          rankingList.innerHTML = "";
+          topEntries.forEach((entry, index) => {
+            const item = document.createElement("li");
+            item.className =
+              "flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50/60 px-4 py-3";
+            item.innerHTML = `
+              <div class="flex items-center gap-3">
+                <span class="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-sm font-semibold text-blue-600">${
+                  index + 1
+                }</span>
+                <div>
+                  <p class="font-medium text-slate-700">${entry.label}</p>
+                  <p class="text-xs text-slate-500">${entry.company} · ${entry.botId}</p>
+                </div>
+              </div>
+              <span class="text-sm font-semibold text-slate-700">${formatRankingNumber(
+                entry.count
+              )} mensajes</span>
+            `;
+            rankingList.appendChild(item);
+          });
+          rankingList.classList.remove("hidden");
+        }
+
+        const hasMessages = topEntries.some((entry) => entry.count > 0);
+        setRankingMessage(
+          hasMessages
+            ? ""
+            : "No se registraron mensajes en el periodo seleccionado."
+        );
+      };
+
+      const detachBotRankingListener = () => {
+        if (botRankingRef) {
+          botRankingRef.off();
+          botRankingRef = null;
+        }
+        botRankingData = null;
+        botRankingLoaded = false;
+        if (rankingList) {
+          rankingList.innerHTML = "";
+          rankingList.classList.add("hidden");
+        }
+        setRankingMessage("");
+        setRankingLoading(false);
+      };
+
+      const attachBotRankingListener = () => {
+        if (!rankingCard) return;
+        detachBotRankingListener();
+        setRankingLoading(true);
+        botRankingRef = db.ref("empresas");
+        botRankingRef.on(
+          "value",
+          (snapshot) => {
+            botRankingData = snapshot.val() || {};
+            botRankingLoaded = true;
+            setRankingLoading(false);
+            renderBotRanking();
+          },
+          (error) => {
+            console.error("No se pudo cargar el ranking de bots", error);
+            botRankingData = {};
+            botRankingLoaded = true;
+            setRankingLoading(false);
+            if (rankingList) rankingList.classList.add("hidden");
+            setRankingMessage("No se pudo cargar el ranking de bots.");
+          }
+        );
+      };
+
+      if (rankingFilter) {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, "0");
+        const day = String(today.getDate()).padStart(2, "0");
+        if (rankingDayInput && !rankingDayInput.value)
+          rankingDayInput.value = `${year}-${month}-${day}`;
+        if (rankingMonthInput && !rankingMonthInput.value)
+          rankingMonthInput.value = `${year}-${month}`;
+        if (rankingYearInput && !rankingYearInput.value)
+          rankingYearInput.value = String(year);
+        updateRankingInputsVisibility();
+      }
+
+      if (rankingFilter) {
+        rankingFilter.addEventListener("change", () => {
+          updateRankingInputsVisibility();
+          renderBotRanking();
+        });
+      }
+
+      [rankingDayInput, rankingMonthInput, rankingYearInput].forEach((input) => {
+        if (!input) return;
+        input.addEventListener("change", () => {
+          renderBotRanking();
+        });
+        input.addEventListener("input", () => {
+          renderBotRanking();
+        });
+      });
 
       const setVisible = (el, show) => {
         el.classList.toggle("hidden", !show);
@@ -409,6 +795,7 @@ const firebaseConfig = {
         hideMessage(loginError);
         if (!user) {
           detachCompaniesListener();
+          detachBotRankingListener();
           setVisible(dashboard, false);
           setVisible(unauthorizedCard, false);
           setVisible(loginCard, true);
@@ -429,8 +816,10 @@ const firebaseConfig = {
               setVisible(dashboard, true);
               companiesRef = db.ref("empresas");
               companiesRef.on("value", renderCompanies);
+              attachBotRankingListener();
             } else {
               detachCompaniesListener();
+              detachBotRankingListener();
               unauthorizedMessage.textContent =
                 "Tu cuenta no tiene permisos para acceder a este panel.";
               hideMessage(loginError);
@@ -445,6 +834,7 @@ const firebaseConfig = {
             setVisible(dashboard, false);
             setVisible(unauthorizedCard, false);
             setVisible(loginCard, true);
+            detachBotRankingListener();
           });
       });
     </script>
