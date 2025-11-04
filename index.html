@@ -855,6 +855,23 @@ body.login-view #appContainer {
       </table>
     </div>
   </div>
+
+  <div class="card p-6 space-y-4">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2 text-sm font-semibold text-gray-700">
+        <i data-lucide="trophy" class="w-4 h-4"></i>
+        <span>Ranking de bots por mensajes</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button type="button" class="chip dashboard-ranking-filter" data-dashboard-ranking="day">Hoy</button>
+        <button type="button" class="chip dashboard-ranking-filter active" data-dashboard-ranking="month">Mes</button>
+        <button type="button" class="chip dashboard-ranking-filter" data-dashboard-ranking="year">Año</button>
+      </div>
+    </div>
+    <div id="dashboardBotsRankingList" class="space-y-3 text-sm text-gray-600">
+      <p class="text-sm text-gray-400">Cargando ranking…</p>
+    </div>
+  </div>
 </section>
 
 <!-- Chat -->
@@ -1895,6 +1912,8 @@ let dashboardChartInstance = null;
 let dashboardRefreshScheduled = false;
 let dashboardMessagesLoading = false;
 let dashboardLastMetrics = { conversations: 0, messages: 0 };
+let dashboardBotsRankingData = null;
+let dashboardBotsRankingRange = 'month';
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
 
@@ -2343,6 +2362,202 @@ function computeDashboardMessageMetrics(timestamps = []) {
   updateDashboardMetricCards({ today, week, month });
 }
 
+function analyzeDashboardBotConversations(conversationsNode) {
+  const result = {
+    messageCount: 0,
+    conversationCount: 0,
+    metricTimestamps: [],
+    actualMessageTimestamps: [],
+    conversationStartTimestamps: [],
+  };
+
+  Object.values(conversationsNode || {}).forEach((chatPayload) => {
+    if (!chatPayload || typeof chatPayload !== 'object') return;
+    result.conversationCount += 1;
+
+    const fallbackConversationTs = extractDashboardTimestamp(chatPayload);
+    if (fallbackConversationTs) {
+      result.metricTimestamps.push(fallbackConversationTs);
+      result.conversationStartTimestamps.push(fallbackConversationTs);
+    }
+
+    const collection = chatPayload.messages || chatPayload.mensajes || {};
+    const messagesArray = Array.isArray(collection) ? collection : Object.values(collection || {});
+    let firstMessageTs = null;
+
+    const recordMessage = (messagePayload) => {
+      if (!messagePayload) return;
+      result.messageCount += 1;
+      const ts = extractDashboardTimestamp(messagePayload);
+      if (ts) {
+        result.metricTimestamps.push(ts);
+        result.actualMessageTimestamps.push(ts);
+        if (!firstMessageTs || ts < firstMessageTs) {
+          firstMessageTs = ts;
+        }
+      }
+    };
+
+    if (messagesArray && messagesArray.length) {
+      messagesArray.forEach(recordMessage);
+    }
+
+    if (!messagesArray || !messagesArray.length) {
+      const fallbackMessages = chatPayload.mensajes || chatPayload.messages || {};
+      const values = Array.isArray(fallbackMessages) ? fallbackMessages : Object.values(fallbackMessages || {});
+      values.forEach(recordMessage);
+    }
+
+    if (!firstMessageTs && fallbackConversationTs) {
+      firstMessageTs = fallbackConversationTs;
+    }
+
+    if (firstMessageTs) {
+      result.conversationStartTimestamps.push(firstMessageTs);
+    }
+  });
+
+  return result;
+}
+
+function renderDashboardBotsRanking() {
+  const container = $('dashboardBotsRankingList');
+  if (!container) return;
+
+  container.innerHTML = '';
+
+  if (!dashboardBotsRankingData) {
+    const loading = document.createElement('p');
+    loading.className = 'text-sm text-gray-400';
+    loading.textContent = 'Cargando ranking…';
+    container.appendChild(loading);
+    return;
+  }
+
+  const items = dashboardBotsRankingData[dashboardBotsRankingRange] || [];
+  if (!items.length) {
+    const empty = document.createElement('p');
+    empty.className = 'text-sm text-gray-400';
+    empty.textContent = 'No hay mensajes en este periodo.';
+    container.appendChild(empty);
+    return;
+  }
+
+  const list = document.createElement('ol');
+  list.className = 'space-y-3 list-none';
+
+  items.forEach(({ botId, label, count }, index) => {
+    const item = document.createElement('li');
+    item.className = 'flex items-center justify-between gap-4 rounded-lg bg-gray-50 px-4 py-3';
+
+    const left = document.createElement('div');
+    left.className = 'flex items-center gap-3 min-w-0';
+
+    const badge = document.createElement('span');
+    badge.className = 'flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-white text-xs font-semibold text-gray-500 shadow-sm';
+    badge.textContent = String(index + 1);
+
+    const details = document.createElement('div');
+    details.className = 'min-w-0';
+
+    const nameEl = document.createElement('div');
+    nameEl.className = 'font-medium text-gray-900 truncate';
+    nameEl.textContent = label;
+
+    const idEl = document.createElement('div');
+    idEl.className = 'text-xs text-gray-500 truncate';
+    idEl.textContent = botId;
+
+    details.appendChild(nameEl);
+    details.appendChild(idEl);
+
+    left.appendChild(badge);
+    left.appendChild(details);
+
+    const countEl = document.createElement('div');
+    countEl.className = 'text-sm font-semibold text-gray-900 whitespace-nowrap';
+    countEl.innerHTML = `${formatDashboardNumber(count)} <span class="font-normal text-gray-500">mensajes</span>`;
+
+    item.appendChild(left);
+    item.appendChild(countEl);
+
+    list.appendChild(item);
+  });
+
+  container.appendChild(list);
+}
+
+function updateDashboardBotsRankingData(analysesByBot) {
+  if (!analysesByBot || Object.keys(analysesByBot).length === 0) {
+    dashboardBotsRankingData = { day: [], month: [], year: [] };
+    renderDashboardBotsRanking();
+    return;
+  }
+
+  const startToday = new Date().setHours(0, 0, 0, 0);
+  const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).getTime();
+  const startOfYear = new Date(new Date().getFullYear(), 0, 1).getTime();
+
+  const entries = Object.entries(analysesByBot).map(([botId, analysis]) => {
+    const actualTimestamps = analysis?.actualMessageTimestamps || [];
+    return {
+      botId,
+      label: getDashboardBotName(botId) || botId,
+      day: actualTimestamps.filter(ts => ts >= startToday).length,
+      month: actualTimestamps.filter(ts => ts >= startOfMonth).length,
+      year: actualTimestamps.filter(ts => ts >= startOfYear).length,
+    };
+  });
+
+  const buildRanking = (key) => entries
+    .map(({ botId, label, [key]: count }) => ({ botId, label, count }))
+    .filter(entry => entry.count > 0)
+    .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, 'es'))
+    .slice(0, 5);
+
+  dashboardBotsRankingData = {
+    day: buildRanking('day'),
+    month: buildRanking('month'),
+    year: buildRanking('year'),
+  };
+
+  renderDashboardBotsRanking();
+}
+
+function syncDashboardBotsRankingFilters() {
+  const buttons = document.querySelectorAll('[data-dashboard-ranking]');
+  buttons.forEach((button) => {
+    const range = button.dataset.dashboardRanking;
+    const isActive = range === dashboardBotsRankingRange;
+    button.classList.toggle('active', isActive);
+  });
+}
+
+function setDashboardBotsRankingRange(range) {
+  if (!range) return;
+  if (!['day', 'month', 'year'].includes(range)) return;
+  dashboardBotsRankingRange = range;
+  syncDashboardBotsRankingFilters();
+  renderDashboardBotsRanking();
+}
+
+function attachDashboardRankingListeners() {
+  const buttons = document.querySelectorAll('[data-dashboard-ranking]');
+  if (!buttons.length) return;
+
+  buttons.forEach((button) => {
+    button.addEventListener('click', (event) => {
+      event.preventDefault();
+      const range = button.dataset.dashboardRanking;
+      if (range) {
+        setDashboardBotsRankingRange(range);
+      }
+    });
+  });
+
+  setDashboardBotsRankingRange(dashboardBotsRankingRange);
+}
+
 async function refreshDashboardData() {
   if (!dashboardInitialized) return;
   const select = $('dashboardBotFilter');
@@ -2357,12 +2572,13 @@ async function refreshDashboardData() {
   const availableIds = getDashboardBotIds();
   const targetIds = dashboardSelectedBotId === '__all__' ? availableIds : availableIds.includes(dashboardSelectedBotId) ? [dashboardSelectedBotId] : availableIds;
 
-  if (!targetIds.length) {
+  if (!availableIds.length) {
     dashboardLastMetrics = { conversations: 0, messages: 0 };
     updateDashboardMetricCards({ today: 0, week: 0, month: 0 });
     buildDashboardChart([]);
     dashboardMessagesLoading = false;
     updateDashboardSummaryText();
+    updateDashboardBotsRankingData({});
     return;
   }
 
@@ -2370,7 +2586,7 @@ async function refreshDashboardData() {
   updateDashboardSummaryText();
 
   try {
-    const snapshots = await Promise.all(targetIds.map(async (botId) => {
+    const snapshots = await Promise.all(availableIds.map(async (botId) => {
       try {
 const snap = await firebase.database().ref(`empresas/${EMPRESA}/bots/${botId}/conversaciones`).once('value');
         return { botId, data: snap.val() || {} };
@@ -2380,73 +2596,36 @@ const snap = await firebase.database().ref(`empresas/${EMPRESA}/bots/${botId}/co
       }
     }));
 
+    const analysesByBot = {};
+    snapshots.forEach(({ botId, data }) => {
+      analysesByBot[botId] = analyzeDashboardBotConversations(data || {});
+    });
+
     let conversations = 0;
     let messages = 0;
-    const messageTimestamps = [];
+    const metricTimestamps = [];
     const conversationStartTimestamps = [];
 
-    snapshots.forEach(({ data }) => {
-      Object.values(data || {}).forEach((chatPayload) => {
-        if (!chatPayload || typeof chatPayload !== 'object') return;
-        conversations += 1;
-        const fallbackTs = extractDashboardTimestamp(chatPayload);
-if (fallbackTs) {
-  messageTimestamps.push(fallbackTs);
-  conversationStartTimestamps.push(fallbackTs);
-}
-
-        const collection = chatPayload.messages || chatPayload.mensajes || {};
-        const messagesArray = Array.isArray(collection) ? collection : Object.values(collection || {});
-        let firstMessageTs = null;
-        if (messagesArray && messagesArray.length) {
-          messagesArray.forEach((msg) => {
-            if (!msg) return;
-            messages += 1;
-            const ts = extractDashboardTimestamp(msg);
-            if (ts) {
-              messageTimestamps.push(ts);
-              if (!firstMessageTs || ts < firstMessageTs) {
-                firstMessageTs = ts;
-              }
-            }
-          });
-        }
-        if (!messagesArray || !messagesArray.length) {
-          const fallbackMessages = chatPayload.mensajes || chatPayload.messages || {};
-          const values = Array.isArray(fallbackMessages) ? fallbackMessages : Object.values(fallbackMessages || {});
-          values.forEach((msg) => {
-            if (!msg) return;
-            messages += 1;
-            const ts = extractDashboardTimestamp(msg);
-            if (ts) {
-              messageTimestamps.push(ts);
-              if (!firstMessageTs || ts < firstMessageTs) {
-                firstMessageTs = ts;
-              }
-            }
-          });
-        }
-        if (!firstMessageTs) {
-          const fallbackTs = extractDashboardTimestamp(chatPayload);
-          if (fallbackTs) {
-            firstMessageTs = fallbackTs;
-          }
-        }
-        if (firstMessageTs) {
-          conversationStartTimestamps.push(firstMessageTs);
-        }
-      });
+    targetIds.forEach((botId) => {
+      const analysis = analysesByBot[botId];
+      if (!analysis) return;
+      conversations += analysis.conversationCount;
+      messages += analysis.messageCount;
+      analysis.metricTimestamps.forEach(ts => metricTimestamps.push(ts));
+      analysis.conversationStartTimestamps.forEach(ts => conversationStartTimestamps.push(ts));
     });
 
     dashboardLastMetrics = { conversations, messages };
     dashboardMessagesLoading = false;
     updateDashboardSummaryText();
-    computeDashboardMessageMetrics(messageTimestamps);
+    computeDashboardMessageMetrics(metricTimestamps);
     buildDashboardChart(conversationStartTimestamps);
+    updateDashboardBotsRankingData(analysesByBot);
   } catch (err) {
     console.error('No se pudo actualizar el dashboard', err);
     dashboardMessagesLoading = false;
     updateDashboardSummaryText();
+    updateDashboardBotsRankingData(null);
   }
 }
 
@@ -2462,6 +2641,7 @@ function initDashboard() {
   dashboardInitialized = true;
 
   attachDashboardTableListeners();
+  attachDashboardRankingListeners();
 
   filterSelect.addEventListener('change', (event) => {
     dashboardSelectedBotId = event.target.value || '__all__';
