@@ -1895,6 +1895,9 @@ let dashboardChartInstance = null;
 let dashboardRefreshScheduled = false;
 let dashboardMessagesLoading = false;
 let dashboardLastMetrics = { conversations: 0, messages: 0 };
+let dashboardMensajesRef = null;
+let dashboardMessagesCache = {};
+let dashboardMessagesReady = false;
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
 
@@ -2090,6 +2093,7 @@ function populateDashboardFilterOptions() {
 }
 
 function renderDashboardBotsTable() {
+  // Llenar tabla de bots
   const tbody = $('dashboardBotsTableBody');
   if (!tbody) return;
   tbody.innerHTML = '';
@@ -2359,33 +2363,29 @@ async function refreshDashboardData() {
   dashboardMessagesLoading = true;
   updateDashboardSummaryText();
 
+  if (!dashboardMessagesReady) {
+    return;
+  }
+
   try {
-    const snapshots = await Promise.all(targetIds.map(async (botId) => {
-      try {
-        const snap = await firebase.database().ref(`mensajes/${EMPRESA}/${botId}`).once('value');
-        return { botId, data: snap.val() || {} };
-      } catch (err) {
-        console.warn('No se pudieron leer los mensajes del bot', botId, err);
-        return { botId, data: {} };
-      }
+    // Cargar métricas
+    const snapshots = targetIds.map((botId) => ({
+      botId,
+      data: dashboardMessagesCache?.[botId] || {}
     }));
 
-    let conversations = 0;
-    let messages = 0;
     const messageTimestamps = [];
     const conversationStartTimestamps = [];
 
     snapshots.forEach(({ data }) => {
       Object.values(data || {}).forEach((chatPayload) => {
         if (!chatPayload || typeof chatPayload !== 'object') return;
-        conversations += 1;
         const collection = chatPayload.messages || chatPayload.mensajes || {};
         const messagesArray = Array.isArray(collection) ? collection : Object.values(collection || {});
         let firstMessageTs = null;
         if (messagesArray && messagesArray.length) {
           messagesArray.forEach((msg) => {
             if (!msg) return;
-            messages += 1;
             const ts = extractDashboardTimestamp(msg);
             if (ts) {
               messageTimestamps.push(ts);
@@ -2400,7 +2400,6 @@ async function refreshDashboardData() {
           const values = Array.isArray(fallbackMessages) ? fallbackMessages : Object.values(fallbackMessages || {});
           values.forEach((msg) => {
             if (!msg) return;
-            messages += 1;
             const ts = extractDashboardTimestamp(msg);
             if (ts) {
               messageTimestamps.push(ts);
@@ -2422,10 +2421,16 @@ async function refreshDashboardData() {
       });
     });
 
-    dashboardLastMetrics = { conversations, messages };
+    const currentDate = new Date();
+    const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getTime();
+    const monthConversations = conversationStartTimestamps.filter(ts => ts >= startOfMonth).length;
+    const monthMessages = messageTimestamps.filter(ts => ts >= startOfMonth).length;
+
+    dashboardLastMetrics = { conversations: monthConversations, messages: monthMessages };
     dashboardMessagesLoading = false;
     updateDashboardSummaryText();
     computeDashboardMessageMetrics(messageTimestamps);
+    // Actualizar gráfico
     buildDashboardChart(conversationStartTimestamps);
   } catch (err) {
     console.error('No se pudo actualizar el dashboard', err);
@@ -2475,6 +2480,17 @@ function initDashboard() {
     dashboardActiveRepliesCount = countActiveChatReplies(snap.val());
     updateDashboardSummaryText();
   });
+
+  if (!dashboardMensajesRef) {
+    dashboardMensajesRef = firebase.database().ref(`mensajes/${EMPRESA}`);
+    dashboardMensajesRef.on('value', (snap) => {
+      dashboardMessagesCache = snap.val() || {};
+      dashboardMessagesReady = true;
+      scheduleDashboardRefresh();
+    }, (err) => {
+      console.warn('No se pudieron escuchar los mensajes del dashboard', err);
+    });
+  }
 
   populateDashboardFilterOptions();
   dashboardMessagesLoading = true;
