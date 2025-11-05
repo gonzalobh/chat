@@ -2050,6 +2050,9 @@ let isLimitedEditor = false;
 let isAllowedEditorForCurrentBot = false;
 let allowedEditorBots = new Set();
 let currentBotAllowedEditors = {};
+let currentEmpresa = null;
+let currentBot = null;
+let userRole = 'viewer';
 
 const DEFAULT_TAB_KEYS = ['dashboard', 'chat', 'mensajes', 'knowledge', 'respuestas', 'prompt', 'usuarios'];
 let TAB_KEYS = [...DEFAULT_TAB_KEYS];
@@ -3228,12 +3231,37 @@ async function loadAllowedBotsForUser(email) {
   }
 }
 
+async function findEditorAccessForEmail(email) {
+  const normalizedEmail = normalizeEmail(email);
+  if (!normalizedEmail) return null;
+  try {
+    const empresasSnap = await db.ref('empresas').once('value');
+    const empresasData = empresasSnap.val() || {};
+    for (const [empresaKey, empresaData] of Object.entries(empresasData)) {
+      const botCollections = [empresaData?.bots || {}, empresaData?.config?.bots || {}];
+      for (const bots of botCollections) {
+        if (!bots || typeof bots !== 'object') continue;
+        for (const [botKey, botData] of Object.entries(bots)) {
+          const allowedEditors = botData?.allowedEditors || {};
+          if (isEmailInAllowedEditors(allowedEditors, normalizedEmail)) {
+            return { empresa: empresaKey, bot: botKey };
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.error('No se pudo verificar allowedEditors para el usuario', err);
+  }
+  return null;
+}
+
 function redirectToBot(botId) {
   if (!botId || botId === BOT) return;
   const storageKey = `bot:${EMPRESA}`;
   localStorage.setItem(storageKey, botId);
   const url = new URL(window.location.href);
   url.searchParams.set('bot', botId);
+  currentBot = botId;
   window.location.href = url.toString();
 }
 
@@ -4710,6 +4738,14 @@ async function refreshPermissions() {
   canWriteFlag = isGlobalAdmin || isPrimaryAdmin || isAllowedEditorForCurrentBot;
   setWriteEnabled(canWriteFlag);
 
+  if (isGlobalAdmin || isPrimaryAdmin || isCompanyAdmin) {
+    userRole = 'admin';
+  } else if (isLimitedEditor) {
+    userRole = 'editor';
+  } else {
+    userRole = 'viewer';
+  }
+
   const permBannerA = document.getElementById('permBannerA');
   const permBannerS = document.getElementById('permBannerS');
   if (permBannerA) permBannerA.classList.toggle('hidden', canWriteFlag);
@@ -4752,6 +4788,10 @@ function applyRoleUI() {
   }
   TAB_KEYS = visibleTabs;
 
+  if (!TAB_KEYS.includes(currentActiveTab)) {
+    setActiveTab(TAB_KEYS[0] || 'chat');
+  }
+
   DEFAULT_TAB_KEYS.forEach((tab) => {
     const btn = document.querySelector(`.sidebar-btn[data-tab="${tab}"]`);
     if (btn) {
@@ -4780,7 +4820,7 @@ function applyRoleUI() {
 
   const botSelectorWrap = $('botSelectorWrap');
   if (botSelectorWrap) {
-    botSelectorWrap.classList.toggle('hidden', editorOnly);
+    botSelectorWrap.classList.toggle('hidden', editorOnly || userRole === 'editor');
   }
 
   const newBotBtn = $('btnNewBot');
@@ -4867,6 +4907,9 @@ function showLoginView() {
   isAllowedEditorForCurrentBot = false;
   allowedEditorBots = new Set();
   currentBotAllowedEditors = {};
+  currentEmpresa = null;
+  currentBot = null;
+  userRole = 'viewer';
   TAB_KEYS = [...DEFAULT_TAB_KEYS];
   applyRoleUI();
   document.querySelector('header')?.classList.add('hidden');
@@ -4920,13 +4963,87 @@ $('btnLogout').addEventListener('click', async () => {
 
 auth.onAuthStateChanged(async (u) => {
   if (u) {
-    const email = (u.email || '').toLowerCase();
-    const { empresa: empresaEncontrada, redirected } = await autoSelectEmpresaForUser(email);
+    const rawEmail = u.email || '';
+    const normalizedEmail = normalizeEmail(rawEmail);
+    const { empresa: empresaEncontrada, redirected } = await autoSelectEmpresaForUser(normalizedEmail);
     if (redirected) {
       return;
     }
 
-    if (!empresaEncontrada) {
+    let empresaDetectada = empresaEncontrada || null;
+    let botDetectado = null;
+    let detectedRole = empresaEncontrada ? 'admin' : 'viewer';
+
+    if (!empresaDetectada) {
+      const editorAccess = await findEditorAccessForEmail(normalizedEmail);
+      if (editorAccess) {
+        empresaDetectada = editorAccess.empresa;
+        botDetectado = editorAccess.bot;
+        detectedRole = 'editor';
+      }
+    }
+
+    try {
+      if (!empresaDetectada) {
+        const empresasSnap = await db.ref('empresas').once('value');
+        const empresasData = empresasSnap.val() || {};
+        outer: for (const [empresaId, empresaData] of Object.entries(empresasData)) {
+          const bots = empresaData?.bots || empresaData?.config?.bots || {};
+          for (const [botId, botData] of Object.entries(bots)) {
+            const adminEmail = normalizeEmail(botData?.config?.adminEmail || '');
+            if (adminEmail && adminEmail === normalizedEmail) {
+              empresaDetectada = empresaId;
+              botDetectado = botId;
+              detectedRole = 'admin';
+              break outer;
+            }
+            const allowedEditors = botData?.allowedEditors || {};
+            if (isEmailInAllowedEditors(allowedEditors, normalizedEmail)) {
+              empresaDetectada = empresaId;
+              botDetectado = botId;
+              detectedRole = 'editor';
+              break outer;
+            }
+          }
+        }
+      }
+
+      if (!empresaDetectada) {
+        const legacySnap = await db.ref().once('value');
+        const legacyData = legacySnap.val() || {};
+        for (const [empresaId, empresaData] of Object.entries(legacyData)) {
+          if (empresaId === 'empresas' || empresaId === 'globalAdmins') continue;
+          const adminEmail = normalizeEmail(empresaData?.config?.adminEmail || '');
+          const configBots = empresaData?.config?.bots || {};
+          const matchingBot = Object.entries(configBots).find(([, botData]) => {
+            const botAdmin = normalizeEmail(botData?.config?.adminEmail || '');
+            if (botAdmin && botAdmin === normalizedEmail) {
+              detectedRole = 'admin';
+              return true;
+            }
+            const allowedEditors = botData?.allowedEditors || {};
+            const isEditor = isEmailInAllowedEditors(allowedEditors, normalizedEmail);
+            if (isEditor) {
+              detectedRole = 'editor';
+            }
+            return isEditor;
+          });
+          if (adminEmail && adminEmail === normalizedEmail) {
+            empresaDetectada = empresaId;
+            detectedRole = 'admin';
+            break;
+          } else if (matchingBot) {
+            empresaDetectada = empresaId;
+            botDetectado = matchingBot[0];
+            break;
+          }
+        }
+      }
+    } catch (err) {
+      console.error(t('Error finding company:'), err);
+    }
+
+    if (!empresaDetectada) {
       if (loginErrorEl) {
         loginErrorEl.textContent = 'Tu cuenta no está asociada a ninguna empresa';
         loginErrorEl.classList.remove('hidden');
@@ -4942,70 +5059,22 @@ auth.onAuthStateChanged(async (u) => {
       loginErrorEl.classList.add('hidden');
     }
 
-    let empresaDetectada = empresaEncontrada;
-    let botDetectado = null;
-
-    try {
-      if (!empresaDetectada) {
-        const empresasSnap = await db.ref('empresas').once('value');
-        const empresasData = empresasSnap.val() || {};
-        outer: for (const [empresaId, empresaData] of Object.entries(empresasData)) {
-          const bots = empresaData?.bots || empresaData?.config?.bots || {};
-          for (const [botId, botData] of Object.entries(bots)) {
-            const adminEmail = (botData?.config?.adminEmail || '').toLowerCase();
-            if (adminEmail && adminEmail === email) {
-              empresaDetectada = empresaId;
-              botDetectado = botId;
-              break outer;
-            }
-            const allowedEditors = botData?.allowedEditors || {};
-            if (isEmailInAllowedEditors(allowedEditors, email)) {
-              empresaDetectada = empresaId;
-              botDetectado = botId;
-              break outer;
-            }
-          }
-        }
-      }
-
-      if (!empresaDetectada) {
-        const legacySnap = await db.ref().once('value');
-        const legacyData = legacySnap.val() || {};
-        for (const [empresaId, empresaData] of Object.entries(legacyData)) {
-          if (empresaId === 'empresas' || empresaId === 'globalAdmins') continue;
-          const adminEmail = (empresaData?.config?.adminEmail || '').toLowerCase();
-          const configBots = empresaData?.config?.bots || {};
-          const matchingBot = Object.entries(configBots).find(([, botData]) => {
-            const botAdmin = (botData?.config?.adminEmail || '').toLowerCase();
-            if (botAdmin && botAdmin === email) return true;
-            const allowedEditors = botData?.allowedEditors || {};
-            return isEmailInAllowedEditors(allowedEditors, email);
-          });
-          if (adminEmail && adminEmail === email) {
-            empresaDetectada = empresaId;
-            break;
-          } else if (matchingBot) {
-            empresaDetectada = empresaId;
-            botDetectado = matchingBot[0];
-            break;
-          }
-        }
-      }
-    } catch (err) {
-      console.error(t('Error finding company:'), err);
-    }
-
     if (empresaDetectada) {
       EMPRESA = empresaDetectada;
+      currentEmpresa = EMPRESA;
       localStorage.setItem('empresa', EMPRESA);
       if (empresaBadgeEl) empresaBadgeEl.textContent = EMPRESA;
       if (empresaTextEl) empresaTextEl.textContent = EMPRESA;
       BOT = botDetectado || getBot();
+      currentBot = BOT;
+      userRole = detectedRole || 'admin';
       localStorage.setItem(`bot:${EMPRESA}`, BOT);
       updateBotLabels(BOT);
       console.log(t('✅ Company detected automatically:'), EMPRESA, BOT);
     } else {
       BOT = getBot();
+      currentBot = BOT;
+      userRole = 'viewer';
       console.warn(t('⚠ No company found for this email, using previous value:'), EMPRESA);
     }
 
