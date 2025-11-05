@@ -2106,7 +2106,6 @@ let userRole = 'viewer';
 let dashboard2KnowledgeChart = null;
 let dashboard2AnswersChart = null;
 let dashboard2LineChart = null;
-let dashboard2LoadPromise = null;
 
 const DEFAULT_TAB_KEYS = ['dashboard', 'dashboard2', 'chat', 'mensajes', 'knowledge', 'respuestas', 'prompt', 'usuarios'];
 let TAB_KEYS = [...DEFAULT_TAB_KEYS];
@@ -3166,172 +3165,144 @@ function initDashboard() {
 }
 
 async function loadDashboard2Data() {
-  if (dashboard2LoadPromise) {
-    return dashboard2LoadPromise;
-  }
-
-  const empresa = currentEmpresa || EMPRESA;
-  const botId = currentBot || BOT || $('botSelect')?.value;
-  if (!empresa || !botId) {
+  const user = firebase.auth().currentUser;
+  if (!user) {
+    console.warn('Esperando autenticación de Firebase...');
+    firebase.auth().onAuthStateChanged((u) => {
+      if (u) loadDashboard2Data();
+    });
     return;
   }
 
-  const totalConvEl = $('dash2TotalConv');
-  const knowledgeTextEl = $('dash2KnowledgeText');
-  const answersTextEl = $('dash2AnswersText');
-  const yearLabelEl = $('dash2YearLabel');
-  const knowledgeCanvas = document.getElementById('dash2KnowledgeChart');
-  const answersCanvas = document.getElementById('dash2AnswersChart');
-  const lineCanvas = document.getElementById('dash2LineChart');
+  const urlParams = new URLSearchParams(window.location.search);
+  const empresa = urlParams.get('empresa');
+  const botId = urlParams.get('bot');
+  if (!empresa || !botId) {
+    console.error('Faltan parámetros empresa o bot en la URL');
+    return;
+  }
 
+  const totalConvEl = document.getElementById('dash2TotalConv');
+  const knowledgeTextEl = document.getElementById('dash2KnowledgeText');
+  const answersTextEl = document.getElementById('dash2AnswersText');
   if (!totalConvEl || !knowledgeTextEl || !answersTextEl) {
     return;
   }
 
-  const now = new Date();
-  if (yearLabelEl) {
-    yearLabelEl.textContent = now.getFullYear();
-  }
+  const db = firebase.database();
+  const convRef = db.ref(`empresas/${empresa}/bots/${botId}/conversaciones`);
+  const knowledgeRef = db.ref(`empresas/${empresa}/bots/${botId}/knowledge`);
+  const mensajesRef = db.ref(`empresas/${empresa}/bots/${botId}/mensajes`);
 
-  totalConvEl.textContent = '…';
-  knowledgeTextEl.textContent = '0 / 10000';
-  answersTextEl.textContent = '0 / 500';
+  try {
+    const convSnap = await convRef.once('value');
+    const totalConv = convSnap.numChildren() || 0;
+    totalConvEl.textContent = totalConv;
 
-  dashboard2LoadPromise = (async () => {
-    try {
-      const convSnap = await db.ref(`empresas/${empresa}/bots/${botId}/conversaciones`).once('value');
-      const totalConv = convSnap.exists() ? convSnap.numChildren() : 0;
-      totalConvEl.textContent = typeof formatDashboardNumber === 'function'
-        ? formatDashboardNumber(totalConv)
-        : String(totalConv);
+    const knowledgeSnap = await knowledgeRef.once('value');
+    let totalChars = 0;
+    knowledgeSnap.forEach((k) => {
+      const content = k.val()?.content || '';
+      totalChars += content.length;
+    });
+    const percentK = Math.min((totalChars / 10000) * 100, 100);
+    knowledgeTextEl.textContent = `${totalChars} / 10000`;
 
-      const knowledgeSnap = await db.ref(`empresas/${empresa}/bots/${botId}/knowledge`).once('value');
-      let totalChars = 0;
-      knowledgeSnap.forEach((item) => {
-        const value = item?.val();
-        if (typeof value === 'string') {
-          totalChars += value.length;
-          return;
-        }
-        if (value && typeof value === 'object' && typeof value.content === 'string') {
-          totalChars += value.content.length;
-        }
-      });
-      const percentK = Math.min((totalChars / 10000) * 100, 100);
-      knowledgeTextEl.textContent = `${totalChars} / 10000`;
-
-      if (dashboard2KnowledgeChart) {
-        dashboard2KnowledgeChart.destroy();
-        dashboard2KnowledgeChart = null;
-      }
-      if (knowledgeCanvas) {
-        const ctx = typeof knowledgeCanvas.getContext === 'function'
-          ? knowledgeCanvas.getContext('2d')
-          : null;
-        const target = ctx || knowledgeCanvas;
-        dashboard2KnowledgeChart = new Chart(target, {
-          type: 'doughnut',
-          data: {
-            datasets: [{
-              data: [percentK, 100 - percentK],
-              backgroundColor: ['#22c55e', '#e5e7eb'],
-              borderWidth: 0
-            }]
-          },
-          options: { cutout: '70%', plugins: { legend: { display: false } } }
-        });
-      }
-
-      const answersSnap = await db.ref(`empresas/${empresa}/bots/${botId}/mensajes`).once('value');
-      let totalAnswers = 0;
-      const monthlyData = Array(12).fill(0);
-      answersSnap.forEach((conv) => {
-        conv.forEach((msg) => {
-          const val = msg?.val();
-          if (!val) return;
-          const timestamp = val.timestamp || val.time || val.createdAt || 0;
-          const date = new Date(timestamp);
-          if (Number.isNaN(date.getTime())) return;
-          const monthIndex = date.getMonth();
-          const sameYear = date.getFullYear() === now.getFullYear();
-          if (!sameYear || monthIndex < 0 || monthIndex > 11) return;
-          if (val.sender === 'bot' && monthIndex === now.getMonth()) {
-            totalAnswers += 1;
-          }
-          if (val.sender === 'user') {
-            monthlyData[monthIndex] += 1;
-          }
-        });
-      });
-
-      const percentA = Math.min((totalAnswers / 500) * 100, 100);
-      answersTextEl.textContent = `${totalAnswers} / 500`;
-
-      if (dashboard2AnswersChart) {
-        dashboard2AnswersChart.destroy();
-        dashboard2AnswersChart = null;
-      }
-      if (answersCanvas) {
-        const ctx = typeof answersCanvas.getContext === 'function'
-          ? answersCanvas.getContext('2d')
-          : null;
-        const target = ctx || answersCanvas;
-        dashboard2AnswersChart = new Chart(target, {
-          type: 'doughnut',
-          data: {
-            datasets: [{
-              data: [percentA, 100 - percentA],
-              backgroundColor: ['#3b82f6', '#e5e7eb'],
-              borderWidth: 0
-            }]
-          },
-          options: { cutout: '70%', plugins: { legend: { display: false } } }
-        });
-      }
-
-      if (dashboard2LineChart) {
-        dashboard2LineChart.destroy();
-        dashboard2LineChart = null;
-      }
-      if (lineCanvas) {
-        const ctx = typeof lineCanvas.getContext === 'function'
-          ? lineCanvas.getContext('2d')
-          : null;
-        const target = ctx || lineCanvas;
-        dashboard2LineChart = new Chart(target, {
-          type: 'line',
-          data: {
-            labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
-            datasets: [{
-              label: 'Conversations',
-              data: monthlyData,
-              borderColor: '#22c55e',
-              borderWidth: 2,
-              tension: 0.4,
-              pointRadius: 4,
-              fill: false
-            }]
-          },
-          options: {
-            plugins: { legend: { display: false } },
-            scales: {
-              x: { ticks: { color: '#6b7280' } },
-              y: { ticks: { color: '#6b7280' }, beginAtZero: true }
-            }
-          }
-        });
-      }
-    } catch (error) {
-      console.error('No se pudieron cargar los datos de Dashboard2', error);
-      totalConvEl.textContent = '—';
-      knowledgeTextEl.textContent = '0 / 10000';
-      answersTextEl.textContent = '0 / 500';
-    } finally {
-      dashboard2LoadPromise = null;
+    if (dashboard2KnowledgeChart) {
+      dashboard2KnowledgeChart.destroy();
     }
-  })();
+    dashboard2KnowledgeChart = drawDoughnutChart('dash2KnowledgeChart', percentK, '#22c55e');
 
-  return dashboard2LoadPromise;
+    const answersSnap = await mensajesRef.once('value');
+    let totalAnswers = 0;
+    const now = new Date();
+    const thisMonth = now.getMonth();
+    answersSnap.forEach((conv) => {
+      conv.forEach((msg) => {
+        const val = msg.val();
+        if (val.sender === 'bot') {
+          const d = new Date(val.timestamp || 0);
+          if (d.getMonth() === thisMonth) totalAnswers += 1;
+        }
+      });
+    });
+    const percentA = Math.min((totalAnswers / 500) * 100, 100);
+    answersTextEl.textContent = `${totalAnswers} / 500`;
+
+    if (dashboard2AnswersChart) {
+      dashboard2AnswersChart.destroy();
+    }
+    dashboard2AnswersChart = drawDoughnutChart('dash2AnswersChart', percentA, '#3b82f6');
+
+    const monthlyData = Array(12).fill(0);
+    answersSnap.forEach((conv) => {
+      conv.forEach((msg) => {
+        const val = msg.val();
+        const d = new Date(val.timestamp || 0);
+        if (val.sender === 'user' && !Number.isNaN(d.getMonth())) {
+          monthlyData[d.getMonth()] += 1;
+        }
+      });
+    });
+
+    if (dashboard2LineChart) {
+      dashboard2LineChart.destroy();
+    }
+    dashboard2LineChart = drawLineChart(monthlyData);
+  } catch (error) {
+    console.error('No se pudieron cargar los datos de Dashboard2', error);
+  }
+}
+
+function drawDoughnutChart(id, percent, color) {
+  const element = document.getElementById(id);
+  if (!element) return null;
+
+  return new Chart(element, {
+    type: 'doughnut',
+    data: {
+      datasets: [{
+        data: [percent, 100 - percent],
+        backgroundColor: [color, '#e5e7eb'],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      cutout: '70%',
+      plugins: { legend: { display: false } }
+    }
+  });
+}
+
+function drawLineChart(data) {
+  const canvas = document.getElementById('dash2LineChart');
+  if (!canvas) return null;
+
+  const ctx = typeof canvas.getContext === 'function' ? canvas.getContext('2d') : null;
+  const target = ctx || canvas;
+
+  return new Chart(target, {
+    type: 'line',
+    data: {
+      labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+      datasets: [{
+        label: 'Conversations',
+        data,
+        borderColor: '#22c55e',
+        borderWidth: 2,
+        tension: 0.4,
+        pointRadius: 4,
+        fill: false
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#6b7280' } },
+        y: { beginAtZero: true, ticks: { color: '#6b7280' } }
+      }
+    }
+  });
 }
 
 function getActiveMessagesBot() {
@@ -5153,7 +5124,6 @@ function showLoginView() {
     dashboard2LineChart.destroy();
     dashboard2LineChart = null;
   }
-  dashboard2LoadPromise = null;
   TAB_KEYS = [...DEFAULT_TAB_KEYS];
   applyRoleUI();
   document.querySelector('header')?.classList.add('hidden');
