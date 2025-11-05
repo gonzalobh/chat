@@ -3626,9 +3626,14 @@ function drawDoughnutChart(id, percent, color) {
     },
     options: {
       cutout: '65%',
-      rotation: -Math.PI,
-      circumference: Math.PI,
-      maintainAspectRatio: false,
+      rotation: -0.5 * Math.PI,
+      circumference: 2 * Math.PI,
+      responsive: true,
+      maintainAspectRatio: true,
+      aspectRatio: 1,
+      layout: {
+        padding: 0
+      },
       plugins: {
         legend: { display: false },
         tooltip: { enabled: false }
