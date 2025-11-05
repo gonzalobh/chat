@@ -1931,6 +1931,65 @@ function loadFirebaseAuthModule() {
   return firebaseAuthModulePromise;
 }
 
+function showToast(message) {
+  if (typeof toast === 'function') {
+    toast(message);
+  } else if (typeof alert === 'function') {
+    alert(message);
+  } else {
+    console.log('Toast:', message);
+  }
+}
+
+async function handleEmailLinkSignIn() {
+  try {
+    const { isSignInWithEmailLink, signInWithEmailLink } = await loadFirebaseAuthModule();
+    if (typeof isSignInWithEmailLink !== 'function' || typeof signInWithEmailLink !== 'function') return;
+    if (!isSignInWithEmailLink(auth, window.location.href)) return;
+
+    let email = localStorage.getItem('emailForSignIn');
+    if (!email) {
+      email = window.prompt('Ingresa tu correo para continuar:');
+    }
+    if (!email) return;
+
+    try {
+      await signInWithEmailLink(auth, email, window.location.href);
+      localStorage.removeItem('emailForSignIn');
+      showToast('✅ Bienvenido, acceso completado');
+      window.history.replaceState({}, document.title, '/index6.html');
+    } catch (error) {
+      console.error('Error al completar login:', error);
+      showToast('❌ Error al validar enlace');
+    }
+  } catch (error) {
+    console.error('Error manejando el enlace de acceso:', error);
+  }
+}
+
+handleEmailLinkSignIn();
+
+async function sendEditorInvitationEmail(email) {
+  const trimmedEmail = (email || '').trim();
+  if (!trimmedEmail) return;
+
+  const { sendSignInLinkToEmail } = await loadFirebaseAuthModule();
+  const actionCodeSettings = {
+    url: 'https://tomos.bot/index6.html?mode=signIn',
+    handleCodeInApp: true
+  };
+
+  try {
+    await sendSignInLinkToEmail(auth, trimmedEmail, actionCodeSettings);
+    localStorage.setItem('emailForSignIn', trimmedEmail);
+    showToast(`✅ Invitación enviada a ${trimmedEmail}`);
+  } catch (error) {
+    console.error('Error enviando invitación:', error);
+    showToast('❌ Error al enviar invitación');
+    throw error;
+  }
+}
+
 async function signOutFromFirebase() {
   const { signOut } = await loadFirebaseAuthModule();
   try {
@@ -3960,6 +4019,12 @@ function initUserManagementTab() {
       showFeedback(`✅ Acceso otorgado a ${normalizedEmail} para este bot.`);
       if (typeof toast === 'function') {
         toast(`✅ Acceso otorgado a ${normalizedEmail} para este bot.`);
+      }
+
+      try {
+        await sendEditorInvitationEmail(rawEmail);
+      } catch (inviteError) {
+        console.error('No se pudo enviar la invitación por correo', inviteError);
       }
     } catch (err) {
       console.error('No se pudo invitar al usuario', err);
