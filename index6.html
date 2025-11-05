@@ -3191,7 +3191,6 @@ async function loadDashboard2Data() {
 
   const db = firebase.database();
   const convRef = db.ref(`empresas/${empresa}/bots/${botId}/conversaciones`);
-  const mensajesRef = db.ref(`empresas/${empresa}/bots/${botId}/mensajes`);
   const contextInfoPaths = [
     `empresas/${empresa}/bots/${botId}/config/contextInfo`,
     `empresas/${empresa}/config/bots/${botId}/contextInfo`,
@@ -3201,7 +3200,8 @@ async function loadDashboard2Data() {
 
   try {
     const convSnap = await convRef.once('value');
-    const totalConv = convSnap.numChildren() || 0;
+    const conversationsNode = convSnap.val() || {};
+    const totalConv = convSnap.numChildren() || Object.keys(conversationsNode).length || 0;
     totalConvEl.textContent = totalConv;
 
     let totalChars = 0;
@@ -3241,52 +3241,217 @@ async function loadDashboard2Data() {
     }
     dashboard2KnowledgeChart = drawDoughnutChart('dash2KnowledgeChart', percentK, '#22c55e');
 
-    const answersSnap = await mensajesRef.once('value');
-    let totalAnswers = 0;
     const now = new Date();
     const thisMonth = now.getMonth();
     const thisYear = now.getFullYear();
-    answersSnap.forEach((conv) => {
-      conv.forEach((msg) => {
-        const val = msg.val();
-        const sender = (val?.sender ?? val?.role ?? '').toString().toLowerCase();
-        if (!sender || ['user', 'cliente', 'customer', 'visitor', 'human'].includes(sender)) {
-          return;
-        }
-        const timestamp = extractMessageTimestamp(val);
-        if (!timestamp) return;
-        const d = new Date(timestamp);
-        if (d.getMonth() === thisMonth && d.getFullYear() === thisYear) {
-          totalAnswers += 1;
+    const yearLabelEl = document.getElementById('dash2YearLabel');
+    if (yearLabelEl) {
+      yearLabelEl.textContent = thisYear;
+    }
+
+    const monthlyAnswers = Array(12).fill(0);
+    const monthlyHumanMessages = Array(12).fill(0);
+    const humanSenderHints = new Set([
+      'user',
+      'usuario',
+      'cliente',
+      'customer',
+      'client',
+      'visitor',
+      'visitante',
+      'guest',
+      'invitado',
+      'prospect',
+      'prospecto',
+      'lead',
+      'contact',
+      'human',
+      'humano'
+    ]);
+    const aiSenderHints = new Set([
+      'assistant',
+      'assistantbot',
+      'bot',
+      'robot',
+      'ai',
+      'ia',
+      'agente',
+      'agent',
+      'virtual agent',
+      'openai',
+      'gpt',
+      'system',
+      'asistente'
+    ]);
+
+    const normalize = (value) => {
+      if (!value) return '';
+      return value
+        .toString()
+        .trim()
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9\s]/g, '')
+        .replace(/\s+/g, ' ');
+    };
+
+    const hasOpenAIKeyword = (value = '') => {
+      if (typeof value !== 'string') return false;
+      const normalized = value.toLowerCase();
+      return normalized.includes('openai') || /gpt|davinci|curie|babbage|ada|chatgpt/.test(normalized);
+    };
+
+    const extractProviderHints = (payload = {}) => {
+      const metadata = payload.metadata || {};
+      const tags = payload.tags || {};
+      return [
+        payload.provider,
+        payload.source,
+        payload.origin,
+        payload.engine,
+        payload.integration,
+        payload.platform,
+        payload.service,
+        payload.via,
+        payload.vendor,
+        payload.model,
+        payload.modelo,
+        payload.modelId,
+        payload.modelName,
+        metadata.provider,
+        metadata.source,
+        metadata.origin,
+        metadata.engine,
+        metadata.integration,
+        metadata.platform,
+        metadata.service,
+        metadata.vendor,
+        metadata.model,
+        metadata.modelo,
+        metadata.modelId,
+        metadata.modelName,
+        metadata.openaiModel,
+        tags.provider,
+        tags.source,
+        tags.origin,
+        tags.model,
+        tags.modelName,
+        tags.platform,
+        tags.service
+      ];
+    };
+
+    const processedMessages = new WeakSet();
+    const processedHashes = new Set();
+    const traversedNodes = new WeakSet();
+
+    const registerMessage = (payload = {}) => {
+      if (!payload || typeof payload !== 'object') return;
+      if (processedMessages.has(payload)) return;
+      processedMessages.add(payload);
+
+      const timestamp = extractMessageTimestamp(payload);
+      if (!timestamp) return;
+      const date = new Date(timestamp);
+      const timeValue = date.getTime();
+      const monthIndex = date.getMonth();
+      if (!Number.isFinite(timeValue) || Number.isNaN(monthIndex)) return;
+      if (date.getFullYear() !== thisYear) return;
+
+      const rawSender = payload.sender ?? payload.role ?? payload.from ?? payload.author ?? payload.usuario ?? payload.user;
+      const sender = normalize(rawSender);
+      const identifier = normalize(
+        payload.id ??
+        payload.key ??
+        payload.messageId ??
+        payload.mid ??
+        payload.metadata?.id ??
+        payload.metadata?.messageId ??
+        payload.metadata?.mid ??
+        ''
+      );
+      const contentFragment = normalize(
+        payload.message ??
+        payload.content ??
+        payload.text ??
+        payload.texto ??
+        payload.body ??
+        payload.value ??
+        ''
+      );
+      const hashKey = [timeValue, sender, identifier, contentFragment].join('|');
+      if (processedHashes.has(hashKey)) {
+        return;
+      }
+      processedHashes.add(hashKey);
+
+      if (sender && humanSenderHints.has(sender)) {
+        monthlyHumanMessages[monthIndex] += 1;
+      }
+
+      const providerHints = extractProviderHints(payload);
+      const hasOpenAIHint = providerHints.some(hasOpenAIKeyword);
+      const aiSender = sender && aiSenderHints.has(sender);
+      const qualifiesAsAnswer = (hasOpenAIHint || aiSender) && !humanSenderHints.has(sender);
+      if (!qualifiesAsAnswer) {
+        return;
+      }
+
+      monthlyAnswers[monthIndex] += 1;
+    };
+
+    const walkMessages = (node) => {
+      if (!node || typeof node !== 'object') return;
+
+      if (Array.isArray(node)) {
+        if (traversedNodes.has(node)) return;
+        traversedNodes.add(node);
+        node.forEach((item) => walkMessages(item));
+        return;
+      }
+
+      const keys = Object.keys(node);
+      const senderKeys = ['sender', 'role', 'author', 'usuario', 'user'];
+      const hasSenderKey = keys.some((key) => senderKeys.includes(key));
+      const hasMessageKey = keys.some((key) => ['message', 'content', 'texto', 'text', 'body'].includes(key));
+      const hasTimestampKey = keys.some((key) => ['timestamp', 'time', 'createdAt', 'updatedAt', 'fecha', 'date'].includes(key));
+      const hasFromKey = keys.includes('from');
+      const effectiveSenderKey = hasSenderKey || (hasFromKey && hasMessageKey);
+
+      if (effectiveSenderKey && (hasMessageKey || hasTimestampKey)) {
+        registerMessage(node);
+        return;
+      }
+
+      if (traversedNodes.has(node)) return;
+      traversedNodes.add(node);
+
+      Object.values(node).forEach((value) => {
+        if (value && typeof value === 'object') {
+          walkMessages(value);
         }
       });
+    };
+
+    Object.values(conversationsNode).forEach((conversation) => {
+      if (!conversation || typeof conversation !== 'object') return;
+      walkMessages(conversation);
     });
-    const percentA = Math.min((totalAnswers / 500) * 100, 100);
-    answersTextEl.textContent = `${totalAnswers} / 500`;
+
+    const answersThisMonth = monthlyAnswers[thisMonth] || 0;
+    const percentA = Math.min((answersThisMonth / 500) * 100, 100);
+    answersTextEl.textContent = `${answersThisMonth} / 500`;
 
     if (dashboard2AnswersChart) {
       dashboard2AnswersChart.destroy();
     }
     dashboard2AnswersChart = drawDoughnutChart('dash2AnswersChart', percentA, '#3b82f6');
 
-    const monthlyData = Array(12).fill(0);
-    answersSnap.forEach((conv) => {
-      conv.forEach((msg) => {
-        const val = msg.val();
-        const timestamp = extractMessageTimestamp(val);
-        if (!timestamp) return;
-        const d = new Date(timestamp);
-        const sender = (val?.sender ?? val?.role ?? '').toString().toLowerCase();
-        if (['user', 'cliente', 'customer', 'visitor', 'human'].includes(sender) && !Number.isNaN(d.getMonth())) {
-          monthlyData[d.getMonth()] += 1;
-        }
-      });
-    });
-
     if (dashboard2LineChart) {
       dashboard2LineChart.destroy();
     }
-    dashboard2LineChart = drawLineChart(monthlyData);
+    dashboard2LineChart = drawLineChart(monthlyHumanMessages);
   } catch (error) {
     console.error('No se pudieron cargar los datos de Dashboard2', error);
   }
