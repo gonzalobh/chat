@@ -3191,7 +3191,7 @@ async function loadDashboard2Data() {
 
   const db = firebase.database();
   const convRef = db.ref(`empresas/${empresa}/bots/${botId}/conversaciones`);
-  const knowledgeRef = db.ref(`empresas/${empresa}/bots/${botId}/knowledge`);
+  const knowledgePagesRef = db.ref(`empresas/${empresa}/bots/${botId}/knowledge/pages`);
   const mensajesRef = db.ref(`empresas/${empresa}/bots/${botId}/mensajes`);
 
   try {
@@ -3199,10 +3199,10 @@ async function loadDashboard2Data() {
     const totalConv = convSnap.numChildren() || 0;
     totalConvEl.textContent = totalConv;
 
-    const knowledgeSnap = await knowledgeRef.once('value');
+    const knowledgeSnap = await knowledgePagesRef.once('value');
     let totalChars = 0;
-    knowledgeSnap.forEach((k) => {
-      const content = k.val()?.content || '';
+    knowledgeSnap.forEach((page) => {
+      const content = page.val()?.content || '';
       totalChars += content.length;
     });
     const percentK = Math.min((totalChars / 10000) * 100, 100);
