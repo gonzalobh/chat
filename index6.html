@@ -3191,20 +3191,48 @@ async function loadDashboard2Data() {
 
   const db = firebase.database();
   const convRef = db.ref(`empresas/${empresa}/bots/${botId}/conversaciones`);
-  const knowledgePagesRef = db.ref(`empresas/${empresa}/bots/${botId}/knowledge/pages`);
   const mensajesRef = db.ref(`empresas/${empresa}/bots/${botId}/mensajes`);
+  const contextInfoPaths = [
+    `empresas/${empresa}/bots/${botId}/config/contextInfo`,
+    `empresas/${empresa}/config/bots/${botId}/contextInfo`,
+    `empresas/${empresa}/bots/${botId}/contextInfo`,
+    `empresas/${empresa}/config/contextInfo`
+  ];
 
   try {
     const convSnap = await convRef.once('value');
     const totalConv = convSnap.numChildren() || 0;
     totalConvEl.textContent = totalConv;
 
-    const knowledgeSnap = await knowledgePagesRef.once('value');
     let totalChars = 0;
-    knowledgeSnap.forEach((page) => {
-      const content = page.val()?.content || '';
-      totalChars += content.length;
-    });
+    try {
+      const contextSnaps = await Promise.all(
+        contextInfoPaths.map((path) =>
+          db
+            .ref(path)
+            .once('value')
+            .catch(() => null)
+        )
+      );
+      for (const snap of contextSnaps) {
+        const value = snap?.val();
+        if (typeof value === 'string') {
+          totalChars = value.length;
+        } else if (value && typeof value === 'object') {
+          try {
+            const serialized = JSON.stringify(value);
+            if (serialized) {
+              totalChars = serialized.length;
+            }
+          } catch (err) {
+            console.warn('No se pudo serializar contextInfo', err);
+          }
+        }
+        if (totalChars > 0) break;
+      }
+    } catch (err) {
+      console.warn('No se pudo leer contextInfo para Dashboard2', err);
+    }
     const percentK = Math.min((totalChars / 10000) * 100, 100);
     knowledgeTextEl.textContent = `${totalChars} / 10000`;
 
@@ -3217,12 +3245,19 @@ async function loadDashboard2Data() {
     let totalAnswers = 0;
     const now = new Date();
     const thisMonth = now.getMonth();
+    const thisYear = now.getFullYear();
     answersSnap.forEach((conv) => {
       conv.forEach((msg) => {
         const val = msg.val();
-        if (val.sender === 'bot') {
-          const d = new Date(val.timestamp || 0);
-          if (d.getMonth() === thisMonth) totalAnswers += 1;
+        const sender = (val?.sender ?? val?.role ?? '').toString().toLowerCase();
+        if (!sender || ['user', 'cliente', 'customer', 'visitor', 'human'].includes(sender)) {
+          return;
+        }
+        const timestamp = extractMessageTimestamp(val);
+        if (!timestamp) return;
+        const d = new Date(timestamp);
+        if (d.getMonth() === thisMonth && d.getFullYear() === thisYear) {
+          totalAnswers += 1;
         }
       });
     });
@@ -3238,8 +3273,11 @@ async function loadDashboard2Data() {
     answersSnap.forEach((conv) => {
       conv.forEach((msg) => {
         const val = msg.val();
-        const d = new Date(val.timestamp || 0);
-        if (val.sender === 'user' && !Number.isNaN(d.getMonth())) {
+        const timestamp = extractMessageTimestamp(val);
+        if (!timestamp) return;
+        const d = new Date(timestamp);
+        const sender = (val?.sender ?? val?.role ?? '').toString().toLowerCase();
+        if (['user', 'cliente', 'customer', 'visitor', 'human'].includes(sender) && !Number.isNaN(d.getMonth())) {
           monthlyData[d.getMonth()] += 1;
         }
       });
@@ -3303,6 +3341,27 @@ function drawLineChart(data) {
       }
     }
   });
+}
+
+function extractMessageTimestamp(value = {}) {
+  const fields = ['timestamp', 'time', 'createdAt', 'updatedAt'];
+  for (const field of fields) {
+    const raw = value?.[field];
+    if (raw === undefined || raw === null) continue;
+    if (typeof raw === 'number') {
+      if (!Number.isFinite(raw) || raw <= 0) continue;
+      return raw < 1e12 ? raw * 1000 : raw;
+    }
+    const numeric = Number(raw);
+    if (Number.isFinite(numeric) && numeric > 0) {
+      return numeric < 1e12 ? numeric * 1000 : numeric;
+    }
+    const parsed = Date.parse(raw);
+    if (!Number.isNaN(parsed)) {
+      return parsed;
+    }
+  }
+  return null;
 }
 
 function getActiveMessagesBot() {
