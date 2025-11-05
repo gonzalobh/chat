@@ -272,12 +272,12 @@ button.bg-black:hover {
 
 .dashboard2-chart-value {
   position: absolute;
-  font-size: 0.9rem;
-  color: #333;
-  font-weight: 600;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
 }
 
 .dashboard2-panel {
@@ -1059,13 +1059,13 @@ body.login-view #appContainer {
           </span>
           <div class="flex flex-col">
             <span class="dashboard2-card-title">Limit Knowledge</span>
-            <span id="dash2KnowledgePercent" class="dashboard2-card-subtitle">0%</span>
           </div>
         </div>
       </div>
-      <div class="dashboard2-chart">
+      <div class="dashboard2-chart relative">
+        <span class="absolute top-3 right-4 text-sm text-gray-500 font-medium" id="dash2KnowledgeTextTop">0 / 10000</span>
         <canvas id="dash2KnowledgeChart" width="140" height="140"></canvas>
-        <span id="dash2KnowledgeText" class="dashboard2-chart-value">0 / 10000</span>
+        <span id="dash2KnowledgePercent" class="dashboard2-chart-value text-lg font-semibold text-gray-800">0%</span>
       </div>
     </div>
 
@@ -1078,13 +1078,13 @@ body.login-view #appContainer {
           </span>
           <div class="flex flex-col">
             <span class="dashboard2-card-title">Limit Answers</span>
-            <span id="dash2AnswersPercent" class="dashboard2-card-subtitle">0%</span>
           </div>
         </div>
       </div>
-      <div class="dashboard2-chart">
+      <div class="dashboard2-chart relative">
+        <span class="absolute top-3 right-4 text-sm text-gray-500 font-medium" id="dash2AnswersTextTop">0 / 500</span>
         <canvas id="dash2AnswersChart" width="140" height="140"></canvas>
-        <span id="dash2AnswersText" class="dashboard2-chart-value">0 / 500</span>
+        <span id="dash2AnswersPercent" class="dashboard2-chart-value text-lg font-semibold text-gray-800">0%</span>
       </div>
     </div>
 
@@ -3326,11 +3326,11 @@ async function loadDashboard2Data() {
   }
 
   const totalConvEl = document.getElementById('dash2TotalConv');
-  const knowledgeTextEl = document.getElementById('dash2KnowledgeText');
+  const knowledgeTextTopEl = document.getElementById('dash2KnowledgeTextTop');
   const knowledgePercentEl = document.getElementById('dash2KnowledgePercent');
-  const answersTextEl = document.getElementById('dash2AnswersText');
+  const answersTextTopEl = document.getElementById('dash2AnswersTextTop');
   const answersPercentEl = document.getElementById('dash2AnswersPercent');
-  if (!totalConvEl || !knowledgeTextEl || !answersTextEl) {
+  if (!totalConvEl || !knowledgeTextTopEl || !answersTextTopEl) {
     return;
   }
 
@@ -3379,7 +3379,7 @@ async function loadDashboard2Data() {
       console.warn('No se pudo leer contextInfo para Dashboard2', err);
     }
     const percentK = Math.min((totalChars / 10000) * 100, 100);
-    knowledgeTextEl.textContent = `${totalChars} / 10000`;
+    knowledgeTextTopEl.textContent = `${totalChars} / 10000`;
     if (knowledgePercentEl) {
       knowledgePercentEl.textContent = `${Math.round(percentK)}%`;
     }
@@ -3589,7 +3589,7 @@ async function loadDashboard2Data() {
 
     const answersThisMonth = monthlyAnswers[thisMonth] || 0;
     const percentA = Math.min((answersThisMonth / 500) * 100, 100);
-    answersTextEl.textContent = `${answersThisMonth} / 500`;
+    answersTextTopEl.textContent = `${answersThisMonth} / 500`;
     if (answersPercentEl) {
       answersPercentEl.textContent = `${Math.round(percentA)}%`;
     }
