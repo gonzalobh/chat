@@ -772,6 +772,10 @@ body.login-view #appContainer {
       <i data-lucide="layout-dashboard" class="w-5 h-5 shrink-0"></i>
       <span class="hidden lg:inline lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Dashboard</span>
     </button>
+    <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100 hidden" data-tab="dashboard2" id="dashboard2TabBtn">
+      <i data-lucide="bar-chart-3" class="w-5 h-5 shrink-0"></i>
+      <span class="hidden lg:inline lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Dashboard2</span>
+    </button>
     <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="chat">
       <i data-lucide="message-circle" class="w-5 h-5 shrink-0"></i>
       <span class="hidden lg:inline lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Chat</span>
@@ -911,6 +915,51 @@ body.login-view #appContainer {
           </tbody>
         </table>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- Dashboard 2 -->
+<section id="tab-dashboard2" class="hidden">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+    <!-- Total de Conversaciones -->
+    <div class="card p-4 text-center">
+      <p class="text-xs uppercase font-semibold text-gray-500">Total Conversations</p>
+      <p id="dash2TotalConv" class="text-3xl font-bold text-gray-800 mt-2">—</p>
+    </div>
+
+    <!-- Knowledge Usage -->
+    <div class="card p-4 text-center">
+      <p class="text-xs uppercase font-semibold text-gray-500">Knowledge Used</p>
+      <div class="relative mt-2">
+        <canvas id="dash2KnowledgeChart" width="100" height="100"></canvas>
+      </div>
+      <p id="dash2KnowledgeText" class="text-sm text-gray-600 mt-2">0 / 10000</p>
+    </div>
+
+    <!-- Respuestas del mes -->
+    <div class="card p-4 text-center">
+      <p class="text-xs uppercase font-semibold text-gray-500">Monthly Answers</p>
+      <div class="relative mt-2">
+        <canvas id="dash2AnswersChart" width="100" height="100"></canvas>
+      </div>
+      <p id="dash2AnswersText" class="text-sm text-gray-600 mt-2">0 / 500</p>
+    </div>
+
+  </div>
+
+  <!-- Gráfico de línea mensual -->
+  <div class="card p-6 mt-6">
+    <div class="flex items-center justify-between">
+      <p class="text-sm font-semibold text-gray-700 flex items-center gap-2">
+        <i data-lucide="activity" class="w-4 h-4"></i>
+        Conversations (Monthly)
+      </p>
+      <span id="dash2YearLabel" class="text-xs text-gray-500"></span>
+    </div>
+    <div class="h-[200px] mt-3">
+      <canvas id="dash2LineChart"></canvas>
     </div>
   </div>
 </section>
@@ -2054,7 +2103,12 @@ let currentEmpresa = null;
 let currentBot = null;
 let userRole = 'viewer';
 
-const DEFAULT_TAB_KEYS = ['dashboard', 'chat', 'mensajes', 'knowledge', 'respuestas', 'prompt', 'usuarios'];
+let dashboard2KnowledgeChart = null;
+let dashboard2AnswersChart = null;
+let dashboard2LineChart = null;
+let dashboard2LoadPromise = null;
+
+const DEFAULT_TAB_KEYS = ['dashboard', 'dashboard2', 'chat', 'mensajes', 'knowledge', 'respuestas', 'prompt', 'usuarios'];
 let TAB_KEYS = [...DEFAULT_TAB_KEYS];
 let currentActiveTab = TAB_KEYS[0];
 
@@ -3109,6 +3163,175 @@ function initDashboard() {
   dashboardMessagesLoading = true;
   updateDashboardSummaryText();
   scheduleDashboardRefresh();
+}
+
+async function loadDashboard2Data() {
+  if (dashboard2LoadPromise) {
+    return dashboard2LoadPromise;
+  }
+
+  const empresa = currentEmpresa || EMPRESA;
+  const botId = currentBot || BOT || $('botSelect')?.value;
+  if (!empresa || !botId) {
+    return;
+  }
+
+  const totalConvEl = $('dash2TotalConv');
+  const knowledgeTextEl = $('dash2KnowledgeText');
+  const answersTextEl = $('dash2AnswersText');
+  const yearLabelEl = $('dash2YearLabel');
+  const knowledgeCanvas = document.getElementById('dash2KnowledgeChart');
+  const answersCanvas = document.getElementById('dash2AnswersChart');
+  const lineCanvas = document.getElementById('dash2LineChart');
+
+  if (!totalConvEl || !knowledgeTextEl || !answersTextEl) {
+    return;
+  }
+
+  const now = new Date();
+  if (yearLabelEl) {
+    yearLabelEl.textContent = now.getFullYear();
+  }
+
+  totalConvEl.textContent = '…';
+  knowledgeTextEl.textContent = '0 / 10000';
+  answersTextEl.textContent = '0 / 500';
+
+  dashboard2LoadPromise = (async () => {
+    try {
+      const convSnap = await db.ref(`empresas/${empresa}/bots/${botId}/conversaciones`).once('value');
+      const totalConv = convSnap.exists() ? convSnap.numChildren() : 0;
+      totalConvEl.textContent = typeof formatDashboardNumber === 'function'
+        ? formatDashboardNumber(totalConv)
+        : String(totalConv);
+
+      const knowledgeSnap = await db.ref(`empresas/${empresa}/bots/${botId}/knowledge`).once('value');
+      let totalChars = 0;
+      knowledgeSnap.forEach((item) => {
+        const value = item?.val();
+        if (typeof value === 'string') {
+          totalChars += value.length;
+          return;
+        }
+        if (value && typeof value === 'object' && typeof value.content === 'string') {
+          totalChars += value.content.length;
+        }
+      });
+      const percentK = Math.min((totalChars / 10000) * 100, 100);
+      knowledgeTextEl.textContent = `${totalChars} / 10000`;
+
+      if (dashboard2KnowledgeChart) {
+        dashboard2KnowledgeChart.destroy();
+        dashboard2KnowledgeChart = null;
+      }
+      if (knowledgeCanvas) {
+        const ctx = typeof knowledgeCanvas.getContext === 'function'
+          ? knowledgeCanvas.getContext('2d')
+          : null;
+        const target = ctx || knowledgeCanvas;
+        dashboard2KnowledgeChart = new Chart(target, {
+          type: 'doughnut',
+          data: {
+            datasets: [{
+              data: [percentK, 100 - percentK],
+              backgroundColor: ['#22c55e', '#e5e7eb'],
+              borderWidth: 0
+            }]
+          },
+          options: { cutout: '70%', plugins: { legend: { display: false } } }
+        });
+      }
+
+      const answersSnap = await db.ref(`empresas/${empresa}/bots/${botId}/mensajes`).once('value');
+      let totalAnswers = 0;
+      const monthlyData = Array(12).fill(0);
+      answersSnap.forEach((conv) => {
+        conv.forEach((msg) => {
+          const val = msg?.val();
+          if (!val) return;
+          const timestamp = val.timestamp || val.time || val.createdAt || 0;
+          const date = new Date(timestamp);
+          if (Number.isNaN(date.getTime())) return;
+          const monthIndex = date.getMonth();
+          const sameYear = date.getFullYear() === now.getFullYear();
+          if (!sameYear || monthIndex < 0 || monthIndex > 11) return;
+          if (val.sender === 'bot' && monthIndex === now.getMonth()) {
+            totalAnswers += 1;
+          }
+          if (val.sender === 'user') {
+            monthlyData[monthIndex] += 1;
+          }
+        });
+      });
+
+      const percentA = Math.min((totalAnswers / 500) * 100, 100);
+      answersTextEl.textContent = `${totalAnswers} / 500`;
+
+      if (dashboard2AnswersChart) {
+        dashboard2AnswersChart.destroy();
+        dashboard2AnswersChart = null;
+      }
+      if (answersCanvas) {
+        const ctx = typeof answersCanvas.getContext === 'function'
+          ? answersCanvas.getContext('2d')
+          : null;
+        const target = ctx || answersCanvas;
+        dashboard2AnswersChart = new Chart(target, {
+          type: 'doughnut',
+          data: {
+            datasets: [{
+              data: [percentA, 100 - percentA],
+              backgroundColor: ['#3b82f6', '#e5e7eb'],
+              borderWidth: 0
+            }]
+          },
+          options: { cutout: '70%', plugins: { legend: { display: false } } }
+        });
+      }
+
+      if (dashboard2LineChart) {
+        dashboard2LineChart.destroy();
+        dashboard2LineChart = null;
+      }
+      if (lineCanvas) {
+        const ctx = typeof lineCanvas.getContext === 'function'
+          ? lineCanvas.getContext('2d')
+          : null;
+        const target = ctx || lineCanvas;
+        dashboard2LineChart = new Chart(target, {
+          type: 'line',
+          data: {
+            labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+            datasets: [{
+              label: 'Conversations',
+              data: monthlyData,
+              borderColor: '#22c55e',
+              borderWidth: 2,
+              tension: 0.4,
+              pointRadius: 4,
+              fill: false
+            }]
+          },
+          options: {
+            plugins: { legend: { display: false } },
+            scales: {
+              x: { ticks: { color: '#6b7280' } },
+              y: { ticks: { color: '#6b7280' }, beginAtZero: true }
+            }
+          }
+        });
+      }
+    } catch (error) {
+      console.error('No se pudieron cargar los datos de Dashboard2', error);
+      totalConvEl.textContent = '—';
+      knowledgeTextEl.textContent = '0 / 10000';
+      answersTextEl.textContent = '0 / 500';
+    } finally {
+      dashboard2LoadPromise = null;
+    }
+  })();
+
+  return dashboard2LoadPromise;
 }
 
 function getActiveMessagesBot() {
@@ -4775,11 +4998,13 @@ function setWriteEnabled(enabled) {
 }
 
 function applyRoleUI() {
+  window.userRole = userRole;
   const shouldShowUsuarios = isGlobalAdmin || isPrimaryAdmin;
   const editorOnly = isLimitedEditor && !shouldShowUsuarios;
 
   let visibleTabs = DEFAULT_TAB_KEYS.filter((tab) => {
     if (tab === 'usuarios') return shouldShowUsuarios;
+    if (tab === 'dashboard2') return userRole === 'editor';
     if (editorOnly && (tab === 'dashboard' || tab === 'prompt')) return false;
     return true;
   });
@@ -4873,6 +5098,10 @@ function setActiveTab(tab) {
     }
   });
 
+  if (targetTab === 'dashboard2') {
+    loadDashboard2Data();
+  }
+
   if (targetTab === 'chat') {
     if (typeof window.__setDefaultChatPanel === 'function') {
       window.__setDefaultChatPanel();
@@ -4908,8 +5137,23 @@ function showLoginView() {
   allowedEditorBots = new Set();
   currentBotAllowedEditors = {};
   currentEmpresa = null;
+  window.currentEmpresa = currentEmpresa;
   currentBot = null;
   userRole = 'viewer';
+  window.userRole = userRole;
+  if (dashboard2KnowledgeChart) {
+    dashboard2KnowledgeChart.destroy();
+    dashboard2KnowledgeChart = null;
+  }
+  if (dashboard2AnswersChart) {
+    dashboard2AnswersChart.destroy();
+    dashboard2AnswersChart = null;
+  }
+  if (dashboard2LineChart) {
+    dashboard2LineChart.destroy();
+    dashboard2LineChart = null;
+  }
+  dashboard2LoadPromise = null;
   TAB_KEYS = [...DEFAULT_TAB_KEYS];
   applyRoleUI();
   document.querySelector('header')?.classList.add('hidden');
@@ -5062,12 +5306,14 @@ auth.onAuthStateChanged(async (u) => {
     if (empresaDetectada) {
       EMPRESA = empresaDetectada;
       currentEmpresa = EMPRESA;
+      window.currentEmpresa = currentEmpresa;
       localStorage.setItem('empresa', EMPRESA);
       if (empresaBadgeEl) empresaBadgeEl.textContent = EMPRESA;
       if (empresaTextEl) empresaTextEl.textContent = EMPRESA;
       BOT = botDetectado || getBot();
       currentBot = BOT;
       userRole = detectedRole || 'admin';
+      window.userRole = userRole;
       localStorage.setItem(`bot:${EMPRESA}`, BOT);
       updateBotLabels(BOT);
       console.log(t('✅ Company detected automatically:'), EMPRESA, BOT);
@@ -5075,6 +5321,7 @@ auth.onAuthStateChanged(async (u) => {
       BOT = getBot();
       currentBot = BOT;
       userRole = 'viewer';
+      window.userRole = userRole;
       console.warn(t('⚠ No company found for this email, using previous value:'), EMPRESA);
     }
 
