@@ -792,6 +792,10 @@ body.login-view #appContainer {
       <i data-lucide="file-text" class="w-5 h-5 shrink-0"></i>
       <span class="hidden lg:inline lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Prompt</span>
     </button>
+    <button id="usuariosTabButton" class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100 hidden" data-tab="usuarios">
+      <i data-lucide="users" class="w-5 h-5 shrink-0"></i>
+      <span class="hidden lg:inline lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Usuarios</span>
+    </button>
   </nav>
 
   <div class="hidden lg:block mt-6 text-xs text-gray-500 px-3 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200 space-y-1">
@@ -1657,6 +1661,55 @@ body.login-view #appContainer {
   </div>
 </section>
 
+<section id="tab-usuarios" class="hidden space-y-6 max-w-4xl mx-auto">
+  <div class="card p-5 space-y-4">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div class="w-full md:w-auto space-y-1">
+        <label for="userBotSelect" class="text-sm font-medium text-gray-700">Gestionar bot</label>
+        <select id="userBotSelect" class="w-full md:w-64 border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-black/70">
+          <option value="" disabled selected>Selecciona un bot</option>
+        </select>
+      </div>
+      <p id="userBotSelectStatus" class="text-sm text-gray-500 flex-1">Selecciona un bot para gestionar accesos.</p>
+    </div>
+  </div>
+
+  <div class="card p-5 space-y-4">
+    <div class="flex items-center justify-between">
+      <h3 class="text-lg font-semibold text-gray-800">Usuarios con acceso</h3>
+      <span id="userAccessSummary" class="text-sm text-gray-500">—</span>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200 text-sm">
+        <thead class="bg-gray-50 text-xs font-semibold uppercase tracking-wide text-gray-500">
+          <tr>
+            <th scope="col" class="px-4 py-2 text-left">Email</th>
+            <th scope="col" class="px-4 py-2 text-left">Rol</th>
+            <th scope="col" class="px-4 py-2 text-left">Último acceso</th>
+            <th scope="col" class="px-4 py-2 text-right">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="userAccessTableBody" class="bg-white divide-y divide-gray-100">
+          <tr>
+            <td colspan="4" class="px-4 py-6 text-center text-gray-400 text-sm">Selecciona un bot para ver los usuarios con acceso.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card p-5 space-y-4">
+    <h3 class="text-lg font-semibold text-gray-800">Invitar usuario</h3>
+    <form id="userInviteForm" class="flex flex-col sm:flex-row gap-3">
+      <input id="userInviteEmail" type="email" class="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/70" placeholder="usuario@empresa.com" required>
+      <button id="userInviteSubmit" type="submit" class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-black text-white text-sm disabled:opacity-60 disabled:cursor-not-allowed">
+        Invitar
+      </button>
+    </form>
+    <p id="userInviteFeedback" class="text-sm text-gray-500 hidden"></p>
+  </div>
+</section>
+
 
 </div>
         </div>
@@ -1906,6 +1959,43 @@ let currentWidgetIcon = DEFAULT_WIDGET_ICON;
 const $ = (id) => document.getElementById(id);
 const $$ = (sel) => Array.from(document.querySelectorAll(sel));
 
+const normalizeEmail = (email = '') => (email || '').trim().toLowerCase();
+const encodeEmailKey = (email = '') => normalizeEmail(email).replace(/\./g, ',');
+const decodeEmailKey = (key = '') => (key || '').replace(/,/g, '.');
+
+const extractEditorEntry = (key, value) => {
+  const normalizedKeyEmail = decodeEmailKey(key);
+  const entryEmail = typeof value === 'string'
+    ? value
+    : (value && typeof value.email === 'string')
+      ? value.email
+      : normalizedKeyEmail;
+  const normalizedEmail = normalizeEmail(entryEmail);
+  const lastAccess = value && typeof value === 'object' && value.lastAccess ? value.lastAccess : null;
+  return {
+    key,
+    email: entryEmail || normalizedKeyEmail,
+    normalizedEmail,
+    lastAccess
+  };
+};
+
+let currentUserEmail = '';
+let currentUserEmailNormalized = '';
+let currentCompanyAdminEmail = '';
+let currentBotAdminEmail = '';
+let isGlobalAdmin = false;
+let isPrimaryAdmin = false;
+let isCompanyAdmin = false;
+let isLimitedEditor = false;
+let isAllowedEditorForCurrentBot = false;
+let allowedEditorBots = new Set();
+let currentBotAllowedEditors = {};
+
+const DEFAULT_TAB_KEYS = ['dashboard', 'chat', 'mensajes', 'knowledge', 'respuestas', 'prompt', 'usuarios'];
+let TAB_KEYS = [...DEFAULT_TAB_KEYS];
+let currentActiveTab = TAB_KEYS[0];
+
 const bodyEl = document.body;
 const sidebarEl = document.querySelector('aside');
 const toggleSidebarBtn = document.getElementById('toggleSidebarBtn');
@@ -1915,6 +2005,34 @@ let promptTextareaEl = null;
 let promptSaveBtnEl = null;
 let lastPromptLoadedKey = null;
 let promptLoadingPromise = null;
+
+function parseAllowedEditorsMap(data) {
+  if (!data || typeof data !== 'object') return [];
+  return Object.entries(data).map(([key, value]) => extractEditorEntry(key, value)).filter(entry => !!entry.normalizedEmail);
+}
+
+function isEmailInAllowedEditors(map, email) {
+  if (!map || typeof map !== 'object') return false;
+  const normalizedEmail = normalizeEmail(email);
+  if (!normalizedEmail) return false;
+  const directKey = encodeEmailKey(normalizedEmail);
+  if (map[directKey]) return !!map[directKey];
+  if (map[normalizedEmail]) return !!map[normalizedEmail];
+  return parseAllowedEditorsMap(map).some(entry => entry.normalizedEmail === normalizedEmail && !!map[entry.key]);
+}
+
+function formatLastAccess(value) {
+  if (value === null || typeof value === 'undefined') return '—';
+  const timestamp = typeof value === 'number' ? value : parseInt(value, 10);
+  if (!Number.isFinite(timestamp)) return '—';
+  const date = new Date(timestamp);
+  if (Number.isNaN(date.getTime())) return '—';
+  try {
+    return date.toLocaleString();
+  } catch (err) {
+    return date.toISOString();
+  }
+}
 
 function getPromptConfigRef() {
   if (!EMPRESA || !BOT) return null;
@@ -3033,6 +3151,33 @@ function getBotsRef() {
   return db.ref(getConfigBotCollectionPath());
 }
 
+async function loadAllowedBotsForUser(email) {
+  allowedEditorBots = new Set();
+  const normalizedEmail = normalizeEmail(email);
+  if (!normalizedEmail) return;
+  try {
+    const botsSnap = await getBotsRef().once('value');
+    const botsData = botsSnap.val() || {};
+    Object.entries(botsData).forEach(([botId, botData]) => {
+      const allowedEditors = botData?.allowedEditors || {};
+      if (isEmailInAllowedEditors(allowedEditors, normalizedEmail)) {
+        allowedEditorBots.add(botId);
+      }
+    });
+  } catch (err) {
+    console.error('No se pudieron cargar los bots con acceso asignado', err);
+  }
+}
+
+function redirectToBot(botId) {
+  if (!botId || botId === BOT) return;
+  const storageKey = `bot:${EMPRESA}`;
+  localStorage.setItem(storageKey, botId);
+  const url = new URL(window.location.href);
+  url.searchParams.set('bot', botId);
+  window.location.href = url.toString();
+}
+
 function slugifyBotId(name = '') {
   return name
     .toLowerCase()
@@ -3061,6 +3206,12 @@ async function ensureBotDataExists() {
 }
 
 let botSelectorInitialized = false;
+let usersTabInitialized = false;
+let userTabBotsCache = {};
+let userManagementEditorsRef = null;
+let userManagementEditorListener = null;
+let currentManagedBotId = '';
+
 function initBotSelector() {
   if (botSelectorInitialized) return;
   const select = $('botSelect');
@@ -3604,6 +3755,238 @@ function initBotSelector() {
 }
 
 
+
+
+function initUserManagementTab() {
+  if (usersTabInitialized) return;
+  const tabSection = $('tab-usuarios');
+  const botSelect = $('userBotSelect');
+  const tableBody = $('userAccessTableBody');
+  if (!tabSection || !botSelect || !tableBody) return;
+
+  usersTabInitialized = true;
+
+  const statusEl = $('userBotSelectStatus');
+  const summaryEl = $('userAccessSummary');
+  const feedbackEl = $('userInviteFeedback');
+  const inviteForm = $('userInviteForm');
+  const inviteEmailInput = $('userInviteEmail');
+  const inviteSubmit = $('userInviteSubmit');
+
+  const showFeedback = (message = '', isError = false) => {
+    if (!feedbackEl) return;
+    feedbackEl.textContent = message;
+    feedbackEl.classList.toggle('hidden', !message);
+    feedbackEl.classList.toggle('text-red-600', !!message && isError);
+    feedbackEl.classList.toggle('text-gray-500', !isError);
+  };
+
+  const getBotDisplayName = (botId) => (userTabBotsCache?.[botId]?.config?.hotelName || botId || '').toString();
+
+  const renderEmptyState = (message) => {
+    tableBody.innerHTML = '';
+    const row = document.createElement('tr');
+    const cell = document.createElement('td');
+    cell.colSpan = 4;
+    cell.className = 'px-4 py-6 text-center text-gray-400 text-sm';
+    cell.textContent = message;
+    row.appendChild(cell);
+    tableBody.appendChild(row);
+    if (summaryEl) summaryEl.textContent = '—';
+  };
+
+  const updateInviteState = () => {
+    const hasBot = !!currentManagedBotId;
+    const displayName = hasBot ? getBotDisplayName(currentManagedBotId) : '';
+    if (inviteEmailInput) inviteEmailInput.disabled = !hasBot;
+    if (inviteSubmit) {
+      inviteSubmit.disabled = !hasBot;
+      inviteSubmit.classList.toggle('opacity-60', !hasBot);
+      inviteSubmit.classList.toggle('cursor-not-allowed', !hasBot);
+    }
+    if (statusEl) {
+      statusEl.textContent = hasBot
+        ? `Gestionando bot "${displayName}"`
+        : 'Selecciona un bot para gestionar accesos.';
+    }
+    showFeedback('');
+  };
+
+  const renderEditorsTable = (botId, editorsData) => {
+    currentBotAllowedEditors = editorsData || {};
+    tableBody.innerHTML = '';
+
+    const adminEmail = userTabBotsCache?.[botId]?.config?.adminEmail || currentCompanyAdminEmail || '';
+    const normalizedAdminEmail = normalizeEmail(adminEmail);
+
+    const entries = parseAllowedEditorsMap(currentBotAllowedEditors)
+      .filter(entry => entry.normalizedEmail !== normalizedAdminEmail)
+      .sort((a, b) => a.email.localeCompare(b.email));
+
+    if (adminEmail) {
+      const adminRow = document.createElement('tr');
+      adminRow.innerHTML = `
+        <td class="px-4 py-3 text-sm text-gray-700">${adminEmail}</td>
+        <td class="px-4 py-3 text-sm text-emerald-600 font-medium">Admin principal</td>
+        <td class="px-4 py-3 text-sm text-gray-500">—</td>
+        <td class="px-4 py-3 text-right text-sm text-gray-400">—</td>
+      `;
+      tableBody.appendChild(adminRow);
+    }
+
+    if (!entries.length) {
+      const emptyRow = document.createElement('tr');
+      const cell = document.createElement('td');
+      cell.colSpan = 4;
+      cell.className = 'px-4 py-6 text-center text-gray-400 text-sm';
+      cell.textContent = 'No hay usuarios invitados para este bot.';
+      emptyRow.appendChild(cell);
+      tableBody.appendChild(emptyRow);
+      if (summaryEl) summaryEl.textContent = 'Sin editores invitados';
+      return;
+    }
+
+    entries.forEach((entry) => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td class="px-4 py-3 text-sm text-gray-700">${entry.email}</td>
+        <td class="px-4 py-3 text-sm text-gray-600">Editor</td>
+        <td class="px-4 py-3 text-sm text-gray-500">${formatLastAccess(entry.lastAccess)}</td>
+        <td class="px-4 py-3 text-right">
+          <button type="button" class="text-sm text-red-600 hover:text-red-700" data-remove-editor data-email="${entry.email}" data-email-key="${entry.key}">❌</button>
+        </td>
+      `;
+      tableBody.appendChild(row);
+    });
+
+    if (summaryEl) {
+      const count = entries.length;
+      summaryEl.textContent = count === 1 ? '1 editor invitado' : `${count} editores invitados`;
+    }
+  };
+
+  const subscribeToBotEditors = (botId) => {
+    if (userManagementEditorsRef && userManagementEditorListener) {
+      userManagementEditorsRef.off('value', userManagementEditorListener);
+    }
+    if (!botId) {
+      renderEmptyState('Selecciona un bot para ver los usuarios con acceso.');
+      return;
+    }
+    userManagementEditorsRef = db.ref(`${getBotBasePath(botId)}/allowedEditors`);
+    userManagementEditorListener = (snap) => {
+      renderEditorsTable(botId, snap.val() || {});
+    };
+    userManagementEditorsRef.on('value', userManagementEditorListener);
+  };
+
+  const rebuildBotOptions = () => {
+    const entries = Object.entries(userTabBotsCache || {});
+    botSelect.innerHTML = '';
+
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = entries.length ? 'Selecciona un bot' : 'No hay bots disponibles';
+    placeholder.disabled = entries.length > 0;
+    placeholder.selected = !currentManagedBotId;
+    botSelect.appendChild(placeholder);
+
+    entries
+      .sort((a, b) => {
+        const nameA = (a[1]?.config?.hotelName || a[0] || '').toString().toLowerCase();
+        const nameB = (b[1]?.config?.hotelName || b[0] || '').toString().toLowerCase();
+        if (nameA < nameB) return -1;
+        if (nameA > nameB) return 1;
+        return 0;
+      })
+      .forEach(([id, data]) => {
+        const option = document.createElement('option');
+        option.value = id;
+        option.textContent = data?.config?.hotelName || id;
+        botSelect.appendChild(option);
+      });
+
+    if (currentManagedBotId && botSelect.querySelector(`option[value="${currentManagedBotId}"]`)) {
+      botSelect.value = currentManagedBotId;
+    } else {
+      currentManagedBotId = '';
+    }
+
+    updateInviteState();
+
+    if (currentManagedBotId) {
+      subscribeToBotEditors(currentManagedBotId);
+    } else {
+      renderEmptyState(entries.length ? 'Selecciona un bot para ver los usuarios con acceso.' : 'No hay bots disponibles.');
+    }
+  };
+
+  getBotsRef().on('value', (snap) => {
+    userTabBotsCache = snap.val() || {};
+    rebuildBotOptions();
+  });
+
+  botSelect.addEventListener('change', (event) => {
+    currentManagedBotId = event.target.value || '';
+    updateInviteState();
+    subscribeToBotEditors(currentManagedBotId);
+  });
+
+  inviteForm?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (!currentManagedBotId) return;
+    const rawEmail = inviteEmailInput?.value || '';
+    const normalizedEmail = normalizeEmail(rawEmail);
+    if (!normalizedEmail || !rawEmail.includes('@')) {
+      showFeedback('Introduce un correo válido.', true);
+      return;
+    }
+
+    const adminEmailNormalized = normalizeEmail(userTabBotsCache?.[currentManagedBotId]?.config?.adminEmail || currentCompanyAdminEmail || '');
+    if (normalizedEmail === adminEmailNormalized) {
+      showFeedback('El admin principal ya tiene acceso a todos los bots.', true);
+      return;
+    }
+
+    if (isEmailInAllowedEditors(currentBotAllowedEditors, normalizedEmail)) {
+      showFeedback('Este usuario ya tiene acceso a este bot.', true);
+      return;
+    }
+
+    try {
+      const key = encodeEmailKey(normalizedEmail);
+      await db.ref(`${getBotBasePath(currentManagedBotId)}/allowedEditors/${key}`).set(true);
+      if (inviteEmailInput) inviteEmailInput.value = '';
+      showFeedback(`✅ Acceso otorgado a ${normalizedEmail} para este bot.`);
+      if (typeof toast === 'function') {
+        toast(`✅ Acceso otorgado a ${normalizedEmail} para este bot.`);
+      }
+    } catch (err) {
+      console.error('No se pudo invitar al usuario', err);
+      showFeedback('No se pudo otorgar acceso. Inténtalo de nuevo.', true);
+    }
+  });
+
+  tableBody.addEventListener('click', async (event) => {
+    const target = event.target.closest('[data-remove-editor]');
+    if (!target || !currentManagedBotId) return;
+    const emailKey = target.getAttribute('data-email-key');
+    const emailValue = target.getAttribute('data-email');
+    if (!emailKey) return;
+    try {
+      await db.ref(`${getBotBasePath(currentManagedBotId)}/allowedEditors/${emailKey}`).set(null);
+      if (typeof toast === 'function') {
+        toast(`Acceso revocado para ${emailValue}`);
+      }
+    } catch (err) {
+      console.error('No se pudo revocar el acceso', err);
+      showFeedback('No se pudo revocar el acceso. Inténtalo de nuevo.', true);
+    }
+  });
+
+  updateInviteState();
+  renderEmptyState('Selecciona un bot para ver los usuarios con acceso.');
+}
 
 
 let languageSelectorInitialized = false;
@@ -4196,29 +4579,33 @@ function initChatTemplatesUI() {
 let canWriteFlag = false;
 async function refreshPermissions() {
   const user = auth.currentUser;
-  if (!user) { canWriteFlag = false; setWriteEnabled(false); return; }
+  if (!user) { canWriteFlag = false; setWriteEnabled(false); applyRoleUI(); return; }
 
-  const userEmail = (user.email || '').toLowerCase();
-  $('authEmail').textContent = user.email || '';
+  currentUserEmail = user.email || '';
+  currentUserEmailNormalized = normalizeEmail(currentUserEmail);
+  $('authEmail').textContent = currentUserEmail || '';
 
   const adminEmails = new Set();
 
   const botAdminSnap = await eref('config/adminEmail').once('value');
-  const botAdminEmail = (botAdminSnap.val() || '').toLowerCase();
-  if (botAdminEmail) adminEmails.add(botAdminEmail);
+  currentBotAdminEmail = (botAdminSnap.val() || '').trim();
+  const normalizedBotAdminEmail = normalizeEmail(currentBotAdminEmail);
+  if (normalizedBotAdminEmail) adminEmails.add(normalizedBotAdminEmail);
 
   try {
     const companyAdminSnap = await db.ref(`empresas/${EMPRESA}/config/adminEmail`).once('value');
-    const companyAdminEmail = (companyAdminSnap.val() || '').toLowerCase();
-    if (companyAdminEmail) adminEmails.add(companyAdminEmail);
+    currentCompanyAdminEmail = (companyAdminSnap.val() || '').trim();
+    const normalizedCompanyAdminEmail = normalizeEmail(currentCompanyAdminEmail);
+    if (normalizedCompanyAdminEmail) adminEmails.add(normalizedCompanyAdminEmail);
   } catch (err) {
     console.warn('No se pudo leer config/adminEmail a nivel empresa', err);
+    currentCompanyAdminEmail = '';
   }
 
   if (!adminEmails.size) {
     try {
       const legacyAdminSnap = await db.ref(`${getLegacySingleBotPath()}/config/adminEmail`).once('value');
-      const legacyAdminEmail = (legacyAdminSnap.val() || '').toLowerCase();
+      const legacyAdminEmail = normalizeEmail(legacyAdminSnap.val() || '');
       if (legacyAdminEmail) adminEmails.add(legacyAdminEmail);
     } catch (err) {
       console.warn('No se pudo leer config/adminEmail legacy', err);
@@ -4226,9 +4613,36 @@ async function refreshPermissions() {
   }
 
   const globalAdminSnap = await db.ref('globalAdmins/' + user.uid).once('value');
-  const isGlobal = !!globalAdminSnap.val();
+  isGlobalAdmin = !!globalAdminSnap.val();
+  isPrimaryAdmin = !!(currentUserEmailNormalized && adminEmails.has(currentUserEmailNormalized));
+  isCompanyAdmin = !!(currentUserEmailNormalized && normalizeEmail(currentCompanyAdminEmail) === currentUserEmailNormalized);
 
-  canWriteFlag = isGlobal || (userEmail && adminEmails.has(userEmail));
+  try {
+    const allowedEditorsSnap = await db.ref(`${getBotBasePath()}/allowedEditors`).once('value');
+    currentBotAllowedEditors = allowedEditorsSnap.val() || {};
+  } catch (err) {
+    console.warn('No se pudo leer la lista de editores permitidos', err);
+    currentBotAllowedEditors = {};
+  }
+
+  isAllowedEditorForCurrentBot = isEmailInAllowedEditors(currentBotAllowedEditors, currentUserEmailNormalized);
+
+  if (!isGlobalAdmin && !isPrimaryAdmin) {
+    await loadAllowedBotsForUser(currentUserEmailNormalized);
+    if (!isAllowedEditorForCurrentBot && allowedEditorBots.size) {
+      const [firstBot] = allowedEditorBots.values();
+      if (firstBot && firstBot !== BOT) {
+        redirectToBot(firstBot);
+        return;
+      }
+    }
+  } else {
+    allowedEditorBots = new Set();
+  }
+
+  isLimitedEditor = !isGlobalAdmin && !isPrimaryAdmin && isAllowedEditorForCurrentBot;
+
+  canWriteFlag = isGlobalAdmin || isPrimaryAdmin || isAllowedEditorForCurrentBot;
   setWriteEnabled(canWriteFlag);
 
   const permBannerA = document.getElementById('permBannerA');
@@ -4236,6 +4650,7 @@ async function refreshPermissions() {
   if (permBannerA) permBannerA.classList.toggle('hidden', canWriteFlag);
   if (permBannerS) permBannerS.classList.toggle('hidden', canWriteFlag);
   applyPromptPermissionState();
+  applyRoleUI();
 }
 
 function setWriteEnabled(enabled) {
@@ -4244,7 +4659,7 @@ function setWriteEnabled(enabled) {
     'uploadAvatar','deleteAvatar','fontSelect','tgChatVisible','hotelName',
     'timeZone','saveContext','contextText','widgetIconTrigger',
     'addKnowledgePage','knowledgeUrlInput','confirmAddKnowledge','personalitySelect','btnNewBot',
-    'newBotNameInput','confirmNewBot'
+    'newBotNameInput','confirmNewBot','userInviteEmail','userInviteSubmit'
   ];
   ids.forEach(id => {
     const el = $(id);
@@ -4258,21 +4673,98 @@ function setWriteEnabled(enabled) {
   }
 }
 
-const TAB_KEYS = ['dashboard','chat','mensajes','knowledge','respuestas','prompt'];
+function applyRoleUI() {
+  const shouldShowUsuarios = isGlobalAdmin || isPrimaryAdmin;
+  const editorOnly = isLimitedEditor && !shouldShowUsuarios;
+
+  let visibleTabs = DEFAULT_TAB_KEYS.filter((tab) => {
+    if (tab === 'usuarios') return shouldShowUsuarios;
+    if (editorOnly && (tab === 'dashboard' || tab === 'prompt')) return false;
+    return true;
+  });
+  if (!visibleTabs.length) {
+    visibleTabs = ['chat'];
+  }
+  TAB_KEYS = visibleTabs;
+
+  DEFAULT_TAB_KEYS.forEach((tab) => {
+    const btn = document.querySelector(`.sidebar-btn[data-tab="${tab}"]`);
+    if (btn) {
+      const isVisible = TAB_KEYS.includes(tab);
+      btn.classList.toggle('hidden', !isVisible);
+    }
+    const section = document.getElementById(`tab-${tab}`);
+    if (section && !TAB_KEYS.includes(tab)) {
+      section.classList.add('hidden');
+    }
+  });
+
+  const usuariosBtn = $('usuariosTabButton');
+  if (usuariosBtn) {
+    usuariosBtn.classList.toggle('hidden', !shouldShowUsuarios);
+  }
+
+  const usuariosSection = $('tab-usuarios');
+  if (usuariosSection) {
+    usuariosSection.classList.toggle('hidden', !shouldShowUsuarios);
+  }
+
+  if (shouldShowUsuarios) {
+    initUserManagementTab();
+  }
+
+  const botSelectorWrap = $('botSelectorWrap');
+  if (botSelectorWrap) {
+    botSelectorWrap.classList.toggle('hidden', editorOnly);
+  }
+
+  const newBotBtn = $('btnNewBot');
+  if (newBotBtn) {
+    newBotBtn.classList.toggle('hidden', editorOnly);
+    newBotBtn.disabled = !!editorOnly;
+  }
+
+  const botSelect = $('botSelect');
+  if (botSelect) {
+    if (editorOnly) {
+      botSelect.disabled = true;
+      const currentLabel = $('botText')?.textContent || BOT;
+      botSelect.innerHTML = '';
+      const option = document.createElement('option');
+      option.value = BOT;
+      option.textContent = currentLabel;
+      option.selected = true;
+      botSelect.appendChild(option);
+    } else {
+      botSelect.disabled = false;
+    }
+  }
+
+  if (typeof lucide !== 'undefined' && lucide?.createIcons) {
+    lucide.createIcons();
+  }
+
+  const desiredTab = TAB_KEYS.includes(currentActiveTab) ? currentActiveTab : (TAB_KEYS[0] || 'chat');
+  setActiveTab(desiredTab);
+}
+
 let tabsInitialized = false;
 
 function setActiveTab(tab) {
-  const targetTab = TAB_KEYS.includes(tab) ? tab : 'dashboard';
+  const fallbackTab = TAB_KEYS.includes(tab) ? tab : (TAB_KEYS[0] || 'dashboard');
+  const targetTab = fallbackTab;
+  currentActiveTab = targetTab;
 
   $$('.sidebar-btn').forEach(btn => {
     const btnTab = btn.getAttribute('data-tab');
     btn.classList.toggle('active', btnTab === targetTab);
   });
 
-  TAB_KEYS.forEach(key => {
+  DEFAULT_TAB_KEYS.forEach(key => {
     const section = document.getElementById(`tab-${key}`);
     if (section) {
-      section.classList.toggle('hidden', key !== targetTab);
+      const shouldShow = key === targetTab && TAB_KEYS.includes(key);
+      section.classList.toggle('hidden', !shouldShow);
     }
   });
 
@@ -4303,6 +4795,15 @@ function showAppView() {
 }
 
 function showLoginView() {
+  isGlobalAdmin = false;
+  isPrimaryAdmin = false;
+  isCompanyAdmin = false;
+  isLimitedEditor = false;
+  isAllowedEditorForCurrentBot = false;
+  allowedEditorBots = new Set();
+  currentBotAllowedEditors = {};
+  TAB_KEYS = [...DEFAULT_TAB_KEYS];
+  applyRoleUI();
   document.querySelector('header')?.classList.add('hidden');
   document.querySelector('aside')?.classList.add('hidden');
   $('headerSpacer')?.classList.add('hidden');
@@ -4392,6 +4893,12 @@ auth.onAuthStateChanged(async (u) => {
               botDetectado = botId;
               break outer;
             }
+            const allowedEditors = botData?.allowedEditors || {};
+            if (isEmailInAllowedEditors(allowedEditors, email)) {
+              empresaDetectada = empresaId;
+              botDetectado = botId;
+              break outer;
+            }
           }
         }
       }
@@ -4405,7 +4912,9 @@ auth.onAuthStateChanged(async (u) => {
           const configBots = empresaData?.config?.bots || {};
           const matchingBot = Object.entries(configBots).find(([, botData]) => {
             const botAdmin = (botData?.config?.adminEmail || '').toLowerCase();
-            return botAdmin && botAdmin === email;
+            if (botAdmin && botAdmin === email) return true;
+            const allowedEditors = botData?.allowedEditors || {};
+            return isEmailInAllowedEditors(allowedEditors, email);
           });
           if (adminEmail && adminEmail === email) {
             empresaDetectada = empresaId;
@@ -4468,12 +4977,13 @@ auth.onAuthStateChanged(async (u) => {
 // ====== Tabs ======
 function initTabs() {
   if (tabsInitialized) {
-    setActiveTab('dashboard');
+    const fallback = TAB_KEYS.includes(currentActiveTab) ? currentActiveTab : (TAB_KEYS[0] || 'dashboard');
+    setActiveTab(fallback);
     return;
   }
 
   tabsInitialized = true;
-  setActiveTab('dashboard');
+  setActiveTab(TAB_KEYS[0] || 'dashboard');
 
   $$('.sidebar-btn').forEach(btn => {
     btn.addEventListener('click', () => {
