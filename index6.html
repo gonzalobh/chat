@@ -3608,14 +3608,19 @@ function drawDoughnutChart(id, percent, color) {
   const element = document.getElementById(id);
   if (!element) return null;
 
+  const safePercent = Math.min(Math.max(percent, 0), 100);
+  const remainder = 100 - safePercent;
+  const hasBothSegments = safePercent > 0 && remainder > 0;
+
   return new Chart(element, {
     type: 'doughnut',
     data: {
       datasets: [{
-        data: [percent, 100 - percent],
+        data: [safePercent, remainder],
         backgroundColor: [color, '#d8d8d8'],
         borderWidth: 0,
-        borderRadius: 8,
+        borderRadius: hasBothSegments ? 8 : 0,
+        spacing: hasBothSegments ? 2 : 0,
         hoverOffset: 0
       }]
     },
