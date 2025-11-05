@@ -201,6 +201,9 @@ const chatMetaRef = chatLogBaseRef.child('meta');
 let chatMetaCache = null;
 let chatStartedAt = null;
 
+let SYSTEM_PROMPT = "";
+let systemPromptRef = null;
+
 chatMetaRef.once('value').then(snapshot => {
   chatMetaCache = snapshot.val() || {};
   if (chatMetaCache.startedAt) {
@@ -265,6 +268,31 @@ function logChatMessage(sender, text) {
     console.warn('No se pudo registrar la referencia del mensaje', err);
   }
   updateChatMeta(payload.text, now);
+}
+
+function initSystemPromptListener() {
+  if (systemPromptRef) {
+    try {
+      systemPromptRef.off();
+    } catch (err) {
+      console.warn('No se pudo desuscribir del prompt anterior', err);
+    }
+    systemPromptRef = null;
+  }
+
+  if (!EMPRESA || !BOT) {
+    SYSTEM_PROMPT = "";
+    return;
+  }
+
+  systemPromptRef = db.ref(`empresas/${EMPRESA}/bots/${BOT}/config/prompt`);
+  systemPromptRef.on('value', (snap) => {
+    const value = snap.val();
+    SYSTEM_PROMPT = typeof value === 'string' ? value : '';
+  }, (err) => {
+    console.warn('No se pudo cargar el prompt del sistema', err);
+    SYSTEM_PROMPT = '';
+  });
 }
 
 let useLegacyBotPath = false;
@@ -515,7 +543,7 @@ async function askAI(userText){
   const body = {
     // 🔹 Solo enviamos mensajes e información de contexto general
     messages: MESSAGES,
-    system: CURRENT.contextInfo || "" // El proxy añade su propio prompt
+    system: SYSTEM_PROMPT || CURRENT.contextInfo || "" // El proxy añade su propio prompt
   };
 
   const res = await fetch(PROXY_URL, {
@@ -802,6 +830,7 @@ function initEmbedIntegration() {
 document.addEventListener("DOMContentLoaded", async () => {
   lucide.createIcons();
   await prepareBotPath();
+  initSystemPromptListener();
   initFirebaseBindings();
 
   // Cerrar chat

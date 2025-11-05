@@ -590,7 +590,8 @@ header {
 
 /* === Centrar todas las pestañas excepto Appearance === */
 #tab-knowledge,
-#tab-respuestas {
+#tab-respuestas,
+#tab-prompt {
   margin-left: auto;
   margin-right: auto;
   width: 100%;
@@ -786,6 +787,10 @@ body.login-view #appContainer {
     <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="respuestas">
       <i data-lucide="messages-square" class="w-5 h-5 shrink-0"></i>
       <span class="hidden lg:inline lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Auto Responses</span>
+    </button>
+    <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="prompt">
+      <i data-lucide="file-text" class="w-5 h-5 shrink-0"></i>
+      <span class="hidden lg:inline lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Prompt</span>
     </button>
   </nav>
 
@@ -1643,6 +1648,15 @@ body.login-view #appContainer {
   </div>
 </section>
 
+<section id="tab-prompt" class="hidden">
+  <div class="card p-6 space-y-4 max-w-3xl mx-auto">
+    <h2 class="text-xl font-semibold text-gray-800">System Prompt</h2>
+    <p class="text-sm text-gray-500">Aquí puedes escribir el texto base del asistente. Este texto se usará como prompt del sistema para este bot.</p>
+    <textarea id="promptTextarea" class="w-full border border-gray-200 rounded-xl p-3 text-sm min-h-[400px] focus:outline-none focus:ring-2 focus:ring-black/70" placeholder="Escribe aquí el prompt del sistema..."></textarea>
+    <button id="savePromptBtn" class="bg-black text-white rounded-xl px-4 py-2.5 hover:bg-gray-900">Guardar cambios</button>
+  </div>
+</section>
+
 
 </div>
         </div>
@@ -1895,6 +1909,104 @@ const $$ = (sel) => Array.from(document.querySelectorAll(sel));
 const bodyEl = document.body;
 const sidebarEl = document.querySelector('aside');
 const toggleSidebarBtn = document.getElementById('toggleSidebarBtn');
+
+let promptTabInitialized = false;
+let promptTextareaEl = null;
+let promptSaveBtnEl = null;
+let lastPromptLoadedKey = null;
+let promptLoadingPromise = null;
+
+function getPromptConfigRef() {
+  if (!EMPRESA || !BOT) return null;
+  return db.ref(`empresas/${EMPRESA}/bots/${BOT}/config/prompt`);
+}
+
+async function loadPromptForCurrentBot({ force = false } = {}) {
+  promptTextareaEl = promptTextareaEl || $('promptTextarea');
+  const textarea = promptTextareaEl;
+  if (!textarea) return;
+
+  const ref = getPromptConfigRef();
+  if (!ref) return;
+
+  if (promptLoadingPromise) {
+    return promptLoadingPromise;
+  }
+
+  const key = `${EMPRESA || ''}::${BOT || ''}`;
+  if (!force && lastPromptLoadedKey === key) {
+    return;
+  }
+
+  try {
+    promptLoadingPromise = ref.once('value').then((snap) => {
+      const value = snap.val();
+      textarea.value = typeof value === 'string' ? value : '';
+      lastPromptLoadedKey = key;
+    }).catch((err) => {
+      console.error('No se pudo cargar el prompt del sistema', err);
+    });
+    await promptLoadingPromise;
+  } finally {
+    promptLoadingPromise = null;
+  }
+}
+
+function applyPromptPermissionState() {
+  promptTextareaEl = promptTextareaEl || $('promptTextarea');
+  promptSaveBtnEl = promptSaveBtnEl || $('savePromptBtn');
+  const textarea = promptTextareaEl;
+  const saveBtn = promptSaveBtnEl;
+  if (!textarea && !saveBtn) return;
+
+  const permBanner = $('permBannerS');
+  const noWrite = !!(permBanner && !permBanner.classList.contains('hidden'));
+
+  if (textarea) {
+    textarea.disabled = noWrite;
+    textarea.classList.toggle('opacity-60', noWrite);
+    textarea.classList.toggle('cursor-not-allowed', noWrite);
+  }
+  if (saveBtn) {
+    saveBtn.classList.toggle('hidden', noWrite);
+    saveBtn.disabled = noWrite;
+  }
+}
+
+function initPromptTab() {
+  if (promptTabInitialized) return;
+
+  promptTextareaEl = $('promptTextarea');
+  promptSaveBtnEl = $('savePromptBtn');
+
+  if (!promptTextareaEl) return;
+
+  promptTabInitialized = true;
+
+  applyPromptPermissionState();
+
+  if (promptSaveBtnEl) {
+    promptSaveBtnEl.addEventListener('click', async () => {
+      const ref = getPromptConfigRef();
+      if (!ref) return;
+      const value = promptTextareaEl.value || '';
+      try {
+        await ref.set(value);
+        lastPromptLoadedKey = `${EMPRESA || ''}::${BOT || ''}`;
+        if (typeof toast === 'function') {
+          toast('Prompt guardado correctamente');
+        } else {
+          alert('Prompt guardado correctamente');
+        }
+      } catch (err) {
+        console.error('No se pudo guardar el prompt del sistema', err);
+        alert('No se pudo guardar el prompt. Inténtalo de nuevo.');
+      }
+    });
+  }
+
+  loadPromptForCurrentBot({ force: true });
+}
 
 if (sidebarEl && toggleSidebarBtn) {
   const closeSidebar = ({ immediate = false } = {}) => {
@@ -4123,6 +4235,7 @@ async function refreshPermissions() {
   const permBannerS = document.getElementById('permBannerS');
   if (permBannerA) permBannerA.classList.toggle('hidden', canWriteFlag);
   if (permBannerS) permBannerS.classList.toggle('hidden', canWriteFlag);
+  applyPromptPermissionState();
 }
 
 function setWriteEnabled(enabled) {
@@ -4145,7 +4258,7 @@ function setWriteEnabled(enabled) {
   }
 }
 
-const TAB_KEYS = ['dashboard','chat','mensajes','knowledge','respuestas'];
+const TAB_KEYS = ['dashboard','chat','mensajes','knowledge','respuestas','prompt'];
 let tabsInitialized = false;
 
 function setActiveTab(tab) {
@@ -4167,8 +4280,14 @@ function setActiveTab(tab) {
     if (typeof window.__setDefaultChatPanel === 'function') {
       window.__setDefaultChatPanel();
     }
-  } else if (typeof window.__hideHeaderPanel === 'function') {
-    window.__hideHeaderPanel();
+  } else {
+    if (typeof window.__hideHeaderPanel === 'function') {
+      window.__hideHeaderPanel();
+    }
+    if (targetTab === 'prompt') {
+      initPromptTab();
+      loadPromptForCurrentBot({ force: true });
+    }
   }
 }
 
@@ -4392,6 +4511,7 @@ async function initAll(){
   initKnowledge();
   initIntegration();
   initRespuestas();
+  initPromptTab();
   initWelcome();
   initSchedule();
 }
