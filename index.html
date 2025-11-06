@@ -1051,7 +1051,7 @@ body.login-view #appContainer {
           <span class="">
             <i data-lucide="bot" class="w-5 h-5"></i>
           </span>
-          <span class="dashboard2-card-title">Total Conversations</span>
+          <span id="dash2TotalConvTitle" class="dashboard2-card-title">Total Conversations</span>
         </div>
         <p id="dash2TotalConv" class="dashboard2-card-value">—</p>
       </div>
@@ -1064,7 +1064,7 @@ body.login-view #appContainer {
           <span class="">
             <i data-lucide="book-open" class="w-5 h-5"></i>
           </span>
-          <span class="dashboard2-card-title">Limit Knowledge</span>
+          <span id="dash2KnowledgeTitle" class="dashboard2-card-title">Limit Knowledge</span>
         </div>
         <span id="dash2KnowledgeTextTop" class="text-sm text-gray-500 font-medium">23457 / 10000</span>
       </div>
@@ -1081,7 +1081,7 @@ body.login-view #appContainer {
           <span class="">
             <i data-lucide="message-square" class="w-5 h-5"></i>
           </span>
-          <span class="dashboard2-card-title">Limit Answers</span>
+          <span id="dash2AnswersTitle" class="dashboard2-card-title">Limit Answers</span>
         </div>
         <span id="dash2AnswersTextTop" class="text-sm text-gray-500 font-medium">7 / 500</span>
       </div>
@@ -1100,7 +1100,7 @@ body.login-view #appContainer {
         <span class="">
           <i data-lucide="messages-square" class="w-5 h-5"></i>
         </span>
-        <span class="dashboard2-card-title">Conversations</span>
+        <span id="dash2ConversationsTitle" class="dashboard2-card-title">Conversations</span>
       </div>
       <span id="dash2YearLabel" class="dashboard2-panel-subtitle"></span>
     </div>
@@ -2102,6 +2102,19 @@ const registerTranslationTarget = (node, key, target = 'text', options = {}) => 
   if (!node || !window.translationManager) return;
   translationManager.register(node, key, target, options);
 };
+
+if (window.translationManager) {
+  const dash2TitleTranslations = [
+    ['dash2TotalConvTitle', 'Total Conversations'],
+    ['dash2KnowledgeTitle', 'Limit Knowledge'],
+    ['dash2AnswersTitle', 'Limit Answers'],
+    ['dash2ConversationsTitle', 'Conversations'],
+  ];
+  dash2TitleTranslations.forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    if (el) registerTranslationTarget(el, key);
+  });
+}
 
 // ====== Firebase config ======
 const FIREBASE_CONFIG = {
