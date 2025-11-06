@@ -539,11 +539,18 @@ const MESSAGES = []; // {role:'system'|'user'|'assistant', content:string}
 const CURRENT = { avatarUrl: "", hotelName: "", contextInfo: "", personality:"warm" };
 
 
-async function askAI(userText){
+async function askAI(userText) {
+  const combinedSystem = `
+  ${SYSTEM_PROMPT || ""}
+
+  Use the following hotel information to answer the guest accurately:
+
+  ${CURRENT.contextInfo || ""}
+  `;
+
   const body = {
-    // 🔹 Solo enviamos mensajes e información de contexto general
     messages: MESSAGES,
-    system: SYSTEM_PROMPT || CURRENT.contextInfo || "" // El proxy añade su propio prompt
+    system: combinedSystem
   };
 
   const res = await fetch(PROXY_URL, {
@@ -554,7 +561,6 @@ async function askAI(userText){
 
   if (!res.ok) throw new Error("IA request failed: " + res.status);
   const data = await res.json();
-
   return data?.choices?.[0]?.message?.content || "";
 }
 
