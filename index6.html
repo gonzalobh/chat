@@ -878,7 +878,7 @@ body.login-view #appContainer {
 <div id="headerSpacer" class="h-[57px]"></div>
 <div class="flex min-h-screen w-full relative">
       <!-- Sidebar -->
-<aside class="hidden md:flex peer group flex flex-col fixed top-[57px] left-0 h-[calc(100vh-57px)] bg-white border-r overflow-y-auto transition-transform duration-300 -translate-x-full md:translate-x-0 w-56 md:w-[72px] lg:w-[72px] lg:hover:w-[260px] shadow-lg md:shadow-none z-50 md:z-auto">
+<aside id="sidebar" class="hidden md:hidden peer group flex flex-col fixed top-[57px] left-0 h-[calc(100vh-57px)] bg-white border-r overflow-y-auto transition-transform duration-300 -translate-x-full md:translate-x-0 w-56 md:w-[72px] lg:w-[72px] lg:hover:w-[260px] shadow-lg md:shadow-none z-50 md:z-auto">
   <nav class="space-y-2 mt-4 px-2">
     <button class="sidebar-btn active flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="dashboard">
       <i data-lucide="layout-dashboard" class="w-5 h-5 shrink-0"></i>
@@ -2249,7 +2249,7 @@ let TAB_KEYS = [...DEFAULT_TAB_KEYS];
 let currentActiveTab = TAB_KEYS[0];
 
 const bodyEl = document.body;
-const sidebarEl = document.querySelector('aside');
+const sidebarEl = document.getElementById('sidebar');
 const toggleSidebarBtn = document.getElementById('toggleSidebarBtn');
 
 let promptTabInitialized = false;
@@ -5490,7 +5490,10 @@ function setActiveTab(tab) {
 
 function showAppView() {
   document.querySelector('header')?.classList.remove('hidden');
-  document.querySelector('aside')?.classList.remove('hidden');
+  const sidebar = document.getElementById('sidebar');
+  if (sidebar) {
+    document.getElementById("sidebar").classList.remove("hidden", "md:hidden");
+  }
   $('headerSpacer')?.classList.remove('hidden');
   $('login').classList.add('hidden');
   $('tabs').classList.remove('hidden');
@@ -5527,7 +5530,10 @@ function showLoginView() {
   TAB_KEYS = [...DEFAULT_TAB_KEYS];
   applyRoleUI();
   document.querySelector('header')?.classList.add('hidden');
-  document.querySelector('aside')?.classList.add('hidden');
+  const sidebar = document.getElementById('sidebar');
+  if (sidebar) {
+    sidebar.classList.add('hidden', 'md:hidden');
+  }
   $('headerSpacer')?.classList.add('hidden');
   $('login').classList.remove('hidden');
   $('tabs').classList.add('hidden');
