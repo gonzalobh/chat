@@ -860,8 +860,9 @@ body.login-view #appContainer {
         <span id="empresaBadge" class="text-[8px] bg-black text-white px-1 py-[1px] rounded mb-[2px]">—</span>
         <span id="authEmail" class="text-xs text-gray-500 break-words max-w-[200px] md:max-w-[240px]">—</span>
       </div>
-      <button id="btnLogout" class="px-3 py-1.5 bg-red-600 text-white rounded-md hidden shrink-0">
-        Log out
+      <button id="btnLogout" class="px-3 py-1.5 bg-red-600 text-white rounded-md hidden shrink-0 flex items-center justify-center" aria-label="Cerrar sesión">
+        <span class="sr-only">Cerrar sesión</span>
+        <i data-lucide="log-out" class="w-4 h-4"></i>
       </button>
       <select id="languageSelect" class="border border-gray-200 rounded-md px-2 py-1 text-xs leading-tight bg-white focus:outline-none focus:ring-1 focus:ring-black/40 notranslate h-8 min-w-[120px]">
         <option value="en">English</option>
@@ -935,7 +936,13 @@ body.login-view #appContainer {
   <label class="block text-sm text-gray-600 mb-1 text-left">Email</label>
   <input id="emailInput" type="email" class="w-full border rounded-xl px-3 py-2 mb-3" placeholder="admin@company.com">
   <label class="block text-sm text-gray-600 mb-1 text-left">Password</label>
-  <input id="passwordInput" type="password" class="w-full border rounded-xl px-3 py-2 mb-4" placeholder="••••••••">
+  <div class="relative mb-4">
+    <input id="passwordInput" type="password" class="w-full border rounded-xl px-3 py-2 pr-10" placeholder="••••••••">
+    <button type="button" id="togglePasswordVisibility" class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600" aria-pressed="false">
+      <span class="sr-only">Mostrar contraseña</span>
+      <i data-lucide="eye" class="w-4 h-4"></i>
+    </button>
+  </div>
   <button id="btnLogin" class="w-full py-2.5 rounded-xl bg-black text-white">Login</button>
   <p id="loginError" class="text-red-600 text-sm mt-3 hidden text-center">❌ Incorrect credentials</p>
 </div>
@@ -2433,6 +2440,31 @@ if (sidebarEl && toggleSidebarBtn) {
 
 const loginErrorEl = $('loginError');
 const defaultLoginErrorMessage = loginErrorEl?.textContent || '';
+const passwordInputEl = $('passwordInput');
+const togglePasswordVisibilityButton = $('togglePasswordVisibility');
+
+if (togglePasswordVisibilityButton && passwordInputEl) {
+  togglePasswordVisibilityButton.addEventListener('click', () => {
+    const isCurrentlyHidden = passwordInputEl.getAttribute('type') === 'password';
+    passwordInputEl.setAttribute('type', isCurrentlyHidden ? 'text' : 'password');
+    togglePasswordVisibilityButton.setAttribute('aria-pressed', String(isCurrentlyHidden));
+
+    const icon = togglePasswordVisibilityButton.querySelector('i[data-lucide]');
+    if (icon) {
+      icon.setAttribute('data-lucide', isCurrentlyHidden ? 'eye-off' : 'eye');
+    }
+
+    const srText = togglePasswordVisibilityButton.querySelector('.sr-only');
+    if (srText) {
+      srText.textContent = isCurrentlyHidden ? 'Ocultar contraseña' : 'Mostrar contraseña';
+    }
+
+    if (window.lucide) {
+      window.lucide.createIcons();
+    }
+  });
+}
+
 function toast(msg){
   const t = $('toast');
   t.textContent = msg;
