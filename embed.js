@@ -63,14 +63,21 @@
       transform: translateX(var(--widget-horizontal-translate)) scale(1.05);
       box-shadow: 0 6px 14px rgba(0,0,0,0.3);
     }
-    #chatWidgetFrame {
-      position: fixed; bottom: 90px; left: auto; right: 24px; width: 420px; height: 620px;
-      --widget-frame-translate: 0;
-      border: none; border-radius: 18px;
-      box-shadow: 0 6px 24px rgba(0,0,0,0.2);
-      display: none; z-index: 99999; overflow: hidden;
-      transform: translateX(var(--widget-frame-translate));
-    }
+#chatWidgetFrame {
+  position: fixed;
+  bottom: 90px;
+  right: 24px;
+  width: 420px;
+  max-height: calc(100vh - 110px); /* 🟢 se ajusta automáticamente */
+  height: 90vh; /* mantiene proporción */
+  border: none;
+  border-radius: 18px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.2);
+  display: none;
+  z-index: 99999;
+  overflow: hidden;
+  transform: translateX(var(--widget-frame-translate));
+}
     #chatWidgetFrame[data-position="left"] {
       left: 24px;
       right: auto;
@@ -144,21 +151,18 @@
         }
 
         // 🔹 Si llega una imagen personalizada desde el chat
-        if (d.imageUrl) {
-          const img = document.createElement("img");
-          img.src = d.imageUrl;
-          img.alt = "chat icon";
-          img.style.width = "32px";
-          img.style.height = "32px";
-          img.style.objectFit = "contain";
+// 🔹 Si llega una imagen personalizada desde el chat
+if (d.imageUrl) {
+  const img = document.createElement("img");
+  img.src = d.imageUrl;
+  img.alt = "chat icon";
+  img.style.width = "28px";
+  img.style.height = "28px";
+  img.style.objectFit = "contain";
 
-          // aplicar mismo radio también a la imagen
-          if (typeof d.radius !== "undefined") {
-            img.style.borderRadius = d.radius + "%";
-          }
-
-          btn.appendChild(img);
-        }
+  // ❌ No aplicamos border-radius a la imagen, solo al botón
+  btn.appendChild(img);
+}
 
         // 🔹 Si llega un SVG de fallback
         else if (d.svg?.includes("<svg")) {

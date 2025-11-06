@@ -33,7 +33,7 @@
 
     :root{ --tile-radius: 18px; --avatar-radius: 50%; }
     body{ font-family: 'Manrope', system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
-    .card{ background:white; border-radius: var(--tile-radius); box-shadow: 0 10px 30px rgba(0,0,0,.06); }
+    .card{ background:#f3f3f3; border-radius: var(--tile-radius); }
     .toggle{--w:52px;--h:28px;--p:3px;appearance:none;-webkit-appearance:none;outline:none;cursor:pointer;width:var(--w);height:var(--h);border-radius:999px;border:2px solid #111;background:#fff;position:relative;box-sizing:border-box;transition:background .2s,border-color .2s}
     .toggle::after{content:"";position:absolute;top:50%;left:var(--p);width:calc(var(--h) - 2*var(--p));height:calc(var(--h) - 2*var(--p));border-radius:50%;background:#111;transform:translateY(-50%);transition:left .2s,background .2s}
     .toggle:checked{background:#111;border-color:#111}
@@ -80,6 +80,19 @@
     .chat-columns > .chat-column{height:640px;}
     .chat-column-secondary{background:#fff;border-radius:26px;padding:24px;box-shadow:0 10px 24px rgba(15,23,42,.08);border:1px solid rgba(15,23,42,.08);}
     .appearance-chip{min-width:94px;justify-content:center;font-weight:500}
+    .personality-option{display:flex;align-items:center;gap:12px;width:100%;padding:10px 14px;border-radius:12px;background:transparent;color:#374151;font-size:14px;font-weight:500;transition:all .2s ease;text-align:left}
+    .personality-option:hover{background:#f3f4f6;color:#111}
+    .personality-option-icon{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:999px;background:#f3f4f6;color:#4b5563;flex-shrink:0}
+    .personality-option-label{flex:1;display:flex;align-items:center}
+    .personality-option-check{opacity:0;transition:opacity .2s ease;color:#10b981}
+    .personality-option-active{background:#eef2ff;color:#111;font-weight:600}
+    .personality-option-active .personality-option-icon{background:#e0e7ff;color:#1f2937}
+    .personality-option-active .personality-option-check{opacity:1}
+    .personality-dropdown-button{width:100%;border:1px solid #e5e7eb;border-radius:12px;padding:10px 14px;background:#fff;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 8px 18px rgba(15,23,42,.04);transition:all .2s ease;color:#1f2937}
+    .personality-dropdown-button:hover{border-color:#d1d5db;box-shadow:0 10px 24px rgba(15,23,42,.08)}
+    .personality-dropdown-button:focus{outline:none;box-shadow:0 0 0 3px rgba(17,17,17,.08)}
+    .personality-dropdown-label{display:flex;align-items:center;gap:12px;flex:1;min-width:0}
+    .personality-dropdown-menu{position:absolute;left:0;right:0;margin-top:8px;padding:8px;border-radius:14px;border:1px solid #e5e7eb;background:#fff;box-shadow:0 18px 38px rgba(15,23,42,.12);z-index:40;display:flex;flex-direction:column;gap:4px}
 aside {
   scrollbar-width: thin;
   scrollbar-color: #ccc transparent;
@@ -185,12 +198,124 @@ button.bg-black:hover {
   box-shadow: 0 3px 6px rgba(0,0,0,0.1);
 }
 
+.dashboard2-card {
+  background:#f3f3f3;
+  border-radius: 18px;
+  padding: 1.25rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
+  justify-content: space-between;
+}
+
+.dashboard2-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dashboard2-card-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.dashboard2-card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: #e4e4e4;
+  color: #4d4d4d;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+}
+
+.dashboard2-card-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #3f3f3f;
+}
+
+.dashboard2-card-subtitle {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #6a6a6a;
+  margin-top: 0.1rem;
+}
+
+.dashboard2-card-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #303030;
+}
+
+.dashboard2-chart {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 0;
+  height: 160px;
+}
+
+.dashboard2-chart canvas {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 130px;
+  max-height: 130px;
+  aspect-ratio: 1/1;
+}
+
+.dashboard2-chart-value {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.dashboard2-panel {
+  background: linear-gradient(180deg, #f7f7f7 0%, #f2f2f2 100%);
+  border-radius: 18px;
+  padding: 1.5rem 1.75rem;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
+}
+
+.dashboard2-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dashboard2-panel-subtitle {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #6a6a6a;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.dashboard2-line-chart {
+  margin-top: 1rem;
+  height: 210px;
+}
+
+.dashboard2-line-chart canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
 /* === Logo fijo y estable en el header === */
 header img[alt="Tomos Logo"] {
-  position: absolute;          /* fija su posición dentro del header */
-  left: 14px;                  /* ajusta la distancia desde el borde izquierdo */
-  top: 50%;                    /* lo centra verticalmente */
-  transform: translateY(-50%); /* centra perfectamente en altura */
+  position: relative;
+  left: 0;
+  top: auto;
+  transform: none;
   height: 38px;
   width: auto;
   border-radius: 10px;
@@ -199,6 +324,11 @@ header img[alt="Tomos Logo"] {
 }
 header {
   position: relative; /* necesario para que el logo se posicione dentro */
+}
+@media (max-width: 1023px) {
+  header img[alt="Tomos Logo"] {
+    height: 34px;
+  }
 }
 
 #embedScriptBox {
@@ -572,7 +702,8 @@ header {
 
 /* === Centrar todas las pestañas excepto Appearance === */
 #tab-knowledge,
-#tab-respuestas {
+#tab-respuestas,
+#tab-prompt {
   margin-left: auto;
   margin-right: auto;
   width: 100%;
@@ -618,6 +749,23 @@ body.login-view #appContainer {
 
   #login input {
     font-size: 16px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .chat-columns > .chat-column {
+    height: auto;
+  }
+  .iphone {
+    max-width: 100%;
+    margin-inline: auto;
+    transform: scale(.9);
+  }
+}
+
+@media (max-width: 767px) {
+  .iphone {
+    transform: scale(.85);
   }
 }
 /* === Knowledge page buttons === */
@@ -683,7 +831,7 @@ body.login-view #appContainer {
 
   </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body class="min-h-screen overflow-x-hidden" style=" background: #ffffff; ">
   <!-- Loader -->
   <div id="pageLoader" class="fixed inset-0 bg-white/95 flex flex-col items-center justify-center z-[9999]">
     <div class="animate-spin rounded-full h-14 w-14 border-[3px] border-gray-300 border-t-gray-900"></div>
@@ -692,73 +840,84 @@ body.login-view #appContainer {
 
   <!-- Header minimal -->
 <header class="fixed top-0 left-0 w-full bg-white backdrop-blur border-b z-50 shadow-sm">
-  <div class="max-w-7xl mx-auto px-5 py-3 flex items-center justify-between">
-
-    <!-- Logo -->
-    <div class="flex items-center gap-3">
-      <img src="logo.png" alt="Tomos Logo" class="h-8 w-auto rounded-lg " />
+  <div class="max-w-7xl mx-auto px-5 py-3 flex flex-wrap items-center gap-3">
+    <div class="flex items-center gap-2 order-1">
+      <button id="toggleSidebarBtn" class="md:hidden lg:hidden p-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100">
+        <i data-lucide="menu" class="w-5 h-5"></i>
+      </button>
+      <img src="logo.svg" alt="Tomos Logo" class="h-8 w-auto rounded-lg" />
     </div>
-
-    <!-- Empresa + Email + Logout -->
-    <div class="flex items-center gap-4">
+    <div class="flex items-center gap-3 order-3 md:order-2 w-full md:w-auto md:ml-auto lg:order-2 lg:ml-auto overflow-x-auto lg:overflow-visible pb-1 lg:pb-0 px-1 sm:px-2 lg:px-0 flex-nowrap" id="headerControls">
       <div class="flex items-center gap-2" id="botSelectorWrap">
-        <select id="botSelect" class="border border-gray-200 rounded-md px-2 py-1 text-xs leading-tight bg-white focus:outline-none focus:ring-1 focus:ring-black/40 min-w-[110px] h-8">
+        <select id="botSelect" class="border border-gray-200 rounded-md px-2 py-1 text-xs leading-tight bg-white focus:outline-none focus:ring-1 focus:ring-black/40 min-w-[120px] h-8">
           <option value="" disabled selected>Loading bots…</option>
         </select>
         <button id="btnNewBot" class="text-gray-700 inline-flex items-center justify-center px-3 h-9 text-xs leading-tight border border-gray-200 rounded-md bg-white hover:bg-gray-100 transition">
           + New Bot
         </button>
       </div>
-      <div class="flex flex-col items-end text-right leading-tight">
-        <span id="empresaBadge" class="text-[8px] bg-black text-white px-1 py-[1px] rounded mb-[2px]">
-          —
-        </span>
-        <span id="authEmail" class="text-xs text-gray-500">—</span>
-      </div>
-      <button id="btnLogout" class="px-3 py-1.5 bg-red-600 text-white rounded-md hidden">
-        Log out
-      </button>
-      <select id="languageSelect" class="border border-gray-200 rounded-md px-2 py-1 text-xs leading-tight bg-white focus:outline-none focus:ring-1 focus:ring-black/40 notranslate h-8 min-w-[110px]">
+  
+
+      <select id="languageSelect" class="border border-gray-200 rounded-md px-2 py-1 text-xs leading-tight bg-white focus:outline-none focus:ring-1 focus:ring-black/40 notranslate h-8 min-w-[120px]">
         <option value="en">English</option>
         <option value="fr">Français</option>
         <option value="es">Español</option>
         <option value="de">Deutsch</option>
         <option value="pt">Português</option>
       </select>
+          <div class="flex flex-col items-end text-right leading-tight shrink-0">
+        <span id="empresaBadge" class="text-[8px] bg-black text-white px-1 py-[1px] rounded mb-[2px]">—</span>
+        <span id="authEmail" class="text-xs text-gray-500 break-words max-w-[200px] md:max-w-[240px]">—</span>
+      </div>
+            <button id="btnLogout" class="px-3 py-1.5 bg-red-600 text-white rounded-md hidden shrink-0 flex items-center justify-center" aria-label="Cerrar sesión">
+        <span class="sr-only">Cerrar sesión</span>
+        <i data-lucide="log-out" class="w-4 h-4"></i>
+      </button>
     </div>
-
   </div>
 </header>
 
 
 <div id="headerSpacer" class="h-[57px]"></div>
-<div class="flex min-h-screen">
+<div class="flex min-h-screen w-full relative">
       <!-- Sidebar -->
-<aside class="peer group fixed top-[57px] left-0 h-[calc(100vh-57px)] bg-white border-r overflow-y-auto transition-all duration-300 w-[72px] hover:w-[260px]">
+<aside id="sidebar" class="hidden md:hidden peer group flex flex-col fixed top-[57px] left-0 h-[calc(100vh-57px)] bg-white border-r overflow-y-auto transition-transform duration-300 -translate-x-full md:translate-x-0 w-56 md:w-[72px] lg:w-[72px] lg:hover:w-[260px] shadow-lg md:shadow-none z-50 md:z-auto">
   <nav class="space-y-2 mt-4 px-2">
     <button class="sidebar-btn active flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="dashboard">
       <i data-lucide="layout-dashboard" class="w-5 h-5 shrink-0"></i>
-      <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Dashboard</span>
+      <span class="hidden lg:inline lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Dashboard</span>
+    </button>
+    <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100 hidden" data-tab="dashboard2" id="dashboard2TabBtn">
+      <i data-lucide="bar-chart-3" class="w-5 h-5 shrink-0"></i>
+      <span class="hidden lg:inline lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Dashboard2</span>
     </button>
     <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="chat">
       <i data-lucide="message-circle" class="w-5 h-5 shrink-0"></i>
-      <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Chat</span>
+      <span class="hidden lg:inline lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Chat</span>
     </button>
     <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="mensajes">
       <i data-lucide="inbox" class="w-5 h-5 shrink-0"></i>
-      <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Mensajes</span>
+      <span class="hidden lg:inline lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Mensajes</span>
     </button>
     <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="knowledge">
       <i data-lucide="book-open" class="w-5 h-5 shrink-0"></i>
-      <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Knowledge</span>
+      <span class="hidden lg:inline lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Knowledge</span>
     </button>
     <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="respuestas">
       <i data-lucide="messages-square" class="w-5 h-5 shrink-0"></i>
-      <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Auto Responses</span>
+      <span class="hidden lg:inline lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Auto Responses</span>
+    </button>
+    <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="prompt">
+      <i data-lucide="file-text" class="w-5 h-5 shrink-0"></i>
+      <span class="hidden lg:inline lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Prompt</span>
+    </button>
+    <button id="usuariosTabButton" class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100 hidden" data-tab="usuarios">
+      <i data-lucide="users" class="w-5 h-5 shrink-0"></i>
+      <span class="hidden lg:inline lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Usuarios</span>
     </button>
   </nav>
 
-  <div class="mt-6 text-xs text-gray-500 px-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 space-y-1">
+  <div class="hidden lg:block mt-6 text-xs text-gray-500 px-3 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200 space-y-1">
     <div>Empresa: <b id="empresaText">—</b></div>
     <div>Bot: <b id="botText">—</b></div>
   </div>
@@ -766,11 +925,11 @@ body.login-view #appContainer {
 
 
 <!-- Content -->
-<main class="flex-1 w-full ml-0 lg:ml-[72px] transition-all duration-300 lg:peer-hover:ml-[260px] flex justify-center">
-<div id="appContainer" class="w-full max-w-6xl pt-8 px-8 pb-8">
+<main class="flex-1 w-full ml-0 md:ml-[72px] lg:ml-[72px] transition-all duration-300 lg:peer-hover:ml-[260px] flex justify-center">
+<div id="appContainer" class="w-full max-w-6xl pt-8 pb-8 px-4 sm:px-6 lg:px-8">
               <!-- Login card -->
 <div id="login" class="hidden w-full max-w-sm mx-auto mt-10 card p-6 text-center">
-<img src="logo.png" alt="Tomos Logo" class="w-32 h-auto mx-auto mb-4 rounded-lg" />
+<img src="logo.svg" alt="Tomos Logo" class="w-32 h-auto mx-auto mb-4 rounded-lg" />
   
   <div class="flex items-center justify-center mb-4 gap-2">
     <h2 class="text-xl font-bold">Admin Access</h2>
@@ -779,7 +938,13 @@ body.login-view #appContainer {
   <label class="block text-sm text-gray-600 mb-1 text-left">Email</label>
   <input id="emailInput" type="email" class="w-full border rounded-xl px-3 py-2 mb-3" placeholder="admin@company.com">
   <label class="block text-sm text-gray-600 mb-1 text-left">Password</label>
-  <input id="passwordInput" type="password" class="w-full border rounded-xl px-3 py-2 mb-4" placeholder="••••••••">
+  <div class="relative mb-4">
+    <input id="passwordInput" type="password" class="w-full border rounded-xl px-3 py-2 pr-10" placeholder="••••••••">
+    <button type="button" id="togglePasswordVisibility" class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600" aria-pressed="false">
+      <span class="sr-only">Mostrar contraseña</span>
+      <i data-lucide="eye" class="w-4 h-4"></i>
+    </button>
+  </div>
   <button id="btnLogin" class="w-full py-2.5 rounded-xl bg-black text-white">Login</button>
   <p id="loginError" class="text-red-600 text-sm mt-3 hidden text-center">❌ Incorrect credentials</p>
 </div>
@@ -789,87 +954,158 @@ body.login-view #appContainer {
         <!-- Tabs container -->
         <div id="tabs" class="hidden">
 <!-- Dashboard -->
-<section id="tab-dashboard" class="hidden space-y-6">
-  <div class="card p-5 space-y-4">
-    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-      <div class="flex items-center gap-2 text-sm font-medium text-gray-700">
-        <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
-        <span>Filtrar por bot</span>
+<section id="tab-dashboard" class="hidden">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+    <div class="col-span-1 lg:col-span-2 card p-4 space-y-4">
+      <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div class="flex flex-col gap-1 text-sm text-gray-600">
+          <span class="font-semibold text-gray-800">Filtrar por bot</span>
+          <select id="dashboardBotFilter" class="w-full lg:w-64 border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-black/70">
+            <option value="__all__">Todos los bots</option>
+          </select>
+        </div>
+        <p id="dashboardSummary" class="text-sm text-gray-500 lg:text-right break-words">Cargando datos…</p>
       </div>
-      <select id="dashboardBotFilter" class="w-full md:w-60 border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-black/70">
-        <option value="__all__">Todos los bots</option>
-      </select>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div class="card p-3">
+          <div class="text-[11px] font-semibold uppercase tracking-wide text-gray-500">Hoy</div>
+          <div id="dashboardMetricToday" class="mt-2 text-xl font-semibold text-gray-900">—</div>
+        </div>
+        <div class="card p-3">
+          <div class="text-[11px] font-semibold uppercase tracking-wide text-gray-500">Semana</div>
+          <div id="dashboardMetricWeek" class="mt-2 text-xl font-semibold text-gray-900">—</div>
+        </div>
+        <div class="card p-3">
+          <div class="text-[11px] font-semibold uppercase tracking-wide text-gray-500">Mes</div>
+          <div id="dashboardMetricMonth" class="mt-2 text-xl font-semibold text-gray-900">—</div>
+        </div>
+      </div>
     </div>
-    <p id="dashboardSummary" class="text-sm text-gray-500">Cargando datos…</p>
+
+    <div class="card p-4 flex flex-col gap-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2 text-sm font-semibold text-gray-700">
+          <i data-lucide="activity" class="w-4 h-4"></i>
+          <span>Conversaciones (últimos 30 días)</span>
+        </div>
+        <span id="dashboardChartLegend" class="text-xs text-gray-400"></span>
+      </div>
+      <div class="h-[180px]">
+        <canvas id="dashboardConversationsChart" class="w-full h-full"></canvas>
+      </div>
+    </div>
+
+    <div class="card p-4 space-y-3">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-2 text-sm font-semibold text-gray-700">
+          <i data-lucide="trophy" class="w-4 h-4"></i>
+          <span>Bots más utilizados</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button type="button" class="chip dashboard-ranking-filter" data-dashboard-ranking="day">Hoy</button>
+          <button type="button" class="chip dashboard-ranking-filter active" data-dashboard-ranking="month">Mes</button>
+          <button type="button" class="chip dashboard-ranking-filter" data-dashboard-ranking="year">Año</button>
+        </div>
+      </div>
+      <div id="dashboardBotsRankingList" class="space-y-3 text-sm text-gray-600">
+        <p class="text-sm text-gray-400">Cargando ranking…</p>
+      </div>
+    </div>
+
+    <div class="col-span-1 lg:col-span-2 card overflow-hidden">
+      <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+        <div class="flex items-center gap-2 text-sm font-semibold text-gray-700">
+          <i data-lucide="bot" class="w-4 h-4"></i>
+          <span>Bots activos</span>
+        </div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-100 text-sm">
+          <thead class="bg-gray-50 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
+            <tr>
+              <th scope="col" class="px-4 py-2 text-left">Bot</th>
+              <th scope="col" class="px-4 py-2 text-left">Estado</th>
+              <th scope="col" class="px-4 py-2 text-right">Mensajes</th>
+              <th scope="col" class="px-4 py-2 text-right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="dashboardBotsTableBody" class="divide-y divide-gray-100 bg-white text-sm">
+            <tr>
+              <td colspan="4" class="px-4 py-6 text-center text-gray-400 text-sm">Cargando bots…</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Dashboard 2 -->
+<section id="tab-dashboard2" class="hidden">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+    <!-- Total de Conversaciones -->
+    <div class="dashboard2-card">
+      <div class="dashboard2-card-header">
+        <div class="dashboard2-card-title-group">
+          <span class="">
+            <i data-lucide="bot" class="w-5 h-5"></i>
+          </span>
+          <span class="dashboard2-card-title">Total Conversations</span>
+        </div>
+        <p id="dash2TotalConv" class="dashboard2-card-value">—</p>
+      </div>
+    </div>
+
+    <!-- Knowledge Usage -->
+    <div class="dashboard2-card">
+      <div class="dashboard2-card-header flex items-center justify-between">
+        <div class="dashboard2-card-title-group">
+          <span class="">
+            <i data-lucide="book-open" class="w-5 h-5"></i>
+          </span>
+          <span class="dashboard2-card-title">Limit Knowledge</span>
+        </div>
+        <span id="dash2KnowledgeTextTop" class="text-sm text-gray-500 font-medium">23457 / 10000</span>
+      </div>
+      <div class="dashboard2-chart relative">
+        <canvas id="dash2KnowledgeChart" width="140" height="140"></canvas>
+        <span id="dash2KnowledgePercent" class="dashboard2-chart-value text-lg font-semibold text-gray-800">0%</span>
+      </div>
+    </div>
+
+    <!-- Respuestas del mes -->
+    <div class="dashboard2-card">
+      <div class="dashboard2-card-header flex items-center justify-between">
+        <div class="dashboard2-card-title-group">
+          <span class="">
+            <i data-lucide="message-square" class="w-5 h-5"></i>
+          </span>
+          <span class="dashboard2-card-title">Limit Answers</span>
+        </div>
+        <span id="dash2AnswersTextTop" class="text-sm text-gray-500 font-medium">7 / 500</span>
+      </div>
+      <div class="dashboard2-chart relative">
+        <canvas id="dash2AnswersChart" width="140" height="140"></canvas>
+        <span id="dash2AnswersPercent" class="dashboard2-chart-value text-lg font-semibold text-gray-800">0%</span>
+      </div>
+    </div>
+
   </div>
 
-  <div class="grid gap-4 sm:grid-cols-3">
-    <div class="card p-5">
-      <div class="text-xs font-semibold uppercase tracking-wide text-gray-500">Hoy</div>
-      <div id="dashboardMetricToday" class="mt-2 text-2xl font-semibold text-gray-900">—</div>
-    </div>
-    <div class="card p-5">
-      <div class="text-xs font-semibold uppercase tracking-wide text-gray-500">Semana</div>
-      <div id="dashboardMetricWeek" class="mt-2 text-2xl font-semibold text-gray-900">—</div>
-    </div>
-    <div class="card p-5">
-      <div class="text-xs font-semibold uppercase tracking-wide text-gray-500">Mes</div>
-      <div id="dashboardMetricMonth" class="mt-2 text-2xl font-semibold text-gray-900">—</div>
-    </div>
-  </div>
-
-  <div class="card p-6">
-    <div class="flex items-center justify-between mb-4">
-      <div class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-        <i data-lucide="activity" class="w-4 h-4"></i>
-        <span>Conversaciones (últimos 30 días)</span>
+  <!-- Gráfico de línea mensual -->
+  <div class="dashboard2-panel mt-6">
+    <div class="dashboard2-panel-header">
+      <div class="dashboard2-card-title-group">
+        <span class="">
+          <i data-lucide="messages-square" class="w-5 h-5"></i>
+        </span>
+        <span class="dashboard2-card-title">Conversations</span>
       </div>
-      <span id="dashboardChartLegend" class="text-xs text-gray-400"></span>
+      <span id="dash2YearLabel" class="dashboard2-panel-subtitle"></span>
     </div>
-    <div class="h-64">
-      <canvas id="dashboardConversationsChart" class="w-full h-full"></canvas>
-    </div>
-  </div>
-
-  <div class="card overflow-hidden">
-    <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-      <div class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-        <i data-lucide="bot" class="w-4 h-4"></i>
-        <span>Bots activos</span>
-      </div>
-    </div>
-    <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-100">
-        <thead class="bg-gray-50 text-xs font-semibold uppercase tracking-wide text-gray-500">
-          <tr>
-            <th scope="col" class="px-5 py-3 text-left">Bot</th>
-            <th scope="col" class="px-5 py-3 text-left">Estado</th>
-            <th scope="col" class="px-5 py-3 text-right">Acciones</th>
-          </tr>
-        </thead>
-        <tbody id="dashboardBotsTableBody" class="divide-y divide-gray-100 text-sm bg-white">
-          <tr>
-            <td colspan="3" class="px-5 py-6 text-center text-gray-400 text-sm">Cargando bots…</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="card p-6 space-y-4">
-    <div class="flex flex-wrap items-center justify-between gap-3">
-      <div class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-        <i data-lucide="trophy" class="w-4 h-4"></i>
-        <span>Ranking de bots por mensajes</span>
-      </div>
-      <div class="flex items-center gap-2">
-        <button type="button" class="chip dashboard-ranking-filter" data-dashboard-ranking="day">Hoy</button>
-        <button type="button" class="chip dashboard-ranking-filter active" data-dashboard-ranking="month">Mes</button>
-        <button type="button" class="chip dashboard-ranking-filter" data-dashboard-ranking="year">Año</button>
-      </div>
-    </div>
-    <div id="dashboardBotsRankingList" class="space-y-3 text-sm text-gray-600">
-      <p class="text-sm text-gray-400">Cargando ranking…</p>
+    <div class="dashboard2-line-chart">
+      <canvas id="dash2LineChart"></canvas>
     </div>
   </div>
 </section>
@@ -905,8 +1141,8 @@ body.login-view #appContainer {
     </div>
   </div>
 
-  <div class="grid gap-8 xl:grid-cols-[260px,380px] xl:justify-center items-start xl:items-stretch chat-columns">
-    <div class="relative flex justify-center h-full chat-column">
+  <div class="flex flex-col gap-8 md:grid md:grid-cols-2 xl:grid-cols-[260px,380px] xl:justify-center items-stretch md:items-start chat-columns">
+    <div class="relative flex justify-center h-full w-full chat-column">
       <div class="space-y-6 h-full flex flex-col">
         <div class="iphone mx-auto">
           <div class="notch"></div>
@@ -973,25 +1209,65 @@ body.login-view #appContainer {
             </div>
 
             <div class="text-center">
-              <p id="botNameDisplay" class="text-lg font-semibold text-gray-800">Asistente del hotel</p>
+              <p id="botNameDisplay" class="text-lg font-semibold text-gray-800">Tomos Bot</p>
             </div>
 
             <div class="space-y-4">
               <div class="space-y-4">
                 <div>
                   <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wide">Name</label>
-                  <input id="hotelName" class="mt-2 w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-black/70" placeholder="Asistente del hotel" />
+                  <input id="hotelName" class="mt-2 w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-black/70" placeholder="Tomos Bot" />
                 </div>
               </div>
-              <div>
+              <div class="space-y-3">
                 <label for="personalitySelect" class="block text-xs font-semibold text-gray-600 uppercase tracking-wide">Personality</label>
-                <select id="personalitySelect" class="mt-2 w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-black/70">
-                  <option value="formal">🧑‍💼 Formal &amp; Polite</option>
-                  <option value="relaxed">🌴 Relaxed &amp; Friendly</option>
-                  <option value="warm">😊 Warm &amp; Welcoming</option>
-                  <option value="efficient">⚡ Efficient &amp; Direct</option>
-                  <option value="young">🎈 Young &amp; Playful</option>
-                </select>
+                <div class="mt-2 relative">
+                  <select id="personalitySelect" class="hidden">
+                    <option value="friendly">Friendly</option>
+                    <option value="professional">Professional</option>
+                    <option value="informal">Informal</option>
+                    <option value="informative">Informative</option>
+                    <option value="empathetic">Empathetic</option>
+                  </select>
+                  <div id="personalityDropdown" class="relative">
+                    <button type="button" id="personalityDropdownButton" class="personality-dropdown-button" aria-haspopup="listbox" aria-expanded="false">
+                      <span class="personality-dropdown-label">
+                        <span id="personalityDropdownIcon" class="personality-option-icon">
+                          <i data-lucide="smile" class="w-4 h-4"></i>
+                        </span>
+                        <span id="personalityDropdownLabel" class="truncate">Friendly</span>
+                      </span>
+                      <i id="personalityDropdownChevron" data-lucide="chevron-down" class="w-4 h-4 text-gray-400"></i>
+                    </button>
+                    <div id="personalityDropdownMenu" class="personality-dropdown-menu hidden" role="listbox">
+                      <button type="button" class="personality-option" data-personality-option="friendly" aria-pressed="false" role="option">
+                        <span class="personality-option-icon"><i data-lucide="smile" class="w-5 h-5"></i></span>
+                        <span class="personality-option-label">Friendly</span>
+                        <i data-lucide="check" class="personality-option-check w-4 h-4"></i>
+                      </button>
+                      <button type="button" class="personality-option" data-personality-option="professional" aria-pressed="false" role="option">
+                        <span class="personality-option-icon"><i data-lucide="briefcase" class="w-5 h-5"></i></span>
+                        <span class="personality-option-label">Professional</span>
+                        <i data-lucide="check" class="personality-option-check w-4 h-4"></i>
+                      </button>
+                      <button type="button" class="personality-option" data-personality-option="informal" aria-pressed="false" role="option">
+                        <span class="personality-option-icon"><i data-lucide="shirt" class="w-5 h-5"></i></span>
+                        <span class="personality-option-label">Informal</span>
+                        <i data-lucide="check" class="personality-option-check w-4 h-4"></i>
+                      </button>
+                      <button type="button" class="personality-option" data-personality-option="informative" aria-pressed="false" role="option">
+                        <span class="personality-option-icon"><i data-lucide="info" class="w-5 h-5"></i></span>
+                        <span class="personality-option-label">Informative</span>
+                        <i data-lucide="check" class="personality-option-check w-4 h-4"></i>
+                      </button>
+                      <button type="button" class="personality-option" data-personality-option="empathetic" aria-pressed="false" role="option">
+                        <span class="personality-option-icon"><i data-lucide="heart" class="w-5 h-5"></i></span>
+                        <span class="personality-option-label">Empathetic</span>
+                        <i data-lucide="check" class="personality-option-check w-4 h-4"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div class="flex items-center justify-between gap-4 border border-gray-200 rounded-2xl px-4 py-3 bg-gray-50">
@@ -1048,7 +1324,7 @@ body.login-view #appContainer {
                     <i data-lucide="message-square-text" class="w-5 h-5" id="headerSummaryIcon"></i>
                   </div>
                   <div class="flex-1 min-w-0">
-                    <p id="headerSummaryTitle" class="text-sm font-medium text-gray-800 truncate">Asistente del hotel</p>
+                    <p id="headerSummaryTitle" class="text-sm font-medium text-gray-800 truncate">Tomos Bot</p>
                     <p class="text-xs text-gray-500">Edita el título y la identidad visual del encabezado.</p>
                   </div>
                 </div>
@@ -1124,7 +1400,7 @@ body.login-view #appContainer {
               <div class="space-y-4">
                 <div>
                   <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Encabezado</p>
-                  <div class="grid gap-3 sm:grid-cols-2 mt-2">
+                  <div class="grid gap-3 md:grid-cols-2 mt-2">
                     <div class="flex items-center gap-3 border border-gray-200 rounded-2xl px-3 py-3 bg-white shadow-sm">
                       <input id="chatHeaderColor" type="color" class="color-circle rounded-full border border-gray-200 shadow-sm cursor-pointer">
                       <span class="text-sm font-medium text-gray-600 select-none">Fondo del encabezado</span>
@@ -1137,7 +1413,7 @@ body.login-view #appContainer {
                 </div>
                 <div>
                   <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Chat</p>
-                  <div class="grid gap-3 sm:grid-cols-2 mt-2">
+                  <div class="grid gap-3 md:grid-cols-2 mt-2">
                     <div class="flex items-center gap-3 border border-gray-200 rounded-2xl px-3 py-3 bg-white shadow-sm">
                       <input id="chatBackgroundColor" type="color" class="color-circle rounded-full border border-gray-200 shadow-sm cursor-pointer">
                       <span class="text-sm font-medium text-gray-600 select-none">Fondo del chat</span>
@@ -1150,7 +1426,7 @@ body.login-view #appContainer {
                 </div>
                 <div>
                   <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Cliente</p>
-                  <div class="grid gap-3 sm:grid-cols-2 mt-2">
+                  <div class="grid gap-3 md:grid-cols-2 mt-2">
                     <div class="flex items-center gap-3 border border-gray-200 rounded-2xl px-3 py-3 bg-white shadow-sm">
                       <input id="chatPrimaryColor" type="color" class="color-circle rounded-full border border-gray-200 shadow-sm cursor-pointer">
                       <span class="text-sm font-medium text-gray-600 select-none">Fondo del cliente</span>
@@ -1353,7 +1629,7 @@ body.login-view #appContainer {
 
 <!-- MENSAJES TAB -->
 <section id="tab-mensajes" class="hidden">
-  <div class="grid gap-6 lg:grid-cols-[320px,1fr]">
+  <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-[320px,1fr]">
     <div class="card p-4 flex flex-col h-[620px]">
       <div class="flex flex-col gap-3">
         <div>
@@ -1469,7 +1745,7 @@ body.login-view #appContainer {
 
       <div id="autoResponseEditor" class="hidden space-y-5">
         <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-5 space-y-5">
-          <div class="grid gap-4 lg:grid-cols-[2fr,1fr] lg:items-start">
+          <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-[2fr,1fr] lg:items-start">
             <div class="space-y-2">
               <label class="text-xs font-medium text-gray-600 uppercase tracking-wide">Keyword</label>
               <input id="autoResponseKeyword" type="text" placeholder="(e.g. spa, restaurant)"
@@ -1501,7 +1777,7 @@ body.login-view #appContainer {
               <textarea id="autoResponseText" rows="3" placeholder="Write the automatic response..."
                         class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60"></textarea>
             </div>
-            <div class="grid gap-3 sm:grid-cols-2">
+            <div class="grid gap-3 md:grid-cols-2">
               <div>
                 <label class="block text-xs font-semibold text-gray-600 mb-1">Title</label>
                 <input id="autoResponseTitle" type="text" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/60">
@@ -1568,6 +1844,64 @@ body.login-view #appContainer {
     </div>
 
     <p id="msgAutoResponses" class="text-green-600 text-sm hidden">✔ Saved</p>
+  </div>
+</section>
+
+<section id="tab-prompt" class="hidden">
+  <div class="card p-6 space-y-4 max-w-3xl mx-auto">
+    <h2 class="text-xl font-semibold text-gray-800">System Prompt</h2>
+    <p class="text-sm text-gray-500">Aquí puedes escribir el texto base del asistente. Este texto se usará como prompt del sistema para este bot.</p>
+    <textarea id="promptTextarea" class="w-full border border-gray-200 rounded-xl p-3 text-sm min-h-[400px] focus:outline-none focus:ring-2 focus:ring-black/70" placeholder="Escribe aquí el prompt del sistema..."></textarea>
+    <button id="savePromptBtn" class="bg-black text-white rounded-xl px-4 py-2.5 hover:bg-gray-900">Guardar cambios</button>
+  </div>
+</section>
+
+<section id="tab-usuarios" class="hidden space-y-6 max-w-4xl mx-auto">
+  <div class="card p-5 space-y-4">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div class="w-full md:w-auto space-y-1">
+        <label for="userBotSelect" class="text-sm font-medium text-gray-700">Gestionar bot</label>
+        <select id="userBotSelect" class="w-full md:w-64 border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-black/70">
+          <option value="" disabled selected>Selecciona un bot</option>
+        </select>
+      </div>
+      <p id="userBotSelectStatus" class="text-sm text-gray-500 flex-1">Selecciona un bot para gestionar accesos.</p>
+    </div>
+  </div>
+
+  <div class="card p-5 space-y-4">
+    <div class="flex items-center justify-between">
+      <h3 class="text-lg font-semibold text-gray-800">Usuarios con acceso</h3>
+      <span id="userAccessSummary" class="text-sm text-gray-500">—</span>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200 text-sm">
+        <thead class="bg-gray-50 text-xs font-semibold uppercase tracking-wide text-gray-500">
+          <tr>
+            <th scope="col" class="px-4 py-2 text-left">Email</th>
+            <th scope="col" class="px-4 py-2 text-left">Rol</th>
+            <th scope="col" class="px-4 py-2 text-left">Último acceso</th>
+            <th scope="col" class="px-4 py-2 text-right">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="userAccessTableBody" class="bg-white divide-y divide-gray-100">
+          <tr>
+            <td colspan="4" class="px-4 py-6 text-center text-gray-400 text-sm">Selecciona un bot para ver los usuarios con acceso.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card p-5 space-y-4">
+    <h3 class="text-lg font-semibold text-gray-800">Invitar usuario</h3>
+    <form id="userInviteForm" class="flex flex-col sm:flex-row gap-3">
+      <input id="userInviteEmail" type="email" class="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/70" placeholder="usuario@empresa.com" required>
+      <button id="userInviteSubmit" type="submit" class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-black text-white text-sm disabled:opacity-60 disabled:cursor-not-allowed">
+        Invitar
+      </button>
+    </form>
+    <p id="userInviteFeedback" class="text-sm text-gray-500 hidden"></p>
   </div>
 </section>
 
@@ -1706,7 +2040,7 @@ body.login-view #appContainer {
       <p class="text-sm text-gray-500">Selecciona una plantilla para aplicar rápidamente una combinación de colores. Luego podrás personalizar los detalles.</p>
     </div>
     <div id="chatTemplatePanel" class="space-y-4">
-      <div id="chatTemplateGrid" class="grid gap-2 sm:grid-cols-2 md:grid-cols-3"></div>
+      <div id="chatTemplateGrid" class="grid gap-2 md:grid-cols-2 lg:grid-cols-3"></div>
     </div>
   </div>
 </div>
@@ -1792,6 +2126,65 @@ function loadFirebaseAuthModule() {
   return firebaseAuthModulePromise;
 }
 
+function showToast(message) {
+  if (typeof toast === 'function') {
+    toast(message);
+  } else if (typeof alert === 'function') {
+    alert(message);
+  } else {
+    console.log('Toast:', message);
+  }
+}
+
+async function handleEmailLinkSignIn() {
+  try {
+    const { isSignInWithEmailLink, signInWithEmailLink } = await loadFirebaseAuthModule();
+    if (typeof isSignInWithEmailLink !== 'function' || typeof signInWithEmailLink !== 'function') return;
+    if (!isSignInWithEmailLink(auth, window.location.href)) return;
+
+    let email = localStorage.getItem('emailForSignIn');
+    if (!email) {
+      email = window.prompt('Ingresa tu correo para continuar:');
+    }
+    if (!email) return;
+
+    try {
+      await signInWithEmailLink(auth, email, window.location.href);
+      localStorage.removeItem('emailForSignIn');
+      showToast('✅ Bienvenido, acceso completado');
+      window.history.replaceState({}, document.title, '/index6.html');
+    } catch (error) {
+      console.error('Error al completar login:', error);
+      showToast('❌ Error al validar enlace');
+    }
+  } catch (error) {
+    console.error('Error manejando el enlace de acceso:', error);
+  }
+}
+
+handleEmailLinkSignIn();
+
+async function sendEditorInvitationEmail(email) {
+  const trimmedEmail = (email || '').trim();
+  if (!trimmedEmail) return;
+
+  const { sendSignInLinkToEmail } = await loadFirebaseAuthModule();
+  const actionCodeSettings = {
+    url: 'https://tomos.bot/index6.html?mode=signIn',
+    handleCodeInApp: true
+  };
+
+  try {
+    await sendSignInLinkToEmail(auth, trimmedEmail, actionCodeSettings);
+    localStorage.setItem('emailForSignIn', trimmedEmail);
+    showToast(`✅ Invitación enviada a ${trimmedEmail}`);
+  } catch (error) {
+    console.error('Error enviando invitación:', error);
+    showToast('❌ Error al enviar invitación');
+    throw error;
+  }
+}
+
 async function signOutFromFirebase() {
   const { signOut } = await loadFirebaseAuthModule();
   try {
@@ -1820,8 +2213,260 @@ let currentWidgetIcon = DEFAULT_WIDGET_ICON;
 const $ = (id) => document.getElementById(id);
 const $$ = (sel) => Array.from(document.querySelectorAll(sel));
 
+const normalizeEmail = (email = '') => (email || '').trim().toLowerCase();
+const encodeEmailKey = (email = '') => normalizeEmail(email).replace(/\./g, ',');
+const decodeEmailKey = (key = '') => (key || '').replace(/,/g, '.');
+
+const extractEditorEntry = (key, value) => {
+  const normalizedKeyEmail = decodeEmailKey(key);
+  const entryEmail = typeof value === 'string'
+    ? value
+    : (value && typeof value.email === 'string')
+      ? value.email
+      : normalizedKeyEmail;
+  const normalizedEmail = normalizeEmail(entryEmail);
+  const lastAccess = value && typeof value === 'object' && value.lastAccess ? value.lastAccess : null;
+  return {
+    key,
+    email: entryEmail || normalizedKeyEmail,
+    normalizedEmail,
+    lastAccess
+  };
+};
+
+let currentUserEmail = '';
+let currentUserEmailNormalized = '';
+let currentCompanyAdminEmail = '';
+let currentBotAdminEmail = '';
+let isGlobalAdmin = false;
+let isPrimaryAdmin = false;
+let isCompanyAdmin = false;
+let isLimitedEditor = false;
+let isAllowedEditorForCurrentBot = false;
+let allowedEditorBots = new Set();
+let currentBotAllowedEditors = {};
+let currentEmpresa = null;
+let currentBot = null;
+let userRole = 'viewer';
+
+let dashboard2KnowledgeChart = null;
+let dashboard2AnswersChart = null;
+let dashboard2LineChart = null;
+
+const DEFAULT_TAB_KEYS = ['dashboard', 'dashboard2', 'chat', 'mensajes', 'knowledge', 'respuestas', 'prompt', 'usuarios'];
+let TAB_KEYS = [...DEFAULT_TAB_KEYS];
+let currentActiveTab = TAB_KEYS[0];
+
+const bodyEl = document.body;
+const sidebarEl = document.getElementById('sidebar');
+const toggleSidebarBtn = document.getElementById('toggleSidebarBtn');
+
+let promptTabInitialized = false;
+let promptTextareaEl = null;
+let promptSaveBtnEl = null;
+let lastPromptLoadedKey = null;
+let promptLoadingPromise = null;
+
+function parseAllowedEditorsMap(data) {
+  if (!data || typeof data !== 'object') return [];
+  return Object.entries(data).map(([key, value]) => extractEditorEntry(key, value)).filter(entry => !!entry.normalizedEmail);
+}
+
+function isEmailInAllowedEditors(map, email) {
+  if (!map || typeof map !== 'object') return false;
+  const normalizedEmail = normalizeEmail(email);
+  if (!normalizedEmail) return false;
+  const directKey = encodeEmailKey(normalizedEmail);
+  if (map[directKey]) return !!map[directKey];
+  if (map[normalizedEmail]) return !!map[normalizedEmail];
+  return parseAllowedEditorsMap(map).some(entry => entry.normalizedEmail === normalizedEmail && !!map[entry.key]);
+}
+
+function formatLastAccess(value) {
+  if (value === null || typeof value === 'undefined') return '—';
+  const timestamp = typeof value === 'number' ? value : parseInt(value, 10);
+  if (!Number.isFinite(timestamp)) return '—';
+  const date = new Date(timestamp);
+  if (Number.isNaN(date.getTime())) return '—';
+  try {
+    return date.toLocaleString();
+  } catch (err) {
+    return date.toISOString();
+  }
+}
+
+function getPromptConfigRef() {
+  if (!EMPRESA || !BOT) return null;
+  return db.ref(`empresas/${EMPRESA}/bots/${BOT}/config/prompt`);
+}
+
+async function loadPromptForCurrentBot({ force = false } = {}) {
+  promptTextareaEl = promptTextareaEl || $('promptTextarea');
+  const textarea = promptTextareaEl;
+  if (!textarea) return;
+
+  const ref = getPromptConfigRef();
+  if (!ref) return;
+
+  if (promptLoadingPromise) {
+    return promptLoadingPromise;
+  }
+
+  const key = `${EMPRESA || ''}::${BOT || ''}`;
+  if (!force && lastPromptLoadedKey === key) {
+    return;
+  }
+
+  try {
+    promptLoadingPromise = ref.once('value').then((snap) => {
+      const value = snap.val();
+      textarea.value = typeof value === 'string' ? value : '';
+      lastPromptLoadedKey = key;
+    }).catch((err) => {
+      console.error('No se pudo cargar el prompt del sistema', err);
+    });
+    await promptLoadingPromise;
+  } finally {
+    promptLoadingPromise = null;
+  }
+}
+
+function applyPromptPermissionState() {
+  promptTextareaEl = promptTextareaEl || $('promptTextarea');
+  promptSaveBtnEl = promptSaveBtnEl || $('savePromptBtn');
+  const textarea = promptTextareaEl;
+  const saveBtn = promptSaveBtnEl;
+  if (!textarea && !saveBtn) return;
+
+  const permBanner = $('permBannerS');
+  const noWrite = !!(permBanner && !permBanner.classList.contains('hidden'));
+
+  if (textarea) {
+    textarea.disabled = noWrite;
+    textarea.classList.toggle('opacity-60', noWrite);
+    textarea.classList.toggle('cursor-not-allowed', noWrite);
+  }
+  if (saveBtn) {
+    saveBtn.classList.toggle('hidden', noWrite);
+    saveBtn.disabled = noWrite;
+  }
+}
+
+function initPromptTab() {
+  if (promptTabInitialized) return;
+
+  promptTextareaEl = $('promptTextarea');
+  promptSaveBtnEl = $('savePromptBtn');
+
+  if (!promptTextareaEl) return;
+
+  promptTabInitialized = true;
+
+  applyPromptPermissionState();
+
+  if (promptSaveBtnEl) {
+    promptSaveBtnEl.addEventListener('click', async () => {
+      const ref = getPromptConfigRef();
+      if (!ref) return;
+      const value = promptTextareaEl.value || '';
+      try {
+        await ref.set(value);
+        lastPromptLoadedKey = `${EMPRESA || ''}::${BOT || ''}`;
+        if (typeof toast === 'function') {
+          toast('Prompt guardado correctamente');
+        } else {
+          alert('Prompt guardado correctamente');
+        }
+      } catch (err) {
+        console.error('No se pudo guardar el prompt del sistema', err);
+        alert('No se pudo guardar el prompt. Inténtalo de nuevo.');
+      }
+    });
+  }
+
+  loadPromptForCurrentBot({ force: true });
+}
+
+if (sidebarEl && toggleSidebarBtn) {
+  const closeSidebar = ({ immediate = false } = {}) => {
+    if (window.innerWidth >= 768) {
+      sidebarEl.classList.remove('hidden', '-translate-x-full');
+      bodyEl.classList.remove('overflow-hidden');
+      return;
+    }
+
+    bodyEl.classList.remove('overflow-hidden');
+    sidebarEl.classList.add('-translate-x-full');
+
+    if (immediate) {
+      sidebarEl.classList.add('hidden');
+      return;
+    }
+
+    sidebarEl.addEventListener('transitionend', function handler(event) {
+      if (event.propertyName === 'transform') {
+        sidebarEl.classList.add('hidden');
+        sidebarEl.removeEventListener('transitionend', handler);
+      }
+    }, { once: true });
+  };
+
+  const openSidebar = () => {
+    sidebarEl.classList.remove('hidden');
+    requestAnimationFrame(() => {
+      sidebarEl.classList.remove('-translate-x-full');
+    });
+    bodyEl.classList.add('overflow-hidden');
+  };
+
+  toggleSidebarBtn.addEventListener('click', () => {
+    if (sidebarEl.classList.contains('hidden')) {
+      openSidebar();
+    } else {
+      closeSidebar();
+    }
+  });
+
+  const handleSidebarOnResize = () => {
+    if (window.innerWidth >= 768) {
+      sidebarEl.classList.remove('hidden', '-translate-x-full');
+      bodyEl.classList.remove('overflow-hidden');
+    } else {
+      closeSidebar({ immediate: true });
+    }
+  };
+
+  handleSidebarOnResize();
+  window.addEventListener('resize', handleSidebarOnResize);
+}
+
 const loginErrorEl = $('loginError');
 const defaultLoginErrorMessage = loginErrorEl?.textContent || '';
+const passwordInputEl = $('passwordInput');
+const togglePasswordVisibilityButton = $('togglePasswordVisibility');
+
+if (togglePasswordVisibilityButton && passwordInputEl) {
+  togglePasswordVisibilityButton.addEventListener('click', () => {
+    const isCurrentlyHidden = passwordInputEl.getAttribute('type') === 'password';
+    passwordInputEl.setAttribute('type', isCurrentlyHidden ? 'text' : 'password');
+    togglePasswordVisibilityButton.setAttribute('aria-pressed', String(isCurrentlyHidden));
+
+    const icon = togglePasswordVisibilityButton.querySelector('i[data-lucide]');
+    if (icon) {
+      icon.setAttribute('data-lucide', isCurrentlyHidden ? 'eye-off' : 'eye');
+    }
+
+    const srText = togglePasswordVisibilityButton.querySelector('.sr-only');
+    if (srText) {
+      srText.textContent = isCurrentlyHidden ? 'Ocultar contraseña' : 'Mostrar contraseña';
+    }
+
+    if (window.lucide) {
+      window.lucide.createIcons();
+    }
+  });
+}
+
 function toast(msg){
   const t = $('toast');
   t.textContent = msg;
@@ -1913,6 +2558,7 @@ let dashboardRefreshScheduled = false;
 let dashboardMessagesLoading = false;
 let dashboardLastMetrics = { conversations: 0, messages: 0 };
 let dashboardBotsRankingData = null;
+let dashboardAnalysesByBot = {};
 let dashboardBotsRankingRange = 'month';
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
@@ -2117,8 +2763,8 @@ function renderDashboardBotsTable() {
   if (!ids.length) {
     const emptyRow = document.createElement('tr');
     const emptyCell = document.createElement('td');
-    emptyCell.colSpan = 3;
-    emptyCell.className = 'px-5 py-6 text-center text-gray-400 text-sm';
+    emptyCell.colSpan = 4;
+    emptyCell.className = 'px-4 py-6 text-center text-gray-400 text-sm';
     emptyCell.textContent = 'No hay bots configurados';
     emptyRow.appendChild(emptyCell);
     tbody.appendChild(emptyRow);
@@ -2138,7 +2784,7 @@ function renderDashboardBotsTable() {
       const row = document.createElement('tr');
 
       const botCell = document.createElement('td');
-      botCell.className = 'px-5 py-4';
+      botCell.className = 'px-4 py-2 align-middle';
       const botWrapper = document.createElement('div');
       botWrapper.className = 'flex items-center gap-3';
 
@@ -2151,7 +2797,7 @@ function renderDashboardBotsTable() {
 
       const textWrapper = document.createElement('div');
       const nameEl = document.createElement('div');
-      nameEl.className = 'font-semibold text-gray-900';
+      nameEl.className = 'font-semibold text-gray-900 text-sm';
       nameEl.textContent = getDashboardBotName(botId);
       const idEl = document.createElement('div');
       idEl.className = 'text-xs text-gray-400 truncate';
@@ -2162,14 +2808,14 @@ function renderDashboardBotsTable() {
       botCell.appendChild(botWrapper);
 
       const statusCell = document.createElement('td');
-      statusCell.className = 'px-5 py-4';
+      statusCell.className = 'px-4 py-2 align-middle';
       const statusWrapper = document.createElement('div');
       statusWrapper.className = 'inline-flex items-center gap-2';
       const statusDot = document.createElement('span');
-const isActive =
-  botData?.config?.chatVisible === true ||
-  botData?.chatVisible === true ||
-  botData?.tgChatVisible === true;
+      const isActive =
+        botData?.config?.chatVisible === true ||
+        botData?.chatVisible === true ||
+        botData?.tgChatVisible === true;
       statusDot.className = `h-2.5 w-2.5 rounded-full ${isActive ? 'bg-emerald-500' : 'bg-rose-500'}`;
       const statusLabel = document.createElement('span');
       statusLabel.className = 'text-sm text-gray-600';
@@ -2177,14 +2823,19 @@ const isActive =
       statusWrapper.append(statusDot, statusLabel);
       statusCell.appendChild(statusWrapper);
 
+      const messagesCell = document.createElement('td');
+      messagesCell.className = 'px-4 py-2 text-right text-sm font-semibold text-gray-800 align-middle';
+      const messageCount = dashboardAnalysesByBot?.[botId]?.messageCount;
+      messagesCell.textContent = typeof messageCount === 'number' ? formatDashboardNumber(messageCount) : '—';
+
       const actionsCell = document.createElement('td');
-      actionsCell.className = 'px-5 py-4';
+      actionsCell.className = 'px-4 py-2 align-middle';
       const actionsWrapper = document.createElement('div');
-      actionsWrapper.className = 'flex items-center justify-end gap-2';
+      actionsWrapper.className = 'flex items-center justify-end gap-1.5';
 
       const editBtn = document.createElement('button');
       editBtn.type = 'button';
-      editBtn.className = 'p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition';
+      editBtn.className = 'p-1 rounded-lg hover:bg-gray-100 text-sm transition';
       editBtn.setAttribute('data-dashboard-action', 'edit');
       editBtn.setAttribute('data-bot-id', botId);
       editBtn.setAttribute('aria-label', 'Editar bot');
@@ -2192,7 +2843,7 @@ const isActive =
 
       const cloneBtn = document.createElement('button');
       cloneBtn.type = 'button';
-      cloneBtn.className = 'p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition';
+      cloneBtn.className = 'p-1 rounded-lg hover:bg-gray-100 text-sm transition';
       cloneBtn.setAttribute('data-dashboard-action', 'clone');
       cloneBtn.setAttribute('data-bot-id', botId);
       cloneBtn.setAttribute('aria-label', 'Clonar bot');
@@ -2200,7 +2851,7 @@ const isActive =
 
       const deleteBtn = document.createElement('button');
       deleteBtn.type = 'button';
-      deleteBtn.className = 'p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition';
+      deleteBtn.className = 'p-1 rounded-lg hover:bg-gray-100 text-sm transition';
       deleteBtn.setAttribute('data-dashboard-action', 'delete');
       deleteBtn.setAttribute('data-bot-id', botId);
       deleteBtn.setAttribute('aria-label', 'Eliminar bot');
@@ -2209,7 +2860,7 @@ const isActive =
       actionsWrapper.append(editBtn, cloneBtn, deleteBtn);
       actionsCell.appendChild(actionsWrapper);
 
-      row.append(botCell, statusCell, actionsCell);
+      row.append(botCell, statusCell, messagesCell, actionsCell);
       tbody.appendChild(row);
     });
 
@@ -2578,7 +3229,9 @@ async function refreshDashboardData() {
     buildDashboardChart([]);
     dashboardMessagesLoading = false;
     updateDashboardSummaryText();
+    dashboardAnalysesByBot = {};
     updateDashboardBotsRankingData({});
+    renderDashboardBotsTable();
     return;
   }
 
@@ -2620,12 +3273,16 @@ const snap = await firebase.database().ref(`empresas/${EMPRESA}/bots/${botId}/co
     updateDashboardSummaryText();
     computeDashboardMessageMetrics(metricTimestamps);
     buildDashboardChart(conversationStartTimestamps);
+    dashboardAnalysesByBot = analysesByBot;
     updateDashboardBotsRankingData(analysesByBot);
+    renderDashboardBotsTable();
   } catch (err) {
     console.error('No se pudo actualizar el dashboard', err);
     dashboardMessagesLoading = false;
     updateDashboardSummaryText();
+    dashboardAnalysesByBot = {};
     updateDashboardBotsRankingData(null);
+    renderDashboardBotsTable();
   }
 }
 
@@ -2676,6 +3333,410 @@ function initDashboard() {
   dashboardMessagesLoading = true;
   updateDashboardSummaryText();
   scheduleDashboardRefresh();
+}
+
+async function loadDashboard2Data() {
+  const user = firebase.auth().currentUser;
+  if (!user) {
+    console.warn('Esperando autenticación de Firebase...');
+    firebase.auth().onAuthStateChanged((u) => {
+      if (u) loadDashboard2Data();
+    });
+    return;
+  }
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const empresa = urlParams.get('empresa');
+  const botId = urlParams.get('bot');
+  if (!empresa || !botId) {
+    console.error('Faltan parámetros empresa o bot en la URL');
+    return;
+  }
+
+  const totalConvEl = document.getElementById('dash2TotalConv');
+  const knowledgeTextTopEl = document.getElementById('dash2KnowledgeTextTop');
+  const knowledgePercentEl = document.getElementById('dash2KnowledgePercent');
+  const answersTextTopEl = document.getElementById('dash2AnswersTextTop');
+  const answersPercentEl = document.getElementById('dash2AnswersPercent');
+  if (!totalConvEl || !knowledgeTextTopEl || !answersTextTopEl) {
+    return;
+  }
+
+  const db = firebase.database();
+  const convRef = db.ref(`empresas/${empresa}/bots/${botId}/conversaciones`);
+  const contextInfoPaths = [
+    `empresas/${empresa}/bots/${botId}/config/contextInfo`,
+    `empresas/${empresa}/config/bots/${botId}/contextInfo`,
+    `empresas/${empresa}/bots/${botId}/contextInfo`,
+    `empresas/${empresa}/config/contextInfo`
+  ];
+
+  try {
+    const convSnap = await convRef.once('value');
+    const conversationsNode = convSnap.val() || {};
+    const totalConv = convSnap.numChildren() || Object.keys(conversationsNode).length || 0;
+    totalConvEl.textContent = totalConv;
+
+    let totalChars = 0;
+    try {
+      const contextSnaps = await Promise.all(
+        contextInfoPaths.map((path) =>
+          db
+            .ref(path)
+            .once('value')
+            .catch(() => null)
+        )
+      );
+      for (const snap of contextSnaps) {
+        const value = snap?.val();
+        if (typeof value === 'string') {
+          totalChars = value.length;
+        } else if (value && typeof value === 'object') {
+          try {
+            const serialized = JSON.stringify(value);
+            if (serialized) {
+              totalChars = serialized.length;
+            }
+          } catch (err) {
+            console.warn('No se pudo serializar contextInfo', err);
+          }
+        }
+        if (totalChars > 0) break;
+      }
+    } catch (err) {
+      console.warn('No se pudo leer contextInfo para Dashboard2', err);
+    }
+    const percentK = Math.min((totalChars / 10000) * 100, 100);
+    knowledgeTextTopEl.textContent = `${totalChars} / 10000`;
+    if (knowledgePercentEl) {
+      knowledgePercentEl.textContent = `${Math.round(percentK)}%`;
+    }
+
+    if (dashboard2KnowledgeChart) {
+      dashboard2KnowledgeChart.destroy();
+    }
+    dashboard2KnowledgeChart = drawDoughnutChart('dash2KnowledgeChart', percentK, '#7ea04d');
+
+    const now = new Date();
+    const thisMonth = now.getMonth();
+    const thisYear = now.getFullYear();
+    const yearLabelEl = document.getElementById('dash2YearLabel');
+    if (yearLabelEl) {
+      yearLabelEl.textContent = thisYear;
+    }
+
+    const monthlyAnswers = Array(12).fill(0);
+    const monthlyHumanMessages = Array(12).fill(0);
+    const humanSenderHints = new Set([
+      'user',
+      'usuario',
+      'cliente',
+      'customer',
+      'client',
+      'visitor',
+      'visitante',
+      'guest',
+      'invitado',
+      'prospect',
+      'prospecto',
+      'lead',
+      'contact',
+      'human',
+      'humano'
+    ]);
+    const aiSenderHints = new Set([
+      'assistant',
+      'assistantbot',
+      'bot',
+      'robot',
+      'ai',
+      'ia',
+      'agente',
+      'agent',
+      'virtual agent',
+      'openai',
+      'gpt',
+      'system',
+      'asistente'
+    ]);
+
+    const normalize = (value) => {
+      if (!value) return '';
+      return value
+        .toString()
+        .trim()
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9\s]/g, '')
+        .replace(/\s+/g, ' ');
+    };
+
+    const hasOpenAIKeyword = (value = '') => {
+      if (typeof value !== 'string') return false;
+      const normalized = value.toLowerCase();
+      return normalized.includes('openai') || /gpt|davinci|curie|babbage|ada|chatgpt/.test(normalized);
+    };
+
+    const extractProviderHints = (payload = {}) => {
+      const metadata = payload.metadata || {};
+      const tags = payload.tags || {};
+      return [
+        payload.provider,
+        payload.source,
+        payload.origin,
+        payload.engine,
+        payload.integration,
+        payload.platform,
+        payload.service,
+        payload.via,
+        payload.vendor,
+        payload.model,
+        payload.modelo,
+        payload.modelId,
+        payload.modelName,
+        metadata.provider,
+        metadata.source,
+        metadata.origin,
+        metadata.engine,
+        metadata.integration,
+        metadata.platform,
+        metadata.service,
+        metadata.vendor,
+        metadata.model,
+        metadata.modelo,
+        metadata.modelId,
+        metadata.modelName,
+        metadata.openaiModel,
+        tags.provider,
+        tags.source,
+        tags.origin,
+        tags.model,
+        tags.modelName,
+        tags.platform,
+        tags.service
+      ];
+    };
+
+    const processedMessages = new WeakSet();
+    const processedHashes = new Set();
+    const traversedNodes = new WeakSet();
+
+    const registerMessage = (payload = {}) => {
+      if (!payload || typeof payload !== 'object') return;
+      if (processedMessages.has(payload)) return;
+      processedMessages.add(payload);
+
+      const timestamp = extractMessageTimestamp(payload);
+      if (!timestamp) return;
+      const date = new Date(timestamp);
+      const timeValue = date.getTime();
+      const monthIndex = date.getMonth();
+      if (!Number.isFinite(timeValue) || Number.isNaN(monthIndex)) return;
+      if (date.getFullYear() !== thisYear) return;
+
+      const rawSender = payload.sender ?? payload.role ?? payload.from ?? payload.author ?? payload.usuario ?? payload.user;
+      const sender = normalize(rawSender);
+      const identifier = normalize(
+        payload.id ??
+        payload.key ??
+        payload.messageId ??
+        payload.mid ??
+        payload.metadata?.id ??
+        payload.metadata?.messageId ??
+        payload.metadata?.mid ??
+        ''
+      );
+      const contentFragment = normalize(
+        payload.message ??
+        payload.content ??
+        payload.text ??
+        payload.texto ??
+        payload.body ??
+        payload.value ??
+        ''
+      );
+      const hashKey = [timeValue, sender, identifier, contentFragment].join('|');
+      if (processedHashes.has(hashKey)) {
+        return;
+      }
+      processedHashes.add(hashKey);
+
+      if (sender && humanSenderHints.has(sender)) {
+        monthlyHumanMessages[monthIndex] += 1;
+      }
+
+      const providerHints = extractProviderHints(payload);
+      const hasOpenAIHint = providerHints.some(hasOpenAIKeyword);
+      const aiSender = sender && aiSenderHints.has(sender);
+      const qualifiesAsAnswer = (hasOpenAIHint || aiSender) && !humanSenderHints.has(sender);
+      if (!qualifiesAsAnswer) {
+        return;
+      }
+
+      monthlyAnswers[monthIndex] += 1;
+    };
+
+    const walkMessages = (node) => {
+      if (!node || typeof node !== 'object') return;
+
+      if (Array.isArray(node)) {
+        if (traversedNodes.has(node)) return;
+        traversedNodes.add(node);
+        node.forEach((item) => walkMessages(item));
+        return;
+      }
+
+      const keys = Object.keys(node);
+      const senderKeys = ['sender', 'role', 'author', 'usuario', 'user'];
+      const hasSenderKey = keys.some((key) => senderKeys.includes(key));
+      const hasMessageKey = keys.some((key) => ['message', 'content', 'texto', 'text', 'body'].includes(key));
+      const hasTimestampKey = keys.some((key) => ['timestamp', 'time', 'createdAt', 'updatedAt', 'fecha', 'date'].includes(key));
+      const hasFromKey = keys.includes('from');
+      const effectiveSenderKey = hasSenderKey || (hasFromKey && hasMessageKey);
+
+      if (effectiveSenderKey && (hasMessageKey || hasTimestampKey)) {
+        registerMessage(node);
+        return;
+      }
+
+      if (traversedNodes.has(node)) return;
+      traversedNodes.add(node);
+
+      Object.values(node).forEach((value) => {
+        if (value && typeof value === 'object') {
+          walkMessages(value);
+        }
+      });
+    };
+
+    Object.values(conversationsNode).forEach((conversation) => {
+      if (!conversation || typeof conversation !== 'object') return;
+      walkMessages(conversation);
+    });
+
+    const answersThisMonth = monthlyAnswers[thisMonth] || 0;
+    const percentA = Math.min((answersThisMonth / 500) * 100, 100);
+    answersTextTopEl.textContent = `${answersThisMonth} / 500`;
+    if (answersPercentEl) {
+      answersPercentEl.textContent = `${Math.round(percentA)}%`;
+    }
+
+    if (dashboard2AnswersChart) {
+      dashboard2AnswersChart.destroy();
+    }
+    dashboard2AnswersChart = drawDoughnutChart('dash2AnswersChart', percentA, '#7b7b7b');
+
+    if (dashboard2LineChart) {
+      dashboard2LineChart.destroy();
+    }
+    dashboard2LineChart = drawLineChart(monthlyHumanMessages);
+  } catch (error) {
+    console.error('No se pudieron cargar los datos de Dashboard2', error);
+  }
+}
+
+function drawDoughnutChart(id, percent, color) {
+  const element = document.getElementById(id);
+  if (!element) return null;
+
+  const safePercent = Math.min(Math.max(percent, 0), 100);
+  const remainder = 100 - safePercent;
+  const hasBothSegments = safePercent > 0 && remainder > 0;
+
+  const options = {
+    cutout: '75%',
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { enabled: false }
+    }
+  };
+
+  return new Chart(element, {
+    type: 'doughnut',
+    data: {
+      datasets: [{
+        data: [safePercent, remainder],
+        backgroundColor: [color, '#d8d8d8'],
+        borderWidth: 0,
+        borderRadius: hasBothSegments ? 8 : 0,
+        spacing: hasBothSegments ? 2 : 0,
+        hoverOffset: 0
+      }]
+    },
+    options
+  });
+}
+
+function drawLineChart(data) {
+  const canvas = document.getElementById('dash2LineChart');
+  if (!canvas) return null;
+
+  const ctx = typeof canvas.getContext === 'function' ? canvas.getContext('2d') : null;
+  const target = ctx || canvas;
+
+  return new Chart(target, {
+    type: 'line',
+    data: {
+      labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+      datasets: [{
+        label: 'Conversations',
+        data,
+        borderColor: '#6f8f72',
+        borderWidth: 2.5,
+        tension: 0.35,
+        pointRadius: 4,
+        pointHoverRadius: 5,
+        pointBackgroundColor: '#6f8f72',
+        pointBorderColor: '#ffffff',
+        pointBorderWidth: 2,
+        fill: true,
+        backgroundColor: 'rgba(111, 143, 114, 0.18)'
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
+      interaction: { mode: 'nearest', axis: 'x', intersect: false },
+      maintainAspectRatio: false,
+      layout: {
+        padding: { top: 10, right: 12, left: 0, bottom: 0 }
+      },
+      scales: {
+        x: {
+          ticks: { color: '#6b6b6b', font: { family: 'Manrope', size: 11 } },
+          grid: { color: '#e3e3e3', drawBorder: false }
+        },
+        y: {
+          beginAtZero: true,
+          ticks: { color: '#6b6b6b', font: { family: 'Manrope', size: 11 } },
+          grid: { color: '#e3e3e3', drawBorder: false }
+        }
+      }
+    }
+  });
+}
+
+function extractMessageTimestamp(value = {}) {
+  const fields = ['timestamp', 'time', 'createdAt', 'updatedAt'];
+  for (const field of fields) {
+    const raw = value?.[field];
+    if (raw === undefined || raw === null) continue;
+    if (typeof raw === 'number') {
+      if (!Number.isFinite(raw) || raw <= 0) continue;
+      return raw < 1e12 ? raw * 1000 : raw;
+    }
+    const numeric = Number(raw);
+    if (Number.isFinite(numeric) && numeric > 0) {
+      return numeric < 1e12 ? numeric * 1000 : numeric;
+    }
+    const parsed = Date.parse(raw);
+    if (!Number.isNaN(parsed)) {
+      return parsed;
+    }
+  }
+  return null;
 }
 
 function getActiveMessagesBot() {
@@ -2780,6 +3841,58 @@ function getBotsRef() {
   return db.ref(getConfigBotCollectionPath());
 }
 
+async function loadAllowedBotsForUser(email) {
+  allowedEditorBots = new Set();
+  const normalizedEmail = normalizeEmail(email);
+  if (!normalizedEmail) return;
+  try {
+    const botsSnap = await getBotsRef().once('value');
+    const botsData = botsSnap.val() || {};
+    Object.entries(botsData).forEach(([botId, botData]) => {
+      const allowedEditors = botData?.allowedEditors || {};
+      if (isEmailInAllowedEditors(allowedEditors, normalizedEmail)) {
+        allowedEditorBots.add(botId);
+      }
+    });
+  } catch (err) {
+    console.error('No se pudieron cargar los bots con acceso asignado', err);
+  }
+}
+
+async function findEditorAccessForEmail(email) {
+  const normalizedEmail = normalizeEmail(email);
+  if (!normalizedEmail) return null;
+  try {
+    const empresasSnap = await db.ref('empresas').once('value');
+    const empresasData = empresasSnap.val() || {};
+    for (const [empresaKey, empresaData] of Object.entries(empresasData)) {
+      const botCollections = [empresaData?.bots || {}, empresaData?.config?.bots || {}];
+      for (const bots of botCollections) {
+        if (!bots || typeof bots !== 'object') continue;
+        for (const [botKey, botData] of Object.entries(bots)) {
+          const allowedEditors = botData?.allowedEditors || {};
+          if (isEmailInAllowedEditors(allowedEditors, normalizedEmail)) {
+            return { empresa: empresaKey, bot: botKey };
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.error('No se pudo verificar allowedEditors para el usuario', err);
+  }
+  return null;
+}
+
+function redirectToBot(botId) {
+  if (!botId || botId === BOT) return;
+  const storageKey = `bot:${EMPRESA}`;
+  localStorage.setItem(storageKey, botId);
+  const url = new URL(window.location.href);
+  url.searchParams.set('bot', botId);
+  currentBot = botId;
+  window.location.href = url.toString();
+}
+
 function slugifyBotId(name = '') {
   return name
     .toLowerCase()
@@ -2808,6 +3921,12 @@ async function ensureBotDataExists() {
 }
 
 let botSelectorInitialized = false;
+let usersTabInitialized = false;
+let userTabBotsCache = {};
+let userManagementEditorsRef = null;
+let userManagementEditorListener = null;
+let currentManagedBotId = '';
+
 function initBotSelector() {
   if (botSelectorInitialized) return;
   const select = $('botSelect');
@@ -3351,6 +4470,244 @@ function initBotSelector() {
 }
 
 
+
+
+function initUserManagementTab() {
+  if (usersTabInitialized) return;
+  const tabSection = $('tab-usuarios');
+  const botSelect = $('userBotSelect');
+  const tableBody = $('userAccessTableBody');
+  if (!tabSection || !botSelect || !tableBody) return;
+
+  usersTabInitialized = true;
+
+  const statusEl = $('userBotSelectStatus');
+  const summaryEl = $('userAccessSummary');
+  const feedbackEl = $('userInviteFeedback');
+  const inviteForm = $('userInviteForm');
+  const inviteEmailInput = $('userInviteEmail');
+  const inviteSubmit = $('userInviteSubmit');
+
+  const showFeedback = (message = '', isError = false) => {
+    if (!feedbackEl) return;
+    feedbackEl.textContent = message;
+    feedbackEl.classList.toggle('hidden', !message);
+    feedbackEl.classList.toggle('text-red-600', !!message && isError);
+    feedbackEl.classList.toggle('text-gray-500', !isError);
+  };
+
+  const getBotDisplayName = (botId) => (userTabBotsCache?.[botId]?.config?.hotelName || botId || '').toString();
+
+  const renderEmptyState = (message) => {
+    tableBody.innerHTML = '';
+    const row = document.createElement('tr');
+    const cell = document.createElement('td');
+    cell.colSpan = 4;
+    cell.className = 'px-4 py-6 text-center text-gray-400 text-sm';
+    cell.textContent = message;
+    row.appendChild(cell);
+    tableBody.appendChild(row);
+    if (summaryEl) summaryEl.textContent = '—';
+  };
+
+  const updateInviteState = () => {
+    const hasBot = !!currentManagedBotId;
+    const displayName = hasBot ? getBotDisplayName(currentManagedBotId) : '';
+    if (inviteEmailInput) inviteEmailInput.disabled = !hasBot;
+    if (inviteSubmit) {
+      inviteSubmit.disabled = !hasBot;
+      inviteSubmit.classList.toggle('opacity-60', !hasBot);
+      inviteSubmit.classList.toggle('cursor-not-allowed', !hasBot);
+    }
+    if (statusEl) {
+      statusEl.textContent = hasBot
+        ? `Gestionando bot "${displayName}"`
+        : 'Selecciona un bot para gestionar accesos.';
+    }
+    showFeedback('');
+  };
+
+  const renderEditorsTable = (botId, editorsData) => {
+    currentBotAllowedEditors = editorsData || {};
+    tableBody.innerHTML = '';
+
+    const adminEmail = userTabBotsCache?.[botId]?.config?.adminEmail || currentCompanyAdminEmail || '';
+    const normalizedAdminEmail = normalizeEmail(adminEmail);
+
+    const entries = parseAllowedEditorsMap(currentBotAllowedEditors)
+      .filter(entry => entry.normalizedEmail !== normalizedAdminEmail)
+      .sort((a, b) => a.email.localeCompare(b.email));
+
+    if (adminEmail) {
+      const adminRow = document.createElement('tr');
+      adminRow.innerHTML = `
+        <td class="px-4 py-3 text-sm text-gray-700">${adminEmail}</td>
+        <td class="px-4 py-3 text-sm text-emerald-600 font-medium">Admin principal</td>
+        <td class="px-4 py-3 text-sm text-gray-500">—</td>
+        <td class="px-4 py-3 text-right text-sm text-gray-400">—</td>
+      `;
+      tableBody.appendChild(adminRow);
+    }
+
+    if (!entries.length) {
+      const emptyRow = document.createElement('tr');
+      const cell = document.createElement('td');
+      cell.colSpan = 4;
+      cell.className = 'px-4 py-6 text-center text-gray-400 text-sm';
+      cell.textContent = 'No hay usuarios invitados para este bot.';
+      emptyRow.appendChild(cell);
+      tableBody.appendChild(emptyRow);
+      if (summaryEl) summaryEl.textContent = 'Sin editores invitados';
+      return;
+    }
+
+    entries.forEach((entry) => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td class="px-4 py-3 text-sm text-gray-700">${entry.email}</td>
+        <td class="px-4 py-3 text-sm text-gray-600">Editor</td>
+        <td class="px-4 py-3 text-sm text-gray-500">${formatLastAccess(entry.lastAccess)}</td>
+        <td class="px-4 py-3 text-right">
+          <button type="button" class="text-sm text-red-600 hover:text-red-700" data-remove-editor data-email="${entry.email}" data-email-key="${entry.key}">❌</button>
+        </td>
+      `;
+      tableBody.appendChild(row);
+    });
+
+    if (summaryEl) {
+      const count = entries.length;
+      summaryEl.textContent = count === 1 ? '1 editor invitado' : `${count} editores invitados`;
+    }
+  };
+
+  const subscribeToBotEditors = (botId) => {
+    if (userManagementEditorsRef && userManagementEditorListener) {
+      userManagementEditorsRef.off('value', userManagementEditorListener);
+    }
+    if (!botId) {
+      renderEmptyState('Selecciona un bot para ver los usuarios con acceso.');
+      return;
+    }
+    userManagementEditorsRef = db.ref(`${getBotBasePath(botId)}/allowedEditors`);
+    userManagementEditorListener = (snap) => {
+      renderEditorsTable(botId, snap.val() || {});
+    };
+    userManagementEditorsRef.on('value', userManagementEditorListener);
+  };
+
+  const rebuildBotOptions = () => {
+    const entries = Object.entries(userTabBotsCache || {});
+    botSelect.innerHTML = '';
+
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = entries.length ? 'Selecciona un bot' : 'No hay bots disponibles';
+    placeholder.disabled = entries.length > 0;
+    placeholder.selected = !currentManagedBotId;
+    botSelect.appendChild(placeholder);
+
+    entries
+      .sort((a, b) => {
+        const nameA = (a[1]?.config?.hotelName || a[0] || '').toString().toLowerCase();
+        const nameB = (b[1]?.config?.hotelName || b[0] || '').toString().toLowerCase();
+        if (nameA < nameB) return -1;
+        if (nameA > nameB) return 1;
+        return 0;
+      })
+      .forEach(([id, data]) => {
+        const option = document.createElement('option');
+        option.value = id;
+        option.textContent = data?.config?.hotelName || id;
+        botSelect.appendChild(option);
+      });
+
+    if (currentManagedBotId && botSelect.querySelector(`option[value="${currentManagedBotId}"]`)) {
+      botSelect.value = currentManagedBotId;
+    } else {
+      currentManagedBotId = '';
+    }
+
+    updateInviteState();
+
+    if (currentManagedBotId) {
+      subscribeToBotEditors(currentManagedBotId);
+    } else {
+      renderEmptyState(entries.length ? 'Selecciona un bot para ver los usuarios con acceso.' : 'No hay bots disponibles.');
+    }
+  };
+
+  getBotsRef().on('value', (snap) => {
+    userTabBotsCache = snap.val() || {};
+    rebuildBotOptions();
+  });
+
+  botSelect.addEventListener('change', (event) => {
+    currentManagedBotId = event.target.value || '';
+    updateInviteState();
+    subscribeToBotEditors(currentManagedBotId);
+  });
+
+  inviteForm?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (!currentManagedBotId) return;
+    const rawEmail = inviteEmailInput?.value || '';
+    const normalizedEmail = normalizeEmail(rawEmail);
+    if (!normalizedEmail || !rawEmail.includes('@')) {
+      showFeedback('Introduce un correo válido.', true);
+      return;
+    }
+
+    const adminEmailNormalized = normalizeEmail(userTabBotsCache?.[currentManagedBotId]?.config?.adminEmail || currentCompanyAdminEmail || '');
+    if (normalizedEmail === adminEmailNormalized) {
+      showFeedback('El admin principal ya tiene acceso a todos los bots.', true);
+      return;
+    }
+
+    if (isEmailInAllowedEditors(currentBotAllowedEditors, normalizedEmail)) {
+      showFeedback('Este usuario ya tiene acceso a este bot.', true);
+      return;
+    }
+
+    try {
+      const key = encodeEmailKey(normalizedEmail);
+      await db.ref(`${getBotBasePath(currentManagedBotId)}/allowedEditors/${key}`).set(true);
+      if (inviteEmailInput) inviteEmailInput.value = '';
+      showFeedback(`✅ Acceso otorgado a ${normalizedEmail} para este bot.`);
+      if (typeof toast === 'function') {
+        toast(`✅ Acceso otorgado a ${normalizedEmail} para este bot.`);
+      }
+
+      try {
+        await sendEditorInvitationEmail(rawEmail);
+      } catch (inviteError) {
+        console.error('No se pudo enviar la invitación por correo', inviteError);
+      }
+    } catch (err) {
+      console.error('No se pudo invitar al usuario', err);
+      showFeedback('No se pudo otorgar acceso. Inténtalo de nuevo.', true);
+    }
+  });
+
+  tableBody.addEventListener('click', async (event) => {
+    const target = event.target.closest('[data-remove-editor]');
+    if (!target || !currentManagedBotId) return;
+    const emailKey = target.getAttribute('data-email-key');
+    const emailValue = target.getAttribute('data-email');
+    if (!emailKey) return;
+    try {
+      await db.ref(`${getBotBasePath(currentManagedBotId)}/allowedEditors/${emailKey}`).set(null);
+      if (typeof toast === 'function') {
+        toast(`Acceso revocado para ${emailValue}`);
+      }
+    } catch (err) {
+      console.error('No se pudo revocar el acceso', err);
+      showFeedback('No se pudo revocar el acceso. Inténtalo de nuevo.', true);
+    }
+  });
+
+  updateInviteState();
+  renderEmptyState('Selecciona un bot para ver los usuarios con acceso.');
+}
 
 
 let languageSelectorInitialized = false;
@@ -3943,29 +5300,33 @@ function initChatTemplatesUI() {
 let canWriteFlag = false;
 async function refreshPermissions() {
   const user = auth.currentUser;
-  if (!user) { canWriteFlag = false; setWriteEnabled(false); return; }
+  if (!user) { canWriteFlag = false; setWriteEnabled(false); applyRoleUI(); return; }
 
-  const userEmail = (user.email || '').toLowerCase();
-  $('authEmail').textContent = user.email || '';
+  currentUserEmail = user.email || '';
+  currentUserEmailNormalized = normalizeEmail(currentUserEmail);
+  $('authEmail').textContent = currentUserEmail || '';
 
   const adminEmails = new Set();
 
   const botAdminSnap = await eref('config/adminEmail').once('value');
-  const botAdminEmail = (botAdminSnap.val() || '').toLowerCase();
-  if (botAdminEmail) adminEmails.add(botAdminEmail);
+  currentBotAdminEmail = (botAdminSnap.val() || '').trim();
+  const normalizedBotAdminEmail = normalizeEmail(currentBotAdminEmail);
+  if (normalizedBotAdminEmail) adminEmails.add(normalizedBotAdminEmail);
 
   try {
     const companyAdminSnap = await db.ref(`empresas/${EMPRESA}/config/adminEmail`).once('value');
-    const companyAdminEmail = (companyAdminSnap.val() || '').toLowerCase();
-    if (companyAdminEmail) adminEmails.add(companyAdminEmail);
+    currentCompanyAdminEmail = (companyAdminSnap.val() || '').trim();
+    const normalizedCompanyAdminEmail = normalizeEmail(currentCompanyAdminEmail);
+    if (normalizedCompanyAdminEmail) adminEmails.add(normalizedCompanyAdminEmail);
   } catch (err) {
     console.warn('No se pudo leer config/adminEmail a nivel empresa', err);
+    currentCompanyAdminEmail = '';
   }
 
   if (!adminEmails.size) {
     try {
       const legacyAdminSnap = await db.ref(`${getLegacySingleBotPath()}/config/adminEmail`).once('value');
-      const legacyAdminEmail = (legacyAdminSnap.val() || '').toLowerCase();
+      const legacyAdminEmail = normalizeEmail(legacyAdminSnap.val() || '');
       if (legacyAdminEmail) adminEmails.add(legacyAdminEmail);
     } catch (err) {
       console.warn('No se pudo leer config/adminEmail legacy', err);
@@ -3973,15 +5334,52 @@ async function refreshPermissions() {
   }
 
   const globalAdminSnap = await db.ref('globalAdmins/' + user.uid).once('value');
-  const isGlobal = !!globalAdminSnap.val();
+  isGlobalAdmin = !!globalAdminSnap.val();
+  isPrimaryAdmin = !!(currentUserEmailNormalized && adminEmails.has(currentUserEmailNormalized));
+  isCompanyAdmin = !!(currentUserEmailNormalized && normalizeEmail(currentCompanyAdminEmail) === currentUserEmailNormalized);
 
-  canWriteFlag = isGlobal || (userEmail && adminEmails.has(userEmail));
+  try {
+    const allowedEditorsSnap = await db.ref(`${getBotBasePath()}/allowedEditors`).once('value');
+    currentBotAllowedEditors = allowedEditorsSnap.val() || {};
+  } catch (err) {
+    console.warn('No se pudo leer la lista de editores permitidos', err);
+    currentBotAllowedEditors = {};
+  }
+
+  isAllowedEditorForCurrentBot = isEmailInAllowedEditors(currentBotAllowedEditors, currentUserEmailNormalized);
+
+  if (!isGlobalAdmin && !isPrimaryAdmin) {
+    await loadAllowedBotsForUser(currentUserEmailNormalized);
+    if (!isAllowedEditorForCurrentBot && allowedEditorBots.size) {
+      const [firstBot] = allowedEditorBots.values();
+      if (firstBot && firstBot !== BOT) {
+        redirectToBot(firstBot);
+        return;
+      }
+    }
+  } else {
+    allowedEditorBots = new Set();
+  }
+
+  isLimitedEditor = !isGlobalAdmin && !isPrimaryAdmin && isAllowedEditorForCurrentBot;
+
+  canWriteFlag = isGlobalAdmin || isPrimaryAdmin || isAllowedEditorForCurrentBot;
   setWriteEnabled(canWriteFlag);
+
+  if (isGlobalAdmin || isPrimaryAdmin || isCompanyAdmin) {
+    userRole = 'admin';
+  } else if (isLimitedEditor) {
+    userRole = 'editor';
+  } else {
+    userRole = 'viewer';
+  }
 
   const permBannerA = document.getElementById('permBannerA');
   const permBannerS = document.getElementById('permBannerS');
   if (permBannerA) permBannerA.classList.toggle('hidden', canWriteFlag);
   if (permBannerS) permBannerS.classList.toggle('hidden', canWriteFlag);
+  applyPromptPermissionState();
+  applyRoleUI();
 }
 
 function setWriteEnabled(enabled) {
@@ -3990,7 +5388,7 @@ function setWriteEnabled(enabled) {
     'uploadAvatar','deleteAvatar','fontSelect','tgChatVisible','hotelName',
     'timeZone','saveContext','contextText','widgetIconTrigger',
     'addKnowledgePage','knowledgeUrlInput','confirmAddKnowledge','personalitySelect','btnNewBot',
-    'newBotNameInput','confirmNewBot'
+    'newBotNameInput','confirmNewBot','userInviteEmail','userInviteSubmit'
   ];
   ids.forEach(id => {
     const el = $(id);
@@ -4004,36 +5402,132 @@ function setWriteEnabled(enabled) {
   }
 }
 
-const TAB_KEYS = ['dashboard','chat','mensajes','knowledge','respuestas'];
+function applyRoleUI() {
+  window.userRole = userRole;
+  const shouldShowUsuarios = isGlobalAdmin || isPrimaryAdmin;
+  const editorOnly = isLimitedEditor && !shouldShowUsuarios;
+
+  let visibleTabs = DEFAULT_TAB_KEYS.filter((tab) => {
+    if (tab === 'usuarios') return shouldShowUsuarios;
+    if (tab === 'dashboard2') return userRole === 'editor';
+    if (editorOnly && (tab === 'dashboard' || tab === 'prompt')) return false;
+    return true;
+  });
+  if (!visibleTabs.length) {
+    visibleTabs = ['chat'];
+  }
+  TAB_KEYS = visibleTabs;
+
+  if (!TAB_KEYS.includes(currentActiveTab)) {
+    setActiveTab(TAB_KEYS[0] || 'chat');
+  }
+
+  DEFAULT_TAB_KEYS.forEach((tab) => {
+    const btn = document.querySelector(`.sidebar-btn[data-tab="${tab}"]`);
+    if (btn) {
+      const isVisible = TAB_KEYS.includes(tab);
+      btn.classList.toggle('hidden', !isVisible);
+    }
+    const section = document.getElementById(`tab-${tab}`);
+    if (section && !TAB_KEYS.includes(tab)) {
+      section.classList.add('hidden');
+    }
+  });
+
+  const usuariosBtn = $('usuariosTabButton');
+  if (usuariosBtn) {
+    usuariosBtn.classList.toggle('hidden', !shouldShowUsuarios);
+  }
+
+  const usuariosSection = $('tab-usuarios');
+  if (usuariosSection) {
+    usuariosSection.classList.toggle('hidden', !shouldShowUsuarios);
+  }
+
+  if (shouldShowUsuarios) {
+    initUserManagementTab();
+  }
+
+  const botSelectorWrap = $('botSelectorWrap');
+  if (botSelectorWrap) {
+    botSelectorWrap.classList.toggle('hidden', editorOnly || userRole === 'editor');
+  }
+
+  const newBotBtn = $('btnNewBot');
+  if (newBotBtn) {
+    newBotBtn.classList.toggle('hidden', editorOnly);
+    newBotBtn.disabled = !!editorOnly;
+  }
+
+  const botSelect = $('botSelect');
+  if (botSelect) {
+    if (editorOnly) {
+      botSelect.disabled = true;
+      const currentLabel = $('botText')?.textContent || BOT;
+      botSelect.innerHTML = '';
+      const option = document.createElement('option');
+      option.value = BOT;
+      option.textContent = currentLabel;
+      option.selected = true;
+      botSelect.appendChild(option);
+    } else {
+      botSelect.disabled = false;
+    }
+  }
+
+  if (typeof lucide !== 'undefined' && lucide?.createIcons) {
+    lucide.createIcons();
+  }
+
+  const desiredTab = TAB_KEYS.includes(currentActiveTab) ? currentActiveTab : (TAB_KEYS[0] || 'chat');
+  setActiveTab(desiredTab);
+}
+
 let tabsInitialized = false;
 
 function setActiveTab(tab) {
-  const targetTab = TAB_KEYS.includes(tab) ? tab : 'dashboard';
+  const fallbackTab = TAB_KEYS.includes(tab) ? tab : (TAB_KEYS[0] || 'dashboard');
+  const targetTab = fallbackTab;
+  currentActiveTab = targetTab;
 
   $$('.sidebar-btn').forEach(btn => {
     const btnTab = btn.getAttribute('data-tab');
     btn.classList.toggle('active', btnTab === targetTab);
   });
 
-  TAB_KEYS.forEach(key => {
+  DEFAULT_TAB_KEYS.forEach(key => {
     const section = document.getElementById(`tab-${key}`);
     if (section) {
-      section.classList.toggle('hidden', key !== targetTab);
+      const shouldShow = key === targetTab && TAB_KEYS.includes(key);
+      section.classList.toggle('hidden', !shouldShow);
     }
   });
+
+  if (targetTab === 'dashboard2') {
+    loadDashboard2Data();
+  }
 
   if (targetTab === 'chat') {
     if (typeof window.__setDefaultChatPanel === 'function') {
       window.__setDefaultChatPanel();
     }
-  } else if (typeof window.__hideHeaderPanel === 'function') {
-    window.__hideHeaderPanel();
+  } else {
+    if (typeof window.__hideHeaderPanel === 'function') {
+      window.__hideHeaderPanel();
+    }
+    if (targetTab === 'prompt') {
+      initPromptTab();
+      loadPromptForCurrentBot({ force: true });
+    }
   }
 }
 
 function showAppView() {
   document.querySelector('header')?.classList.remove('hidden');
-  document.querySelector('aside')?.classList.remove('hidden');
+  const sidebar = document.getElementById('sidebar');
+  if (sidebar) {
+    document.getElementById("sidebar").classList.remove("hidden", "md:hidden");
+  }
   $('headerSpacer')?.classList.remove('hidden');
   $('login').classList.add('hidden');
   $('tabs').classList.remove('hidden');
@@ -4043,8 +5537,37 @@ function showAppView() {
 }
 
 function showLoginView() {
+  isGlobalAdmin = false;
+  isPrimaryAdmin = false;
+  isCompanyAdmin = false;
+  isLimitedEditor = false;
+  isAllowedEditorForCurrentBot = false;
+  allowedEditorBots = new Set();
+  currentBotAllowedEditors = {};
+  currentEmpresa = null;
+  window.currentEmpresa = currentEmpresa;
+  currentBot = null;
+  userRole = 'viewer';
+  window.userRole = userRole;
+  if (dashboard2KnowledgeChart) {
+    dashboard2KnowledgeChart.destroy();
+    dashboard2KnowledgeChart = null;
+  }
+  if (dashboard2AnswersChart) {
+    dashboard2AnswersChart.destroy();
+    dashboard2AnswersChart = null;
+  }
+  if (dashboard2LineChart) {
+    dashboard2LineChart.destroy();
+    dashboard2LineChart = null;
+  }
+  TAB_KEYS = [...DEFAULT_TAB_KEYS];
+  applyRoleUI();
   document.querySelector('header')?.classList.add('hidden');
-  document.querySelector('aside')?.classList.add('hidden');
+  const sidebar = document.getElementById('sidebar');
+  if (sidebar) {
+    sidebar.classList.add('hidden', 'md:hidden');
+  }
   $('headerSpacer')?.classList.add('hidden');
   $('login').classList.remove('hidden');
   $('tabs').classList.add('hidden');
@@ -4094,13 +5617,87 @@ $('btnLogout').addEventListener('click', async () => {
 
 auth.onAuthStateChanged(async (u) => {
   if (u) {
-    const email = (u.email || '').toLowerCase();
-    const { empresa: empresaEncontrada, redirected } = await autoSelectEmpresaForUser(email);
+    const rawEmail = u.email || '';
+    const normalizedEmail = normalizeEmail(rawEmail);
+    const { empresa: empresaEncontrada, redirected } = await autoSelectEmpresaForUser(normalizedEmail);
     if (redirected) {
       return;
     }
 
-    if (!empresaEncontrada) {
+    let empresaDetectada = empresaEncontrada || null;
+    let botDetectado = null;
+    let detectedRole = empresaEncontrada ? 'admin' : 'viewer';
+
+    if (!empresaDetectada) {
+      const editorAccess = await findEditorAccessForEmail(normalizedEmail);
+      if (editorAccess) {
+        empresaDetectada = editorAccess.empresa;
+        botDetectado = editorAccess.bot;
+        detectedRole = 'editor';
+      }
+    }
+
+    try {
+      if (!empresaDetectada) {
+        const empresasSnap = await db.ref('empresas').once('value');
+        const empresasData = empresasSnap.val() || {};
+        outer: for (const [empresaId, empresaData] of Object.entries(empresasData)) {
+          const bots = empresaData?.bots || empresaData?.config?.bots || {};
+          for (const [botId, botData] of Object.entries(bots)) {
+            const adminEmail = normalizeEmail(botData?.config?.adminEmail || '');
+            if (adminEmail && adminEmail === normalizedEmail) {
+              empresaDetectada = empresaId;
+              botDetectado = botId;
+              detectedRole = 'admin';
+              break outer;
+            }
+            const allowedEditors = botData?.allowedEditors || {};
+            if (isEmailInAllowedEditors(allowedEditors, normalizedEmail)) {
+              empresaDetectada = empresaId;
+              botDetectado = botId;
+              detectedRole = 'editor';
+              break outer;
+            }
+          }
+        }
+      }
+
+      if (!empresaDetectada) {
+        const legacySnap = await db.ref().once('value');
+        const legacyData = legacySnap.val() || {};
+        for (const [empresaId, empresaData] of Object.entries(legacyData)) {
+          if (empresaId === 'empresas' || empresaId === 'globalAdmins') continue;
+          const adminEmail = normalizeEmail(empresaData?.config?.adminEmail || '');
+          const configBots = empresaData?.config?.bots || {};
+          const matchingBot = Object.entries(configBots).find(([, botData]) => {
+            const botAdmin = normalizeEmail(botData?.config?.adminEmail || '');
+            if (botAdmin && botAdmin === normalizedEmail) {
+              detectedRole = 'admin';
+              return true;
+            }
+            const allowedEditors = botData?.allowedEditors || {};
+            const isEditor = isEmailInAllowedEditors(allowedEditors, normalizedEmail);
+            if (isEditor) {
+              detectedRole = 'editor';
+            }
+            return isEditor;
+          });
+          if (adminEmail && adminEmail === normalizedEmail) {
+            empresaDetectada = empresaId;
+            detectedRole = 'admin';
+            break;
+          } else if (matchingBot) {
+            empresaDetectada = empresaId;
+            botDetectado = matchingBot[0];
+            break;
+          }
+        }
+      }
+    } catch (err) {
+      console.error(t('Error finding company:'), err);
+    }
+
+    if (!empresaDetectada) {
       if (loginErrorEl) {
         loginErrorEl.textContent = 'Tu cuenta no está asociada a ninguna empresa';
         loginErrorEl.classList.remove('hidden');
@@ -4116,62 +5713,25 @@ auth.onAuthStateChanged(async (u) => {
       loginErrorEl.classList.add('hidden');
     }
 
-    let empresaDetectada = empresaEncontrada;
-    let botDetectado = null;
-
-    try {
-      if (!empresaDetectada) {
-        const empresasSnap = await db.ref('empresas').once('value');
-        const empresasData = empresasSnap.val() || {};
-        outer: for (const [empresaId, empresaData] of Object.entries(empresasData)) {
-          const bots = empresaData?.bots || empresaData?.config?.bots || {};
-          for (const [botId, botData] of Object.entries(bots)) {
-            const adminEmail = (botData?.config?.adminEmail || '').toLowerCase();
-            if (adminEmail && adminEmail === email) {
-              empresaDetectada = empresaId;
-              botDetectado = botId;
-              break outer;
-            }
-          }
-        }
-      }
-
-      if (!empresaDetectada) {
-        const legacySnap = await db.ref().once('value');
-        const legacyData = legacySnap.val() || {};
-        for (const [empresaId, empresaData] of Object.entries(legacyData)) {
-          if (empresaId === 'empresas' || empresaId === 'globalAdmins') continue;
-          const adminEmail = (empresaData?.config?.adminEmail || '').toLowerCase();
-          const configBots = empresaData?.config?.bots || {};
-          const matchingBot = Object.entries(configBots).find(([, botData]) => {
-            const botAdmin = (botData?.config?.adminEmail || '').toLowerCase();
-            return botAdmin && botAdmin === email;
-          });
-          if (adminEmail && adminEmail === email) {
-            empresaDetectada = empresaId;
-            break;
-          } else if (matchingBot) {
-            empresaDetectada = empresaId;
-            botDetectado = matchingBot[0];
-            break;
-          }
-        }
-      }
-    } catch (err) {
-      console.error(t('Error finding company:'), err);
-    }
-
     if (empresaDetectada) {
       EMPRESA = empresaDetectada;
+      currentEmpresa = EMPRESA;
+      window.currentEmpresa = currentEmpresa;
       localStorage.setItem('empresa', EMPRESA);
       if (empresaBadgeEl) empresaBadgeEl.textContent = EMPRESA;
       if (empresaTextEl) empresaTextEl.textContent = EMPRESA;
       BOT = botDetectado || getBot();
+      currentBot = BOT;
+      userRole = detectedRole || 'admin';
+      window.userRole = userRole;
       localStorage.setItem(`bot:${EMPRESA}`, BOT);
       updateBotLabels(BOT);
       console.log(t('✅ Company detected automatically:'), EMPRESA, BOT);
     } else {
       BOT = getBot();
+      currentBot = BOT;
+      userRole = 'viewer';
+      window.userRole = userRole;
       console.warn(t('⚠ No company found for this email, using previous value:'), EMPRESA);
     }
 
@@ -4208,12 +5768,13 @@ auth.onAuthStateChanged(async (u) => {
 // ====== Tabs ======
 function initTabs() {
   if (tabsInitialized) {
-    setActiveTab('dashboard');
+    const fallback = TAB_KEYS.includes(currentActiveTab) ? currentActiveTab : (TAB_KEYS[0] || 'dashboard');
+    setActiveTab(fallback);
     return;
   }
 
   tabsInitialized = true;
-  setActiveTab('dashboard');
+  setActiveTab(TAB_KEYS[0] || 'dashboard');
 
   $$('.sidebar-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -4251,6 +5812,7 @@ async function initAll(){
   initKnowledge();
   initIntegration();
   initRespuestas();
+  initPromptTab();
   initWelcome();
   initSchedule();
 }
@@ -4319,7 +5881,7 @@ function initApariencia() {
   });
 
   setChatPanel('bot');
-  window.__setDefaultChatPanel = () => setChatPanel('bot');
+window.__setDefaultChatPanel = () => {};
 
   const activityScoreButtons = Array.from(document.querySelectorAll('[data-activity-score]'));
   const setActivityScore = (score) => {
@@ -4388,8 +5950,8 @@ function initApariencia() {
   const headerNameRef = eref('config/hotelName');
   if (headerSummaryTitle && headerNameRef) {
     headerNameRef.on('value', snap => {
-      const val = (snap.val() || 'Asistente del hotel').trim();
-      headerSummaryTitle.textContent = val || 'Asistente del hotel';
+      const val = (snap.val() || 'Tomos Bot').trim();
+      headerSummaryTitle.textContent = val || 'Tomos Bot';
     });
   }
 
@@ -5313,18 +6875,133 @@ function initSettingsTab(){
 
   // Assistant personality
   const personalitySelect = $('personalitySelect');
+  const personalityButtons = Array.from(document.querySelectorAll('[data-personality-option]'));
+  const personalityDropdown = $('personalityDropdown');
+  const personalityDropdownButton = $('personalityDropdownButton');
+  const personalityDropdownMenu = $('personalityDropdownMenu');
+  const personalityDropdownIcon = $('personalityDropdownIcon');
+  const personalityDropdownLabel = $('personalityDropdownLabel');
   const persRef = eref('config/personality');
   const personalityValues = Array.from(personalitySelect?.options || []).map(opt => opt.value);
-  persRef.once('value', s=>{
-    const v = s.val() || 'warm';
-    if (personalitySelect && personalityValues.includes(v)) {
-      personalitySelect.value = v;
+  const personalityAliases = {
+    warm: 'friendly',
+    relaxed: 'informal',
+    formal: 'professional',
+    efficient: 'informative',
+    young: 'informal'
+  };
+
+  const normalizePersonality = (value) => {
+    const val = (value || '').toString();
+    if (personalityValues.includes(val)) return val;
+    const alias = personalityAliases[val];
+    if (alias && personalityValues.includes(alias)) return alias;
+    return personalityValues[0] || '';
+  };
+
+  const closePersonalityMenu = () => {
+    if (!personalityDropdownMenu) return;
+    personalityDropdownMenu.classList.add('hidden');
+    personalityDropdownButton?.setAttribute('aria-expanded', 'false');
+  };
+
+  const openPersonalityMenu = () => {
+    if (!personalityDropdownMenu) return;
+    personalityDropdownMenu.classList.remove('hidden');
+    personalityDropdownButton?.setAttribute('aria-expanded', 'true');
+  };
+
+  const updatePersonalityDropdownDisplay = (value) => {
+    if (!personalityDropdownMenu) return;
+    const activeBtn = personalityDropdownMenu.querySelector(`[data-personality-option="${value}"]`);
+    const labelText = activeBtn?.querySelector('.personality-option-label')?.textContent?.trim() || value;
+    if (personalityDropdownLabel) {
+      personalityDropdownLabel.textContent = labelText;
     }
+    if (personalityDropdownIcon) {
+      personalityDropdownIcon.innerHTML = '';
+      const iconSource = activeBtn?.querySelector('svg') || activeBtn?.querySelector('[data-lucide]');
+      if (iconSource) {
+        const clone = iconSource.cloneNode(true);
+        if (clone.classList) {
+          clone.classList.remove('w-5', 'h-5');
+          clone.classList.add('w-4', 'h-4');
+        }
+        personalityDropdownIcon.appendChild(clone);
+        if (clone.tagName && clone.tagName.toLowerCase() === 'i' && window.lucide) {
+          window.lucide.createIcons();
+        }
+      }
+    }
+  };
+
+  const applyPersonalitySelection = (value) => {
+    if (!personalitySelect) return;
+    const normalized = normalizePersonality(value);
+    personalitySelect.value = normalized;
+    personalityButtons.forEach(btn => {
+      const isActive = btn.dataset.personalityOption === normalized;
+      btn.classList.toggle('personality-option-active', isActive);
+      btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    });
+    updatePersonalityDropdownDisplay(normalized);
+  };
+
+  persRef.once('value', s=>{
+    const v = normalizePersonality(s.val() || 'friendly');
+    applyPersonalitySelection(v);
   });
+
+  if (personalitySelect) {
+    applyPersonalitySelection(personalitySelect.value || 'friendly');
+  }
+
   personalitySelect?.addEventListener('change', ()=> canWrite(async ()=>{
+    if (!personalitySelect) return;
+    applyPersonalitySelection(personalitySelect.value);
     await persRef.set(personalitySelect.value);
     toast(t('✔ Personality updated'));
+    closePersonalityMenu();
   }));
+
+  if (personalityDropdownButton && !personalityDropdownButton.dataset.bound) {
+    personalityDropdownButton.addEventListener('click', (event) => {
+      event.preventDefault();
+      if (!personalityDropdownMenu) return;
+      if (personalityDropdownMenu.classList.contains('hidden')) {
+        openPersonalityMenu();
+      } else {
+        closePersonalityMenu();
+      }
+    });
+    personalityDropdownButton.dataset.bound = 'true';
+  }
+
+  if (!window.__personalityDropdownCloseListener) {
+    window.__personalityDropdownCloseListener = (event) => {
+      if (!personalityDropdown) return;
+      if (!personalityDropdown.contains(event.target)) {
+        closePersonalityMenu();
+      }
+    };
+    document.addEventListener('click', window.__personalityDropdownCloseListener);
+  }
+
+  personalityButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (!personalitySelect) return;
+      const value = btn.dataset.personalityOption;
+      if (!value) return;
+      const normalized = normalizePersonality(value);
+      if (personalitySelect.value === normalized) {
+        applyPersonalitySelection(normalized);
+        return;
+      }
+      personalitySelect.value = normalized;
+      personalitySelect.dispatchEvent(new Event('change', { bubbles: true }));
+      closePersonalityMenu();
+    });
+  });
   
   
   function autoResize(t){
@@ -6097,8 +7774,38 @@ function initMensajes() {
     return fallback;
   }
 
+  function getLastMessageTimestamp(payload = {}) {
+    const directSources = [
+      payload.updatedAt,
+      payload.timestamp,
+      payload.lastUpdated,
+      payload.lastMessageTime,
+      payload.lastMessageTimestamp,
+      payload.lastMessage?.time,
+      payload.lastMessage?.timestamp,
+    ];
+    let latest = 0;
+    directSources.forEach((value) => {
+      const numeric = Number(value);
+      if (Number.isFinite(numeric) && numeric > latest) {
+        latest = numeric;
+      }
+    });
+    const collection = payload.mensajes || payload.messages;
+    if (collection && typeof collection === 'object') {
+      Object.values(collection).forEach((message) => {
+        if (!message) return;
+        const numeric = Number(message.time ?? message.timestamp ?? message.createdAt ?? message.updatedAt ?? 0);
+        if (Number.isFinite(numeric) && numeric > latest) {
+          latest = numeric;
+        }
+      });
+    }
+    return latest;
+  }
+
   function mapConversation(chatId, payload = {}) {
-    const updatedAt = Number(payload.updatedAt ?? payload.timestamp ?? payload.lastUpdated ?? 0);
+    const updatedAt = getLastMessageTimestamp(payload);
     return {
       chatId,
       userName: payload.userName || payload.name || '',
@@ -6252,22 +7959,24 @@ function initMensajes() {
 
       const infoCol = document.createElement('div');
       infoCol.className = 'flex-1 min-w-0';
+      const updatedAtValue = Number(chat.updatedAt) || 0;
+      const updatedAtDate = updatedAtValue ? new Date(updatedAtValue) : null;
+
       const nameEl = document.createElement('div');
       nameEl.className = `text-sm font-semibold truncate ${isActive ? 'text-white' : 'text-gray-800'}`;
-      nameEl.textContent = (chat.userName || 'Guest').trim() || 'Guest';
+      nameEl.textContent = updatedAtDate
+        ? updatedAtDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })
+        : 'Sin fecha';
       infoCol.appendChild(nameEl);
 
       const metaRow = document.createElement('div');
       metaRow.className = `flex items-center gap-2 text-[11px] ${isActive ? 'text-white/70' : 'text-gray-500'}`;
-      if (chat.updatedAt) {
-        const dateEl = document.createElement('span');
-        dateEl.textContent = new Date(chat.updatedAt).toLocaleDateString();
-        metaRow.appendChild(dateEl);
-      }
-      const idEl = document.createElement('span');
-      idEl.className = 'truncate';
-      idEl.textContent = `#${chat.chatId}`;
-      metaRow.appendChild(idEl);
+      const timeMetaEl = document.createElement('span');
+      timeMetaEl.className = 'truncate';
+      timeMetaEl.textContent = updatedAtDate
+        ? updatedAtDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+        : 'Sin hora';
+      metaRow.appendChild(timeMetaEl);
       infoCol.appendChild(metaRow);
 
       const actions = document.createElement('div');
@@ -6935,7 +8644,7 @@ function initRespuestas() {
     wrap.appendChild(header);
 
     const grid = document.createElement("div");
-    grid.className = "grid gap-3 sm:grid-cols-2";
+    grid.className = "grid gap-3 md:grid-cols-2";
 
     const titleWrap = document.createElement("div");
     titleWrap.className = "space-y-1";
