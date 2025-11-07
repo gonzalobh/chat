@@ -114,7 +114,7 @@ def build_translations_js(entries):
         "      el.setAttribute(attr, formatter ? formatter(translated) : translated);",
         "    });",
         "    applyManualTargets();",
-        "    document.title = getTranslation(currentLanguage, 'Tomos · Admin');",
+        "    document.title = getTranslation(currentLanguage, 'Tomos Bot');",
         "    const select = document.getElementById('languageSelect');",
         "    if (select && select.value !== currentLanguage) select.value = currentLanguage;",
         "  }",

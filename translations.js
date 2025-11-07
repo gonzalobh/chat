@@ -2,7 +2,7 @@
   const DEFAULT_LANGUAGE = 'es';
   const TRANSLATIONS = {
     'en': {
-      'Tomos · Admin': 'Tomos · Admin',
+      'Tomos Bot': 'Tomos Bot',
       'Loading…': 'Loading…',
       'Log out': 'Log out',
       'Chat': 'Chat',
@@ -229,7 +229,7 @@
       'Enabled': 'Enabled',
     },
     'fr': {
-      'Tomos · Admin': 'Tomos · Admin',
+      'Tomos Bot': 'Tomos Bot',
       'Loading…': 'Chargement…',
       'Log out': 'Se déconnecter',
       'Chat': 'Discussion',
@@ -456,7 +456,7 @@
       'Enabled': 'Activé',
     },
     'es': {
-      'Tomos · Admin': 'Tomos · Admin',
+      'Tomos Bot': 'Tomos Bot',
       'Loading…': 'Cargando…',
       'Log out': 'Cerrar sesión',
       'Chat': 'Chat',
@@ -683,7 +683,7 @@
       'Enabled': 'Activado',
     },
     'de': {
-      'Tomos · Admin': 'Tomos · Admin',
+      'Tomos Bot': 'Tomos Bot',
       'Loading…': 'Wird geladen…',
       'Log out': 'Abmelden',
       'Chat': 'Chat',
@@ -910,7 +910,7 @@
       'Enabled': 'Aktiviert',
     },
     'pt': {
-      'Tomos · Admin': 'Tomos · Admin',
+      'Tomos Bot': 'Tomos Bot',
       'Loading…': 'Carregando…',
       'Log out': 'Sair',
       'Chat': 'Chat',
@@ -1278,7 +1278,7 @@
         el.setAttribute(attr, formatter ? formatter(translated) : translated);
       });
     });
-    document.title = getTranslation(currentLanguage, 'Tomos · Admin');
+    document.title = getTranslation(currentLanguage, 'Tomos Bot');
     const select = document.getElementById('languageSelect');
     if (select && select.value !== currentLanguage) select.value = currentLanguage;
   }

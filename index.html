@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Tomos · Admin</title>
+  <title>Tomos Bot</title>
 
   <!-- Firebase (compat) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
@@ -205,7 +205,6 @@ button.bg-black:hover {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
   justify-content: space-between;
 }
 
@@ -283,7 +282,6 @@ button.bg-black:hover {
   background: linear-gradient(180deg, #f7f7f7 0%, #f2f2f2 100%);
   border-radius: 18px;
   padding: 1.5rem 1.75rem;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
 }
 
 .dashboard2-panel-header {
@@ -889,7 +887,7 @@ body.login-view #appContainer {
     </button>
     <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100 hidden" data-tab="dashboard2" id="dashboard2TabBtn">
       <i data-lucide="bar-chart-3" class="w-5 h-5 shrink-0"></i>
-      <span class="hidden lg:inline lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Dashboard2</span>
+      <span class="hidden lg:inline lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Dashboard</span>
     </button>
     <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="chat">
       <i data-lucide="message-circle" class="w-5 h-5 shrink-0"></i>
@@ -2165,7 +2163,7 @@ async function handleEmailLinkSignIn() {
       await signInWithEmailLink(auth, email, window.location.href);
       localStorage.removeItem('emailForSignIn');
       showToast('✅ Bienvenido, acceso completado');
-      window.history.replaceState({}, document.title, '/index6.html');
+      window.history.replaceState({}, document.title, '/index.html');
     } catch (error) {
       console.error('Error al completar login:', error);
       showToast('❌ Error al validar enlace');
@@ -2183,7 +2181,7 @@ async function sendEditorInvitationEmail(email) {
 
   const { sendSignInLinkToEmail } = await loadFirebaseAuthModule();
   const actionCodeSettings = {
-    url: 'https://tomos.bot/index6.html?mode=signIn',
+    url: 'https://tomos.bot/index.html?mode=signIn',
     handleCodeInApp: true
   };
 
@@ -9214,6 +9212,9 @@ function initWelcome() {
 // First paint
 </script>
 
+
+
+
 <!-- 🎯 Selector de icono del widget -->
 <div id="widgetIconModal"
   class="fixed inset-0 bg-black/70 hidden items-center justify-center z-[9998]">
@@ -9266,4 +9267,22 @@ function initWelcome() {
 
 
 </body>
+<script>
+  function fixTitle() {
+    if (document.title !== 'Tomos Bot') {
+      document.title = 'Tomos Bot';
+    }
+  }
+
+  // Cuando la página carga
+  window.addEventListener('load', fixTitle);
+
+  // Cuando vuelves a la pestaña
+  document.addEventListener('visibilitychange', fixTitle);
+  window.addEventListener('focus', fixTitle);
+
+  // Por si algún script lo cambia después de un rato
+  setInterval(fixTitle, 2000);
+</script>
+
 </html>
