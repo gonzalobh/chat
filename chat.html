@@ -438,6 +438,28 @@ function addTyping(){
 
 function removeTyping(el){ if(el && el.parentNode) el.parentNode.removeChild(el); }
 
+function showTypingIndicator({ avatarUrl } = {}) {
+  const typing = addTyping();
+  const avatarImg = typing.querySelector('#__typAva');
+  const avatar = avatarUrl || CURRENT.avatarUrl;
+  if (avatarImg) {
+    if (avatar) {
+      avatarImg.src = avatar;
+    } else {
+      avatarImg.style.display = 'none';
+    }
+  }
+  return typing;
+}
+
+function delayedAssistantAction(action, delayMs = 1800, opts = {}) {
+  const typing = showTypingIndicator(opts);
+  setTimeout(() => {
+    removeTyping(typing);
+    action();
+  }, delayMs);
+}
+
 /* =========================
    AUTO RESPONSES (desde Admin beta3)
 ========================= */
@@ -448,6 +470,9 @@ function tryAutoResponse(userText){
   // Encuentra la primera coincidencia simple por "includes"
   const hit = Object.values(AUTO).find(r => (r.trigger||"").toLowerCase().trim() && t.includes(r.trigger.toLowerCase().trim()));
   if (!hit) return false;
+
+  const delayOpts = { avatarUrl: CURRENT.avatarUrl };
+  const delayMs = 2000;
 
   if (hit.type === 'text') {
     const parts = [];
@@ -462,7 +487,8 @@ function tryAutoResponse(userText){
           return `<a href="${href}" target="_blank" class="pill-btn">${b.label}</a>`;
         }).join("") + `</div>`);
     }
-    addAssistantMessageHTML(parts.join(""), { avatarUrl: CURRENT.avatarUrl });
+    const html = parts.join("");
+    delayedAssistantAction(() => addAssistantMessageHTML(html, { avatarUrl: CURRENT.avatarUrl }), delayMs, delayOpts);
     return true;
   }
 
@@ -477,7 +503,8 @@ function tryAutoResponse(userText){
         </div>
       </div>
     `).join("");
-    addAssistantMessageHTML(`<div class="cards">${cards}</div>`, { avatarUrl: CURRENT.avatarUrl });
+    const html = `<div class="cards">${cards}</div>`;
+    delayedAssistantAction(() => addAssistantMessageHTML(html, { avatarUrl: CURRENT.avatarUrl }), delayMs, delayOpts);
     return true;
   }
 
@@ -493,7 +520,7 @@ function tryAutoResponse(userText){
       return `<button class="pill-btn chat-option" data-trigger="${action}">${b.label}</button>`;
     }).join("");
     const html = `${label}<div class="flex flex-wrap gap-2">${btns}</div>`;
-    addAssistantMessageHTML(html, { avatarUrl: CURRENT.avatarUrl });
+    delayedAssistantAction(() => addAssistantMessageHTML(html, { avatarUrl: CURRENT.avatarUrl }), delayMs, delayOpts);
     return true;
   }
 
@@ -526,8 +553,11 @@ function scheduleWelcome(){
       const parts=[];
       if (val.image) parts.push(`<img src="${val.image}" class="w-full max-w-xs rounded-lg mb-2" />`);
       if (val.text) parts.push(marked.parse(val.text));
-      addAssistantMessageHTML(parts.join(""), { avatarUrl: CURRENT.avatarUrl });
-      sessionStorage.setItem(key, '1');
+      const html = parts.join("");
+      delayedAssistantAction(() => {
+        addAssistantMessageHTML(html, { avatarUrl: CURRENT.avatarUrl });
+        sessionStorage.setItem(key, '1');
+      });
     }, delay*1000);
   });
 }
@@ -569,9 +599,7 @@ async function handleUserMessage(text){
   if (tryAutoResponse(text)) return;
 
   // 2) IA
-  const typing = addTyping();
-  const avatarImg = typing.querySelector('#__typAva');
-  if (avatarImg && CURRENT.avatarUrl) { avatarImg.src = CURRENT.avatarUrl; } else if (avatarImg) { avatarImg.style.display='none'; }
+  const typing = showTypingIndicator();
 
   try{
     const reply = await askAI(text);
