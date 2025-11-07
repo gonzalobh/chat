@@ -1449,43 +1449,43 @@
   },
   {
     "key": "language.english",
-    "en": "English",
-    "fr": "Anglais",
-    "es": "Inglés",
-    "de": "Englisch",
-    "pt": "Inglês"
+    "en": "EN",
+    "fr": "EN",
+    "es": "EN",
+    "de": "EN",
+    "pt": "EN"
   },
   {
     "key": "language.french",
-    "en": "French",
-    "fr": "Français",
-    "es": "Francés",
-    "de": "Französisch",
-    "pt": "Francês"
+    "en": "FR",
+    "fr": "FR",
+    "es": "FR",
+    "de": "FR",
+    "pt": "FR"
   },
   {
     "key": "language.spanish",
-    "en": "Spanish",
-    "fr": "Espagnol",
-    "es": "Español",
-    "de": "Spanisch",
-    "pt": "Espanhol"
+    "en": "ES",
+    "fr": "ES",
+    "es": "ES",
+    "de": "ES",
+    "pt": "ES"
   },
   {
     "key": "language.german",
-    "en": "German",
-    "fr": "Allemand",
-    "es": "Alemán",
-    "de": "Deutsch",
-    "pt": "Alemão"
+    "en": "DE",
+    "fr": "DE",
+    "es": "DE",
+    "de": "DE",
+    "pt": "DE"
   },
   {
     "key": "language.portuguese",
-    "en": "Portuguese",
-    "fr": "Portugais",
-    "es": "Portugués",
-    "de": "Portugiesisch",
-    "pt": "Português"
+    "en": "PT",
+    "fr": "PT",
+    "es": "PT",
+    "de": "PT",
+    "pt": "PT"
   },
   {
     "key": "Enabled",
