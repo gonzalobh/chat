@@ -826,6 +826,283 @@ body.login-view #appContainer {
   background-color: #111111;
 }
 
+.dashboard-header-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem 1.75rem;
+  border-radius: 22px;
+  background: linear-gradient(180deg, #f8f8f8 0%, #f3f3f3 100%);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  box-shadow: 0 24px 48px -28px rgba(15, 23, 42, 0.35);
+}
+
+.dashboard-header-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  max-width: 260px;
+}
+
+.dashboard-header-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #6b7280;
+}
+
+.dashboard-header-select {
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.32);
+  padding: 0.55rem 0.85rem;
+  font-size: 0.92rem;
+  color: #1f2937;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dashboard-header-select:focus {
+  outline: none;
+  border-color: #111827;
+  box-shadow: 0 16px 32px rgba(17, 24, 39, 0.12);
+}
+
+.dashboard-header-summary {
+  font-size: 0.92rem;
+  color: #4b5563;
+  max-width: 460px;
+}
+
+@media (min-width: 768px) {
+  .dashboard-header-card {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.dashboard-bots-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.dashboard-bot-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.75rem;
+  border-radius: 24px;
+  background: linear-gradient(180deg, #ffffff 0%, #f7f7f7 100%);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  box-shadow: 0 28px 60px -32px rgba(15, 23, 42, 0.35);
+}
+
+.dashboard-bot-card.loading {
+  align-items: center;
+  justify-content: center;
+  min-height: 140px;
+}
+
+.dashboard-bot-card-empty {
+  font-size: 0.95rem;
+  color: #9ca3af;
+}
+
+@media (min-width: 1024px) {
+  .dashboard-bot-card {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.dashboard-bot-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  width: 100%;
+}
+
+.dashboard-bot-identity {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.dashboard-bot-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, #f5f5f5, #e5e7eb);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 10px 20px rgba(148, 163, 184, 0.35);
+  color: #1f2937;
+  flex-shrink: 0;
+}
+
+.dashboard-bot-icon i {
+  width: 22px;
+  height: 22px;
+}
+
+.dashboard-bot-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.dashboard-bot-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.2;
+}
+
+.dashboard-bot-subtitle {
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #6b7280;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dashboard-bot-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.dashboard-bot-edit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.55rem 0.95rem;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #f8f8f8 0%, #ebebeb 100%);
+  border: 1px solid rgba(17, 24, 39, 0.08);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1f2937;
+  box-shadow: 0 12px 24px rgba(17, 24, 39, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dashboard-bot-edit-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 30px rgba(17, 24, 39, 0.12);
+}
+
+.dashboard-bot-edit-btn i {
+  width: 16px;
+  height: 16px;
+}
+
+.dashboard-bot-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .dashboard-bot-card-body {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.dashboard-bot-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.dashboard-bot-stat-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.dashboard-bot-stat-value {
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.dashboard-bot-card-charts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.dashboard-bot-chart-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 110px;
+}
+
+.dashboard-bot-chart {
+  position: relative;
+  width: 96px;
+  height: 96px;
+}
+
+@media (min-width: 1280px) {
+  .dashboard-bot-chart {
+    width: 108px;
+    height: 108px;
+  }
+}
+
+.dashboard-bot-chart canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.dashboard-bot-chart-value {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: 700;
+  color: #1f2937;
+  font-size: 1rem;
+}
+
+.dashboard-bot-chart-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #6b7280;
+  font-weight: 600;
+  text-align: center;
+}
+
+.dashboard-bot-chart-text {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #111827;
+  text-align: center;
+}
+
 
   </style>
 </head>
@@ -952,88 +1229,20 @@ body.login-view #appContainer {
         <!-- Tabs container -->
         <div id="tabs" class="hidden">
 <!-- Dashboard -->
-<section id="tab-dashboard" class="hidden">
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
-    <div class="col-span-1 lg:col-span-2 card p-4 space-y-4">
-      <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <div class="flex flex-col gap-1 text-sm text-gray-600">
-          <span class="font-semibold text-gray-800">Filtrar por bot</span>
-          <select id="dashboardBotFilter" class="w-full lg:w-64 border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-black/70">
-            <option value="__all__">Todos los bots</option>
-          </select>
-        </div>
-        <p id="dashboardSummary" class="text-sm text-gray-500 lg:text-right break-words">Cargando datos…</p>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-        <div class="card p-3">
-          <div class="text-[11px] font-semibold uppercase tracking-wide text-gray-500">Hoy</div>
-          <div id="dashboardMetricToday" class="mt-2 text-xl font-semibold text-gray-900">—</div>
-        </div>
-        <div class="card p-3">
-          <div class="text-[11px] font-semibold uppercase tracking-wide text-gray-500">Semana</div>
-          <div id="dashboardMetricWeek" class="mt-2 text-xl font-semibold text-gray-900">—</div>
-        </div>
-        <div class="card p-3">
-          <div class="text-[11px] font-semibold uppercase tracking-wide text-gray-500">Mes</div>
-          <div id="dashboardMetricMonth" class="mt-2 text-xl font-semibold text-gray-900">—</div>
-        </div>
-      </div>
+<section id="tab-dashboard" class="hidden space-y-6">
+  <div class="dashboard-header-card">
+    <div class="dashboard-header-controls">
+      <label for="dashboardBotFilter" class="dashboard-header-label">Filtrar por bot</label>
+      <select id="dashboardBotFilter" class="dashboard-header-select">
+        <option value="__all__">Todos los bots</option>
+      </select>
     </div>
+    <p id="dashboardSummary" class="dashboard-header-summary">Cargando datos…</p>
+  </div>
 
-    <div class="card p-4 flex flex-col gap-3">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-          <i data-lucide="activity" class="w-4 h-4"></i>
-          <span>Conversaciones (últimos 30 días)</span>
-        </div>
-        <span id="dashboardChartLegend" class="text-xs text-gray-400"></span>
-      </div>
-      <div class="h-[180px]">
-        <canvas id="dashboardConversationsChart" class="w-full h-full"></canvas>
-      </div>
-    </div>
-
-    <div class="card p-4 space-y-3">
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <div class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-          <i data-lucide="trophy" class="w-4 h-4"></i>
-          <span>Bots más utilizados</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <button type="button" class="chip dashboard-ranking-filter" data-dashboard-ranking="day">Hoy</button>
-          <button type="button" class="chip dashboard-ranking-filter active" data-dashboard-ranking="month">Mes</button>
-          <button type="button" class="chip dashboard-ranking-filter" data-dashboard-ranking="year">Año</button>
-        </div>
-      </div>
-      <div id="dashboardBotsRankingList" class="space-y-3 text-sm text-gray-600">
-        <p class="text-sm text-gray-400">Cargando ranking…</p>
-      </div>
-    </div>
-
-    <div class="col-span-1 lg:col-span-2 card overflow-hidden">
-      <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-        <div class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-          <i data-lucide="bot" class="w-4 h-4"></i>
-          <span>Bots activos</span>
-        </div>
-      </div>
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-100 text-sm">
-          <thead class="bg-gray-50 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
-            <tr>
-              <th scope="col" class="px-4 py-2 text-left">Bot</th>
-              <th scope="col" class="px-4 py-2 text-left">Estado</th>
-              <th scope="col" class="px-4 py-2 text-right">Mensajes</th>
-              <th scope="col" class="px-4 py-2 text-right">Acciones</th>
-            </tr>
-          </thead>
-          <tbody id="dashboardBotsTableBody" class="divide-y divide-gray-100 bg-white text-sm">
-            <tr>
-              <td colspan="4" class="px-4 py-6 text-center text-gray-400 text-sm">Cargando bots…</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+  <div id="dashboardBotsList" class="dashboard-bots-list">
+    <div class="dashboard-bot-card loading">
+      <p class="dashboard-bot-card-empty">Cargando bots…</p>
     </div>
   </div>
 </section>
@@ -2571,6 +2780,9 @@ let dashboardLastMetrics = { conversations: 0, messages: 0 };
 let dashboardBotsRankingData = null;
 let dashboardAnalysesByBot = {};
 let dashboardBotsRankingRange = 'month';
+const DASHBOARD_DEFAULT_KNOWLEDGE_LIMIT = 10000;
+const DASHBOARD_DEFAULT_ANSWERS_LIMIT = 500;
+const dashboardBotCardCharts = new Map();
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
 
@@ -2630,6 +2842,188 @@ function formatDashboardNumber(value) {
   } catch (err) {
     return numeric.toString();
   }
+}
+
+function getDashboardBotSources(botId) {
+  const sources = [];
+  const push = (source) => {
+    if (source && typeof source === 'object' && !sources.includes(source)) {
+      sources.push(source);
+    }
+  };
+
+  const configNode = dashboardConfigBotsData?.[botId];
+  const botNode = dashboardBotsData?.[botId];
+
+  push(configNode);
+  push(configNode?.config);
+  push(configNode?.settings);
+  push(configNode?.meta);
+  push(configNode?.data);
+
+  push(botNode);
+  push(botNode?.config);
+  push(botNode?.settings);
+  push(botNode?.meta);
+  push(botNode?.data);
+
+  return sources;
+}
+
+function getDashboardNestedValue(source, path) {
+  if (!source || typeof source !== 'object') return null;
+  const segments = Array.isArray(path) ? path : String(path || '').split('.');
+  let current = source;
+  for (const segment of segments) {
+    if (!segment) continue;
+    if (current && typeof current === 'object' && Object.prototype.hasOwnProperty.call(current, segment)) {
+      current = current[segment];
+    } else {
+      return null;
+    }
+  }
+  return current;
+}
+
+function resolveNumericFromSources(sources, paths) {
+  for (const source of sources) {
+    if (!source || typeof source !== 'object') continue;
+    for (const path of paths) {
+      const rawValue = getDashboardNestedValue(source, path);
+      const value = typeof rawValue === 'string' ? Number(rawValue) : rawValue;
+      if (typeof value === 'number' && Number.isFinite(value)) {
+        return value;
+      }
+    }
+  }
+  return null;
+}
+
+function resolveStringFromSources(sources, paths) {
+  for (const source of sources) {
+    if (!source || typeof source !== 'object') continue;
+    for (const path of paths) {
+      const value = getDashboardNestedValue(source, path);
+      if (typeof value === 'string') {
+        const trimmed = value.trim();
+        if (trimmed) return trimmed;
+      }
+    }
+  }
+  return null;
+}
+
+function sanitizeDashboardId(botId) {
+  return (botId || '').toString().replace(/[^a-zA-Z0-9_-]+/g, '-');
+}
+
+function computeDashboardContextLength(botId) {
+  const sources = getDashboardBotSources(botId);
+  const contextPaths = [
+    ['contextInfo'],
+    ['context'],
+    ['contexto'],
+    ['knowledge'],
+    ['knowledgeBase'],
+    ['knowledge_base'],
+    ['knowledgeBaseText'],
+    ['knowledgeText'],
+    ['contextText'],
+    ['dataset'],
+    ['trainingData'],
+    ['botKnowledge'],
+    ['plan', 'contextInfo'],
+    ['plan', 'context'],
+    ['profile', 'contextInfo']
+  ];
+
+  const countLength = (value) => {
+    if (!value) return 0;
+    if (typeof value === 'string') return value.length;
+    if (Array.isArray(value)) {
+      return value.reduce((total, item) => total + countLength(item), 0);
+    }
+    if (typeof value === 'object') {
+      try {
+        return JSON.stringify(value).length;
+      } catch (err) {
+        return 0;
+      }
+    }
+    return 0;
+  };
+
+  let maxLength = 0;
+  for (const source of sources) {
+    if (!source || typeof source !== 'object') continue;
+    for (const path of contextPaths) {
+      const value = getDashboardNestedValue(source, path);
+      if (value === undefined || value === null) continue;
+      const length = countLength(value);
+      if (length > maxLength) {
+        maxLength = length;
+      }
+    }
+  }
+
+  return maxLength;
+}
+
+function getDashboardBotLimits(botId) {
+  const sources = getDashboardBotSources(botId);
+  const knowledgeLimitPaths = [
+    ['limits', 'knowledge'],
+    ['limits', 'context'],
+    ['limits', 'knowledgeChars'],
+    ['limits', 'contextChars'],
+    ['knowledgeLimit'],
+    ['knowledgeCharsLimit'],
+    ['contextLimit'],
+    ['contextCharactersLimit'],
+    ['plan', 'limits', 'knowledge'],
+    ['plan', 'knowledgeLimit'],
+    ['plan', 'limits', 'context'],
+    ['subscription', 'limits', 'knowledge'],
+    ['pricing', 'limits', 'knowledge']
+  ];
+  const answersLimitPaths = [
+    ['limits', 'answers'],
+    ['limits', 'responses'],
+    ['limits', 'messages'],
+    ['answersLimit'],
+    ['responseLimit'],
+    ['monthlyAnswersLimit'],
+    ['plan', 'limits', 'answers'],
+    ['plan', 'answersLimit'],
+    ['plan', 'limits', 'responses'],
+    ['subscription', 'limits', 'answers'],
+    ['pricing', 'limits', 'answers']
+  ];
+
+  const knowledgeLimit = resolveNumericFromSources(sources, knowledgeLimitPaths);
+  const answersLimit = resolveNumericFromSources(sources, answersLimitPaths);
+
+  return {
+    knowledgeLimit: typeof knowledgeLimit === 'number' ? knowledgeLimit : DASHBOARD_DEFAULT_KNOWLEDGE_LIMIT,
+    answersLimit: typeof answersLimit === 'number' ? answersLimit : DASHBOARD_DEFAULT_ANSWERS_LIMIT,
+  };
+}
+
+function getDashboardBotPlanLabel(botId) {
+  const sources = getDashboardBotSources(botId);
+  const value = resolveStringFromSources(sources, [
+    ['plan', 'name'],
+    ['planName'],
+    ['plan'],
+    ['pricing', 'name'],
+    ['pricingPlan'],
+    ['subscription', 'plan'],
+    ['subscription', 'name'],
+    ['metadata', 'plan'],
+    ['tier'],
+    ['config', 'plan', 'name']
+  ]);
+  return value ? value.toString() : '';
 }
 
 function updateDashboardSummaryText() {
@@ -2766,113 +3160,160 @@ function populateDashboardFilterOptions() {
 }
 
 function renderDashboardBotsTable() {
-  const tbody = $('dashboardBotsTableBody');
-  if (!tbody) return;
-  tbody.innerHTML = '';
+  const container = $('dashboardBotsList');
+  if (!container) return;
+
+  dashboardBotCardCharts.forEach((charts) => {
+    if (charts && typeof charts === 'object') {
+      if (charts.knowledge && typeof charts.knowledge.destroy === 'function') {
+        charts.knowledge.destroy();
+      }
+      if (charts.answers && typeof charts.answers.destroy === 'function') {
+        charts.answers.destroy();
+      }
+    }
+  });
+  dashboardBotCardCharts.clear();
+
+  container.innerHTML = '';
 
   const ids = getDashboardBotIds();
   if (!ids.length) {
-    const emptyRow = document.createElement('tr');
-    const emptyCell = document.createElement('td');
-    emptyCell.colSpan = 4;
-    emptyCell.className = 'px-4 py-6 text-center text-gray-400 text-sm';
-    emptyCell.textContent = 'No hay bots configurados';
-    emptyRow.appendChild(emptyCell);
-    tbody.appendChild(emptyRow);
+    const emptyCard = document.createElement('div');
+    emptyCard.className = 'dashboard-bot-card loading';
+    const emptyText = document.createElement('p');
+    emptyText.className = 'dashboard-bot-card-empty';
+    emptyText.textContent = 'No hay bots configurados';
+    emptyCard.appendChild(emptyText);
+    container.appendChild(emptyCard);
     return;
   }
 
-  const entries = ids.map((botId) => [
-    botId,
-    (dashboardConfigBotsData && dashboardConfigBotsData[botId]) ||
-    (dashboardBotsData && dashboardBotsData[botId]) ||
-    {}
-  ]);
+  ids
+    .sort((a, b) => getDashboardBotName(a).toLowerCase().localeCompare(getDashboardBotName(b).toLowerCase()))
+    .forEach((botId) => {
+      const analysis = dashboardAnalysesByBot?.[botId] || {};
+      const totalConversations = analysis?.conversationCount || 0;
+      const { knowledgeLimit, answersLimit } = getDashboardBotLimits(botId);
+      const knowledgeUsed = computeDashboardContextLength(botId);
+      const knowledgePercent = knowledgeLimit > 0 ? Math.min((knowledgeUsed / knowledgeLimit) * 100, 100) : 0;
+      const answersUsedRaw = Number(analysis?.aiMessagesThisMonth || 0);
+      const answersUsed = Number.isFinite(answersUsedRaw) ? Math.max(answersUsedRaw, 0) : 0;
+      const answersPercent = answersLimit > 0 ? Math.min((answersUsed / answersLimit) * 100, 100) : 0;
+      const planLabel = getDashboardBotPlanLabel(botId);
+      const planDisplay = planLabel ? planLabel.toUpperCase() : '';
+      const subtitleParts = [];
+      if (planDisplay) subtitleParts.push(planDisplay);
+      subtitleParts.push(botId);
 
-  entries
-    .sort((a, b) => getDashboardBotName(a[0]).toLowerCase().localeCompare(getDashboardBotName(b[0]).toLowerCase()))
-    .forEach(([botId, botData]) => {
-      const row = document.createElement('tr');
+      const card = document.createElement('article');
+      card.className = 'dashboard-bot-card';
 
-      const botCell = document.createElement('td');
-      botCell.className = 'px-4 py-2 align-middle';
-      const botWrapper = document.createElement('div');
-      botWrapper.className = 'flex items-center gap-3';
+      const header = document.createElement('div');
+      header.className = 'dashboard-bot-card-header';
+
+      const identity = document.createElement('div');
+      identity.className = 'dashboard-bot-identity';
 
       const iconWrapper = document.createElement('span');
-      iconWrapper.className = 'inline-flex h-9 w-9 items-center justify-center rounded-full bg-gray-100 text-gray-600';
+      iconWrapper.className = 'dashboard-bot-icon';
       const icon = document.createElement('i');
-      icon.setAttribute('data-lucide', 'brain');
-      icon.className = 'w-4 h-4';
+      icon.setAttribute('data-lucide', 'bot');
       iconWrapper.appendChild(icon);
 
-      const textWrapper = document.createElement('div');
-      const nameEl = document.createElement('div');
-      nameEl.className = 'font-semibold text-gray-900 text-sm';
-      nameEl.textContent = getDashboardBotName(botId);
-      const idEl = document.createElement('div');
-      idEl.className = 'text-xs text-gray-400 truncate';
-      idEl.textContent = botId;
-      textWrapper.append(nameEl, idEl);
+      const titles = document.createElement('div');
+      titles.className = 'dashboard-bot-titles';
+      const titleEl = document.createElement('div');
+      titleEl.className = 'dashboard-bot-title';
+      titleEl.textContent = getDashboardBotName(botId);
+      const subtitleEl = document.createElement('div');
+      subtitleEl.className = 'dashboard-bot-subtitle';
+      subtitleEl.textContent = subtitleParts.filter(Boolean).join(' • ');
+      titles.append(titleEl, subtitleEl);
 
-      botWrapper.append(iconWrapper, textWrapper);
-      botCell.appendChild(botWrapper);
+      identity.append(iconWrapper, titles);
 
-      const statusCell = document.createElement('td');
-      statusCell.className = 'px-4 py-2 align-middle';
-      const statusWrapper = document.createElement('div');
-      statusWrapper.className = 'inline-flex items-center gap-2';
-      const statusDot = document.createElement('span');
-      const isActive =
-        botData?.config?.chatVisible === true ||
-        botData?.chatVisible === true ||
-        botData?.tgChatVisible === true;
-      statusDot.className = `h-2.5 w-2.5 rounded-full ${isActive ? 'bg-emerald-500' : 'bg-rose-500'}`;
-      const statusLabel = document.createElement('span');
-      statusLabel.className = 'text-sm text-gray-600';
-      statusLabel.textContent = isActive ? 'Activo' : 'Inactivo';
-      statusWrapper.append(statusDot, statusLabel);
-      statusCell.appendChild(statusWrapper);
-
-      const messagesCell = document.createElement('td');
-      messagesCell.className = 'px-4 py-2 text-right text-sm font-semibold text-gray-800 align-middle';
-      const messageCount = dashboardAnalysesByBot?.[botId]?.messageCount;
-      messagesCell.textContent = typeof messageCount === 'number' ? formatDashboardNumber(messageCount) : '—';
-
-      const actionsCell = document.createElement('td');
-      actionsCell.className = 'px-4 py-2 align-middle';
-      const actionsWrapper = document.createElement('div');
-      actionsWrapper.className = 'flex items-center justify-end gap-1.5';
-
+      const actions = document.createElement('div');
+      actions.className = 'dashboard-bot-card-actions';
       const editBtn = document.createElement('button');
       editBtn.type = 'button';
-      editBtn.className = 'p-1 rounded-lg hover:bg-gray-100 text-sm transition';
+      editBtn.className = 'dashboard-bot-edit-btn';
       editBtn.setAttribute('data-dashboard-action', 'edit');
       editBtn.setAttribute('data-bot-id', botId);
-      editBtn.setAttribute('aria-label', 'Editar bot');
-      editBtn.innerHTML = '<i data-lucide="pencil" class="w-4 h-4"></i>';
+      editBtn.setAttribute('aria-label', `Editar bot ${getDashboardBotName(botId)}`);
+      const editIcon = document.createElement('i');
+      editIcon.setAttribute('data-lucide', 'pencil');
+      const editLabel = document.createElement('span');
+      editLabel.textContent = 'Edit';
+      editBtn.append(editIcon, editLabel);
+      actions.appendChild(editBtn);
 
-      const cloneBtn = document.createElement('button');
-      cloneBtn.type = 'button';
-      cloneBtn.className = 'p-1 rounded-lg hover:bg-gray-100 text-sm transition';
-      cloneBtn.setAttribute('data-dashboard-action', 'clone');
-      cloneBtn.setAttribute('data-bot-id', botId);
-      cloneBtn.setAttribute('aria-label', 'Clonar bot');
-      cloneBtn.innerHTML = '<i data-lucide="copy" class="w-4 h-4"></i>';
+      header.append(identity, actions);
 
-      const deleteBtn = document.createElement('button');
-      deleteBtn.type = 'button';
-      deleteBtn.className = 'p-1 rounded-lg hover:bg-gray-100 text-sm transition';
-      deleteBtn.setAttribute('data-dashboard-action', 'delete');
-      deleteBtn.setAttribute('data-bot-id', botId);
-      deleteBtn.setAttribute('aria-label', 'Eliminar bot');
-      deleteBtn.innerHTML = '<i data-lucide="trash-2" class="w-4 h-4"></i>';
+      const body = document.createElement('div');
+      body.className = 'dashboard-bot-card-body';
 
-      actionsWrapper.append(editBtn, cloneBtn, deleteBtn);
-      actionsCell.appendChild(actionsWrapper);
+      const statBlock = document.createElement('div');
+      statBlock.className = 'dashboard-bot-stat';
+      const statLabel = document.createElement('span');
+      statLabel.className = 'dashboard-bot-stat-label';
+      statLabel.textContent = 'Total Conversations';
+      const statValue = document.createElement('span');
+      statValue.className = 'dashboard-bot-stat-value';
+      statValue.textContent = formatDashboardNumber(totalConversations);
+      statBlock.append(statLabel, statValue);
 
-      row.append(botCell, statusCell, messagesCell, actionsCell);
-      tbody.appendChild(row);
+      const chartsWrapper = document.createElement('div');
+      chartsWrapper.className = 'dashboard-bot-card-charts';
+
+      const knowledgeBlock = document.createElement('div');
+      knowledgeBlock.className = 'dashboard-bot-chart-block';
+      const knowledgeChartWrapper = document.createElement('div');
+      knowledgeChartWrapper.className = 'dashboard-bot-chart';
+      const knowledgeCanvasId = `dashboard-bot-${sanitizeDashboardId(botId)}-knowledge`;
+      const knowledgeCanvas = document.createElement('canvas');
+      knowledgeCanvas.id = knowledgeCanvasId;
+      const knowledgeValue = document.createElement('span');
+      knowledgeValue.className = 'dashboard-bot-chart-value';
+      knowledgeValue.textContent = `${Math.round(knowledgePercent)}%`;
+      knowledgeChartWrapper.append(knowledgeCanvas, knowledgeValue);
+      const knowledgeLabel = document.createElement('span');
+      knowledgeLabel.className = 'dashboard-bot-chart-label';
+      knowledgeLabel.textContent = 'Limit Knowledge';
+      const knowledgeText = document.createElement('span');
+      knowledgeText.className = 'dashboard-bot-chart-text';
+      knowledgeText.textContent = `${formatDashboardNumber(knowledgeUsed)} / ${formatDashboardNumber(knowledgeLimit)}`;
+      knowledgeBlock.append(knowledgeChartWrapper, knowledgeLabel, knowledgeText);
+
+      const answersBlock = document.createElement('div');
+      answersBlock.className = 'dashboard-bot-chart-block';
+      const answersChartWrapper = document.createElement('div');
+      answersChartWrapper.className = 'dashboard-bot-chart';
+      const answersCanvasId = `dashboard-bot-${sanitizeDashboardId(botId)}-answers`;
+      const answersCanvas = document.createElement('canvas');
+      answersCanvas.id = answersCanvasId;
+      const answersValue = document.createElement('span');
+      answersValue.className = 'dashboard-bot-chart-value';
+      answersValue.textContent = `${Math.round(answersPercent)}%`;
+      answersChartWrapper.append(answersCanvas, answersValue);
+      const answersLabel = document.createElement('span');
+      answersLabel.className = 'dashboard-bot-chart-label';
+      answersLabel.textContent = 'Limit Answers';
+      const answersText = document.createElement('span');
+      answersText.className = 'dashboard-bot-chart-text';
+      answersText.textContent = `${formatDashboardNumber(answersUsed)} / ${formatDashboardNumber(answersLimit)}`;
+      answersBlock.append(answersChartWrapper, answersLabel, answersText);
+
+      chartsWrapper.append(knowledgeBlock, answersBlock);
+
+      body.append(statBlock, chartsWrapper);
+
+      card.append(header, body);
+      container.appendChild(card);
+
+      const knowledgeChart = drawDoughnutChart(knowledgeCanvasId, knowledgePercent, '#7ea04d');
+      const answersChart = drawDoughnutChart(answersCanvasId, answersPercent, '#7b7b7b');
+      dashboardBotCardCharts.set(botId, { knowledge: knowledgeChart, answers: answersChart });
     });
 
   if (window.lucide) {
@@ -2881,9 +3322,9 @@ function renderDashboardBotsTable() {
 }
 
 function attachDashboardTableListeners() {
-  const tbody = $('dashboardBotsTableBody');
-  if (!tbody || tbody.dataset.listenerAttached === 'true') return;
-  tbody.addEventListener('click', (event) => {
+  const container = $('dashboardBotsList');
+  if (!container || container.dataset.listenerAttached === 'true') return;
+  container.addEventListener('click', (event) => {
     const actionButton = event.target.closest('[data-dashboard-action]');
     if (!actionButton) return;
     const action = actionButton.getAttribute('data-dashboard-action');
@@ -2897,7 +3338,7 @@ function attachDashboardTableListeners() {
       handleDashboardDelete(botId, actionButton);
     }
   });
-  tbody.dataset.listenerAttached = 'true';
+  container.dataset.listenerAttached = 'true';
 }
 
 function countActiveChatReplies(data) {
@@ -3024,6 +3465,119 @@ function computeDashboardMessageMetrics(timestamps = []) {
   updateDashboardMetricCards({ today, week, month });
 }
 
+const DASHBOARD_MESSAGE_HUMAN_HINTS = new Set([
+  'user',
+  'usuario',
+  'cliente',
+  'customer',
+  'client',
+  'visitor',
+  'visitante',
+  'guest',
+  'invitado',
+  'prospect',
+  'prospecto',
+  'lead',
+  'contact',
+  'human',
+  'humano'
+]);
+
+const DASHBOARD_MESSAGE_AI_HINTS = new Set([
+  'assistant',
+  'assistantbot',
+  'bot',
+  'robot',
+  'ai',
+  'ia',
+  'agente',
+  'agent',
+  'virtual agent',
+  'virtualassistant',
+  'virtual assistant',
+  'openai',
+  'gpt',
+  'system',
+  'asistente'
+]);
+
+function normalizeDashboardMessageValue(value) {
+  if (value === null || value === undefined) return '';
+  return value
+    .toString()
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function hasDashboardOpenAIKeyword(value) {
+  if (!value || typeof value !== 'string') return false;
+  const normalized = value.toLowerCase();
+  return normalized.includes('openai') || /gpt|davinci|curie|babbage|ada|chatgpt/.test(normalized);
+}
+
+function extractDashboardMessageProviderHints(payload = {}) {
+  const metadata = payload.metadata || {};
+  const tags = payload.tags || {};
+  return [
+    payload.provider,
+    payload.source,
+    payload.origin,
+    payload.engine,
+    payload.integration,
+    payload.platform,
+    payload.service,
+    payload.vendor,
+    payload.model,
+    payload.modelo,
+    payload.modelId,
+    payload.modelName,
+    metadata.provider,
+    metadata.source,
+    metadata.origin,
+    metadata.engine,
+    metadata.integration,
+    metadata.platform,
+    metadata.service,
+    metadata.vendor,
+    metadata.model,
+    metadata.modelo,
+    metadata.modelId,
+    metadata.modelName,
+    metadata.openaiModel,
+    tags.provider,
+    tags.source,
+    tags.origin,
+    tags.model,
+    tags.modelName,
+    tags.platform,
+    tags.service
+  ].filter(Boolean);
+}
+
+function isDashboardAiMessage(payload = {}) {
+  const senderRaw = payload.sender ?? payload.role ?? payload.from ?? payload.author ?? payload.usuario ?? payload.user;
+  const sender = normalizeDashboardMessageValue(senderRaw);
+  const providerHints = extractDashboardMessageProviderHints(payload);
+  const aiSender = sender && DASHBOARD_MESSAGE_AI_HINTS.has(sender);
+  const humanSender = sender && DASHBOARD_MESSAGE_HUMAN_HINTS.has(sender);
+  if (!humanSender && aiSender) {
+    return true;
+  }
+  if (!humanSender && providerHints.some(hasDashboardOpenAIKeyword)) {
+    return true;
+  }
+  const typeHint = normalizeDashboardMessageValue(payload.type ?? payload.messageType ?? payload.kind ?? payload.channel);
+  if (typeHint && DASHBOARD_MESSAGE_AI_HINTS.has(typeHint)) {
+    return true;
+  }
+  return false;
+}
+
 function analyzeDashboardBotConversations(conversationsNode) {
   const result = {
     messageCount: 0,
@@ -3031,7 +3585,14 @@ function analyzeDashboardBotConversations(conversationsNode) {
     metricTimestamps: [],
     actualMessageTimestamps: [],
     conversationStartTimestamps: [],
+    aiMessageCount: 0,
+    aiMessagesThisMonth: 0,
   };
+
+  const aiDedupSet = new Set();
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
 
   Object.values(conversationsNode || {}).forEach((chatPayload) => {
     if (!chatPayload || typeof chatPayload !== 'object') return;
@@ -3056,6 +3617,38 @@ function analyzeDashboardBotConversations(conversationsNode) {
         result.actualMessageTimestamps.push(ts);
         if (!firstMessageTs || ts < firstMessageTs) {
           firstMessageTs = ts;
+        }
+
+        if (isDashboardAiMessage(messagePayload)) {
+          const senderValue = normalizeDashboardMessageValue(
+            messagePayload.sender ?? messagePayload.role ?? messagePayload.from ?? messagePayload.author ?? messagePayload.usuario ?? messagePayload.user
+          );
+          const identifier = normalizeDashboardMessageValue(
+            messagePayload.id ??
+            messagePayload.key ??
+            messagePayload.messageId ??
+            messagePayload.mid ??
+            messagePayload.metadata?.id ??
+            messagePayload.metadata?.messageId ??
+            ''
+          );
+          const contentFragment = normalizeDashboardMessageValue(
+            messagePayload.message ??
+            messagePayload.content ??
+            messagePayload.text ??
+            messagePayload.texto ??
+            messagePayload.body ??
+            ''
+          ).slice(0, 120);
+          const aiKey = [ts, senderValue, identifier, contentFragment].join('|');
+          if (!aiDedupSet.has(aiKey)) {
+            aiDedupSet.add(aiKey);
+            result.aiMessageCount += 1;
+            const date = new Date(ts);
+            if (date.getFullYear() === currentYear && date.getMonth() === currentMonth) {
+              result.aiMessagesThisMonth += 1;
+            }
+          }
         }
       }
     };
@@ -3300,8 +3893,8 @@ const snap = await firebase.database().ref(`empresas/${EMPRESA}/bots/${botId}/co
 function initDashboard() {
   if (dashboardInitialized) return;
   const filterSelect = $('dashboardBotFilter');
-  const botsTable = $('dashboardBotsTableBody');
-  if (!filterSelect || !botsTable) {
+  const botsContainer = $('dashboardBotsList');
+  if (!filterSelect || !botsContainer) {
     setTimeout(initDashboard, 300);
     return;
   }
