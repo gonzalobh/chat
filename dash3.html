@@ -308,27 +308,6 @@ button.bg-black:hover {
   height: 100% !important;
 }
 
-/* === Logo fijo y estable en el header === */
-header img[alt="Tomos Logo"] {
-  position: relative;
-  left: 0;
-  top: auto;
-  transform: none;
-  height: 38px;
-  width: auto;
-  border-radius: 10px;
-  object-fit: contain;
-  pointer-events: none;        /* evita clics accidentales */
-}
-header {
-  position: relative; /* necesario para que el logo se posicione dentro */
-}
-@media (max-width: 1023px) {
-  header img[alt="Tomos Logo"] {
-    height: 34px;
-  }
-}
-
 #embedScriptBox {
   resize: none;
   overflow: hidden;
@@ -1043,7 +1022,19 @@ body.login-view #appContainer {
 }
 
 
-  </style>
+  header .fixed-logo {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 38px;
+    width: auto;
+    border-radius: 10px;
+    object-fit: contain;
+    z-index: 50;
+  }
+
+    </style>
 </head>
 <body class="min-h-screen overflow-x-hidden" style=" background: #ffffff; ">
   <!-- Loader -->
@@ -1054,12 +1045,12 @@ body.login-view #appContainer {
 
   <!-- Header minimal -->
 <header class="fixed top-0 left-0 w-full bg-white backdrop-blur border-b z-50 shadow-sm">
+  <img src="logo.svg" alt="Tomos Logo" class="fixed-logo" />
   <div class="max-w-7xl mx-auto px-5 py-3 relative flex items-center gap-3 w-full">
     <div class="flex items-center gap-2 shrink-0">
       <button id="toggleSidebarBtn" class="md:hidden lg:hidden p-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100">
         <i data-lucide="menu" class="w-5 h-5"></i>
       </button>
-      <img src="logo.svg" alt="Tomos Logo" class="h-8 w-auto rounded-lg" />
     </div>
     <div class="absolute left-1/2 -translate-x-1/2 flex items-center gap-2 px-1 sm:px-2 z-10" id="botSelectorWrap">
         <select id="botSelect" class="border border-gray-200 rounded-md px-2 py-1 text-xs leading-tight bg-white focus:outline-none focus:ring-1 focus:ring-black/40 min-w-[120px] h-8">
