@@ -826,61 +826,6 @@ body.login-view #appContainer {
   background-color: #111111;
 }
 
-.dashboard-header-card {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 1.5rem 1.75rem;
-  border-radius: 22px;
-
-}
-
-.dashboard-header-controls {
-  display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
-  max-width: 260px;
-}
-
-.dashboard-header-label {
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #6b7280;
-}
-
-.dashboard-header-select {
-  background: #ffffff;
-  border-radius: 14px;
-  border: 1px solid rgba(148, 163, 184, 0.32);
-  padding: 0.55rem 0.85rem;
-  font-size: 0.92rem;
-  color: #1f2937;
-  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.dashboard-header-select:focus {
-  outline: none;
-  border-color: #111827;
-  box-shadow: 0 16px 32px rgba(17, 24, 39, 0.12);
-}
-
-.dashboard-header-summary {
-  font-size: 0.92rem;
-  color: #4b5563;
-  max-width: 460px;
-}
-
-@media (min-width: 768px) {
-  .dashboard-header-card {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-  }
-}
-
 .dashboard-bots-list {
   display: flex;
   flex-direction: column;
@@ -1224,16 +1169,6 @@ body.login-view #appContainer {
         <div id="tabs" class="hidden">
 <!-- Dashboard -->
 <section id="tab-dashboard" class="hidden space-y-6">
-  <div class="dashboard-header-card">
-    <div class="dashboard-header-controls">
-      <label for="dashboardBotFilter" class="dashboard-header-label">Filtrar por bot</label>
-      <select id="dashboardBotFilter" class="dashboard-header-select">
-        <option value="__all__">Todos los bots</option>
-      </select>
-    </div>
-    <p id="dashboardSummary" class="dashboard-header-summary">Cargando datos…</p>
-  </div>
-
   <div id="dashboardBotsList" class="dashboard-bots-list">
     <div class="dashboard-bot-card loading">
       <p class="dashboard-bot-card-empty">Cargando bots…</p>
@@ -3809,8 +3744,6 @@ function attachDashboardRankingListeners() {
 
 async function refreshDashboardData() {
   if (!dashboardInitialized) return;
-  const select = $('dashboardBotFilter');
-  if (!select) return;
 
   const legendEl = $('dashboardChartLegend');
   const label = dashboardSelectedBotId === '__all__'
@@ -3819,6 +3752,9 @@ async function refreshDashboardData() {
   if (legendEl) legendEl.textContent = label;
 
   const availableIds = getDashboardBotIds();
+  if (dashboardSelectedBotId !== '__all__' && !availableIds.includes(dashboardSelectedBotId)) {
+    dashboardSelectedBotId = '__all__';
+  }
   const targetIds = dashboardSelectedBotId === '__all__' ? availableIds : availableIds.includes(dashboardSelectedBotId) ? [dashboardSelectedBotId] : availableIds;
 
   if (!availableIds.length) {
@@ -3888,7 +3824,7 @@ function initDashboard() {
   if (dashboardInitialized) return;
   const filterSelect = $('dashboardBotFilter');
   const botsContainer = $('dashboardBotsList');
-  if (!filterSelect || !botsContainer) {
+  if (!botsContainer) {
     setTimeout(initDashboard, 300);
     return;
   }
@@ -3898,10 +3834,12 @@ function initDashboard() {
   attachDashboardTableListeners();
   attachDashboardRankingListeners();
 
-  filterSelect.addEventListener('change', (event) => {
-    dashboardSelectedBotId = event.target.value || '__all__';
-    scheduleDashboardRefresh();
-  });
+  if (filterSelect) {
+    filterSelect.addEventListener('change', (event) => {
+      dashboardSelectedBotId = event.target.value || '__all__';
+      scheduleDashboardRefresh();
+    });
+  }
 
   const botsRef = firebase.database().ref(`empresas/${EMPRESA}/bots`);
   botsRef.on('value', (snap) => {
