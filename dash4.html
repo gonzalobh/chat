@@ -2397,7 +2397,21 @@ let dashboard2LineChart = null;
 
 const DEFAULT_TAB_KEYS = ['dashboard', 'dashboard2', 'chat', 'mensajes', 'knowledge', 'respuestas', 'prompt', 'usuarios'];
 let TAB_KEYS = [...DEFAULT_TAB_KEYS];
-let currentActiveTab = TAB_KEYS[0];
+
+function getInitialTabKey() {
+  try {
+    const url = new URL(window.location.href);
+    const tabParam = (url.searchParams.get('tab') || '').trim();
+    if (tabParam && DEFAULT_TAB_KEYS.includes(tabParam)) {
+      return tabParam;
+    }
+  } catch (err) {
+    console.warn('No se pudo leer el parámetro de tab en la URL', err);
+  }
+  return TAB_KEYS[0] || 'dashboard';
+}
+
+let currentActiveTab = getInitialTabKey();
 
 const bodyEl = document.body;
 const sidebarEl = document.getElementById('sidebar');
@@ -3301,6 +3315,7 @@ function handleDashboardEdit(botId) {
   }
   const url = new URL(window.location.href);
   url.searchParams.set('bot', botId);
+  url.searchParams.set('tab', 'chat');
   window.location.href = url.toString();
 }
 
@@ -6014,10 +6029,21 @@ function applyRoleUI() {
 
 let tabsInitialized = false;
 
+function updateUrlTabParam(tab) {
+  try {
+    const url = new URL(window.location.href);
+    url.searchParams.set('tab', tab);
+    window.history.replaceState({}, '', url.toString());
+  } catch (err) {
+    console.warn('No se pudo actualizar el parámetro de tab en la URL', err);
+  }
+}
+
 function setActiveTab(tab) {
   const fallbackTab = TAB_KEYS.includes(tab) ? tab : (TAB_KEYS[0] || 'dashboard');
   const targetTab = fallbackTab;
   currentActiveTab = targetTab;
+  updateUrlTabParam(targetTab);
 
   $$('.sidebar-btn').forEach(btn => {
     const btnTab = btn.getAttribute('data-tab');
