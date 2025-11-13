@@ -6329,7 +6329,8 @@ function initTabs() {
   }
 
   tabsInitialized = true;
-  setActiveTab(TAB_KEYS[0] || 'dashboard');
+  const initialTab = TAB_KEYS.includes(currentActiveTab) ? currentActiveTab : (TAB_KEYS[0] || 'dashboard');
+  setActiveTab(initialTab);
 
   $$('.sidebar-btn').forEach(btn => {
     btn.addEventListener('click', () => {
