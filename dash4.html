@@ -3168,13 +3168,6 @@ function renderDashboardBotsTable() {
       const editLabel = document.createElement('span');
       editLabel.textContent = 'Edit';
       editBtn.append(editIcon, editLabel);
-      editBtn.addEventListener('click', (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        if (!selectBotFromDashboard(botId, { openChatTab: true })) {
-          handleDashboardEdit(botId);
-        }
-      });
       actions.appendChild(editBtn);
 
       header.append(identity, actions);
@@ -3250,44 +3243,6 @@ function renderDashboardBotsTable() {
   }
 }
 
-function selectBotFromDashboard(botId, { openChatTab = false } = {}) {
-  if (!botId) return false;
-  const botSelect = $('botSelect');
-  if (!botSelect) return false;
-
-  let targetOption = Array.from(botSelect.options || []).find((option) => option.value === botId);
-  if (!targetOption) {
-    targetOption = document.createElement('option');
-    targetOption.value = botId;
-    targetOption.textContent = getDashboardBotName(botId) || botId;
-    botSelect.appendChild(targetOption);
-  }
-
-  if (botSelect.value !== botId) {
-    botSelect.value = botId;
-  }
-
-  const botChangeHandler = typeof window.handleBotChange === 'function'
-    ? window.handleBotChange
-    : null;
-  if (botChangeHandler) {
-    botChangeHandler(botId);
-  } else {
-    botSelect.dispatchEvent(new Event('change', { bubbles: true }));
-  }
-
-  if (openChatTab) {
-    const activateTabFn = typeof window.activateTab === 'function'
-      ? window.activateTab
-      : (typeof setActiveTab === 'function' ? setActiveTab : null);
-    if (typeof activateTabFn === 'function') {
-      activateTabFn('chat');
-    }
-  }
-
-  return true;
-}
-
 function attachDashboardTableListeners() {
   const container = $('dashboardBotsList');
   if (!container || container.dataset.listenerAttached === 'true') return;
@@ -3332,8 +3287,17 @@ function generateDashboardCloneId(baseId = '') {
 
 function handleDashboardEdit(botId) {
   if (!botId) return;
-  if (selectBotFromDashboard(botId, { openChatTab: true })) {
-    return;
+  setActiveTab('chat');
+  const botSelect = $('botSelect');
+  if (botSelect) {
+    const hasOption = Array.from(botSelect.options || []).some(opt => opt.value === botId);
+    if (hasOption) {
+      if (botSelect.value !== botId) {
+        botSelect.value = botId;
+        botSelect.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      return;
+    }
   }
   const url = new URL(window.location.href);
   url.searchParams.set('bot', botId);
