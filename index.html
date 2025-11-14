@@ -817,6 +817,8 @@ body.login-view #appContainer {
   flex-direction: column;
   gap: 1.5rem;
   padding: 1.75rem;
+  padding-bottom: 3.75rem;
+  padding-right: 3.25rem;
   border-radius: 24px;
   background: #f3f3f3;
 
@@ -902,6 +904,34 @@ body.login-view #appContainer {
   align-items: center;
   gap: 0.75rem;
   flex-shrink: 0;
+}
+
+.dashboard-bot-delete-btn {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  border: 1px solid rgba(17, 24, 39, 0.1);
+  background: #fff;
+  color: #b91c1c;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.dashboard-bot-delete-btn:hover {
+  color: #ef4444;
+  background: #fee2e2;
+  box-shadow: 0 10px 18px rgba(239, 68, 68, 0.15);
+  transform: translateY(-2px);
+}
+
+.dashboard-bot-delete-btn i {
+  width: 18px;
+  height: 18px;
 }
 
 .dashboard-bot-edit-btn {
@@ -2133,6 +2163,34 @@ body.login-view #appContainer {
   </div>
 </div>
 
+<!-- Modal: Delete bot -->
+<div id="dashboardDeleteModal" class="fixed inset-0 hidden items-center justify-center bg-black/40 backdrop-blur-sm z-[1250] px-4">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 space-y-5 relative">
+    <button id="closeDashboardDeleteModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600" aria-label="Cerrar">
+      <i data-lucide="x" class="w-5 h-5"></i>
+    </button>
+    <div class="flex items-center gap-3">
+      <span class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-red-100 text-red-600">
+        <i data-lucide="shield-alert" class="w-5 h-5"></i>
+      </span>
+      <div>
+        <h3 class="text-lg font-semibold text-gray-900">Eliminar bot</h3>
+        <p class="text-sm text-gray-500">Esta acción no se puede deshacer.</p>
+      </div>
+    </div>
+    <p class="text-sm text-gray-600">
+      ¿Seguro que deseas eliminar <span id="dashboardDeleteBotName" class="font-semibold text-gray-900"></span>? Perderás todo su historial y configuración.
+    </p>
+    <div class="flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-3 pt-2">
+      <button id="cancelDashboardDelete" type="button" class="px-4 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50">Cancelar</button>
+      <button id="confirmDashboardDelete" type="button" class="px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-semibold flex items-center justify-center gap-2 hover:bg-red-700">
+        <i data-lucide="trash-2" class="w-4 h-4"></i>
+        Eliminar
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- Modal: Add knowledge page -->
 <div id="knowledgeModal" class="fixed inset-0 hidden items-center justify-center bg-black/40 backdrop-blur-sm z-[1200] px-4">
   <div class="bg-white rounded-2xl shadow-2xl w-full max-w-xl p-6 space-y-4 relative">
@@ -2719,6 +2777,8 @@ let dashboardBotsRankingRange = 'month';
 const DASHBOARD_DEFAULT_KNOWLEDGE_LIMIT = 10000;
 const DASHBOARD_DEFAULT_ANSWERS_LIMIT = 500;
 const dashboardBotCardCharts = new Map();
+let dashboardDeleteModalBotId = null;
+let dashboardDeleteModalTrigger = null;
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
 
@@ -3245,6 +3305,21 @@ function renderDashboardBotsTable() {
       body.append(statBlock, chartsWrapper);
 
       card.append(header, body);
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.type = 'button';
+      deleteBtn.className = 'dashboard-bot-delete-btn';
+      deleteBtn.setAttribute('data-dashboard-action', 'delete');
+      deleteBtn.setAttribute('data-bot-id', botId);
+      const deleteLabel = getDashboardBotName(botId) || botId || 'bot';
+      deleteBtn.setAttribute('aria-label', `Eliminar bot ${deleteLabel}`);
+      const deleteIcon = document.createElement('i');
+      deleteIcon.setAttribute('data-lucide', 'trash');
+      deleteBtn.appendChild(deleteIcon);
+      deleteBtn.classList.toggle('hidden', !canWriteFlag);
+      deleteBtn.disabled = !canWriteFlag;
+      card.appendChild(deleteBtn);
+
       container.appendChild(card);
 
       const knowledgeChart = drawDoughnutChart(knowledgeCanvasId, knowledgePercent, '#7ea04d');
@@ -3255,6 +3330,8 @@ function renderDashboardBotsTable() {
   if (window.lucide) {
     lucide.createIcons();
   }
+
+  updateDashboardDeleteButtons();
 }
 
 function attachDashboardTableListeners() {
@@ -3271,7 +3348,7 @@ function attachDashboardTableListeners() {
     } else if (action === 'clone') {
       handleDashboardClone(botId, actionButton);
     } else if (action === 'delete') {
-      handleDashboardDelete(botId, actionButton);
+      openDashboardDeleteModal(botId, actionButton);
     }
   });
   container.dataset.listenerAttached = 'true';
@@ -3362,9 +3439,48 @@ async function handleDashboardClone(botId, trigger) {
   }
 }
 
-async function handleDashboardDelete(botId, trigger) {
+function openDashboardDeleteModal(botId, trigger) {
   if (!botId) return;
-  if (!confirm('¿Eliminar este bot?')) return;
+  if (!canWriteFlag) {
+    toast('⚠ No tienes permisos para eliminar bots');
+    return;
+  }
+  const modal = $('dashboardDeleteModal');
+  if (!modal) {
+    handleDashboardDelete(botId, trigger);
+    return;
+  }
+  dashboardDeleteModalBotId = botId;
+  dashboardDeleteModalTrigger = trigger || null;
+  const nameEl = $('dashboardDeleteBotName');
+  if (nameEl) {
+    nameEl.textContent = getDashboardBotName(botId) || botId || 'este bot';
+  }
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+}
+
+function closeDashboardDeleteModal(force = false) {
+  const modal = $('dashboardDeleteModal');
+  if (!modal) return;
+  const confirmBtn = $('confirmDashboardDelete');
+  if (!force && confirmBtn && confirmBtn.disabled) return;
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+  dashboardDeleteModalBotId = null;
+  const trigger = dashboardDeleteModalTrigger;
+  dashboardDeleteModalTrigger = null;
+  if (trigger && typeof trigger.focus === 'function') {
+    trigger.focus();
+  }
+}
+
+async function handleDashboardDelete(botId, trigger) {
+  if (!botId) return false;
+  if (!canWriteFlag) {
+    toast('⚠ No tienes permisos para eliminar bots');
+    return false;
+  }
   if (trigger) {
     trigger.disabled = true;
     trigger.classList.add('opacity-50', 'pointer-events-none');
@@ -3380,9 +3496,11 @@ async function handleDashboardDelete(botId, trigger) {
       populateDashboardFilterOptions();
       scheduleDashboardRefresh();
     }
+    return true;
   } catch (err) {
     console.error('No se pudo eliminar el bot', err);
     toast('⚠ No se pudo eliminar el bot');
+    return false;
   } finally {
     if (trigger) {
       trigger.disabled = false;
@@ -3390,6 +3508,39 @@ async function handleDashboardDelete(botId, trigger) {
     }
   }
 }
+
+const dashboardDeleteModalEl = $('dashboardDeleteModal');
+const dashboardDeleteModalClose = $('closeDashboardDeleteModal');
+const dashboardDeleteModalCancel = $('cancelDashboardDelete');
+const dashboardDeleteModalConfirm = $('confirmDashboardDelete');
+
+dashboardDeleteModalClose?.addEventListener('click', () => closeDashboardDeleteModal());
+dashboardDeleteModalCancel?.addEventListener('click', () => closeDashboardDeleteModal());
+dashboardDeleteModalEl?.addEventListener('click', (event) => {
+  if (event.target === dashboardDeleteModalEl) {
+    closeDashboardDeleteModal();
+  }
+});
+
+dashboardDeleteModalConfirm?.addEventListener('click', async () => {
+  if (!dashboardDeleteModalBotId || dashboardDeleteModalConfirm.disabled) return;
+  const cancelBtn = $('cancelDashboardDelete');
+  const closeBtn = $('closeDashboardDeleteModal');
+  if (cancelBtn) cancelBtn.disabled = true;
+  if (closeBtn) {
+    closeBtn.disabled = true;
+    closeBtn.classList.add('opacity-50');
+  }
+  const success = await handleDashboardDelete(dashboardDeleteModalBotId, dashboardDeleteModalConfirm);
+  if (cancelBtn) cancelBtn.disabled = false;
+  if (closeBtn) {
+    closeBtn.disabled = false;
+    closeBtn.classList.remove('opacity-50');
+  }
+  if (success) {
+    closeDashboardDeleteModal(true);
+  }
+});
 
 function computeDashboardMessageMetrics(timestamps = []) {
   const now = Date.now();
@@ -5932,7 +6083,7 @@ function setWriteEnabled(enabled) {
     'uploadAvatar','deleteAvatar','fontSelect','tgChatVisible','hotelName',
     'timeZone','saveContext','contextText','widgetIconTrigger',
     'addKnowledgePage','knowledgeUrlInput','confirmAddKnowledge','personalitySelect','btnNewBot',
-    'newBotNameInput','confirmNewBot','userInviteEmail','userInviteSubmit'
+    'newBotNameInput','confirmNewBot','userInviteEmail','userInviteSubmit','confirmDashboardDelete'
   ];
   ids.forEach(id => {
     const el = $(id);
@@ -5944,6 +6095,20 @@ function setWriteEnabled(enabled) {
   if (typeof window.__applyKnowledgeWriteState === 'function') {
     window.__applyKnowledgeWriteState();
   }
+  updateDashboardDeleteButtons();
+}
+
+function updateDashboardDeleteButtons() {
+  const buttons = document.querySelectorAll('.dashboard-bot-delete-btn');
+  buttons.forEach((button) => {
+    button.classList.toggle('hidden', !canWriteFlag);
+    button.disabled = !canWriteFlag;
+    if (!canWriteFlag) {
+      button.setAttribute('tabindex', '-1');
+    } else {
+      button.removeAttribute('tabindex');
+    }
+  });
 }
 
 function applyRoleUI() {
