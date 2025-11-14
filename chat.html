@@ -481,27 +481,69 @@ function linkify(text){
 /* =========================
    RENDER MENSAJES
 ========================= */
-function addAssistantMessageHTML(html, {avatarUrl, rawText}={}){
+function createAssistantBubble(avatarUrl) {
   const wrap = document.createElement('div');
   wrap.className = 'chat-bubble chat-assistant';
   const avatar = document.createElement('img');
   avatar.className = 'avatar-icon';
-  if (avatarUrl) { avatar.src = avatarUrl; } else { avatar.style.display='none'; }
+  if (avatarUrl) {
+    avatar.src = avatarUrl;
+  } else {
+    avatar.style.display = 'none';
+  }
   const msg = document.createElement('div');
-msg.className = 'msg';
-msg.style.color = getComputedStyle(document.documentElement)
-  .getPropertyValue('--assistant-text') || '#000000';
-  msg.innerHTML = html;
+  msg.className = 'msg';
+  const assistantColor = getComputedStyle(document.documentElement)
+    .getPropertyValue('--assistant-text') || '#000000';
+  msg.style.color = assistantColor;
   wrap.appendChild(avatar);
   wrap.appendChild(msg);
   chatBox.appendChild(wrap);
   chatBox.scrollTop = chatBox.scrollHeight;
+  return { wrap, msg };
+}
+
+function addAssistantMessageHTML(html, {avatarUrl, rawText}={}){
+  const { msg } = createAssistantBubble(avatarUrl);
+  msg.innerHTML = html;
   const plain = rawText != null ? rawText : stripHtml(html);
   logChatMessage('bot', plain);
 }
+
 function addAssistantMessage(text, opts={}){
-  const md = marked.parse(text || "");
-  addAssistantMessageHTML(md, { ...opts, rawText: text });
+  const { avatarUrl, animate = true } = opts;
+  const content = text || "";
+  if (!animate) {
+    const md = marked.parse(content);
+    addAssistantMessageHTML(md, { avatarUrl, rawText: content });
+    return;
+  }
+
+  const { msg } = createAssistantBubble(avatarUrl);
+  if (!content) {
+    logChatMessage('bot', '');
+    return;
+  }
+
+  let index = 0;
+  const total = content.length;
+  const baseDelay = 18;
+  const minChunk = 1;
+  const chunkSize = Math.max(minChunk, Math.ceil(total / 120));
+
+  function typeNextChunk() {
+    index = Math.min(total, index + chunkSize);
+    const partial = content.slice(0, index);
+    msg.innerHTML = marked.parse(partial);
+    chatBox.scrollTop = chatBox.scrollHeight;
+    if (index < total) {
+      setTimeout(typeNextChunk, baseDelay);
+    } else {
+      logChatMessage('bot', content);
+    }
+  }
+
+  typeNextChunk();
 }
 function addUserMessage(text){
   const bubble = document.createElement('div');
