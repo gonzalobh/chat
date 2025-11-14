@@ -175,6 +175,38 @@
   </div>
 
   <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const BROWSER_LANGUAGE = (navigator.language || navigator.userLanguage || 'en').slice(0, 2).toLowerCase();
+      const TEXT_TRANSLATIONS = {
+        es: {
+          inputPlaceholder: 'Escribe tu mensaje…',
+          downloadConversation: 'Descargar conversación'
+        },
+        en: {
+          inputPlaceholder: 'Write your message…',
+          downloadConversation: 'Download conversation'
+        },
+        fr: {
+          inputPlaceholder: 'Écrivez votre message…',
+          downloadConversation: 'Télécharger la conversation'
+        }
+      };
+
+      const selected = TEXT_TRANSLATIONS[BROWSER_LANGUAGE] || TEXT_TRANSLATIONS.en;
+
+      const chatInput = document.getElementById('chatInput');
+      if (chatInput) {
+        chatInput.placeholder = selected.inputPlaceholder;
+      }
+
+      const downloadChatBtnLabel = document.querySelector('#downloadChatBtn span');
+      if (downloadChatBtnLabel) {
+        downloadChatBtnLabel.textContent = selected.downloadConversation;
+      }
+    });
+  </script>
+
+  <script>
 /* =========================
    FIREBASE CONFIG
 ========================= */
