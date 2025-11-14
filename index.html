@@ -1777,14 +1777,13 @@ body.login-view #appContainer {
             <div class="space-y-3">
               <label for="welcomeImageFile" class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Welcome image (optional)</label>
               <input id="welcomeImageFile" type="file" accept="image/*" class="text-sm">
-              <div class="relative">
-                <img id="welcomePreview" class="rounded-xl w-full max-h-40 object-cover hidden" />
-                <button id="removeWelcomeImage" type="button" class="hidden absolute top-3 right-3 bg-white/90 text-gray-700 hover:text-red-600 hover:bg-white shadow rounded-full p-1 transition" aria-label="Remove welcome image">
-                  <i data-lucide="trash" class="w-4 h-4"></i>
-                </button>
-              </div>
+              <img id="welcomePreview" class="rounded-xl w-full max-h-40 object-cover hidden" />
             </div>
 
+            <div class="flex items-center justify-between">
+              <button id="saveWelcome" class="px-4 py-2 bg-black text-white rounded-md text-sm">Save</button>
+              <p id="msgWelcome" class="text-green-600 text-sm hidden">✔ Saved</p>
+            </div>
           </div>
         </div>
       </div>
@@ -9825,7 +9824,8 @@ function initWelcome() {
   const delay = $("welcomeDelay");
   const file = $("welcomeImageFile");
   const preview = $("welcomePreview");
-  const removeImageBtn = $("removeWelcomeImage");
+  const saveBtn = $("saveWelcome");
+  const msg = $("msgWelcome");
   const summaryCard = $("welcomeSummaryCard");
   const summaryBadge = $("welcomeSummaryBadge");
   const summaryText = $("welcomeSummaryText");
@@ -9838,115 +9838,6 @@ function initWelcome() {
     text: "",
     delay: 2,
     image: ""
-  };
-
-  let welcomeDataLoaded = false;
-  let autoSaveTimeoutId = null;
-  let scheduledPayload = null;
-  let isSavingWelcome = false;
-  let queuedPayload = null;
-
-  const mergePayloads = (current, incoming = {}) => {
-    if (!current) {
-      return {
-        uploadFile: incoming.uploadFile || null,
-        removeImage: !!incoming.removeImage
-      };
-    }
-    const shouldRemove = !!(current.removeImage || incoming.removeImage);
-    return {
-      uploadFile: shouldRemove ? null : (incoming.uploadFile || current.uploadFile || null),
-      removeImage: shouldRemove
-    };
-  };
-
-  const runWelcomeSave = async ({ uploadFile = null, removeImage = false } = {}) => {
-    let imageUrl = state.image || "";
-
-    try {
-      await canWrite(async () => {
-        if (removeImage) {
-          imageUrl = "";
-          try {
-            const storageRef = firebase.storage().ref(`${getBotBasePath()}/welcome.jpg`);
-            await storageRef.delete();
-          } catch (error) {
-            if (error?.code !== 'storage/object-not-found') {
-              console.warn('Failed to delete welcome image', error);
-            }
-          }
-        } else if (uploadFile) {
-          const storageRef = firebase.storage().ref(`${getBotBasePath()}/welcome.jpg`);
-          await storageRef.put(uploadFile);
-          imageUrl = await storageRef.getDownloadURL();
-        } else if (state.image && state.image.startsWith('data:')) {
-          // Prevent saving base64 previews
-          imageUrl = "";
-        }
-
-        const payload = {
-          enabled: !!enabled.checked,
-          text: (text.value || "").trim(),
-          delay: parseInt(delay.value) || 0,
-          image: imageUrl
-        };
-
-        await ref.set(payload);
-
-        state.enabled = payload.enabled;
-        state.text = payload.text;
-        state.delay = payload.delay;
-        state.image = payload.image;
-        if (uploadFile && file) file.value = "";
-        renderPreview();
-        updateSummary();
-      });
-
-      toast(t('✔ Welcome message saved'));
-    } catch (error) {
-      console.error('Failed to save welcome message settings', error);
-      toast(t('⚠ Could not save welcome message'));
-    }
-  };
-
-  const requestWelcomeSave = (payload = {}) => {
-    if (!welcomeDataLoaded) {
-      scheduledPayload = mergePayloads(scheduledPayload, payload);
-      return;
-    }
-
-    if (isSavingWelcome) {
-      queuedPayload = mergePayloads(queuedPayload, payload);
-      return;
-    }
-
-    isSavingWelcome = true;
-    runWelcomeSave(payload).finally(() => {
-      isSavingWelcome = false;
-      if (queuedPayload) {
-        const nextPayload = queuedPayload;
-        queuedPayload = null;
-        requestWelcomeSave(nextPayload);
-      }
-    });
-  };
-
-  const triggerAutoSave = ({ uploadFile = null, removeImage = false, immediate = false } = {}) => {
-    const normalizedPayload = {
-      uploadFile: uploadFile || null,
-      removeImage: !!removeImage
-    };
-    scheduledPayload = mergePayloads(scheduledPayload, normalizedPayload);
-    if (!welcomeDataLoaded) return;
-
-    if (autoSaveTimeoutId) clearTimeout(autoSaveTimeoutId);
-    const delayMs = immediate ? 0 : 700;
-    autoSaveTimeoutId = setTimeout(() => {
-      if (!scheduledPayload) return;
-      const payloadToSave = scheduledPayload;
-      scheduledPayload = null;
-      requestWelcomeSave(payloadToSave);
-    }, delayMs);
   };
 
   const updateSummary = () => {
@@ -9985,27 +9876,6 @@ function initWelcome() {
     }
   };
 
-  const renderPreview = () => {
-    if (!preview) return;
-    if (state.image) {
-      preview.src = state.image;
-      preview.classList.remove("hidden");
-      removeImageBtn?.classList.remove("hidden");
-    } else {
-      preview.classList.add("hidden");
-      preview.removeAttribute('src');
-      removeImageBtn?.classList.add("hidden");
-    }
-  };
-
-  const clearWelcomeImage = () => {
-    state.image = "";
-    if (file) file.value = "";
-    renderPreview();
-    updateSummary();
-    triggerAutoSave({ removeImage: true, immediate: true });
-  };
-
   if (!ref) return console.warn("❌ No se encontró la referencia de chatWelcome");
 
   // Cargar desde Firebase
@@ -10014,20 +9884,19 @@ function initWelcome() {
     enabled.checked = !!val.enabled;
     text.value = val.text || "";
     delay.value = val.delay || 2;
+    if (val.image) {
+      preview.src = val.image;
+      preview.classList.remove("hidden");
+    } else {
+      preview.classList.add("hidden");
+      preview.removeAttribute('src');
+    }
     state.enabled = !!val.enabled;
     state.text = val.text || "";
     const parsedDelay = parseInt(delay.value);
     state.delay = Number.isFinite(parsedDelay) ? parsedDelay : 0;
     state.image = val.image || "";
-    renderPreview();
     updateSummary();
-    welcomeDataLoaded = true;
-
-    if (scheduledPayload) {
-      const payloadToSave = scheduledPayload;
-      scheduledPayload = null;
-      requestWelcomeSave(payloadToSave);
-    }
   });
 
   // Mostrar preview al elegir imagen
@@ -10036,35 +9905,54 @@ function initWelcome() {
     if (!f) return;
     const reader = new FileReader();
     reader.onload = ev => {
+      preview.src = ev.target.result;
+      preview.classList.remove("hidden");
       state.image = ev.target.result;
-      renderPreview();
       updateSummary();
     };
     reader.readAsDataURL(f);
-    triggerAutoSave({ uploadFile: f, immediate: true });
   });
 
   enabled.addEventListener('change', () => {
     state.enabled = !!enabled.checked;
     updateSummary();
-    triggerAutoSave({ immediate: true });
   });
 
   text.addEventListener('input', () => {
     state.text = text.value;
     updateSummary();
-    triggerAutoSave();
   });
 
   delay.addEventListener('input', () => {
     state.delay = parseInt(delay.value) || 0;
     updateSummary();
-    triggerAutoSave({ immediate: true });
   });
 
-  removeImageBtn?.addEventListener('click', (event) => {
-    event.preventDefault();
-    clearWelcomeImage();
+  // Guardar en Firebase
+  saveBtn.onclick = async () => canWrite(async () => {
+    let imageUrl = preview.src || "";
+    // Si el usuario cargó un nuevo archivo, subir a Storage
+    if (file.files.length) {
+      const storageRef = firebase.storage().ref(`${getBotBasePath()}/welcome.jpg`);
+      await storageRef.put(file.files[0]);
+      imageUrl = await storageRef.getDownloadURL();
+    }
+
+    await ref.set({
+      enabled: enabled.checked,
+      text: text.value.trim(),
+      delay: parseInt(delay.value) || 0,
+      image: imageUrl
+    });
+
+    state.enabled = !!enabled.checked;
+    state.text = text.value.trim();
+    state.delay = parseInt(delay.value) || 0;
+    state.image = imageUrl;
+    updateSummary();
+
+    msg.classList.remove("hidden");
+    setTimeout(() => msg.classList.add("hidden"), 1500);
   });
 }
 
