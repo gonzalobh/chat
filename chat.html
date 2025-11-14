@@ -638,8 +638,8 @@ function renderLeadPrompt() {
   addAssistantMessageHTML(html, { avatarUrl: CURRENT.avatarUrl, rawText: 'Para avanzar, ¿quieres que un asesor te contacte?' });
 }
 
-async function maybePromptLeadCaptureAI() {
-  if (leadPromptShown || leadCaptureCompleted || leadCaptureState?.active) return;
+async function maybePromptLeadCaptureAI(latestUserText) {
+  if (leadPromptShown || leadCaptureCompleted || leadCaptureState?.active) return false;
 
   const conversation = conversationLog
     .map(m => `${m.sender}: ${m.text}`)
@@ -649,7 +649,9 @@ async function maybePromptLeadCaptureAI() {
   if (leadDetected) {
     leadPromptShown = true;
     renderLeadPrompt();
+    return true;
   }
+  return false;
 }
 
 function startLeadCapture(method) {
@@ -966,7 +968,7 @@ async function handleUserMessage(text){
 /* =========================
    SEND (botón y Enter)
 ========================= */
-function sendNow(){
+async function sendNow(){
   const t = (input.value || "").trim();
   if (!t) return;
   addUserMessage(t);
@@ -974,9 +976,12 @@ function sendNow(){
   if (processLeadCaptureInput(t)) {
     return;
   }
+  const leadDetected = await maybePromptLeadCaptureAI(t);
+  if (leadDetected === true) {
+    return;
+  }
   MESSAGES.push({ role:'user', content:t });
   handleUserMessage(t);
-  maybePromptLeadCaptureAI();
 }
 sendBtn.addEventListener('click', sendNow);
 input.addEventListener('keydown', e=>{ if(e.key === 'Enter'){ e.preventDefault(); sendNow(); }});
