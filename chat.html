@@ -175,6 +175,7 @@
   </div>
 
   <script>
+    let USER_LANGUAGE = 'en';
     document.addEventListener('DOMContentLoaded', () => {
       const BROWSER_LANGUAGE = (navigator.language || navigator.userLanguage || 'en').slice(0, 2).toLowerCase();
       const TEXT_TRANSLATIONS = {
@@ -198,6 +199,8 @@
       if (chatInput) {
         chatInput.placeholder = selected.inputPlaceholder;
       }
+
+      USER_LANGUAGE = BROWSER_LANGUAGE;
 
       const downloadChatBtnLabel = document.querySelector('#downloadChatBtn span');
       if (downloadChatBtnLabel) {
@@ -264,6 +267,15 @@ let chatStartedAt = null;
 const conversationLog = []; // {sender:'bot'|'user', text:string, time:number}
 const pendingMessagesQueue = [];
 let hasUserSentMessage = false;
+
+const LEAD_INTENT_KEYWORDS = [
+  'reserv', 'contratar', 'precio', 'me interesa', 'informacion', 'información',
+  'cotizar', 'cotización', 'cotizacion', 'contacto', 'contactar', 'asesor',
+  'quiero contratar', 'quiero reservar', 'comprar', 'necesito información', 'necesito informacion'
+];
+let leadPromptShown = false;
+let leadCaptureState = null;
+let leadCaptureCompleted = false;
 
 let SYSTEM_PROMPT = "";
 let systemPromptRef = null;
@@ -594,6 +606,163 @@ function delayedAssistantAction(action, delayMs = 1800, opts = {}) {
   }, delayMs);
 }
 
+function getLeadRef(sessionId = CHAT_ID) {
+  return dbRef(`empresas/${EMPRESA}/bots/${BOT}/leads/${sessionId}`);
+}
+
+function getFirstUserMessage() {
+  for (const entry of conversationLog) {
+    if (entry.sender === 'user' && entry.text) {
+      return entry.text;
+    }
+  }
+  return '';
+}
+
+function getLastUserMessage() {
+  for (let i = conversationLog.length - 1; i >= 0; i -= 1) {
+    const entry = conversationLog[i];
+    if (entry.sender === 'user' && entry.text) {
+      return entry.text;
+    }
+  }
+  return '';
+}
+
+function renderLeadPrompt() {
+  const html = `
+    <div class="space-y-3">
+      <p>Para avanzar, ¿quieres que un asesor te contacte?</p>
+      <div class="flex flex-wrap gap-2">
+        <button class="pill-btn lead-option" data-lead-action="email">Dejar email (nombre + email)</button>
+        <button class="pill-btn lead-option" data-lead-action="phone">Dejar teléfono (nombre + teléfono)</button>
+        <button class="pill-btn lead-option" data-lead-action="skip">No gracias</button>
+      </div>
+    </div>
+  `;
+  addAssistantMessageHTML(html, { avatarUrl: CURRENT.avatarUrl, rawText: 'Para avanzar, ¿quieres que un asesor te contacte?' });
+}
+
+function startLeadCapture(method) {
+  leadCaptureState = {
+    active: true,
+    method,
+    step: 'collect-name',
+    name: '',
+    email: '',
+    phone: ''
+  };
+  addAssistantMessage('¿Cuál es tu nombre?', { avatarUrl: CURRENT.avatarUrl });
+}
+
+function handleLeadOption(action) {
+  if (action === 'email' || action === 'phone') {
+    startLeadCapture(action);
+    return;
+  }
+  if (action === 'skip') {
+    leadCaptureState = null;
+    addAssistantMessage('Sin problema, seguimos 🙂', { avatarUrl: CURRENT.avatarUrl });
+  }
+}
+
+function validateEmail(value) {
+  if (!value) return false;
+  const trimmed = value.trim();
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed);
+}
+
+function validatePhone(value) {
+  if (!value) return false;
+  const trimmed = value.trim();
+  return /^[+]?[-\d()\s]{6,}$/.test(trimmed);
+}
+
+function saveLeadToFirebase(state) {
+  if (!state || !state.name || !state.method) return Promise.resolve();
+  const leadRef = getLeadRef();
+  const timestamp = Date.now();
+  const payload = {
+    name: state.name,
+    method: state.method,
+    sessionId: CHAT_ID,
+    timestamp,
+    pageUrl: window.location.href
+  };
+  if (state.email) payload.email = state.email;
+  if (state.phone) payload.phone = state.phone;
+  if (USER_LANGUAGE) payload.language = USER_LANGUAGE;
+  const firstMessage = getFirstUserMessage();
+  const lastMessage = getLastUserMessage();
+  if (firstMessage) payload.firstMessage = firstMessage;
+  if (lastMessage) payload.lastMessage = lastMessage;
+  return leadRef.update(payload).catch(err => {
+    console.warn('No se pudo guardar el lead', err);
+  });
+}
+
+function finalizeLeadCapture() {
+  if (!leadCaptureState) return;
+  const thankYou = '¡Gracias! Un asesor te contactará pronto.';
+  addAssistantMessage(thankYou, { avatarUrl: CURRENT.avatarUrl });
+  const snapshot = { ...leadCaptureState };
+  leadCaptureState = null;
+  leadCaptureCompleted = true;
+  saveLeadToFirebase(snapshot);
+}
+
+function processLeadCaptureInput(text) {
+  if (!leadCaptureState?.active) return false;
+  const trimmed = (text || '').trim();
+  if (!trimmed) return true;
+
+  if (leadCaptureState.step === 'collect-name') {
+    leadCaptureState.name = trimmed;
+    leadCaptureState.step = leadCaptureState.method === 'email' ? 'collect-email' : 'collect-phone';
+    const nextPrompt = leadCaptureState.method === 'email'
+      ? 'Perfecto, ahora escribe tu correo electrónico:'
+      : 'Perfecto, ahora escribe tu número de contacto:';
+    addAssistantMessage(nextPrompt, { avatarUrl: CURRENT.avatarUrl });
+    return true;
+  }
+
+  if (leadCaptureState.step === 'collect-email') {
+    if (!validateEmail(trimmed)) {
+      addAssistantMessage('Parece que el correo no es válido. ¿Puedes intentarlo nuevamente?', { avatarUrl: CURRENT.avatarUrl });
+      return true;
+    }
+    leadCaptureState.email = trimmed;
+    leadCaptureState.active = false;
+    leadCaptureState.step = 'completed';
+    finalizeLeadCapture();
+    return true;
+  }
+
+  if (leadCaptureState.step === 'collect-phone') {
+    if (!validatePhone(trimmed)) {
+      addAssistantMessage('Ese número no parece válido. Por favor ingrésalo nuevamente con código de país si es posible.', { avatarUrl: CURRENT.avatarUrl });
+      return true;
+    }
+    leadCaptureState.phone = trimmed;
+    leadCaptureState.active = false;
+    leadCaptureState.step = 'completed';
+    finalizeLeadCapture();
+    return true;
+  }
+
+  return true;
+}
+
+function maybePromptLeadCapture(text) {
+  if (leadPromptShown || leadCaptureCompleted || leadCaptureState?.active) return;
+  const normalized = (text || '').toLowerCase();
+  if (!normalized) return;
+  const matchesIntent = LEAD_INTENT_KEYWORDS.some(keyword => normalized.includes(keyword));
+  if (!matchesIntent) return;
+  leadPromptShown = true;
+  renderLeadPrompt();
+}
+
 /* =========================
    AUTO RESPONSES (desde Admin beta3)
 ========================= */
@@ -670,6 +839,15 @@ document.addEventListener('click', (e)=>{
   // Muestra como si el usuario hubiera escrito
   addUserMessage(trig);
   handleUserMessage(trig);
+  maybePromptLeadCapture(trig);
+});
+
+document.addEventListener('click', (event) => {
+  const leadBtn = event.target.closest('.lead-option');
+  if (!leadBtn) return;
+  const action = (leadBtn.dataset.leadAction || '').trim();
+  if (!action) return;
+  handleLeadOption(action);
 });
 
 /* =========================
@@ -754,9 +932,13 @@ function sendNow(){
   const t = (input.value || "").trim();
   if (!t) return;
   addUserMessage(t);
-  MESSAGES.push({ role:'user', content:t });
   input.value = "";
+  if (processLeadCaptureInput(t)) {
+    return;
+  }
+  MESSAGES.push({ role:'user', content:t });
   handleUserMessage(t);
+  maybePromptLeadCapture(t);
 }
 sendBtn.addEventListener('click', sendNow);
 input.addEventListener('keydown', e=>{ if(e.key === 'Enter'){ e.preventDefault(); sendNow(); }});

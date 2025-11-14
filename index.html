@@ -1153,6 +1153,10 @@ body.login-view #appContainer {
       <i data-lucide="file-text" class="w-5 h-5 shrink-0"></i>
       <span class="hidden lg:inline lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Prompt</span>
     </button>
+    <button class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100" data-tab="leads">
+      <i data-lucide="user-plus" class="w-5 h-5 shrink-0"></i>
+      <span class="hidden lg:inline lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Leads</span>
+    </button>
     <button id="usuariosTabButton" class="sidebar-btn flex items-center gap-3 w-full p-3 rounded-lg transition-colors hover:bg-gray-100 hidden" data-tab="usuarios">
       <i data-lucide="users" class="w-5 h-5 shrink-0"></i>
       <span class="hidden lg:inline lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Usuarios</span>
@@ -2021,6 +2025,41 @@ body.login-view #appContainer {
   </div>
 </section>
 
+<section id="tab-leads" class="hidden space-y-6">
+  <div class="card p-5 space-y-4">
+    <div class="flex flex-wrap items-start justify-between gap-4">
+      <div>
+        <h2 class="text-xl font-semibold text-gray-800">Leads</h2>
+        <p class="text-sm text-gray-500">Contactos capturados desde el chat. La lista se actualiza automáticamente.</p>
+      </div>
+      <div class="flex items-center gap-2 text-xs font-medium text-gray-500">
+        <i data-lucide="wifi" class="w-4 h-4"></i>
+        <span>Tiempo real</span>
+      </div>
+    </div>
+
+    <div class="mt-2 overflow-x-auto -mx-1 sm:mx-0">
+      <table class="min-w-full text-sm text-gray-700">
+        <thead class="text-xs uppercase tracking-wide text-gray-500">
+          <tr>
+            <th scope="col" class="px-4 py-3 text-left">Nombre</th>
+            <th scope="col" class="px-4 py-3 text-left">Email</th>
+            <th scope="col" class="px-4 py-3 text-left">Teléfono</th>
+            <th scope="col" class="px-4 py-3 text-left">Método</th>
+            <th scope="col" class="px-4 py-3 text-left">Fecha</th>
+            <th scope="col" class="px-4 py-3 text-left">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="leadsTableBody"></tbody>
+      </table>
+    </div>
+
+    <div id="leadsEmptyState" class="text-sm text-gray-500 text-center py-6 hidden">
+      Aún no hay leads registrados para este bot.
+    </div>
+  </div>
+</section>
+
 <section id="tab-usuarios" class="hidden space-y-6 max-w-4xl mx-auto">
   <div class="card p-5 space-y-4">
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -2459,7 +2498,7 @@ let dashboard2KnowledgeChart = null;
 let dashboard2AnswersChart = null;
 let dashboard2LineChart = null;
 
-const DEFAULT_TAB_KEYS = ['dashboard', 'dashboard2', 'chat', 'mensajes', 'knowledge', 'respuestas', 'prompt', 'usuarios'];
+const DEFAULT_TAB_KEYS = ['dashboard', 'dashboard2', 'chat', 'mensajes', 'knowledge', 'respuestas', 'prompt', 'leads', 'usuarios'];
 let TAB_KEYS = [...DEFAULT_TAB_KEYS];
 
 function getInitialTabKey() {
@@ -2778,6 +2817,11 @@ let dashboardRefreshScheduled = false;
 let dashboardMessagesLoading = false;
 let dashboardLastMetrics = { conversations: 0, messages: 0 };
 let dashboardBotsRankingData = null;
+let leadsTabInitialized = false;
+let leadsRefInstance = null;
+let leadsListener = null;
+let leadsTableBodyEl = null;
+let leadsEmptyStateEl = null;
 let dashboardAnalysesByBot = {};
 let dashboardBotsRankingRange = 'month';
 const DASHBOARD_DEFAULT_KNOWLEDGE_LIMIT = 10000;
@@ -6536,6 +6580,7 @@ async function initAll(){
   initApariencia();
   initSettingsTab();
   initMensajes();
+  initLeadsTab();
   initKnowledge();
   initIntegration();
   initRespuestas();
@@ -9034,6 +9079,98 @@ firebase.database().ref(`empresas/${EMPRESA}/bots/${botId}/conversaciones/${chat
     }
     return loadConversations({ append: false });
   });
+}
+
+function formatLeadTimestamp(value) {
+  if (value == null) return '—';
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric) || numeric <= 0) return '—';
+  const date = new Date(numeric);
+  if (Number.isNaN(date.getTime())) return '—';
+  try {
+    return date.toLocaleString();
+  } catch (err) {
+    console.warn('No se pudo formatear la fecha del lead', err);
+    return date.toISOString();
+  }
+}
+
+function renderLeadsTable(leads = []) {
+  if (!leadsTableBodyEl) return;
+  leadsTableBodyEl.innerHTML = '';
+  if (!leads.length) {
+    if (leadsEmptyStateEl) leadsEmptyStateEl.classList.remove('hidden');
+    return;
+  }
+  if (leadsEmptyStateEl) leadsEmptyStateEl.classList.add('hidden');
+
+  leads.forEach((lead) => {
+    const row = document.createElement('tr');
+    row.className = 'border-b border-gray-100 last:border-0';
+
+    const nameCell = document.createElement('td');
+    nameCell.className = 'px-4 py-3 font-medium text-gray-900';
+    nameCell.textContent = lead.name || '—';
+
+    const emailCell = document.createElement('td');
+    emailCell.className = 'px-4 py-3 text-gray-700';
+    emailCell.textContent = lead.email || '—';
+
+    const phoneCell = document.createElement('td');
+    phoneCell.className = 'px-4 py-3 text-gray-700';
+    phoneCell.textContent = lead.phone || '—';
+
+    const methodCell = document.createElement('td');
+    methodCell.className = 'px-4 py-3';
+    const method = (lead.method || '').toLowerCase();
+    methodCell.textContent = method === 'phone' ? 'Teléfono' : 'Email';
+
+    const dateCell = document.createElement('td');
+    dateCell.className = 'px-4 py-3 text-gray-600';
+    dateCell.textContent = formatLeadTimestamp(lead.timestamp);
+
+    const actionCell = document.createElement('td');
+    actionCell.className = 'px-4 py-3';
+    const placeholder = document.createElement('span');
+    placeholder.className = 'inline-flex items-center rounded-full border border-dashed border-gray-300 px-3 py-1 text-xs text-gray-400';
+    placeholder.textContent = 'Próximamente';
+    actionCell.appendChild(placeholder);
+
+    row.appendChild(nameCell);
+    row.appendChild(emailCell);
+    row.appendChild(phoneCell);
+    row.appendChild(methodCell);
+    row.appendChild(dateCell);
+    row.appendChild(actionCell);
+    leadsTableBodyEl.appendChild(row);
+  });
+}
+
+function subscribeToLeadsRealtime() {
+  if (!EMPRESA || !BOT || !db) return;
+  if (leadsRefInstance && leadsListener) {
+    leadsRefInstance.off('value', leadsListener);
+  }
+  leadsRefInstance = db.ref(`empresas/${EMPRESA}/bots/${BOT}/leads`);
+  leadsListener = (snapshot) => {
+    const payload = snapshot.val() || {};
+    const items = Object.entries(payload).map(([id, value]) => ({ id, ...(value || {}) }));
+    items.sort((a, b) => (Number(b.timestamp) || 0) - (Number(a.timestamp) || 0));
+    renderLeadsTable(items);
+  };
+  leadsRefInstance.on('value', leadsListener, (err) => {
+    console.warn('No se pudieron cargar los leads', err);
+    renderLeadsTable([]);
+  });
+}
+
+function initLeadsTab() {
+  if (leadsTabInitialized) return;
+  leadsTableBodyEl = $('leadsTableBody');
+  leadsEmptyStateEl = $('leadsEmptyState');
+  if (!leadsTableBodyEl) return;
+  leadsTabInitialized = true;
+  subscribeToLeadsRealtime();
 }
 
 // === Function to initialize Integration tab ===
