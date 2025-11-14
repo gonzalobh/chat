@@ -8632,15 +8632,7 @@ function initMensajes() {
 
   function updateHeader(meta = {}) {
     const displayName = (meta.userName || meta.name || '').trim() || 'Guest';
-    if (userNameEl) {
-      userNameEl.textContent = displayName;
-      if (meta.country) {
-        const flag = String.fromCodePoint(
-          ...[...meta.country.toUpperCase()].map(c => 0x1F1E6 - 65 + c.charCodeAt(0))
-        );
-        userNameEl.textContent = `${flag} ${displayName}`;
-      }
-    }
+    if (userNameEl) userNameEl.textContent = displayName;
     if (updatedEl) {
       const timestamp = Number(meta.updatedAt ?? meta.timestamp ?? meta.lastUpdated ?? 0);
       const formatted = formatTimestamp(timestamp);
@@ -8698,15 +8690,6 @@ function initMensajes() {
 
       const nameEl = document.createElement('div');
       nameEl.className = `text-sm font-semibold truncate ${isActive ? 'text-white' : 'text-gray-800'}`;
-      if (chat.country) {
-        const flagEl = document.createElement("span");
-        flagEl.textContent = String.fromCodePoint(
-          ...[...chat.country.toUpperCase()].map(c => 0x1F1E6 - 65 + c.charCodeAt(0))
-        );
-        flagEl.style.marginRight = "6px";
-        flagEl.style.fontSize = "16px";
-        nameEl.prepend(flagEl);
-      }
       nameEl.textContent = updatedAtDate
         ? updatedAtDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })
         : 'Sin fecha';
