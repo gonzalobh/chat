@@ -314,23 +314,33 @@ function updateChatMeta(lastMessage, timestamp) {
   }).catch(err => console.warn('No se pudo actualizar la metadata del chat', err));
 }
 
-function logChatMessage(sender, text) {
+async function getUserCountry() {
+  try {
+    const res = await fetch("https://ipapi.co/json/");
+    const data = await res.json();
+    return data.country_code || null;
+  } catch (e) {
+    return null;
+  }
+}
+
+async function logChatMessage(sender, text) {
   if (!chatMessagesRef || !sender) return;
   const now = Date.now();
   const safeText = text == null ? '' : String(text);
+
+  const country = await getUserCountry();
+
   const payload = {
     sender,
     text: safeText,
-    time: now
+    time: now,
+    country: country || null
   };
+
+  chatMessagesRef.push(payload);
+  updateChatMeta(safeText, now);
   conversationLog.push({ sender, text: safeText, time: now });
-  try {
-    const newRef = chatMessagesRef.push();
-    newRef.set(payload).catch(err => console.warn('No se pudo guardar el mensaje del chat', err));
-  } catch (err) {
-    console.warn('No se pudo registrar la referencia del mensaje', err);
-  }
-  updateChatMeta(payload.text, now);
 }
 
 function initSystemPromptListener() {
