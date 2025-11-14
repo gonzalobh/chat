@@ -1635,15 +1635,6 @@ body.login-view #appContainer {
                 <input id="chatButtonColor" type="color" class="color-circle rounded-full cursor-pointer border border-gray-300 shadow-sm" />
                 <span class="text-sm font-medium text-gray-600 select-none">Widget Background</span>
               </div>
-              <div class="space-y-2">
-                <label for="widgetPositionSelect" class="text-xs font-semibold text-gray-500 uppercase tracking-wide block">Widget position</label>
-                <select id="widgetPositionSelect" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-black/60">
-                  <option value="right">A la derecha</option>
-                  <option value="center">Centrado</option>
-                  <option value="left">A la izquierda</option>
-                </select>
-                <p class="text-xs text-gray-500">Define dónde aparecerá el botón flotante en tu sitio.</p>
-              </div>
             </div>
           </div>
         </div>
@@ -2421,10 +2412,7 @@ function get(reference) {
 }
 
 const DEFAULT_WIDGET_ICON = 'widgets/1.png';
-const DEFAULT_WIDGET_POSITION = 'right';
-const WIDGET_POSITIONS = ['left','center','right'];
 let currentWidgetIcon = DEFAULT_WIDGET_ICON;
-let currentWidgetPosition = DEFAULT_WIDGET_POSITION;
 
 // ====== Helpers ======
 const $ = (id) => document.getElementById(id);
@@ -6098,7 +6086,7 @@ function setWriteEnabled(enabled) {
   const ids = [
     'saveChatPrimaryColor','saveChatButtonColor','uploadLogo','deleteLogo',
     'uploadAvatar','deleteAvatar','fontSelect','tgChatVisible','hotelName',
-    'timeZone','saveContext','contextText','widgetIconTrigger','widgetPositionSelect',
+    'timeZone','saveContext','contextText','widgetIconTrigger',
     'addKnowledgePage','knowledgeUrlInput','confirmAddKnowledge','personalitySelect','btnNewBot',
     'newBotNameInput','confirmNewBot','userInviteEmail','userInviteSubmit','confirmDashboardDelete'
   ];
@@ -6839,39 +6827,6 @@ $('widgetRadius').addEventListener('input', (e) => {
   });
   updateWidgetPreview();
   applyPreview();
-});
-
-// === Widget Position ===
-const widgetPositionSelect = $('widgetPositionSelect');
-const widgetPositionRef = eref('config/widgetPosition');
-
-const normalizeWidgetPosition = (value) => {
-  const normalized = (value || '').toString().toLowerCase();
-  return WIDGET_POSITIONS.includes(normalized) ? normalized : DEFAULT_WIDGET_POSITION;
-};
-
-const applyWidgetPositionSelect = (value) => {
-  currentWidgetPosition = normalizeWidgetPosition(value);
-  if (widgetPositionSelect) {
-    widgetPositionSelect.value = currentWidgetPosition;
-  }
-};
-
-applyWidgetPositionSelect(currentWidgetPosition);
-
-widgetPositionRef.once('value', (snap) => {
-  applyWidgetPositionSelect(snap.val());
-  updateIntegrationEmbedScript();
-});
-
-widgetPositionSelect?.addEventListener('change', (event) => {
-  const position = normalizeWidgetPosition(event.target.value);
-  applyWidgetPositionSelect(position);
-  canWrite(async () => {
-    await widgetPositionRef.set(currentWidgetPosition);
-    toast(t('✔ Widget position updated'));
-  });
-  updateIntegrationEmbedScript();
 });
 
 
@@ -9081,29 +9036,18 @@ firebase.database().ref(`empresas/${EMPRESA}/bots/${botId}/conversaciones/${chat
 }
 
 // === Function to initialize Integration tab ===
-function getEmbedScriptCode() {
+function initIntegration(){
   const scriptAttrs = [`src="https://tomos.bot/embed.js"`, `data-empresa="${EMPRESA}"`];
   scriptAttrs.push(`data-bot="${BOT}"`);
-  const widgetPosition = normalizeWidgetPosition(currentWidgetPosition);
-  scriptAttrs.push(`data-widget-position="${widgetPosition}"`);
-  return `<script ${scriptAttrs.join(' ')}><\\/script>`;
-}
-
-function updateIntegrationEmbedScript() {
+  const code = `<script ${scriptAttrs.join(' ')}><\\/script>`;
   const box = $('embedScriptBox');
-  if (!box) return '';
-  const code = getEmbedScriptCode();
   box.value = code;
+
+  // 🔹 Ajuste automático de altura
   box.style.height = 'auto';
   box.style.height = box.scrollHeight + 'px';
-  return code;
-}
-
-function initIntegration(){
-  updateIntegrationEmbedScript();
 
   $('copyEmbedScript').onclick = () => {
-    const code = getEmbedScriptCode();
     navigator.clipboard.writeText(code);
     toast(t('Copied'));
   };

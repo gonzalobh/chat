@@ -1084,14 +1084,6 @@ function initEmbedIntegration() {
         "*"
       );
     });
-
-    eref("config/widgetPosition").on("value", (s) => {
-      const position = (s.val() || "right").toString().toLowerCase();
-      window.parent.postMessage(
-        { action: "updateWidgetPosition", position },
-        "*"
-      );
-    });
   }
 }
 
