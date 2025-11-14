@@ -907,18 +907,17 @@ body.login-view #appContainer {
 }
 
 .dashboard-bot-delete-btn {
-  position: absolute;
-  bottom: 1rem;
-  right: 1rem;
-  width: 40px;
-  height: 40px;
-  border-radius: 14px;
-  border: 1px solid rgba(17, 24, 39, 0.1);
-  background: #fff;
-  color: #b91c1c;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    width: 25px;
+    height: 25px;
+    border-radius: 14px;
+    border: 1px solid rgba(17, 24, 39, 0.1);
+    color: #d8d8d8;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   transition: transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease, background 0.2s ease;
 }
 
@@ -933,6 +932,12 @@ body.login-view #appContainer {
   width: 18px;
   height: 18px;
 }
+/* Puedes borrar la regla anterior del "i" */
+.dashboard-bot-delete-btn svg {
+  width: 16px !important;
+  height: 16px !important;
+}
+
 
 .dashboard-bot-edit-btn {
   display: inline-flex;

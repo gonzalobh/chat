@@ -63,6 +63,19 @@
       transform: translateX(var(--widget-horizontal-translate)) scale(1.05);
       box-shadow: 0 6px 14px rgba(0,0,0,0.3);
     }
+        #chatWidgetBtn::after {
+    content: "";
+    position: absolute;
+    bottom: 0px;
+    right: -2px;
+    width: 13px;
+    height: 13px;
+    background: #2ecc71;
+    border-radius: 50%;
+    border: 2px solid #ffffff;
+    display: block;
+    }
+
 #chatWidgetFrame {
   position: fixed;
   bottom: 90px;
@@ -78,6 +91,8 @@
   overflow: hidden;
   transform: translateX(var(--widget-frame-translate));
 }
+
+
     #chatWidgetFrame[data-position="left"] {
       left: 24px;
       right: auto;
@@ -139,6 +154,8 @@
       case "chatReady":
         ready = true;
         frame.contentWindow.postMessage({ action: "getChatButtonIcon" }, "*");
+          frame.contentWindow.postMessage({ action: "getChatButtonStatus" }, "*"); // ← añadir esta línea
+
         break;
 
       case "chatButtonIcon":
@@ -177,7 +194,6 @@ if (d.imageUrl) {
         }
 
         // Mostrar el botón
-        btn.style.display = "flex";
         break;
 
       case "chatButtonStatus":
