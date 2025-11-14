@@ -8530,6 +8530,39 @@ function initMensajes() {
     return latest;
   }
 
+  function conversationHasHumanMessage(payload = {}) {
+    const collection = payload.mensajes || payload.messages;
+    if (!collection || typeof collection !== 'object') {
+      return false;
+    }
+    const values = Array.isArray(collection) ? collection : Object.values(collection || {});
+    return values.some((message) => {
+      if (!message || typeof message !== 'object') return false;
+      if (message.isHuman === true || message.fromUser === true || message.fromVisitor === true) {
+        return true;
+      }
+      const candidates = [
+        message.sender,
+        message.role,
+        message.from,
+        message.author,
+        message.usuario,
+        message.user,
+        message.metadata?.sender,
+        message.metadata?.from,
+        message.type,
+        message.messageType,
+        message.kind,
+        message.channel,
+        message.source,
+      ];
+      return candidates.some((value) => {
+        const normalized = normalizeDashboardMessageValue(value);
+        return normalized && DASHBOARD_MESSAGE_HUMAN_HINTS.has(normalized);
+      });
+    });
+  }
+
   function mapConversation(chatId, payload = {}) {
     const updatedAt = getLastMessageTimestamp(payload);
     return {
@@ -8539,6 +8572,7 @@ function initMensajes() {
       lastUpdated: updatedAt,
       lastMessage: getLastMessagePreview(payload),
       raw: payload,
+      hasUserMessages: conversationHasHumanMessage(payload),
     };
   }
 
@@ -8644,24 +8678,25 @@ function initMensajes() {
   function renderConversations() {
     if (!listEl) return;
     const term = (searchInput?.value || '').toLowerCase().trim();
+    const visibleConversations = messagesConversations.filter(item => item.hasUserMessages);
     const dataset = term
-      ? messagesConversations.filter(item => {
+      ? visibleConversations.filter(item => {
           const haystack = `${item.userName || ''} ${item.lastMessage || ''} ${item.chatId}`.toLowerCase();
           return haystack.includes(term);
         })
-      : messagesConversations.slice();
+      : visibleConversations.slice();
 
     dataset.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
     listEl.innerHTML = '';
 
-    if (!messagesConversations.length) {
+    if (!visibleConversations.length) {
       emptyState?.classList.remove('hidden');
     } else {
       emptyState?.classList.add('hidden');
     }
 
     if (!dataset.length) {
-      if (messagesConversations.length) {
+      if (visibleConversations.length) {
         const emptyResult = document.createElement('div');
         emptyResult.className = 'text-xs text-gray-400 text-center py-6';
         emptyResult.textContent = 'Sin resultados';
