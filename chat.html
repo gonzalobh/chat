@@ -268,11 +268,6 @@ const conversationLog = []; // {sender:'bot'|'user', text:string, time:number}
 const pendingMessagesQueue = [];
 let hasUserSentMessage = false;
 
-const LEAD_INTENT_KEYWORDS = [
-  'reserv', 'contratar', 'precio', 'me interesa', 'informacion', 'información',
-  'cotizar', 'cotización', 'cotizacion', 'contacto', 'contactar', 'asesor',
-  'quiero contratar', 'quiero reservar', 'comprar', 'necesito información', 'necesito informacion'
-];
 let leadPromptShown = false;
 let leadCaptureState = null;
 let leadCaptureCompleted = false;
@@ -643,6 +638,20 @@ function renderLeadPrompt() {
   addAssistantMessageHTML(html, { avatarUrl: CURRENT.avatarUrl, rawText: 'Para avanzar, ¿quieres que un asesor te contacte?' });
 }
 
+async function maybePromptLeadCaptureAI() {
+  if (leadPromptShown || leadCaptureCompleted || leadCaptureState?.active) return;
+
+  const conversation = conversationLog
+    .map(m => `${m.sender}: ${m.text}`)
+    .join("\n");
+
+  const leadDetected = await detectLeadIntent(conversation);
+  if (leadDetected) {
+    leadPromptShown = true;
+    renderLeadPrompt();
+  }
+}
+
 function startLeadCapture(method) {
   leadCaptureState = {
     active: true,
@@ -753,16 +762,6 @@ function processLeadCaptureInput(text) {
   return true;
 }
 
-function maybePromptLeadCapture(text) {
-  if (leadPromptShown || leadCaptureCompleted || leadCaptureState?.active) return;
-  const normalized = (text || '').toLowerCase();
-  if (!normalized) return;
-  const matchesIntent = LEAD_INTENT_KEYWORDS.some(keyword => normalized.includes(keyword));
-  if (!matchesIntent) return;
-  leadPromptShown = true;
-  renderLeadPrompt();
-}
-
 /* =========================
    AUTO RESPONSES (desde Admin beta3)
 ========================= */
@@ -839,7 +838,7 @@ document.addEventListener('click', (e)=>{
   // Muestra como si el usuario hubiera escrito
   addUserMessage(trig);
   handleUserMessage(trig);
-  maybePromptLeadCapture(trig);
+  maybePromptLeadCaptureAI();
 });
 
 document.addEventListener('click', (event) => {
@@ -906,6 +905,45 @@ async function askAI(userText) {
   return data?.choices?.[0]?.message?.content || "";
 }
 
+async function detectLeadIntent(conversation) {
+  const prompt = `
+    Analiza la siguiente conversación entre un usuario y un asistente.
+    Debes detectar si el usuario muestra intención de compra o contacto comercial:
+    - reservar
+    - pedir precios o cotización
+    - solicitar información
+    - pedir hablar con un humano
+    - interés en contratar
+    - intención de compra
+    - o cualquier necesidad de contacto comercial
+
+    Puede estar en cualquier idioma.
+
+    Devuelve SOLO un JSON válido con este formato exacto:
+
+    {"lead": true}  (si el usuario muestra intención de contacto/comercial)
+    {"lead": false} (si no existe intención)
+
+    Conversación:
+    ${conversation}
+  `;
+
+  const res = await fetch(PROXY_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      messages: [{ role: "user", content: prompt }]
+    })
+  });
+
+  const data = await res.json();
+  try {
+    return JSON.parse(data?.choices?.[0]?.message?.content || "{}").lead === true;
+  } catch {
+    return false;
+  }
+}
+
 async function handleUserMessage(text){
   // 1) AutoResponses (si hay match, responde y no llama IA)
   if (tryAutoResponse(text)) return;
@@ -938,7 +976,7 @@ function sendNow(){
   }
   MESSAGES.push({ role:'user', content:t });
   handleUserMessage(t);
-  maybePromptLeadCapture(t);
+  maybePromptLeadCaptureAI();
 }
 sendBtn.addEventListener('click', sendNow);
 input.addEventListener('keydown', e=>{ if(e.key === 'Enter'){ e.preventDefault(); sendNow(); }});
