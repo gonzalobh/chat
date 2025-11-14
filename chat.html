@@ -262,6 +262,8 @@ const chatMetaRef = chatLogBaseRef.child('meta');
 let chatMetaCache = null;
 let chatStartedAt = null;
 const conversationLog = []; // {sender:'bot'|'user', text:string, time:number}
+const pendingMessagesQueue = [];
+let hasUserSentMessage = false;
 
 let SYSTEM_PROMPT = "";
 let systemPromptRef = null;
@@ -314,6 +316,25 @@ function updateChatMeta(lastMessage, timestamp) {
   }).catch(err => console.warn('No se pudo actualizar la metadata del chat', err));
 }
 
+function persistChatPayload(payload) {
+  if (!chatMessagesRef || !payload) return;
+  try {
+    const newRef = chatMessagesRef.push();
+    newRef.set(payload).catch(err => console.warn('No se pudo guardar el mensaje del chat', err));
+  } catch (err) {
+    console.warn('No se pudo registrar la referencia del mensaje', err);
+  }
+  updateChatMeta(payload.text, payload.time);
+}
+
+function flushPendingMessages() {
+  if (!pendingMessagesQueue.length) return;
+  while (pendingMessagesQueue.length) {
+    const pending = pendingMessagesQueue.shift();
+    persistChatPayload(pending);
+  }
+}
+
 function logChatMessage(sender, text) {
   if (!chatMessagesRef || !sender) return;
   const now = Date.now();
@@ -324,13 +345,18 @@ function logChatMessage(sender, text) {
     time: now
   };
   conversationLog.push({ sender, text: safeText, time: now });
-  try {
-    const newRef = chatMessagesRef.push();
-    newRef.set(payload).catch(err => console.warn('No se pudo guardar el mensaje del chat', err));
-  } catch (err) {
-    console.warn('No se pudo registrar la referencia del mensaje', err);
+  const isUserMessage = sender === 'user' && safeText.trim().length > 0;
+  if (!hasUserSentMessage) {
+    if (isUserMessage) {
+      hasUserSentMessage = true;
+      flushPendingMessages();
+      persistChatPayload(payload);
+    } else {
+      pendingMessagesQueue.push(payload);
+    }
+    return;
   }
-  updateChatMeta(payload.text, now);
+  persistChatPayload(payload);
 }
 
 function initSystemPromptListener() {
