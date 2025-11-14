@@ -1777,7 +1777,12 @@ body.login-view #appContainer {
             <div class="space-y-3">
               <label for="welcomeImageFile" class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Welcome image (optional)</label>
               <input id="welcomeImageFile" type="file" accept="image/*" class="text-sm">
-              <img id="welcomePreview" class="rounded-xl w-full max-h-40 object-cover hidden" />
+              <div class="relative">
+                <img id="welcomePreview" class="rounded-xl w-full max-h-40 object-cover hidden" />
+                <button id="removeWelcomeImage" type="button" class="hidden absolute top-3 right-3 bg-white/90 text-gray-700 hover:text-red-600 hover:bg-white shadow rounded-full p-1 transition" aria-label="Remove welcome image">
+                  <i data-lucide="trash" class="w-4 h-4"></i>
+                </button>
+              </div>
             </div>
 
             <div class="flex items-center justify-between">
@@ -9824,6 +9829,7 @@ function initWelcome() {
   const delay = $("welcomeDelay");
   const file = $("welcomeImageFile");
   const preview = $("welcomePreview");
+  const removeImageBtn = $("removeWelcomeImage");
   const saveBtn = $("saveWelcome");
   const msg = $("msgWelcome");
   const summaryCard = $("welcomeSummaryCard");
@@ -9876,6 +9882,26 @@ function initWelcome() {
     }
   };
 
+  const renderPreview = () => {
+    if (!preview) return;
+    if (state.image) {
+      preview.src = state.image;
+      preview.classList.remove("hidden");
+      removeImageBtn?.classList.remove("hidden");
+    } else {
+      preview.classList.add("hidden");
+      preview.removeAttribute('src');
+      removeImageBtn?.classList.add("hidden");
+    }
+  };
+
+  const clearWelcomeImage = () => {
+    state.image = "";
+    if (file) file.value = "";
+    renderPreview();
+    updateSummary();
+  };
+
   if (!ref) return console.warn("❌ No se encontró la referencia de chatWelcome");
 
   // Cargar desde Firebase
@@ -9884,18 +9910,12 @@ function initWelcome() {
     enabled.checked = !!val.enabled;
     text.value = val.text || "";
     delay.value = val.delay || 2;
-    if (val.image) {
-      preview.src = val.image;
-      preview.classList.remove("hidden");
-    } else {
-      preview.classList.add("hidden");
-      preview.removeAttribute('src');
-    }
     state.enabled = !!val.enabled;
     state.text = val.text || "";
     const parsedDelay = parseInt(delay.value);
     state.delay = Number.isFinite(parsedDelay) ? parsedDelay : 0;
     state.image = val.image || "";
+    renderPreview();
     updateSummary();
   });
 
@@ -9905,9 +9925,8 @@ function initWelcome() {
     if (!f) return;
     const reader = new FileReader();
     reader.onload = ev => {
-      preview.src = ev.target.result;
-      preview.classList.remove("hidden");
       state.image = ev.target.result;
+      renderPreview();
       updateSummary();
     };
     reader.readAsDataURL(f);
@@ -9928,9 +9947,14 @@ function initWelcome() {
     updateSummary();
   });
 
+  removeImageBtn?.addEventListener('click', (event) => {
+    event.preventDefault();
+    clearWelcomeImage();
+  });
+
   // Guardar en Firebase
   saveBtn.onclick = async () => canWrite(async () => {
-    let imageUrl = preview.src || "";
+    let imageUrl = state.image || "";
     // Si el usuario cargó un nuevo archivo, subir a Storage
     if (file.files.length) {
       const storageRef = firebase.storage().ref(`${getBotBasePath()}/welcome.jpg`);
@@ -9949,6 +9973,7 @@ function initWelcome() {
     state.text = text.value.trim();
     state.delay = parseInt(delay.value) || 0;
     state.image = imageUrl;
+    renderPreview();
     updateSummary();
 
     msg.classList.remove("hidden");
