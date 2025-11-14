@@ -1,4 +1,14 @@
 (() => {
+  const VALID_WIDGET_POSITIONS = ["left", "center", "right"];
+  const DEFAULT_WIDGET_POSITION = "right";
+
+  const normalizeWidgetPosition = (value) => {
+    const normalized = (value || "").toString().toLowerCase();
+    return VALID_WIDGET_POSITIONS.includes(normalized)
+      ? normalized
+      : DEFAULT_WIDGET_POSITION;
+  };
+
   const script = document.currentScript;
   let scriptUrl = null;
   let pageUrl = null;
@@ -29,6 +39,13 @@
   const params = new URLSearchParams({ empresa });
   if (botAttr) params.set("bot", botAttr);
   const iframeSrc = `https://tomos.bot/chat.html?${params.toString()}`;
+
+  const widgetPositionAttr = normalizeWidgetPosition(
+    script?.dataset?.widgetPosition ||
+      scriptUrl?.searchParams.get("widgetPosition") ||
+      pageUrl?.searchParams.get("widgetPosition") ||
+      DEFAULT_WIDGET_POSITION
+  );
 
   // 💅 Estilos del widget
   const style = document.createElement("style");
@@ -132,12 +149,12 @@
   document.body.append(btn, frame);
 
   // 🔄 Comunicación con el iframe
-  let ready = false, got = false, currentPosition = 'right';
+  let ready = false,
+    got = false,
+    currentPosition = normalizeWidgetPosition(widgetPositionAttr);
 
   const applyWidgetPosition = (position) => {
-    const normalized = (position || '').toString().toLowerCase();
-    const valid = ['left', 'center', 'right'];
-    const finalPos = valid.includes(normalized) ? normalized : 'right';
+    const finalPos = normalizeWidgetPosition(position);
     currentPosition = finalPos;
     btn.dataset.position = finalPos;
     frame.dataset.position = finalPos;
