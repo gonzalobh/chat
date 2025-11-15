@@ -680,14 +680,11 @@ function renderLeadPrompt(promptText) {
 async function generateLeadIntro(latestUserText) {
   const fallbackText = 'Para avanzar, ¿quieres que un asesor te contacte?';
   const userMessage = (latestUserText || '').trim() || getLastUserMessage() || fallbackText;
+  const prompt = `Genera una frase muy breve (máximo 1 línea) invitando al usuario a dejar un medio de contacto. \nLa frase debe estar escrita EXCLUSIVAMENTE en el mismo idioma que el mensaje más reciente del usuario.\nAdáptate al contexto de lo que dijo el usuario.\n\nReglas:\n- Detecta automáticamente el idioma del usuario (puede ser cualquier idioma).\n- Responde únicamente en ese idioma.\n- No mezcles idiomas.\n- No saludes.\n- No hagas preguntas largas.\n- No ofrezcas aún opciones (solo la frase introductoria).\n- Mantén un tono amable, humano y profesional.\n- Si no puedes determinar con claridad el idioma, responde en inglés.\n\nMensaje del usuario:\n${userMessage}`;
   const promptMessages = [
     {
-      role: 'system',
-      content: 'Genera una frase muy breve (máximo 1 línea) invitando al usuario a dejar un medio de contacto. Adáptate al mensaje previo del usuario. No ofrezcas opciones en la frase; solo introduce el contexto. Tono amable, humano y profesional.'
-    },
-    {
       role: 'user',
-      content: userMessage
+      content: prompt
     }
   ];
 
