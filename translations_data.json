@@ -48,6 +48,14 @@
     "pt": "Respostas automáticas"
   },
   {
+    "key": "Leads",
+    "en": "Leads",
+    "fr": "Prospects",
+    "es": "Prospectos",
+    "de": "Interessenten",
+    "pt": "Potenciais clientes"
+  },
+  {
     "key": "Empresa:",
     "en": "Company:",
     "fr": "Entreprise :",
