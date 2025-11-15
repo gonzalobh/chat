@@ -2045,9 +2045,8 @@ body.login-view #appContainer {
         <thead class="text-xs uppercase tracking-wide text-gray-500">
           <tr>
             <th scope="col" class="px-4 py-3 text-left">Nombre</th>
-            <th scope="col" class="px-4 py-3 text-left">Email</th>
-            <th scope="col" class="px-4 py-3 text-left">Teléfono</th>
-            <th scope="col" class="px-4 py-3 text-left">Método</th>
+            <th scope="col" class="px-4 py-3 text-left">Contacto</th>
+            <th scope="col" class="px-4 py-3 text-left">Resumen</th>
             <th scope="col" class="px-4 py-3 text-left">Fecha</th>
             <th scope="col" class="px-4 py-3 text-left">Acciones</th>
           </tr>
@@ -2380,12 +2379,13 @@ function escapeCSVValue(value) {
 }
 
 function convertLeadsToCSV(leads = []) {
-  const headers = ['Nombre', 'Email', 'Teléfono', 'Método', 'Fecha'];
+  const headers = ['Nombre', 'Email', 'Teléfono', 'Método', 'Resumen', 'Fecha'];
   const rows = leads.map((lead) => [
     lead.name || '',
     lead.email || '',
     lead.phone || '',
     (lead.method || '').toLowerCase() === 'phone' ? 'Teléfono' : 'Email',
+    lead.note || '',
     formatLeadTimestamp(lead.timestamp) || '',
   ]);
   return [headers, ...rows]
@@ -9177,18 +9177,31 @@ function renderLeadsTable(leads = []) {
     nameCell.className = 'px-4 py-3 font-medium text-gray-900';
     nameCell.textContent = lead.name || '—';
 
-    const emailCell = document.createElement('td');
-    emailCell.className = 'px-4 py-3 text-gray-700';
-    emailCell.textContent = lead.email || '—';
+    const contactCell = document.createElement('td');
+    contactCell.className = 'px-4 py-3 text-gray-700 space-y-1';
+    const contactFragments = [];
+    if (lead.email) {
+      const emailEl = document.createElement('div');
+      emailEl.textContent = lead.email;
+      contactFragments.push(emailEl);
+    }
+    if (lead.phone) {
+      const phoneEl = document.createElement('div');
+      phoneEl.className = 'text-sm text-gray-500';
+      phoneEl.textContent = lead.phone;
+      contactFragments.push(phoneEl);
+    }
+    if (!contactFragments.length) {
+      const emptyContact = document.createElement('div');
+      emptyContact.className = 'text-gray-400';
+      emptyContact.textContent = '—';
+      contactFragments.push(emptyContact);
+    }
+    contactFragments.forEach(fragment => contactCell.appendChild(fragment));
 
-    const phoneCell = document.createElement('td');
-    phoneCell.className = 'px-4 py-3 text-gray-700';
-    phoneCell.textContent = lead.phone || '—';
-
-    const methodCell = document.createElement('td');
-    methodCell.className = 'px-4 py-3';
-    const method = (lead.method || '').toLowerCase();
-    methodCell.textContent = method === 'phone' ? 'Teléfono' : 'Email';
+    const noteCell = document.createElement('td');
+    noteCell.className = 'px-4 py-3 text-gray-700';
+    noteCell.textContent = lead.note || '—';
 
     const dateCell = document.createElement('td');
     dateCell.className = 'px-4 py-3 text-gray-600';
@@ -9204,9 +9217,8 @@ function renderLeadsTable(leads = []) {
     actionCell.appendChild(deleteButton);
 
     row.appendChild(nameCell);
-    row.appendChild(emailCell);
-    row.appendChild(phoneCell);
-    row.appendChild(methodCell);
+    row.appendChild(contactCell);
+    row.appendChild(noteCell);
     row.appendChild(dateCell);
     row.appendChild(actionCell);
     leadsTableBodyEl.appendChild(row);
