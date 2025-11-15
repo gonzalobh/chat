@@ -2337,6 +2337,35 @@ const registerTranslationTarget = (node, key, target = 'text', options = {}) => 
   translationManager.register(node, key, target, options);
 };
 
+const LEADS_STATIC_TRANSLATIONS = [
+  ['leadsTitle', 'Leads'],
+  ['leadsDescription', 'Contactos capturados desde el chat. La lista se actualiza automáticamente.'],
+  ['exportLeadsButton', 'Exportar CSV'],
+  ['leadsColumnName', 'Nombre'],
+  ['leadsColumnContact', 'Contacto'],
+  ['leadsColumnSummary', 'Resumen'],
+  ['leadsColumnDate', 'Fecha'],
+  ['leadsColumnActions', 'Acciones'],
+  ['leadsEmptyState', 'Aún no hay leads registrados para este bot.'],
+];
+
+let leadsTranslationsRegistered = false;
+function registerLeadsStaticTranslations() {
+  if (leadsTranslationsRegistered || !window.translationManager) return;
+  LEADS_STATIC_TRANSLATIONS.forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    if (el) registerTranslationTarget(el, key);
+  });
+  leadsTranslationsRegistered = true;
+}
+
+function refreshLeadsStaticTranslations() {
+  LEADS_STATIC_TRANSLATIONS.forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = t(key);
+  });
+}
+
 if (window.translationManager) {
   const dash2TitleTranslations = [
     ['dash2TotalConvTitle', 'Total Conversations'],
@@ -2348,24 +2377,16 @@ if (window.translationManager) {
     const el = document.getElementById(id);
     if (el) registerTranslationTarget(el, key);
   });
-}
 
-if (window.translationManager) {
-  const leadsTranslationEntries = [
-    ['leadsTitle', 'Leads'],
-    ['leadsDescription', 'Contactos capturados desde el chat. La lista se actualiza automáticamente.'],
-    ['exportLeadsButton', 'Exportar CSV'],
-    ['leadsColumnName', 'Nombre'],
-    ['leadsColumnContact', 'Contacto'],
-    ['leadsColumnSummary', 'Resumen'],
-    ['leadsColumnDate', 'Fecha'],
-    ['leadsColumnActions', 'Acciones'],
-    ['leadsEmptyState', 'Aún no hay leads registrados para este bot.'],
-  ];
-  leadsTranslationEntries.forEach(([id, key]) => {
-    const el = document.getElementById(id);
-    if (el) registerTranslationTarget(el, key);
+  registerLeadsStaticTranslations();
+  refreshLeadsStaticTranslations();
+
+  window.addEventListener('panelLanguageChange', () => {
+    refreshLeadsStaticTranslations();
+    renderLeadsTable();
   });
+} else {
+  refreshLeadsStaticTranslations();
 }
 
 function handleLeadDelete(lead, triggerButton) {

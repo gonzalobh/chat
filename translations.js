@@ -1366,6 +1366,11 @@
     document.title = getTranslation(currentLanguage, 'Tomos Bot');
     const select = document.getElementById('languageSelect');
     if (select && select.value !== currentLanguage) select.value = currentLanguage;
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('panelLanguageChange', {
+        detail: { language: currentLanguage }
+      }));
+    }
   }
   window.translationManager = {
     init() { applyLanguage(currentLanguage); },
