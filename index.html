@@ -2350,11 +2350,14 @@ const LEADS_STATIC_TRANSLATIONS = [
 ];
 
 let leadsTranslationsRegistered = false;
+
 function registerLeadsStaticTranslations() {
   if (leadsTranslationsRegistered || !window.translationManager) return;
   LEADS_STATIC_TRANSLATIONS.forEach(([id, key]) => {
     const el = document.getElementById(id);
-    if (el) registerTranslationTarget(el, key);
+    if (el) {
+      registerTranslationTarget(el, key);
+    }
   });
   leadsTranslationsRegistered = true;
 }
@@ -2362,7 +2365,9 @@ function registerLeadsStaticTranslations() {
 function refreshLeadsStaticTranslations() {
   LEADS_STATIC_TRANSLATIONS.forEach(([id, key]) => {
     const el = document.getElementById(id);
-    if (el) el.textContent = t(key);
+    if (el) {
+      el.textContent = t(key);
+    }
   });
 }
 
