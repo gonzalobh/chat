@@ -489,7 +489,8 @@ function applyChatLanguageConfig(config) {
   const secondary = sanitizeSecondaryLanguageList(snapshot.secondary, primary);
   BOT_PRIMARY_LANGUAGE = primary;
   BOT_SECONDARY_LANGUAGES = secondary;
-  if (!chatLanguagesReady || BOT_SECONDARY_LANGUAGES.length === 0) {
+  // No forzar idioma si ya está cargada la configuración
+  if (!chatLanguagesReady) {
     USER_LANGUAGE = BOT_PRIMARY_LANGUAGE;
   }
   chatLanguagesReady = true;
@@ -518,13 +519,6 @@ async function detectLanguage(text) {
     console.warn('Language detection failed', err);
   }
   return BOT_PRIMARY_LANGUAGE;
-}
-
-async function detectAllowedLanguage(text) {
-  const detected = await detectLanguage(text);
-  const allowed = [BOT_PRIMARY_LANGUAGE, ...BOT_SECONDARY_LANGUAGES];
-  const uniqueAllowed = Array.from(new Set(allowed.filter(Boolean)));
-  return uniqueAllowed.includes(detected) ? detected : BOT_PRIMARY_LANGUAGE;
 }
 
 /* =========================
@@ -1044,10 +1038,12 @@ async function askAI(userText) {
   ${CURRENT.contextInfo || ""}
   `;
 
+  const payloadMessages = [...MESSAGES];
+  const resolvedLanguage = USER_LANGUAGE || BOT_PRIMARY_LANGUAGE || 'es';
   const body = {
-    messages: MESSAGES,
-    system: combinedSystem,
-    lang: USER_LANGUAGE || BOT_PRIMARY_LANGUAGE || 'es'
+    messages: payloadMessages,
+    lang: resolvedLanguage,
+    system: combinedSystem
   };
 
   const res = await fetch(PROXY_URL, {
@@ -1135,8 +1131,13 @@ async function sendNow(){
     return;
   }
   try {
-    if (BOT_SECONDARY_LANGUAGES.length) {
-      USER_LANGUAGE = await detectAllowedLanguage(t);
+    const detected = await detectLanguage(t);
+
+    if (
+      detected === BOT_PRIMARY_LANGUAGE ||
+      BOT_SECONDARY_LANGUAGES.includes(detected)
+    ) {
+      USER_LANGUAGE = detected;
     } else {
       USER_LANGUAGE = BOT_PRIMARY_LANGUAGE;
     }
