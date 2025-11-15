@@ -1302,6 +1302,10 @@ body.login-view #appContainer {
         <i data-lucide="circle" class="w-4 h-4"></i>
         <span>Widget</span>
       </button>
+      <button class="chat-panel-tab" data-chat-panel-tab="languages">
+        <i data-lucide="languages" class="w-4 h-4"></i>
+        <span>Idiomas</span>
+      </button>
       <button class="chat-panel-tab" data-chat-panel-tab="integration">
         <i data-lucide="code-2" class="w-4 h-4"></i>
         <span>Integration</span>
@@ -1638,6 +1642,59 @@ body.login-view #appContainer {
               <div class="flex items-center gap-4">
                 <input id="chatButtonColor" type="color" class="color-circle rounded-full cursor-pointer border border-gray-300 shadow-sm" />
                 <span class="text-sm font-medium text-gray-600 select-none">Widget Background</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div data-chat-panel="languages" class="space-y-5 hidden">
+          <div class="card p-5 space-y-6">
+            <div class="flex items-center gap-2 font-semibold text-gray-800">
+              <i data-lucide="languages" class="w-5 h-5"></i>
+              Idiomas
+            </div>
+            <div class="space-y-6">
+              <div class="space-y-2">
+                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Idioma principal</p>
+                <select id="botPrimaryLanguage" class="border border-gray-200 rounded-xl px-3 py-2 w-full text-sm bg-white focus:outline-none focus:ring-2 focus:ring-black/60">
+                  <option value="es">Español</option>
+                  <option value="en">Inglés</option>
+                  <option value="fr">Francés</option>
+                  <option value="de">Alemán</option>
+                  <option value="pt">Portugués</option>
+                  <option value="pl">Polaco</option>
+                </select>
+                <p class="text-xs text-gray-500">El bot usará este idioma como base para todas las respuestas.</p>
+              </div>
+              <div class="space-y-3">
+                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Idiomas secundarios permitidos</p>
+                <div id="botSecondaryLanguages" class="flex flex-wrap gap-2">
+                  <button type="button" class="chip" data-language-option="es">
+                    <span>Español</span>
+                    <span class="text-[11px] uppercase tracking-wide text-gray-400">ES</span>
+                  </button>
+                  <button type="button" class="chip" data-language-option="en">
+                    <span>Inglés</span>
+                    <span class="text-[11px] uppercase tracking-wide text-gray-400">EN</span>
+                  </button>
+                  <button type="button" class="chip" data-language-option="fr">
+                    <span>Francés</span>
+                    <span class="text-[11px] uppercase tracking-wide text-gray-400">FR</span>
+                  </button>
+                  <button type="button" class="chip" data-language-option="de">
+                    <span>Alemán</span>
+                    <span class="text-[11px] uppercase tracking-wide text-gray-400">DE</span>
+                  </button>
+                  <button type="button" class="chip" data-language-option="pt">
+                    <span>Portugués</span>
+                    <span class="text-[11px] uppercase tracking-wide text-gray-400">PT</span>
+                  </button>
+                  <button type="button" class="chip" data-language-option="pl">
+                    <span>Polaco</span>
+                    <span class="text-[11px] uppercase tracking-wide text-gray-400">PL</span>
+                  </button>
+                </div>
+                <p class="text-xs text-gray-500">Selecciona los idiomas en los que el bot puede responder adicionalmente. Si no eliges ninguno, usará siempre el idioma principal.</p>
               </div>
             </div>
           </div>
@@ -6234,7 +6291,7 @@ async function refreshPermissions() {
 function setWriteEnabled(enabled) {
   const ids = [
     'saveChatPrimaryColor','saveChatButtonColor','uploadLogo','deleteLogo',
-    'uploadAvatar','deleteAvatar','fontSelect','tgChatVisible','hotelName',
+    'uploadAvatar','deleteAvatar','fontSelect','tgChatVisible','hotelName','botPrimaryLanguage',
     'timeZone','saveContext','contextText','widgetIconTrigger',
     'addKnowledgePage','knowledgeUrlInput','confirmAddKnowledge','personalitySelect','btnNewBot',
     'newBotNameInput','confirmNewBot','userInviteEmail','userInviteSubmit','confirmDashboardDelete'
@@ -6248,6 +6305,9 @@ function setWriteEnabled(enabled) {
   });
   if (typeof window.__applyKnowledgeWriteState === 'function') {
     window.__applyKnowledgeWriteState();
+  }
+  if (typeof window.__applyLanguagesWriteState === 'function') {
+    window.__applyLanguagesWriteState();
   }
   updateDashboardDeleteButtons();
 }
@@ -7685,6 +7745,121 @@ function initSettingsTab(){
     await visRef.set(!!$('tgChatVisible').checked);
     toast(t('✔ Chat visibility updated'));
   }));
+
+  // Language settings panel
+  const primaryLanguageSelect = $('botPrimaryLanguage');
+  const secondaryLanguagesContainer = $('botSecondaryLanguages');
+  const languagesRef = primaryLanguageSelect && secondaryLanguagesContainer ? eref('config/languages') : null;
+  const SUPPORTED_LANGUAGE_CODES = ['es','en','fr','de','pt','pl'];
+  let languageState = { primary: 'es', secondary: [] };
+
+  const normalizeLanguageCode = (code) => {
+    const normalized = (code || '').toString().trim().toLowerCase();
+    return SUPPORTED_LANGUAGE_CODES.includes(normalized) ? normalized : '';
+  };
+
+  const sanitizeSecondaryList = (list, primary) => {
+    if (!Array.isArray(list)) return [];
+    const seen = new Set();
+    list.forEach((code) => {
+      const normalized = normalizeLanguageCode(code);
+      if (normalized && normalized !== primary) {
+        seen.add(normalized);
+      }
+    });
+    return Array.from(seen);
+  };
+
+  const renderSecondarySelection = () => {
+    if (!secondaryLanguagesContainer) return;
+    const selected = new Set(languageState.secondary);
+    secondaryLanguagesContainer.querySelectorAll('[data-language-option]').forEach((button) => {
+      const code = normalizeLanguageCode(button.dataset.languageOption);
+      const isActive = !!code && selected.has(code);
+      button.classList.toggle('active', isActive);
+    });
+  };
+
+  const persistLanguageState = async () => {
+    if (!languagesRef) return;
+    const payload = {
+      primary: languageState.primary,
+      secondary: languageState.secondary
+    };
+    await canWrite(async () => {
+      await languagesRef.set(payload);
+      toast(t('✔ Language settings saved'));
+    });
+  };
+
+  const applyLanguageSnapshot = (value) => {
+    if (!primaryLanguageSelect || !secondaryLanguagesContainer) return;
+    const snapshot = typeof value === 'object' && value ? value : {};
+    const primary = normalizeLanguageCode(snapshot.primary) || 'es';
+    const secondary = sanitizeSecondaryList(snapshot.secondary || [], primary);
+    languageState = { primary, secondary };
+    primaryLanguageSelect.value = primary;
+    renderSecondarySelection();
+  };
+
+  const toggleSecondaryLanguage = (code) => {
+    if (!code) return false;
+    const current = new Set(languageState.secondary);
+    if (current.has(code)) {
+      current.delete(code);
+    } else {
+      current.add(code);
+    }
+    languageState.secondary = Array.from(current);
+    renderSecondarySelection();
+    return true;
+  };
+
+  const setSecondaryInteractivity = (enabled) => {
+    if (!secondaryLanguagesContainer) return;
+    const isEnabled = !!enabled;
+    secondaryLanguagesContainer.classList.toggle('opacity-60', !isEnabled);
+    secondaryLanguagesContainer.classList.toggle('pointer-events-none', !isEnabled);
+    secondaryLanguagesContainer.querySelectorAll('[data-language-option]').forEach((button) => {
+      button.disabled = !isEnabled;
+      button.classList.toggle('cursor-not-allowed', !isEnabled);
+    });
+  };
+
+  window.__applyLanguagesWriteState = () => {
+    setSecondaryInteractivity(canWriteFlag);
+  };
+
+  if (primaryLanguageSelect && secondaryLanguagesContainer && languagesRef) {
+    languagesRef.on('value', (snap) => {
+      applyLanguageSnapshot(snap?.val());
+    });
+
+    primaryLanguageSelect.addEventListener('change', () => {
+      const nextPrimary = normalizeLanguageCode(primaryLanguageSelect.value) || languageState.primary;
+      if (nextPrimary === languageState.primary) {
+        primaryLanguageSelect.value = languageState.primary;
+        return;
+      }
+      languageState.primary = nextPrimary;
+      languageState.secondary = sanitizeSecondaryList(languageState.secondary, nextPrimary);
+      renderSecondarySelection();
+      persistLanguageState();
+    });
+
+    secondaryLanguagesContainer.addEventListener('click', (event) => {
+      const target = event.target.closest('[data-language-option]');
+      if (!target || target.disabled) return;
+      const code = normalizeLanguageCode(target.dataset.languageOption);
+      if (!code || code === languageState.primary) return;
+      const changed = toggleSecondaryLanguage(code);
+      if (changed) {
+        persistLanguageState();
+      }
+    });
+
+    setSecondaryInteractivity(canWriteFlag);
+  }
 
   // General Information
   const nameRef = eref('config/hotelName');

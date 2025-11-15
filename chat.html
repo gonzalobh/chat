@@ -175,7 +175,11 @@
   </div>
 
   <script>
-    let USER_LANGUAGE = 'en';
+    let USER_LANGUAGE = 'es';
+    const CHAT_SUPPORTED_LANGUAGES = ['es','en','fr','de','pt','pl'];
+    let BOT_PRIMARY_LANGUAGE = 'es';
+    let BOT_SECONDARY_LANGUAGES = [];
+    let chatLanguagesReady = false;
     document.addEventListener('DOMContentLoaded', () => {
       const BROWSER_LANGUAGE = (navigator.language || navigator.userLanguage || 'en').slice(0, 2).toLowerCase();
       const TEXT_TRANSLATIONS = {
@@ -199,8 +203,6 @@
       if (chatInput) {
         chatInput.placeholder = selected.inputPlaceholder;
       }
-
-      USER_LANGUAGE = BROWSER_LANGUAGE;
 
       const downloadChatBtnLabel = document.querySelector('#downloadChatBtn span');
       if (downloadChatBtnLabel) {
@@ -463,6 +465,67 @@ async function prepareBotPath() {
 const urlParams = new URLSearchParams(location.search);
 let PROXY_URL = urlParams.get('proxy') || "https://hotel-chat-proxy.vercel.app/api/chat";
 // Espera respuesta JSON: { choices: [ { message: { content: "…" } } ] } (OpenAI-style)
+
+function normalizeChatLanguageCode(code) {
+  const normalized = (code || '').toString().trim().toLowerCase();
+  return CHAT_SUPPORTED_LANGUAGES.includes(normalized) ? normalized : '';
+}
+
+function sanitizeSecondaryLanguageList(list, primary) {
+  if (!Array.isArray(list)) return [];
+  const seen = new Set();
+  list.forEach((code) => {
+    const normalized = normalizeChatLanguageCode(code);
+    if (normalized && normalized !== primary) {
+      seen.add(normalized);
+    }
+  });
+  return Array.from(seen);
+}
+
+function applyChatLanguageConfig(config) {
+  const snapshot = config && typeof config === 'object' ? config : {};
+  const primary = normalizeChatLanguageCode(snapshot.primary) || 'es';
+  const secondary = sanitizeSecondaryLanguageList(snapshot.secondary, primary);
+  BOT_PRIMARY_LANGUAGE = primary;
+  BOT_SECONDARY_LANGUAGES = secondary;
+  if (!chatLanguagesReady || BOT_SECONDARY_LANGUAGES.length === 0) {
+    USER_LANGUAGE = BOT_PRIMARY_LANGUAGE;
+  }
+  chatLanguagesReady = true;
+}
+
+async function detectLanguage(text) {
+  const content = (text || '').trim();
+  if (!content) return BOT_PRIMARY_LANGUAGE;
+  const prompt = `Detecta el idioma principal del siguiente texto y responde solo con el código ISO 639-1 en minúsculas (por ejemplo: es, en, fr).\n\nTexto:\n"""${content}"""`;
+  try {
+    const res = await fetch(PROXY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    if (!res.ok) throw new Error('Language detection request failed');
+    const data = await res.json();
+    const raw = (data?.choices?.[0]?.message?.content || '').trim().toLowerCase();
+    const match = raw.match(/\b[a-z]{2}\b/);
+    if (match) {
+      return match[0];
+    }
+  } catch (err) {
+    console.warn('Language detection failed', err);
+  }
+  return BOT_PRIMARY_LANGUAGE;
+}
+
+async function detectAllowedLanguage(text) {
+  const detected = await detectLanguage(text);
+  const allowed = [BOT_PRIMARY_LANGUAGE, ...BOT_SECONDARY_LANGUAGES];
+  const uniqueAllowed = Array.from(new Set(allowed.filter(Boolean)));
+  return uniqueAllowed.includes(detected) ? detected : BOT_PRIMARY_LANGUAGE;
+}
 
 /* =========================
    UI ELEMENTS
@@ -983,7 +1046,8 @@ async function askAI(userText) {
 
   const body = {
     messages: MESSAGES,
-    system: combinedSystem
+    system: combinedSystem,
+    lang: USER_LANGUAGE || BOT_PRIMARY_LANGUAGE || 'es'
   };
 
   const res = await fetch(PROXY_URL, {
@@ -1069,6 +1133,16 @@ async function sendNow(){
   const leadDetected = await maybePromptLeadCaptureAI(t);
   if (leadDetected === true) {
     return;
+  }
+  try {
+    if (BOT_SECONDARY_LANGUAGES.length) {
+      USER_LANGUAGE = await detectAllowedLanguage(t);
+    } else {
+      USER_LANGUAGE = BOT_PRIMARY_LANGUAGE;
+    }
+  } catch (err) {
+    console.warn('Language detection skipped, using primary language', err);
+    USER_LANGUAGE = BOT_PRIMARY_LANGUAGE;
   }
   MESSAGES.push({ role:'user', content:t });
   handleUserMessage(t);
@@ -1180,6 +1254,11 @@ function applyPrimaryColor(color){
 function initFirebaseBindings() {
   // Colores
   eref('config/chatPrimaryColor').on('value', s => applyPrimaryColor(s.val() || '#111111'));
+
+  // Idiomas permitidos
+  eref('config/languages').on('value', (snap) => {
+    applyChatLanguageConfig(snap?.val());
+  });
 
   // 🆕 Fondo del chat
   eref('config/chatBackgroundColor').on('value', s => {
