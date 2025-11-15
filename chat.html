@@ -624,6 +624,38 @@ function getLastUserMessage() {
   return '';
 }
 
+function getRecentUserMessages(limit = 5) {
+  const messages = [];
+  for (let i = conversationLog.length - 1; i >= 0 && messages.length < limit; i -= 1) {
+    const entry = conversationLog[i];
+    if (entry.sender === 'user' && entry.text) {
+      messages.unshift(entry.text);
+    }
+  }
+  return messages;
+}
+
+async function generateLeadSummaryFromAI() {
+  const recentMessages = getRecentUserMessages(6);
+  if (!recentMessages.length) return '';
+  const userMessagesBlock = recentMessages.join('\n');
+  const prompt = `Genera un resumen muy breve (máximo 6 palabras) que describa qué necesita el usuario según los mensajes recientes del chat.\n\nReglas:\n- No saludes ni agregues explicaciones.\n- No inventes información que no está en los mensajes.\n- No repitas textualmente frases largas del usuario.\n- Usa un tono profesional y claro.\n- Si el usuario solo pide ser contactado sin contexto\n  (“quiero que me contacten”, “llámenme”, “me puedes escribir?”),\n  devuelve exactamente: “Solicitud de contacto”.\n\nDevuelve solo el resumen, sin texto extra.\n\nMensajes del usuario:\n${userMessagesBlock}`;
+  try {
+    const res = await fetch(PROXY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: [{ role: 'user', content: prompt }] })
+    });
+    if (!res.ok) throw new Error('IA request failed: ' + res.status);
+    const data = await res.json();
+    const summary = data?.choices?.[0]?.message?.content?.trim();
+    return summary || '';
+  } catch (err) {
+    console.warn('No se pudo generar el resumen del lead', err);
+    return '';
+  }
+}
+
 function renderLeadPrompt(promptText) {
   const leadText = (promptText || '').trim() || 'Para avanzar, ¿quieres que un asesor te contacte?';
   const safeLeadText = leadText
@@ -729,7 +761,7 @@ function validatePhone(value) {
   return /^[+]?[-\d()\s]{6,}$/.test(trimmed);
 }
 
-function saveLeadToFirebase(state) {
+async function saveLeadToFirebase(state) {
   if (!state || !state.name || !state.method) return Promise.resolve();
   const leadRef = getLeadRef();
   const timestamp = Date.now();
@@ -747,6 +779,12 @@ function saveLeadToFirebase(state) {
   const lastMessage = getLastUserMessage();
   if (firstMessage) payload.firstMessage = firstMessage;
   if (lastMessage) payload.lastMessage = lastMessage;
+  if (state.email || state.phone) {
+    const summary = await generateLeadSummaryFromAI();
+    if (summary) {
+      payload.note = summary;
+    }
+  }
   return leadRef.update(payload).catch(err => {
     console.warn('No se pudo guardar el lead', err);
   });
