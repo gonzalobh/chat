@@ -72,6 +72,46 @@
     "pt": "Exportar CSV"
   },
   {
+    "key": "leads.table.column.name",
+    "en": "Name",
+    "fr": "Nom",
+    "es": "Nombre",
+    "de": "Name",
+    "pt": "Nome"
+  },
+  {
+    "key": "leads.table.column.contact",
+    "en": "Contact",
+    "fr": "Contact",
+    "es": "Contacto",
+    "de": "Kontakt",
+    "pt": "Contato"
+  },
+  {
+    "key": "leads.table.column.summary",
+    "en": "Summary",
+    "fr": "Résumé",
+    "es": "Resumen",
+    "de": "Zusammenfassung",
+    "pt": "Resumo"
+  },
+  {
+    "key": "leads.table.column.date",
+    "en": "Date",
+    "fr": "Date",
+    "es": "Fecha",
+    "de": "Datum",
+    "pt": "Data"
+  },
+  {
+    "key": "leads.table.column.actions",
+    "en": "Actions",
+    "fr": "Actions",
+    "es": "Acciones",
+    "de": "Aktionen",
+    "pt": "Ações"
+  },
+  {
     "key": "Nombre",
     "en": "Name",
     "fr": "Nom",
