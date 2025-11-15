@@ -2313,6 +2313,7 @@ if (window.translationManager) {
     languageSelectEl.value = translationManager.getCurrentLanguage();
     languageSelectEl.addEventListener('change', (event) => {
       translationManager.applyLanguage(event.target.value);
+      renderLeadsTable();
     });
 
     const languageOptionMap = {
@@ -2378,6 +2379,45 @@ function escapeCSVValue(value) {
   return stringValue;
 }
 
+const LEAD_NOTE_LANGUAGES = ['es', 'en', 'fr', 'pl', 'de'];
+
+function getCurrentPanelLanguage() {
+  if (window.translationManager && typeof translationManager.getCurrentLanguage === 'function') {
+    const lang = translationManager.getCurrentLanguage();
+    if (lang) return lang;
+  }
+  return 'es';
+}
+
+function getLeadNoteText(note, preferredLanguage = getCurrentPanelLanguage()) {
+  if (!note) return '';
+  if (typeof note === 'string') return note;
+  if (typeof note === 'object') {
+    const normalizedPreferred = (preferredLanguage || '').trim();
+    const languageOrder = [];
+    if (normalizedPreferred) languageOrder.push(normalizedPreferred);
+    LEAD_NOTE_LANGUAGES.forEach((lang) => {
+      if (!languageOrder.includes(lang)) {
+        languageOrder.push(lang);
+      }
+    });
+    for (const lang of languageOrder) {
+      const value = note[lang];
+      if (typeof value === 'string' && value.trim()) {
+        return value.trim();
+      }
+    }
+    const fallbackValue = Object.values(note).find((value) => typeof value === 'string' && value.trim());
+    if (fallbackValue) return fallbackValue.trim();
+  }
+  return '';
+}
+
+function getLeadNoteForLanguage(lead, language = getCurrentPanelLanguage()) {
+  if (!lead) return '';
+  return getLeadNoteText(lead.note, language);
+}
+
 function convertLeadsToCSV(leads = []) {
   const headers = ['Nombre', 'Email', 'Teléfono', 'Método', 'Resumen', 'Fecha'];
   const rows = leads.map((lead) => [
@@ -2385,7 +2425,7 @@ function convertLeadsToCSV(leads = []) {
     lead.email || '',
     lead.phone || '',
     (lead.method || '').toLowerCase() === 'phone' ? 'Teléfono' : 'Email',
-    lead.note || '',
+    getLeadNoteForLanguage(lead),
     formatLeadTimestamp(lead.timestamp) || '',
   ]);
   return [headers, ...rows]
@@ -9159,17 +9199,22 @@ function formatLeadTimestamp(value) {
   }
 }
 
-function renderLeadsTable(leads = []) {
+function renderLeadsTable(leads) {
   if (!leadsTableBodyEl) return;
-  leadsDataCache = Array.isArray(leads) ? leads.slice() : [];
+  if (Array.isArray(leads)) {
+    leadsDataCache = leads.slice();
+  }
+  const dataToRender = Array.isArray(leadsDataCache) ? leadsDataCache.slice() : [];
   leadsTableBodyEl.innerHTML = '';
-  if (!leadsDataCache.length) {
+  if (!dataToRender.length) {
     if (leadsEmptyStateEl) leadsEmptyStateEl.classList.remove('hidden');
     return;
   }
   if (leadsEmptyStateEl) leadsEmptyStateEl.classList.add('hidden');
 
-  leadsDataCache.forEach((lead) => {
+  const panelLanguage = getCurrentPanelLanguage();
+
+  dataToRender.forEach((lead) => {
     const row = document.createElement('tr');
     row.className = 'border-b border-gray-100 last:border-0';
 
@@ -9201,7 +9246,8 @@ function renderLeadsTable(leads = []) {
 
     const noteCell = document.createElement('td');
     noteCell.className = 'px-4 py-3 text-gray-700';
-    noteCell.textContent = lead.note || '—';
+    const noteText = getLeadNoteForLanguage(lead, panelLanguage);
+    noteCell.textContent = noteText || '—';
 
     const dateCell = document.createElement('td');
     dateCell.className = 'px-4 py-3 text-gray-600';

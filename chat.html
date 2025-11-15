@@ -271,6 +271,7 @@ let hasUserSentMessage = false;
 let leadPromptShown = false;
 let leadCaptureState = null;
 let leadCaptureCompleted = false;
+const LEAD_SUMMARY_LANGUAGES = ['es', 'en', 'fr', 'pl', 'de'];
 
 let SYSTEM_PROMPT = "";
 let systemPromptRef = null;
@@ -635,11 +636,11 @@ function getRecentUserMessages(limit = 5) {
   return messages;
 }
 
-async function generateLeadSummaryFromAI() {
-  const recentMessages = getRecentUserMessages(6);
-  if (!recentMessages.length) return '';
-  const userMessagesBlock = recentMessages.join('\n');
-  const prompt = `Genera un resumen muy breve (máximo 6 palabras) que describa qué necesita el usuario según los mensajes recientes del chat.\n\nReglas:\n- No saludes ni agregues explicaciones.\n- No inventes información que no está en los mensajes.\n- No repitas textualmente frases largas del usuario.\n- Usa un tono profesional y claro.\n- Si el usuario solo pide ser contactado sin contexto\n  (“quiero que me contacten”, “llámenme”, “me puedes escribir?”),\n  devuelve exactamente: “Solicitud de contacto”.\n\nDevuelve solo el resumen, sin texto extra.\n\nMensajes del usuario:\n${userMessagesBlock}`;
+function buildLeadSummaryPrompt(languageCode, userMessagesBlock) {
+  return `Genera un resumen muy breve (máximo 6 palabras) que describa qué necesita el usuario según los mensajes recientes del chat. \nEl resumen debe escribirse exclusivamente en el idioma especificado a continuación.\n\nIdioma objetivo: ${languageCode}\n\nReglas:\n- No saludes.\n- No expliques nada.\n- No inventes información.\n- No repitas textualmente frases largas del usuario.\n- Tono profesional y claro.\n- Si el usuario solo pidió contacto sin dar contexto ("quiero que me contacten", "llámenme", "contacto"), devuelve exactamente: \n  - En español: "Solicitud de contacto"\n  - En inglés: "Contact request"\n  - En francés: "Demande de contact"\n  - En polaco: "Prośba o kontakt"\n  - En alemán: "Kontaktanfrage"\n\nDevuelve solamente el resumen.\n\nMensajes del usuario:\n${userMessagesBlock}`;
+}
+
+async function requestLeadSummary(prompt) {
   try {
     const res = await fetch(PROXY_URL, {
       method: 'POST',
@@ -648,12 +649,26 @@ async function generateLeadSummaryFromAI() {
     });
     if (!res.ok) throw new Error('IA request failed: ' + res.status);
     const data = await res.json();
-    const summary = data?.choices?.[0]?.message?.content?.trim();
-    return summary || '';
+    return data?.choices?.[0]?.message?.content?.trim() || '';
   } catch (err) {
     console.warn('No se pudo generar el resumen del lead', err);
     return '';
   }
+}
+
+async function generateLeadSummariesFromAI() {
+  const recentMessages = getRecentUserMessages(6);
+  if (!recentMessages.length) return null;
+  const userMessagesBlock = recentMessages.join('\n');
+  const summaries = {};
+  for (const languageCode of LEAD_SUMMARY_LANGUAGES) {
+    const prompt = buildLeadSummaryPrompt(languageCode, userMessagesBlock);
+    const summary = await requestLeadSummary(prompt);
+    if (summary) {
+      summaries[languageCode] = summary;
+    }
+  }
+  return Object.keys(summaries).length ? summaries : null;
 }
 
 function renderLeadPrompt(promptText) {
@@ -777,9 +792,9 @@ async function saveLeadToFirebase(state) {
   if (firstMessage) payload.firstMessage = firstMessage;
   if (lastMessage) payload.lastMessage = lastMessage;
   if (state.email || state.phone) {
-    const summary = await generateLeadSummaryFromAI();
-    if (summary) {
-      payload.note = summary;
+    const summaries = await generateLeadSummariesFromAI();
+    if (summaries) {
+      payload.note = summaries;
     }
   }
   return leadRef.update(payload).catch(err => {
