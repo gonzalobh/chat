@@ -2313,6 +2313,7 @@ if (window.translationManager) {
     languageSelectEl.value = translationManager.getCurrentLanguage();
     languageSelectEl.addEventListener('change', (event) => {
       translationManager.applyLanguage(event.target.value);
+      refreshLeadsStaticTranslations();
       renderLeadsTable();
     });
 
