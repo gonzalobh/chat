@@ -624,10 +624,17 @@ function getLastUserMessage() {
   return '';
 }
 
-function renderLeadPrompt() {
+function renderLeadPrompt(promptText) {
+  const leadText = (promptText || '').trim() || 'Para avanzar, ¿quieres que un asesor te contacte?';
+  const safeLeadText = leadText
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
   const html = `
     <div class="space-y-3">
-      <p>Para avanzar, ¿quieres que un asesor te contacte?</p>
+      <p>${safeLeadText}</p>
       <div class="flex flex-wrap gap-2">
         <button class="pill-btn lead-option" data-lead-action="email">Dejar email </button>
         <button class="pill-btn lead-option" data-lead-action="phone">Dejar teléfono</button>
@@ -635,7 +642,39 @@ function renderLeadPrompt() {
       </div>
     </div>
   `;
-  addAssistantMessageHTML(html, { avatarUrl: CURRENT.avatarUrl, rawText: 'Para avanzar, ¿quieres que un asesor te contacte?' });
+  addAssistantMessageHTML(html, { avatarUrl: CURRENT.avatarUrl, rawText: leadText });
+}
+
+async function generateLeadIntro(latestUserText) {
+  const fallbackText = 'Para avanzar, ¿quieres que un asesor te contacte?';
+  const userMessage = (latestUserText || '').trim() || getLastUserMessage() || fallbackText;
+  const promptMessages = [
+    {
+      role: 'system',
+      content: 'Genera una frase muy breve (máximo 1 línea) invitando al usuario a dejar un medio de contacto. Adáptate al mensaje previo del usuario. No ofrezcas opciones en la frase; solo introduce el contexto. Tono amable, humano y profesional.'
+    },
+    {
+      role: 'user',
+      content: userMessage
+    }
+  ];
+
+  try {
+    const res = await fetch(PROXY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: promptMessages })
+    });
+
+    if (!res.ok) throw new Error('IA request failed: ' + res.status);
+
+    const data = await res.json();
+    const generated = data?.choices?.[0]?.message?.content?.trim();
+    return generated || fallbackText;
+  } catch (err) {
+    console.warn('No se pudo generar la frase de lead', err);
+    return fallbackText;
+  }
 }
 
 async function maybePromptLeadCaptureAI(latestUserText) {
@@ -648,7 +687,8 @@ async function maybePromptLeadCaptureAI(latestUserText) {
   const leadDetected = await detectLeadIntent(conversation);
   if (leadDetected) {
     leadPromptShown = true;
-    renderLeadPrompt();
+    const introText = await generateLeadIntro(latestUserText);
+    renderLeadPrompt(introText);
     return true;
   }
   return false;
