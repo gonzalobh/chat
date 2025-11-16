@@ -360,12 +360,6 @@ function logChatMessage(sender, text) {
       hasUserSentMessage = true;
       flushPendingMessages();
       persistChatPayload(payload);
-      if (leadCaptureEnabled && !leadPromptShown) {
-        leadPromptShown = true;
-        skipNextUserMessageForLeadCapture = true;
-        startSequentialLeadCapture();
-        return;
-      }
     } else {
       pendingMessagesQueue.push(payload);
     }
@@ -892,6 +886,33 @@ async function askAI(userText) {
   return data?.choices?.[0]?.message?.content || "";
 }
 
+async function detectLeadIntentAI(userText) {
+  try {
+    const body = {
+      system: "Eres un clasificador. Tu tarea es determinar si el usuario tiene intención de entregar sus datos o de que la empresa lo contacte. Responde exclusivamente 'YES' o 'NO', sin explicaciones.",
+      messages: [
+        { role: "user", content: userText }
+      ]
+    };
+
+    const res = await fetch(PROXY_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+
+    if (!res.ok) return false;
+
+    const data = await res.json();
+    const content = (data?.choices?.[0]?.message?.content || "").toLowerCase().trim();
+
+    return content === "yes";
+  } catch (e) {
+    console.warn("Intent detection failed:", e);
+    return false;
+  }
+}
+
 async function handleUserMessage(text){
   const safeText = typeof text === 'string' ? text : '';
 
@@ -926,6 +947,20 @@ async function handleUserMessage(text){
         pt: "Obrigado! Já tenho seus dados. Como posso ajudar?"
       }));
 
+      return;
+    }
+  }
+
+  // ➜ ACTIVAR LEAD CAPTURE SOLO SI LA IA DETECTA INTENCIÓN REAL
+  if (
+    leadCaptureEnabled &&
+    !leadCaptureState &&
+    !leadCaptureCompleted
+  ) {
+    const wantsLead = await detectLeadIntentAI(safeText);
+    if (wantsLead) {
+      leadPromptShown = true;
+      startSequentialLeadCapture();
       return;
     }
   }
