@@ -1448,6 +1448,17 @@ body.login-view #appContainer {
                 </div>
                 <input id="tgChatVisible" type="checkbox" class="toggle" />
               </div>
+
+              <div class="flex items-center justify-between gap-4 border border-gray-200 rounded-2xl px-4 py-3 bg-gray-50">
+                <div>
+                  <div class="flex items-center gap-2 font-semibold text-gray-800 text-sm">
+                    <i data-lucide="users" class="w-4 h-4"></i>
+                    Lead capture
+                  </div>
+                  <p class="text-xs text-gray-500">Enable or disable the lead capture prompts.</p>
+                </div>
+                <input id="tgLeadCapture" type="checkbox" class="toggle" />
+              </div>
             </div>
 
           </div>
@@ -6234,7 +6245,7 @@ async function refreshPermissions() {
 function setWriteEnabled(enabled) {
   const ids = [
     'saveChatPrimaryColor','saveChatButtonColor','uploadLogo','deleteLogo',
-    'uploadAvatar','deleteAvatar','fontSelect','tgChatVisible','hotelName',
+    'uploadAvatar','deleteAvatar','fontSelect','tgChatVisible','tgLeadCapture','hotelName',
     'timeZone','saveContext','contextText','widgetIconTrigger',
     'addKnowledgePage','knowledgeUrlInput','confirmAddKnowledge','personalitySelect','btnNewBot',
     'newBotNameInput','confirmNewBot','userInviteEmail','userInviteSubmit','confirmDashboardDelete'
@@ -7680,10 +7691,26 @@ function initSettingsTab(){
 
   // Toggle show button
   const visRef = eref('config/chatVisible');
-  visRef.once('value', s=> $('tgChatVisible').checked = !!s.val());
-  $('tgChatVisible').addEventListener('change', ()=> canWrite(async ()=>{
-    await visRef.set(!!$('tgChatVisible').checked);
+  const chatVisibleToggle = $('tgChatVisible');
+  visRef.once('value', s=> {
+    if (chatVisibleToggle) chatVisibleToggle.checked = !!s.val();
+  });
+  chatVisibleToggle?.addEventListener('change', ()=> canWrite(async ()=>{
+    await visRef.set(!!chatVisibleToggle.checked);
     toast(t('✔ Chat visibility updated'));
+  }));
+
+  // Lead capture toggle
+  const leadCaptureRef = eref('config/leadCaptureEnabled');
+  const leadCaptureToggle = $('tgLeadCapture');
+  leadCaptureRef.once('value', (s) => {
+    const value = s.val();
+    const enabled = value === false ? false : true;
+    if (leadCaptureToggle) leadCaptureToggle.checked = enabled;
+  });
+  leadCaptureToggle?.addEventListener('change', () => canWrite(async () => {
+    await leadCaptureRef.set(!!leadCaptureToggle.checked);
+    toast(t('✔ Lead capture updated'));
   }));
 
   // General Information

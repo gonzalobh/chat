@@ -271,6 +271,7 @@ let hasUserSentMessage = false;
 let leadPromptShown = false;
 let leadCaptureState = null;
 let leadCaptureCompleted = false;
+let leadCaptureEnabled = true;
 const LEAD_SUMMARY_LANGUAGES = ['es', 'en', 'fr', 'pl', 'de'];
 
 let SYSTEM_PROMPT = "";
@@ -418,6 +419,26 @@ function getBotBasePath() {
 }
 
 function eref(path){ return db.ref(`${getBotBasePath()}/${path}`); }
+
+function applyLeadCaptureConfig(value) {
+  const normalized = value === false ? false : true;
+  leadCaptureEnabled = normalized;
+  if (!normalized) {
+    leadPromptShown = false;
+    leadCaptureState = null;
+    leadCaptureCompleted = false;
+  }
+}
+
+try {
+  eref('config/leadCaptureEnabled').on('value', (snap) => {
+    applyLeadCaptureConfig(snap.val());
+  }, (err) => {
+    console.warn('No se pudo leer config/leadCaptureEnabled', err);
+  });
+} catch (err) {
+  console.warn('No se pudo inicializar el listener de lead capture', err);
+}
 
 async function prepareBotPath() {
   const candidates = [
@@ -672,6 +693,7 @@ async function generateLeadSummariesFromAI() {
 }
 
 function renderLeadPrompt(promptText) {
+  if (!leadCaptureEnabled) return;
   const leadText = (promptText || '').trim() || 'Para avanzar, ¿quieres que un asesor te contacte?';
   const safeLeadText = leadText
     .replace(/&/g, '&amp;')
@@ -722,6 +744,7 @@ async function generateLeadIntro(latestUserText) {
 }
 
 async function maybePromptLeadCaptureAI(latestUserText) {
+  if (!leadCaptureEnabled) return false;
   if (leadPromptShown || leadCaptureCompleted || leadCaptureState?.active) return false;
 
   const conversation = conversationLog
@@ -739,6 +762,7 @@ async function maybePromptLeadCaptureAI(latestUserText) {
 }
 
 function startLeadCapture(method) {
+  if (!leadCaptureEnabled) return;
   leadCaptureState = {
     active: true,
     method,
@@ -751,6 +775,10 @@ function startLeadCapture(method) {
 }
 
 function handleLeadOption(action) {
+  if (!leadCaptureEnabled) {
+    leadCaptureState = null;
+    return;
+  }
   if (action === 'email' || action === 'phone') {
     startLeadCapture(action);
     return;
@@ -774,6 +802,7 @@ function validatePhone(value) {
 }
 
 async function saveLeadToFirebase(state) {
+  if (!leadCaptureEnabled) return Promise.resolve();
   if (!state || !state.name || !state.method) return Promise.resolve();
   const leadRef = getLeadRef();
   const timestamp = Date.now();
@@ -813,6 +842,7 @@ function finalizeLeadCapture() {
 }
 
 function processLeadCaptureInput(text) {
+  if (!leadCaptureEnabled) return false;
   if (!leadCaptureState?.active) return false;
   const trimmed = (text || '').trim();
   if (!trimmed) return true;
