@@ -176,6 +176,63 @@
 
   <script>
     let USER_LANGUAGE = 'en';
+    const I18N = {
+      es: {
+        leaveEmail: 'Dejar email',
+        leavePhone: 'Dejar teléfono',
+        noThanks: 'No gracias',
+        askName: '¿Cuál es tu nombre?',
+        askEmail: 'Perfecto, ahora escribe tu correo electrónico:',
+        askPhone: 'Perfecto, ahora escribe tu número de contacto:',
+        invalidEmail: 'Parece que el correo no es válido. ¿Puedes intentarlo nuevamente?',
+        invalidPhone: 'Ese número no parece válido. Por favor ingrésalo nuevamente con código de país si es posible.',
+        thankYou: '¡Gracias! Un asesor te contactará pronto.'
+      },
+      en: {
+        leaveEmail: 'Leave email',
+        leavePhone: 'Leave phone',
+        noThanks: 'No thanks',
+        askName: "What's your name?",
+        askEmail: 'Great, now type your email address:',
+        askPhone: 'Great, now type your contact number:',
+        invalidEmail: "It seems that email isn't valid. Could you try again?",
+        invalidPhone: "That number doesn't look valid. Please enter it again with country code if possible.",
+        thankYou: 'Thanks! An advisor will contact you soon.'
+      },
+      fr: {
+        leaveEmail: 'Laisser un e-mail',
+        leavePhone: 'Laisser un téléphone',
+        noThanks: 'Non merci',
+        askName: 'Quel est ton nom ?',
+        askEmail: 'Parfait, écris maintenant ton adresse e-mail :',
+        askPhone: 'Parfait, écris maintenant ton numéro de contact :',
+        invalidEmail: "Il semble que cet e-mail n'est pas valide. Peux-tu réessayer ?",
+        invalidPhone: "Ce numéro ne semble pas valide. Merci de le saisir à nouveau avec l'indicatif si possible.",
+        thankYou: 'Merci ! Un conseiller te contactera bientôt.'
+      },
+      de: {
+        leaveEmail: 'E-Mail hinterlassen',
+        leavePhone: 'Telefonnummer hinterlassen',
+        noThanks: 'Nein danke',
+        askName: 'Wie heißt du?',
+        askEmail: 'Perfekt, gib jetzt deine E-Mail-Adresse ein:',
+        askPhone: 'Perfekt, gib jetzt deine Kontaktnummer ein:',
+        invalidEmail: 'Diese E-Mail scheint nicht gültig zu sein. Kannst du es noch einmal versuchen?',
+        invalidPhone: 'Diese Nummer scheint nicht gültig zu sein. Bitte gib sie erneut mit Ländervorwahl ein, wenn möglich.',
+        thankYou: 'Danke! Ein Berater wird dich bald kontaktieren.'
+      },
+      pl: {
+        leaveEmail: 'Podaj e-mail',
+        leavePhone: 'Podaj telefon',
+        noThanks: 'Nie, dziękuję',
+        askName: 'Jak masz na imię?',
+        askEmail: 'Świetnie, teraz wpisz swój adres e-mail:',
+        askPhone: 'Świetnie, teraz wpisz swój numer kontaktowy:',
+        invalidEmail: 'Wygląda na to, że ten e-mail jest nieprawidłowy. Czy możesz spróbować ponownie?',
+        invalidPhone: 'Ten numer wygląda na nieprawidłowy. Wpisz go ponownie z kodem kraju, jeśli to możliwe.',
+        thankYou: 'Dziękujemy! Wkrótce skontaktuje się z Tobą doradca.'
+      }
+    };
     document.addEventListener('DOMContentLoaded', () => {
       const BROWSER_LANGUAGE = (navigator.language || navigator.userLanguage || 'en').slice(0, 2).toLowerCase();
       const TEXT_TRANSLATIONS = {
@@ -672,6 +729,7 @@ async function generateLeadSummariesFromAI() {
 }
 
 function renderLeadPrompt(promptText) {
+  const translations = I18N[USER_LANGUAGE] || I18N.en;
   const leadText = (promptText || '').trim() || 'Para avanzar, ¿quieres que un asesor te contacte?';
   const safeLeadText = leadText
     .replace(/&/g, '&amp;')
@@ -683,9 +741,9 @@ function renderLeadPrompt(promptText) {
     <div class="space-y-3">
       <p>${safeLeadText}</p>
       <div class="flex flex-wrap gap-2">
-        <button class="pill-btn lead-option" data-lead-action="email">Dejar email </button>
-        <button class="pill-btn lead-option" data-lead-action="phone">Dejar teléfono</button>
-        <button class="pill-btn lead-option" data-lead-action="skip">No gracias</button>
+        <button class="pill-btn lead-option" data-lead-action="email">${translations.leaveEmail} </button>
+        <button class="pill-btn lead-option" data-lead-action="phone">${translations.leavePhone}</button>
+        <button class="pill-btn lead-option" data-lead-action="skip">${translations.noThanks}</button>
       </div>
     </div>
   `;
@@ -739,6 +797,7 @@ async function maybePromptLeadCaptureAI(latestUserText) {
 }
 
 function startLeadCapture(method) {
+  const translations = I18N[USER_LANGUAGE] || I18N.en;
   leadCaptureState = {
     active: true,
     method,
@@ -747,7 +806,7 @@ function startLeadCapture(method) {
     email: '',
     phone: ''
   };
-  addAssistantMessage('¿Cuál es tu nombre?', { avatarUrl: CURRENT.avatarUrl });
+  addAssistantMessage(translations.askName, { avatarUrl: CURRENT.avatarUrl });
 }
 
 function handleLeadOption(action) {
@@ -804,7 +863,8 @@ async function saveLeadToFirebase(state) {
 
 function finalizeLeadCapture() {
   if (!leadCaptureState) return;
-  const thankYou = '¡Gracias! Un asesor te contactará pronto.';
+  const translations = I18N[USER_LANGUAGE] || I18N.en;
+  const thankYou = translations.thankYou;
   addAssistantMessage(thankYou, { avatarUrl: CURRENT.avatarUrl });
   const snapshot = { ...leadCaptureState };
   leadCaptureState = null;
@@ -814,6 +874,7 @@ function finalizeLeadCapture() {
 
 function processLeadCaptureInput(text) {
   if (!leadCaptureState?.active) return false;
+  const translations = I18N[USER_LANGUAGE] || I18N.en;
   const trimmed = (text || '').trim();
   if (!trimmed) return true;
 
@@ -821,15 +882,15 @@ function processLeadCaptureInput(text) {
     leadCaptureState.name = trimmed;
     leadCaptureState.step = leadCaptureState.method === 'email' ? 'collect-email' : 'collect-phone';
     const nextPrompt = leadCaptureState.method === 'email'
-      ? 'Perfecto, ahora escribe tu correo electrónico:'
-      : 'Perfecto, ahora escribe tu número de contacto:';
+      ? translations.askEmail
+      : translations.askPhone;
     addAssistantMessage(nextPrompt, { avatarUrl: CURRENT.avatarUrl });
     return true;
   }
 
   if (leadCaptureState.step === 'collect-email') {
     if (!validateEmail(trimmed)) {
-      addAssistantMessage('Parece que el correo no es válido. ¿Puedes intentarlo nuevamente?', { avatarUrl: CURRENT.avatarUrl });
+      addAssistantMessage(translations.invalidEmail, { avatarUrl: CURRENT.avatarUrl });
       return true;
     }
     leadCaptureState.email = trimmed;
@@ -841,7 +902,7 @@ function processLeadCaptureInput(text) {
 
   if (leadCaptureState.step === 'collect-phone') {
     if (!validatePhone(trimmed)) {
-      addAssistantMessage('Ese número no parece válido. Por favor ingrésalo nuevamente con código de país si es posible.', { avatarUrl: CURRENT.avatarUrl });
+      addAssistantMessage(translations.invalidPhone, { avatarUrl: CURRENT.avatarUrl });
       return true;
     }
     leadCaptureState.phone = trimmed;
