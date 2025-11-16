@@ -21,26 +21,18 @@
   async function fetchAllowedOrigins(empresa, botId) {
     const safeEmpresa = encodeURIComponent(empresa || "");
     const safeBot = encodeURIComponent(botId || "default");
-    const candidatePaths = [
-      `empresas/${safeEmpresa}/config/bots/${safeBot}/config/allowedUrls`,
-      `empresas/${safeEmpresa}/bots/${safeBot}/config/allowedUrls`,
-      `${safeEmpresa}/bots/${safeBot}/config/allowedUrls`
-    ];
+    const path = `empresas/${safeEmpresa}/bots/${safeBot}/config/allowedUrls`;
+    const url = `${FIREBASE_DB_URL}/${path}.json`;
 
-    for (const path of candidatePaths) {
-      const url = `${FIREBASE_DB_URL}/${path}.json`;
-      try {
-        const res = await fetch(url);
-        if (!res.ok) continue;
-        const data = await res.json();
-        const origins = toOriginList(data);
-        if (origins.length) return origins;
-      } catch (err) {
-        console.warn("No se pudieron cargar las URLs permitidas", err);
-      }
+    try {
+      const res = await fetch(url);
+      if (!res.ok) return [];
+      const data = await res.json();
+      return toOriginList(data);
+    } catch (err) {
+      console.warn("No se pudieron cargar las URLs permitidas", err);
+      return [];
     }
-
-    return [];
   }
 
   const main = async () => {
@@ -77,11 +69,10 @@
 
     const pageOrigin = pageUrl?.origin || window.location.origin;
     const allowedOrigins = await fetchAllowedOrigins(empresa, botAttr);
-    if (allowedOrigins.length && pageOrigin) {
-      if (!allowedOrigins.includes(pageOrigin)) {
-        console.warn("El chat está bloqueado para este sitio.", pageOrigin);
-        return;
-      }
+
+    if (!allowedOrigins.length || !pageOrigin || !allowedOrigins.includes(pageOrigin)) {
+      console.warn("El chat está bloqueado para este sitio.", pageOrigin);
+      return;
     }
 
     // 💅 Estilos del widget
