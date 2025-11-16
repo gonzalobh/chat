@@ -3,19 +3,54 @@
 
   const normalizeOrigin = (value) => {
     if (!value) return "";
+
+    const trimmed = value.toString().trim();
+    if (!trimmed) return "";
+
+    // Admite hostnames sin protocolo agregando prefijos seguros.
+    const candidates = [trimmed];
+    const looksLikeHostname = /^[a-z0-9.-]+\.[a-z]{2,}$/i.test(trimmed);
+    if (looksLikeHostname && !/^https?:\/\//i.test(trimmed)) {
+      candidates.push(`https://${trimmed}`);
+      candidates.push(`http://${trimmed}`);
+    }
+
+    for (const candidate of candidates) {
+      try {
+        const url = new URL(candidate);
+        return url.origin;
+      } catch (_) {
+        // probar siguiente candidato
+      }
+    }
+
+    return "";
+  };
+
+  const normalizeHostname = (value) => {
+    if (!value) return "";
     try {
       const url = new URL(value);
-      return url.origin;
+      return url.hostname.replace(/^www\./i, "");
     } catch (err) {
       return "";
     }
   };
 
   const toOriginList = (val) => {
-    if (Array.isArray(val)) return val.map(normalizeOrigin).filter(Boolean);
-    if (val && typeof val === "object") return Object.values(val).map(normalizeOrigin).filter(Boolean);
-    if (typeof val === "string") return [normalizeOrigin(val)].filter(Boolean);
-    return [];
+    const seen = new Set();
+    const push = (candidate) => {
+      const normalized = normalizeOrigin(candidate);
+      if (normalized && !seen.has(normalized)) seen.add(normalized);
+    };
+
+    if (Array.isArray(val)) val.forEach(push);
+    else if (val && typeof val === "object") {
+      Object.keys(val).forEach(push);
+      Object.values(val).forEach(push);
+    } else if (typeof val === "string") push(val);
+
+    return Array.from(seen);
   };
 
   async function fetchAllowedOrigins(empresa, botId) {
@@ -25,7 +60,7 @@
     const url = `${FIREBASE_DB_URL}/${path}.json`;
 
     try {
-      const res = await fetch(url);
+      const res = await fetch(url, { cache: "no-store" });
       if (!res.ok) return [];
       const data = await res.json();
       return toOriginList(data);
@@ -62,15 +97,32 @@
       pageUrl?.searchParams.get("bot") ||
       ""
     ).trim();
+
+    if (!botAttr) {
+      console.warn("El chat está bloqueado porque falta el identificador del bot.");
+      return;
+    }
+
     const empresa = empresaAttr || "Boletum";
     const params = new URLSearchParams({ empresa });
     if (botAttr) params.set("bot", botAttr);
     const iframeSrc = `https://tomos.bot/chat.html?${params.toString()}`;
 
-    const pageOrigin = pageUrl?.origin || window.location.origin;
+    const pageOrigin = normalizeOrigin(pageUrl?.href || window.location.href);
+    const pageHostname = normalizeHostname(pageUrl?.href || window.location.href);
     const allowedOrigins = await fetchAllowedOrigins(empresa, botAttr);
 
-    if (!allowedOrigins.length || !pageOrigin || !allowedOrigins.includes(pageOrigin)) {
+    const isAllowed = () => {
+      if (!pageOrigin || !pageHostname || !allowedOrigins.length) return false;
+
+      return allowedOrigins.some((allowed) => {
+        const origin = normalizeOrigin(allowed);
+        const hostname = normalizeHostname(allowed);
+        return origin === pageOrigin || hostname === pageHostname;
+      });
+    };
+
+    if (!isAllowed()) {
       console.warn("El chat está bloqueado para este sitio.", pageOrigin);
       return;
     }
