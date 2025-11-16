@@ -1257,7 +1257,30 @@ eref('config/avatarUrl').on('value', s => {
 /* =========================
    INTEGRACIÓN CON embed.js (versión estable y limpia)
 ========================= */
+/* =========================
+   INTEGRACIÓN CON embed.js (versión estable y limpia)
+========================= */
 function initEmbedIntegration() {
+  // 🔹 estado local de visibilidad del botón (por defecto TRUE)
+  let CHAT_BUTTON_VISIBLE = true;
+
+  // 🔹 Suscribirse a config/chatVisible en Firebase
+  if (typeof eref === "function") {
+    eref("config/chatVisible").on("value", (snap) => {
+      const raw = snap.val();
+      // si es false => oculto, si no existe o es true => visible
+      CHAT_BUTTON_VISIBLE = raw === false ? false : true;
+
+      // Enviar actualización inmediata al embed (por si ya está listo)
+      try {
+        window.parent.postMessage(
+          { action: "chatButtonStatus", visible: CHAT_BUTTON_VISIBLE },
+          "*"
+        );
+      } catch (e) {}
+    });
+  }
+
   window.addEventListener("message", (e) => {
     if (!e.data || typeof e.data !== "object") return;
     const { action } = e.data;
@@ -1303,8 +1326,9 @@ function initEmbedIntegration() {
     }
 
     if (action === "getChatButtonStatus") {
+      // 🔹 responder usando el valor real de Firebase
       window.parent.postMessage(
-        { action: "chatButtonStatus", visible: true },
+        { action: "chatButtonStatus", visible: CHAT_BUTTON_VISIBLE },
         "*"
       );
     }
@@ -1315,8 +1339,10 @@ function initEmbedIntegration() {
     }
   });
 
+  // Avisar que el chat está listo
   window.parent.postMessage({ action: "chatReady" }, "*");
 
+  // 🔹 Color del botón
   if (typeof eref === "function") {
     eref("config/chatButtonColor").on("value", (s) => {
       const color = s.val() || "#111111";
