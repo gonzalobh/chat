@@ -272,7 +272,7 @@ let leadPromptShown = false;
 let leadCaptureState = null;
 let leadCaptureCompleted = false;
 let leadCaptureEnabled = true;
-const LEAD_SUMMARY_LANGUAGES = ['es', 'en', 'fr', 'pl', 'de'];
+let skipNextUserMessageForLeadCapture = false;
 
 let SYSTEM_PROMPT = "";
 let systemPromptRef = null;
@@ -360,6 +360,12 @@ function logChatMessage(sender, text) {
       hasUserSentMessage = true;
       flushPendingMessages();
       persistChatPayload(payload);
+      if (leadCaptureEnabled && !leadPromptShown) {
+        leadPromptShown = true;
+        skipNextUserMessageForLeadCapture = true;
+        startSequentialLeadCapture();
+        return;
+      }
     } else {
       pendingMessagesQueue.push(payload);
     }
@@ -427,6 +433,7 @@ function applyLeadCaptureConfig(value) {
     leadPromptShown = false;
     leadCaptureState = null;
     leadCaptureCompleted = false;
+    skipNextUserMessageForLeadCapture = false;
   }
 }
 
@@ -623,266 +630,52 @@ function delayedAssistantAction(action, delayMs = 1800, opts = {}) {
   }, delayMs);
 }
 
-function getLeadRef(sessionId = CHAT_ID) {
-  return dbRef(`empresas/${EMPRESA}/bots/${BOT}/leads/${sessionId}`);
+function renderAssistantMessage(text) {
+  addAssistantMessage(text, { avatarUrl: CURRENT.avatarUrl });
 }
 
-function getFirstUserMessage() {
-  for (const entry of conversationLog) {
-    if (entry.sender === 'user' && entry.text) {
-      return entry.text;
-    }
-  }
-  return '';
+function translate(lang, dict) {
+  return dict[lang] || dict['en'] || Object.values(dict)[0];
 }
 
-function getLastUserMessage() {
-  for (let i = conversationLog.length - 1; i >= 0; i -= 1) {
-    const entry = conversationLog[i];
-    if (entry.sender === 'user' && entry.text) {
-      return entry.text;
-    }
-  }
-  return '';
+async function startSequentialLeadCapture() {
+  leadCaptureState = { step: 1, name: null, email: null, phone: null };
+  askName();
 }
 
-function getRecentUserMessages(limit = 5) {
-  const messages = [];
-  for (let i = conversationLog.length - 1; i >= 0 && messages.length < limit; i -= 1) {
-    const entry = conversationLog[i];
-    if (entry.sender === 'user' && entry.text) {
-      messages.unshift(entry.text);
-    }
-  }
-  return messages;
+function askName() {
+  renderAssistantMessage(translate(USER_LANGUAGE, {
+    es: "¿Cuál es tu nombre?",
+    en: "What's your name?",
+    fr: "Quel est votre nom ?",
+    de: "Wie ist dein Name?",
+    pl: "Jak masz na imię?",
+    pt: "Qual é o seu nome?"
+  }));
 }
 
-function buildLeadSummaryPrompt(languageCode, userMessagesBlock) {
-  return `Genera un resumen muy breve (máximo 6 palabras) que describa qué necesita el usuario según los mensajes recientes del chat. \nEl resumen debe escribirse exclusivamente en el idioma especificado a continuación.\n\nIdioma objetivo: ${languageCode}\n\nReglas:\n- No saludes.\n- No expliques nada.\n- No inventes información.\n- No repitas textualmente frases largas del usuario.\n- Tono profesional y claro.\n- Si el usuario solo pidió contacto sin dar contexto ("quiero que me contacten", "llámenme", "contacto"), devuelve exactamente: \n  - En español: "Solicitud de contacto"\n  - En inglés: "Contact request"\n  - En francés: "Demande de contact"\n  - En polaco: "Prośba o kontakt"\n  - En alemán: "Kontaktanfrage"\n\nDevuelve solamente el resumen.\n\nMensajes del usuario:\n${userMessagesBlock}`;
+function askEmail() {
+  renderAssistantMessage(translate(USER_LANGUAGE, {
+    es: "¿Cuál es tu email? (opcional)",
+    en: "What's your email? (optional)",
+    fr: "Quel est votre email ? (optionnel)",
+    de: "Wie lautet deine E-Mail? (optional)",
+    pl: "Jaki jest twój email? (opcjonalnie)",
+    pt: "Qual é o seu email? (opcional)"
+  }));
 }
 
-async function requestLeadSummary(prompt) {
-  try {
-    const res = await fetch(PROXY_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: [{ role: 'user', content: prompt }] })
-    });
-    if (!res.ok) throw new Error('IA request failed: ' + res.status);
-    const data = await res.json();
-    return data?.choices?.[0]?.message?.content?.trim() || '';
-  } catch (err) {
-    console.warn('No se pudo generar el resumen del lead', err);
-    return '';
-  }
+function askPhone() {
+  renderAssistantMessage(translate(USER_LANGUAGE, {
+    es: "¿Cuál es tu teléfono? (opcional)",
+    en: "What's your phone number? (optional)",
+    fr: "Quel est votre numéro de téléphone ? (optionnel)",
+    de: "Wie lautet deine Telefonnummer? (optional)",
+    pl: "Jaki jest twój numer telefonu? (opcjonalnie)",
+    pt: "Qual é o seu telefone? (opcional)"
+  }));
 }
 
-async function generateLeadSummariesFromAI() {
-  const recentMessages = getRecentUserMessages(6);
-  if (!recentMessages.length) return null;
-  const userMessagesBlock = recentMessages.join('\n');
-  const summaries = {};
-  for (const languageCode of LEAD_SUMMARY_LANGUAGES) {
-    const prompt = buildLeadSummaryPrompt(languageCode, userMessagesBlock);
-    const summary = await requestLeadSummary(prompt);
-    if (summary) {
-      summaries[languageCode] = summary;
-    }
-  }
-  return Object.keys(summaries).length ? summaries : null;
-}
-
-function renderLeadPrompt(promptText) {
-  if (!leadCaptureEnabled) return;
-  const leadText = (promptText || '').trim() || 'Para avanzar, ¿quieres que un asesor te contacte?';
-  const safeLeadText = leadText
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-  const html = `
-    <div class="space-y-3">
-      <p>${safeLeadText}</p>
-      <div class="flex flex-wrap gap-2">
-        <button class="pill-btn lead-option" data-lead-action="email">Dejar email </button>
-        <button class="pill-btn lead-option" data-lead-action="phone">Dejar teléfono</button>
-        <button class="pill-btn lead-option" data-lead-action="skip">No gracias</button>
-      </div>
-    </div>
-  `;
-  addAssistantMessageHTML(html, { avatarUrl: CURRENT.avatarUrl, rawText: leadText });
-}
-
-async function generateLeadIntro(latestUserText) {
-  const fallbackText = 'Para avanzar, ¿quieres que un asesor te contacte?';
-  const userMessage = (latestUserText || '').trim() || getLastUserMessage() || fallbackText;
-  const prompt = `Genera una frase muy breve (máximo 1 línea) invitando al usuario a dejar un medio de contacto. \nLa frase debe estar escrita EXCLUSIVAMENTE en el mismo idioma que el mensaje más reciente del usuario.\nAdáptate al contexto de lo que dijo el usuario.\n\nReglas:\n- Detecta automáticamente el idioma del usuario (puede ser cualquier idioma).\n- Responde únicamente en ese idioma.\n- No mezcles idiomas.\n- No saludes.\n- No hagas preguntas largas.\n- No ofrezcas aún opciones (solo la frase introductoria).\n- Mantén un tono amable, humano y profesional.\n- Si no puedes determinar con claridad el idioma, responde en inglés.\n\nMensaje del usuario:\n${userMessage}`;
-  const promptMessages = [
-    {
-      role: 'user',
-      content: prompt
-    }
-  ];
-
-  try {
-    const res = await fetch(PROXY_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: promptMessages })
-    });
-
-    if (!res.ok) throw new Error('IA request failed: ' + res.status);
-
-    const data = await res.json();
-    const generated = data?.choices?.[0]?.message?.content?.trim();
-    return generated || fallbackText;
-  } catch (err) {
-    console.warn('No se pudo generar la frase de lead', err);
-    return fallbackText;
-  }
-}
-
-async function maybePromptLeadCaptureAI(latestUserText) {
-  if (!leadCaptureEnabled) return false;
-  if (leadPromptShown || leadCaptureCompleted || leadCaptureState?.active) return false;
-
-  const conversation = conversationLog
-    .map(m => `${m.sender}: ${m.text}`)
-    .join("\n");
-
-  const leadDetected = await detectLeadIntent(conversation);
-  if (leadDetected) {
-    leadPromptShown = true;
-    const introText = await generateLeadIntro(latestUserText);
-    renderLeadPrompt(introText);
-    return true;
-  }
-  return false;
-}
-
-function startLeadCapture(method) {
-  if (!leadCaptureEnabled) return;
-  leadCaptureState = {
-    active: true,
-    method,
-    step: 'collect-name',
-    name: '',
-    email: '',
-    phone: ''
-  };
-  addAssistantMessage('¿Cuál es tu nombre?', { avatarUrl: CURRENT.avatarUrl });
-}
-
-function handleLeadOption(action) {
-  if (!leadCaptureEnabled) {
-    leadCaptureState = null;
-    return;
-  }
-  if (action === 'email' || action === 'phone') {
-    startLeadCapture(action);
-    return;
-  }
-  if (action === 'skip') {
-    leadCaptureState = null;
-    addAssistantMessage('Sin problema, seguimos 🙂', { avatarUrl: CURRENT.avatarUrl });
-  }
-}
-
-function validateEmail(value) {
-  if (!value) return false;
-  const trimmed = value.trim();
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed);
-}
-
-function validatePhone(value) {
-  if (!value) return false;
-  const trimmed = value.trim();
-  return /^[+]?[-\d()\s]{6,}$/.test(trimmed);
-}
-
-async function saveLeadToFirebase(state) {
-  if (!leadCaptureEnabled) return Promise.resolve();
-  if (!state || !state.name || !state.method) return Promise.resolve();
-  const leadRef = getLeadRef();
-  const timestamp = Date.now();
-  const payload = {
-    name: state.name,
-    method: state.method,
-    sessionId: CHAT_ID,
-    timestamp,
-    pageUrl: window.location.href
-  };
-  if (state.email) payload.email = state.email;
-  if (state.phone) payload.phone = state.phone;
-  if (USER_LANGUAGE) payload.language = USER_LANGUAGE;
-  const firstMessage = getFirstUserMessage();
-  const lastMessage = getLastUserMessage();
-  if (firstMessage) payload.firstMessage = firstMessage;
-  if (lastMessage) payload.lastMessage = lastMessage;
-  if (state.email || state.phone) {
-    const summaries = await generateLeadSummariesFromAI();
-    if (summaries) {
-      payload.note = summaries;
-    }
-  }
-  return leadRef.update(payload).catch(err => {
-    console.warn('No se pudo guardar el lead', err);
-  });
-}
-
-function finalizeLeadCapture() {
-  if (!leadCaptureState) return;
-  const thankYou = '¡Gracias! Un asesor te contactará pronto.';
-  addAssistantMessage(thankYou, { avatarUrl: CURRENT.avatarUrl });
-  const snapshot = { ...leadCaptureState };
-  leadCaptureState = null;
-  leadCaptureCompleted = true;
-  saveLeadToFirebase(snapshot);
-}
-
-function processLeadCaptureInput(text) {
-  if (!leadCaptureEnabled) return false;
-  if (!leadCaptureState?.active) return false;
-  const trimmed = (text || '').trim();
-  if (!trimmed) return true;
-
-  if (leadCaptureState.step === 'collect-name') {
-    leadCaptureState.name = trimmed;
-    leadCaptureState.step = leadCaptureState.method === 'email' ? 'collect-email' : 'collect-phone';
-    const nextPrompt = leadCaptureState.method === 'email'
-      ? 'Perfecto, ahora escribe tu correo electrónico:'
-      : 'Perfecto, ahora escribe tu número de contacto:';
-    addAssistantMessage(nextPrompt, { avatarUrl: CURRENT.avatarUrl });
-    return true;
-  }
-
-  if (leadCaptureState.step === 'collect-email') {
-    if (!validateEmail(trimmed)) {
-      addAssistantMessage('Parece que el correo no es válido. ¿Puedes intentarlo nuevamente?', { avatarUrl: CURRENT.avatarUrl });
-      return true;
-    }
-    leadCaptureState.email = trimmed;
-    leadCaptureState.active = false;
-    leadCaptureState.step = 'completed';
-    finalizeLeadCapture();
-    return true;
-  }
-
-  if (leadCaptureState.step === 'collect-phone') {
-    if (!validatePhone(trimmed)) {
-      addAssistantMessage('Ese número no parece válido. Por favor ingrésalo nuevamente con código de país si es posible.', { avatarUrl: CURRENT.avatarUrl });
-      return true;
-    }
-    leadCaptureState.phone = trimmed;
-    leadCaptureState.active = false;
-    leadCaptureState.step = 'completed';
-    finalizeLeadCapture();
-    return true;
-  }
-
-  return true;
-}
 
 /* =========================
    AUTO RESPONSES (desde Admin beta3)
@@ -960,15 +753,6 @@ document.addEventListener('click', (e)=>{
   // Muestra como si el usuario hubiera escrito
   addUserMessage(trig);
   handleUserMessage(trig);
-  maybePromptLeadCaptureAI();
-});
-
-document.addEventListener('click', (event) => {
-  const leadBtn = event.target.closest('.lead-option');
-  if (!leadBtn) return;
-  const action = (leadBtn.dataset.leadAction || '').trim();
-  if (!action) return;
-  handleLeadOption(action);
 });
 
 /* =========================
@@ -1027,54 +811,54 @@ async function askAI(userText) {
   return data?.choices?.[0]?.message?.content || "";
 }
 
-async function detectLeadIntent(conversation) {
-  const prompt = `
-    Analiza la siguiente conversación entre un usuario y un asistente.
-    Debes detectar si el usuario muestra intención de compra o contacto comercial:
-    - reservar
-    - pedir precios o cotización
-    - solicitar información
-    - pedir hablar con un humano
-    - interés en contratar
-    - intención de compra
-    - o cualquier necesidad de contacto comercial
-
-    Puede estar en cualquier idioma.
-
-    Devuelve SOLO un JSON válido con este formato exacto:
-
-    {"lead": true}  (si el usuario muestra intención de contacto/comercial)
-    {"lead": false} (si no existe intención)
-
-    Conversación:
-    ${conversation}
-  `;
-
-  const res = await fetch(PROXY_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      messages: [{ role: "user", content: prompt }]
-    })
-  });
-
-  const data = await res.json();
-  try {
-    return JSON.parse(data?.choices?.[0]?.message?.content || "{}").lead === true;
-  } catch {
-    return false;
-  }
-}
-
 async function handleUserMessage(text){
+  const safeText = typeof text === 'string' ? text : '';
+
+  if (leadCaptureState && !leadCaptureCompleted) {
+
+    if (leadCaptureState.step === 1) {
+      leadCaptureState.name = safeText.trim();
+      leadCaptureState.step = 2;
+      askEmail();
+      return;
+    }
+
+    if (leadCaptureState.step === 2) {
+      leadCaptureState.email = safeText.trim();
+      leadCaptureState.step = 3;
+      askPhone();
+      return;
+    }
+
+    if (leadCaptureState.step === 3) {
+      leadCaptureState.phone = safeText.trim();
+      leadCaptureCompleted = true;
+
+      saveLeadToFirebase();
+
+      renderAssistantMessage(translate(USER_LANGUAGE, {
+        es: "Gracias, ya tengo tus datos. ¿En qué puedo ayudarte ahora?",
+        en: "Thanks! I have your details now. How can I help you?",
+        fr: "Merci ! J'ai vos informations. Comment puis-je vous aider ?",
+        de: "Danke! Ich habe deine Daten. Wie kann ich dir helfen?",
+        pl: "Dziękuję! Mam już twoje dane. W czym mogę pomóc?",
+        pt: "Obrigado! Já tenho seus dados. Como posso ajudar?"
+      }));
+
+      return;
+    }
+  }
+
+  MESSAGES.push({ role:'user', content:safeText });
+
   // 1) AutoResponses (si hay match, responde y no llama IA)
-  if (tryAutoResponse(text)) return;
+  if (tryAutoResponse(safeText)) return;
 
   // 2) IA
   const typing = showTypingIndicator();
 
   try{
-    const reply = await askAI(text);
+    const reply = await askAI(safeText);
     MESSAGES.push({ role:'assistant', content: reply });
     removeTyping(typing);
     addAssistantMessage(reply, { avatarUrl: CURRENT.avatarUrl });
@@ -1093,14 +877,10 @@ async function sendNow(){
   if (!t) return;
   addUserMessage(t);
   input.value = "";
-  if (processLeadCaptureInput(t)) {
+  if (skipNextUserMessageForLeadCapture) {
+    skipNextUserMessageForLeadCapture = false;
     return;
   }
-  const leadDetected = await maybePromptLeadCaptureAI(t);
-  if (leadDetected === true) {
-    return;
-  }
-  MESSAGES.push({ role:'user', content:t });
   handleUserMessage(t);
 }
 sendBtn.addEventListener('click', sendNow);
@@ -1460,6 +1240,21 @@ document.addEventListener("DOMContentLoaded", async () => {
   };
   tryInit();
 });
+
+function saveLeadToFirebase() {
+  if (!leadCaptureState) return;
+  const lead = {
+    name: leadCaptureState.name,
+    email: leadCaptureState.email || "",
+    phone: leadCaptureState.phone || "",
+    lang: USER_LANGUAGE,
+    time: Date.now()
+  };
+
+  const ref = db.ref(`empresas/${EMPRESA}/bots/${BOT}/leads`).push();
+  ref.set(lead);
+  leadCaptureState = null;
+}
 
 
   </script>
