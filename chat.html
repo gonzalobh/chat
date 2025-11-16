@@ -676,6 +676,87 @@ function askPhone() {
   }));
 }
 
+function buildLeadSummaryTranscript(maxEntries = 16) {
+  if (!conversationLog.length) return '';
+  const relevantEntries = conversationLog.slice(-Math.max(1, maxEntries));
+  return relevantEntries
+    .map(entry => {
+      const prefix = entry.sender === 'bot' ? 'Asistente' : 'Usuario';
+      const cleaned = (entry.text || '')
+        .replace(/\s+/g, ' ')
+        .trim();
+      return `${prefix}: ${cleaned}`.trim();
+    })
+    .filter(Boolean)
+    .join('\n');
+}
+
+function parseLeadSummaryResponse(content) {
+  if (!content) return null;
+  const trimmed = content.trim();
+  if (!trimmed) return null;
+  const jsonBlockMatch = trimmed.match(/```json([\s\S]*?)```/i);
+  const textToParse = jsonBlockMatch ? jsonBlockMatch[1].trim() : trimmed;
+  const buildNoteFromObject = (obj) => {
+    if (!obj || typeof obj !== 'object') return null;
+    const note = {};
+    ['es', 'en'].forEach((lang) => {
+      const value = obj[lang];
+      if (typeof value === 'string' && value.trim()) {
+        note[lang] = value.trim();
+      }
+    });
+    return Object.keys(note).length ? note : null;
+  };
+  try {
+    const parsed = JSON.parse(textToParse);
+    if (typeof parsed === 'string') {
+      const clean = parsed.trim();
+      return clean ? { es: clean } : null;
+    }
+    const fromObject = buildNoteFromObject(parsed);
+    if (fromObject) return fromObject;
+  } catch (err) {
+    // ignore parsing errors and fall back to plain text below
+  }
+  const fallback = textToParse.replace(/\s+/g, ' ').trim();
+  return fallback ? { es: fallback } : null;
+}
+
+async function generateLeadSummaryFromConversation() {
+  const transcript = buildLeadSummaryTranscript();
+  if (!transcript) return null;
+  const summarySystemPrompt = `Eres un asistente que redacta notas breves sobre conversaciones de clientes.
+Devuelve un JSON con los campos "es" y "en".
+Cada campo debe contener una frase corta (máximo 30 palabras) que resuma por qué se obtuvo el lead y qué necesita el usuario.`;
+  const body = {
+    messages: [
+      {
+        role: 'user',
+        content: `Transcripción del chat:\n${transcript}\n\nResume por qué se guardó este lead.`
+      }
+    ],
+    system: summarySystemPrompt
+  };
+  try {
+    const response = await fetch(PROXY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if (!response.ok) {
+      console.warn('No se pudo obtener el resumen del lead', response.status);
+      return null;
+    }
+    const data = await response.json();
+    const content = data?.choices?.[0]?.message?.content;
+    return parseLeadSummaryResponse(content);
+  } catch (err) {
+    console.warn('Error al generar el resumen del lead', err);
+    return null;
+  }
+}
+
 
 /* =========================
    AUTO RESPONSES (desde Admin beta3)
@@ -834,7 +915,7 @@ async function handleUserMessage(text){
       leadCaptureState.phone = safeText.trim();
       leadCaptureCompleted = true;
 
-      saveLeadToFirebase();
+      await saveLeadToFirebase();
 
       renderAssistantMessage(translate(USER_LANGUAGE, {
         es: "Gracias, ya tengo tus datos. ¿En qué puedo ayudarte ahora?",
@@ -1241,19 +1322,37 @@ document.addEventListener("DOMContentLoaded", async () => {
   tryInit();
 });
 
-function saveLeadToFirebase() {
+async function saveLeadToFirebase() {
   if (!leadCaptureState) return;
+  const now = Date.now();
   const lead = {
     name: leadCaptureState.name,
     email: leadCaptureState.email || "",
     phone: leadCaptureState.phone || "",
     lang: USER_LANGUAGE,
-    time: Date.now()
+    method: 'chat',
+    timestamp: now,
+    capturedAt: new Date(now).toISOString(),
+    time: now
   };
 
-  const ref = db.ref(`empresas/${EMPRESA}/bots/${BOT}/leads`).push();
-  ref.set(lead);
-  leadCaptureState = null;
+  try {
+    const note = await generateLeadSummaryFromConversation();
+    if (note) {
+      lead.note = note;
+    }
+  } catch (err) {
+    console.warn('No se pudo crear el resumen del lead', err);
+  }
+
+  try {
+    const ref = db.ref(`empresas/${EMPRESA}/bots/${BOT}/leads`).push();
+    await ref.set(lead);
+  } catch (err) {
+    console.warn('No se pudo guardar el lead', err);
+  } finally {
+    leadCaptureState = null;
+  }
 }
 
 
