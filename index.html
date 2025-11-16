@@ -1669,6 +1669,21 @@ body.login-view #appContainer {
               <button id="copyEmbedScript" class="absolute top-3 right-3 px-3 py-1.5 text-sm bg-black text-white rounded-md">Copy</button>
             </div>
           </div>
+
+          <div class="card p-5 space-y-4">
+            <div class="font-semibold flex items-center gap-2 mb-1">
+              <i data-lucide="shield-check" class="w-5 h-5"></i>
+              Sitios permitidos
+            </div>
+            <p class="text-sm text-gray-500">
+              Define los dominios autorizados donde se puede mostrar el bot. El widget no se mostrará si el script se inserta en un sitio no permitido.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-3">
+              <input id="allowedUrlInput" type="url" placeholder="https://www.ejemplo.com" class="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black" />
+              <button id="addAllowedUrl" class="px-4 py-2 bg-black text-white text-sm rounded-lg whitespace-nowrap">Agregar sitio</button>
+            </div>
+            <div id="allowedUrlsList" class="space-y-2"></div>
+          </div>
         </div>
       </div>
 
@@ -2932,6 +2947,7 @@ let dashboardMessagesLoading = false;
 let dashboardLastMetrics = { conversations: 0, messages: 0 };
 let dashboardBotsRankingData = null;
 let leadsTabInitialized = false;
+let integrationTabInitialized = false;
 let leadsRefInstance = null;
 let leadsListener = null;
 let leadsTableBodyEl = null;
@@ -9331,6 +9347,110 @@ function initLeadsTab() {
 
 // === Function to initialize Integration tab ===
 function initIntegration(){
+  if (integrationTabInitialized) return;
+  integrationTabInitialized = true;
+
+  const allowedUrlsListEl = $('allowedUrlsList');
+  const allowedUrlInput = $('allowedUrlInput');
+  const addAllowedUrlBtn = $('addAllowedUrl');
+  const allowedUrlsRef = eref('config/allowedUrls');
+  let allowedUrls = [];
+
+  const parseAllowedUrls = (val) => {
+    if (Array.isArray(val)) return val.filter(Boolean);
+    if (val && typeof val === 'object') return Object.values(val).filter(Boolean);
+    return [];
+  };
+
+  const normalizeOrigin = (value) => {
+    if (!value) return '';
+    try {
+      const url = new URL(value);
+      return url.origin;
+    } catch (err) {
+      return '';
+    }
+  };
+
+  const renderAllowedUrls = () => {
+    if (!allowedUrlsListEl) return;
+    allowedUrlsListEl.innerHTML = '';
+
+    if (!allowedUrls.length) {
+      const empty = document.createElement('p');
+      empty.className = 'text-sm text-gray-500';
+      empty.textContent = 'No hay sitios autorizados todavía.';
+      allowedUrlsListEl.appendChild(empty);
+      return;
+    }
+
+    allowedUrls.forEach((url, idx) => {
+      const row = document.createElement('div');
+      row.className = 'flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-3 py-2 shadow-sm';
+
+      const label = document.createElement('span');
+      label.className = 'flex-1 text-sm text-gray-700 break-all';
+      label.textContent = url;
+
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'text-xs text-red-600 hover:text-red-700';
+      removeBtn.textContent = t('Delete');
+      removeBtn.addEventListener('click', async () => {
+        allowedUrls.splice(idx, 1);
+        await canWrite(async () => {
+          await allowedUrlsRef.set(allowedUrls);
+          renderAllowedUrls();
+          toast(t('✔ Changes saved'));
+        });
+      });
+
+      row.append(label, removeBtn);
+      allowedUrlsListEl.appendChild(row);
+    });
+  };
+
+  if (allowedUrlsRef) {
+    allowedUrlsRef.on('value', (snap) => {
+      allowedUrls = parseAllowedUrls(snap.val()).map(normalizeOrigin).filter(Boolean);
+      renderAllowedUrls();
+    });
+  }
+
+  const handleAddUrl = async () => {
+    if (!allowedUrlsRef || !allowedUrlInput) return;
+    const value = normalizeOrigin(allowedUrlInput.value.trim());
+    if (!value) {
+      toast('Ingresa una URL válida');
+      return;
+    }
+    if (allowedUrls.includes(value)) {
+      toast('Este sitio ya está permitido');
+      return;
+    }
+
+    allowedUrls.push(value);
+    allowedUrlInput.value = '';
+    await canWrite(async () => {
+      await allowedUrlsRef.set(allowedUrls);
+      renderAllowedUrls();
+      toast(t('✔ Changes saved'));
+    });
+  };
+
+  if (addAllowedUrlBtn) {
+    addAllowedUrlBtn.addEventListener('click', handleAddUrl);
+  }
+
+  if (allowedUrlInput) {
+    allowedUrlInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleAddUrl();
+      }
+    });
+  }
+
   const scriptAttrs = [`src="https://tomos.bot/embed.js"`, `data-empresa="${EMPRESA}"`];
   scriptAttrs.push(`data-bot="${BOT}"`);
   const code = `<script ${scriptAttrs.join(' ')}><\\/script>`;
