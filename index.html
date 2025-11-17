@@ -5536,6 +5536,19 @@ function initUserManagementTab() {
     subscribeToBotEditors(currentManagedBotId);
   });
 
+  const mainBotSelect = $('botSelect');
+  if (mainBotSelect) {
+    mainBotSelect.addEventListener('change', (event) => {
+      const nextBotId = event.target.value || '';
+      if (botSelect && botSelect.value !== nextBotId && botSelect.querySelector(`option[value="${nextBotId}"]`)) {
+        botSelect.value = nextBotId;
+      }
+      currentManagedBotId = nextBotId;
+      updateInviteState();
+      subscribeToBotEditors(currentManagedBotId);
+    });
+  }
+
   inviteForm?.addEventListener('submit', async (event) => {
     event.preventDefault();
     if (!currentManagedBotId) return;
