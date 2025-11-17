@@ -1651,24 +1651,6 @@ body.login-view #appContainer {
                 <span class="text-sm font-medium text-gray-600 select-none">Widget Background</span>
               </div>
             </div>
-
-            <div class="space-y-3">
-              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Position</p>
-              <div class="grid grid-cols-3 gap-2" id="widgetPositionControls">
-                <button type="button" data-widget-position="left" class="flex items-center justify-center gap-2 px-3 py-2 border border-gray-200 rounded-xl bg-white text-sm font-medium text-gray-700 transition hover:border-gray-300">
-                  <i data-lucide="arrow-left" class="w-4 h-4"></i>
-                  <span class="hidden sm:inline">Izquierda</span>
-                </button>
-                <button type="button" data-widget-position="center" class="flex items-center justify-center gap-2 px-3 py-2 border border-gray-200 rounded-xl bg-white text-sm font-medium text-gray-700 transition hover:border-gray-300">
-                  <i data-lucide="align-center" class="w-4 h-4"></i>
-                  <span class="hidden sm:inline">Centro</span>
-                </button>
-                <button type="button" data-widget-position="right" class="flex items-center justify-center gap-2 px-3 py-2 border border-gray-200 rounded-xl bg-white text-sm font-medium text-gray-700 transition hover:border-gray-300">
-                  <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                  <span class="hidden sm:inline">Derecha</span>
-                </button>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -6972,51 +6954,6 @@ $('widgetRadius').addEventListener('input', (e) => {
   updateWidgetPreview();
   applyPreview();
 });
-
-// 🔹 Widget Position Controls
-const widgetPositionRef = eref('config/widgetPosition');
-const widgetPositionButtons = Array.from(document.querySelectorAll('[data-widget-position]'));
-const validWidgetPositions = ['left', 'center', 'right'];
-
-const normalizeWidgetPosition = (value) => {
-  const v = (value || '').toString().toLowerCase();
-  return validWidgetPositions.includes(v) ? v : 'right';
-};
-
-const applyWidgetPositionUI = (position) => {
-  const normalized = normalizeWidgetPosition(position);
-  widgetPositionButtons.forEach(btn => {
-    const isActive = (btn.dataset.widgetPosition || '').toLowerCase() === normalized;
-    btn.classList.toggle('bg-black', isActive);
-    btn.classList.toggle('text-white', isActive);
-    btn.classList.toggle('border-black', isActive);
-    btn.classList.toggle('bg-white', !isActive);
-    btn.classList.toggle('text-gray-700', !isActive);
-    btn.classList.toggle('border-gray-200', !isActive);
-  });
-};
-
-if (widgetPositionButtons.length && widgetPositionRef) {
-  widgetPositionRef.once('value', (snap) => {
-    const pos = normalizeWidgetPosition(snap.val());
-    applyWidgetPositionUI(pos);
-    if (snap.val() === null) {
-      canWrite(() => widgetPositionRef.set(pos));
-    }
-  });
-
-  widgetPositionButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const selected = normalizeWidgetPosition(btn.dataset.widgetPosition);
-      applyWidgetPositionUI(selected);
-      canWrite(async () => {
-        await widgetPositionRef.set(selected);
-        toast(t('✔ Widget position updated'));
-        applyPreview();
-      });
-    });
-  });
-}
 
 
 // 🔹 Chat Background Color (auto-save with toast)

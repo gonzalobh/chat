@@ -164,10 +164,9 @@
     </div>
 
 <div class="flex justify-center items-center py-2">
-  <a href="https://tomos.bot" target="_blank" rel="noopener noreferrer" 
+  <a href="https://tomos.io" target="_blank" rel="noopener noreferrer" 
      class="flex items-center gap-2 text-gray-500 text-xs">
-    <span>Powered by</span>
-    <img src="logo.svg" alt="Tomos Bot" class="h-4" style="height:16px; width:auto;" />
+    <span>Powered by Tomos</span>
   </a>
 </div>
 
@@ -1348,20 +1347,6 @@ function initEmbedIntegration() {
       const color = s.val() || "#111111";
       window.parent.postMessage(
         { action: "updateChatButtonColor", color },
-        "*"
-      );
-    });
-
-    const normalizeWidgetPosition = (value) => {
-      const v = (value || "").toString().toLowerCase();
-      return ["left", "center", "right"].includes(v) ? v : "right";
-    };
-
-    const widgetPositionRef = eref("config/widgetPosition");
-    widgetPositionRef.on("value", (s) => {
-      const position = normalizeWidgetPosition(s.val());
-      window.parent.postMessage(
-        { action: "updateWidgetPosition", position },
         "*"
       );
     });
