@@ -1342,20 +1342,12 @@ function initEmbedIntegration() {
   // Avisar que el chat está listo
   window.parent.postMessage({ action: "chatReady" }, "*");
 
-  // 🔹 Color del botón y posición
+  // 🔹 Color del botón
   if (typeof eref === "function") {
     eref("config/chatButtonColor").on("value", (s) => {
       const color = s.val() || "#111111";
       window.parent.postMessage(
         { action: "updateChatButtonColor", color },
-        "*"
-      );
-    });
-
-    eref("config/widgetPosition").on("value", (s) => {
-      const position = (s.val() || "right").toString().toLowerCase();
-      window.parent.postMessage(
-        { action: "updateWidgetPosition", position },
         "*"
       );
     });
