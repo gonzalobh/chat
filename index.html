@@ -76,6 +76,9 @@
     .widget-icon-option img{width:44px;height:44px;object-fit:contain}
     .widget-icon-option:hover{border-color:#93c5fd;background:#eff6ff}
     .widget-icon-option.active{border-color:#2563eb;background:#eff6ff;box-shadow:0 0 0 4px rgba(37,99,235,.12)}
+    .widget-position-btn{border:1px solid #e5e7eb;border-radius:12px;padding:10px;background:#fff;color:#4b5563;transition:all .2s ease;display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px}
+    .widget-position-btn:hover{border-color:#d1d5db;color:#111}
+    .widget-position-btn.active{background:#111;border-color:#111;color:#fff;box-shadow:0 10px 24px rgba(15,23,42,.12)}
     .chat-columns{align-items:stretch;}
     .chat-columns > .chat-column{height:640px;}
     .chat-column-secondary{background:#fff;border-radius:26px;padding:24px;box-shadow:0 10px 24px rgba(15,23,42,.08);border:1px solid rgba(15,23,42,.08);}
@@ -1649,6 +1652,20 @@ body.login-view #appContainer {
               <div class="flex items-center gap-4">
                 <input id="chatButtonColor" type="color" class="color-circle rounded-full cursor-pointer border border-gray-300 shadow-sm" />
                 <span class="text-sm font-medium text-gray-600 select-none">Widget Background</span>
+              </div>
+            </div>
+            <div class="space-y-2">
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Position</p>
+              <div class="flex items-center gap-2">
+                <button type="button" class="widget-position-btn" data-position="left" aria-pressed="false">
+                  <i data-lucide="arrow-down-left" class="w-4 h-4"></i>
+                </button>
+                <button type="button" class="widget-position-btn" data-position="center" aria-pressed="false">
+                  <i data-lucide="arrow-down" class="w-4 h-4"></i>
+                </button>
+                <button type="button" class="widget-position-btn" data-position="right" aria-pressed="true">
+                  <i data-lucide="arrow-down-right" class="w-4 h-4"></i>
+                </button>
               </div>
             </div>
           </div>
@@ -6965,6 +6982,43 @@ $('widgetRadius').addEventListener('input', (e) => {
   });
   updateWidgetPreview();
   applyPreview();
+});
+
+// === Widget Position ===
+const widgetPositionButtons = $$('.widget-position-btn');
+const widgetPositionRef = eref('config/widgetPosition');
+
+const applyWidgetPositionUI = (position) => {
+  const valid = ['left', 'center', 'right'];
+  const final = valid.includes((position || '').toLowerCase()) ? position.toLowerCase() : 'right';
+
+  widgetPositionButtons.forEach((btn) => {
+    const isActive = btn.dataset.position === final;
+    btn.classList.toggle('active', isActive);
+    btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+  });
+
+  return final;
+};
+
+widgetPositionRef.once('value', (snap) => {
+  const saved = snap.val();
+  const final = applyWidgetPositionUI(saved);
+  if (!snap.exists()) {
+    canWrite(() => widgetPositionRef.set(final));
+  }
+});
+
+widgetPositionButtons.forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const desired = btn.dataset.position || 'right';
+    const final = applyWidgetPositionUI(desired);
+    canWrite(async () => {
+      await widgetPositionRef.set(final);
+      toast(t('✔ Widget position updated'));
+    });
+    applyPreview();
+  });
 });
 
 
