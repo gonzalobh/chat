@@ -133,10 +133,11 @@
 #chatWidgetFrame {
   position: fixed;
   bottom: 90px;
-  right: 24px;
+  left: auto;
+  right: auto;
   width: 420px;
-  max-height: calc(100vh - 110px); /* 🟢 se ajusta automáticamente */
-  height: 90vh; /* mantiene proporción */
+  max-height: calc(100vh - 110px);
+  height: 90vh;
   border: none;
   border-radius: 18px;
   box-shadow: 0 6px 24px rgba(0,0,0,0.2);
