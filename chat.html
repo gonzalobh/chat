@@ -1350,6 +1350,22 @@ function initEmbedIntegration() {
         "*"
       );
     });
+
+    const sendWidgetPosition = (pos) => {
+      const valid = ["left", "center", "right"];
+      const normalized = valid.includes((pos || "").toLowerCase())
+        ? pos.toLowerCase()
+        : "right";
+
+      window.parent.postMessage(
+        { action: "updateWidgetPosition", position: normalized },
+        "*"
+      );
+    };
+
+    eref("config/widgetPosition").on("value", (s) => {
+      sendWidgetPosition(s.val());
+    });
   }
 }
 
