@@ -5456,6 +5456,8 @@ function initUserManagementTab() {
     }
   };
 
+  const getEditorsRef = (botId) => db.ref(`${getDefaultBotCollectionPath()}/${botId}/allowedEditors`);
+
   const subscribeToBotEditors = (botId) => {
     if (userManagementEditorsRef && userManagementEditorListener) {
       userManagementEditorsRef.off('value', userManagementEditorListener);
@@ -5464,7 +5466,7 @@ function initUserManagementTab() {
       renderEmptyState('Selecciona un bot en la barra superior para ver los usuarios con acceso.');
       return;
     }
-    userManagementEditorsRef = db.ref(`${getBotBasePath(botId)}/allowedEditors`);
+    userManagementEditorsRef = getEditorsRef(botId);
     userManagementEditorListener = (snap) => {
       renderEditorsTable(botId, snap.val() || {});
     };
@@ -5527,7 +5529,7 @@ function initUserManagementTab() {
 
     try {
       const key = encodeEmailKey(normalizedEmail);
-      await db.ref(`${getBotBasePath(currentManagedBotId)}/allowedEditors/${key}`).set(true);
+      await getEditorsRef(currentManagedBotId).child(key).set(true);
       if (inviteEmailInput) inviteEmailInput.value = '';
       showFeedback(`✅ Acceso otorgado a ${normalizedEmail} para este bot.`);
       if (typeof toast === 'function') {
@@ -5552,7 +5554,7 @@ function initUserManagementTab() {
     const emailValue = target.getAttribute('data-email');
     if (!emailKey) return;
     try {
-      await db.ref(`${getBotBasePath(currentManagedBotId)}/allowedEditors/${emailKey}`).set(null);
+      await getEditorsRef(currentManagedBotId).child(emailKey).set(null);
       if (typeof toast === 'function') {
         toast(`Acceso revocado para ${emailValue}`);
       }
