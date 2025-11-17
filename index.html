@@ -5525,6 +5525,9 @@ function initUserManagementTab() {
   getBotsRef().on('value', (snap) => {
     userTabBotsCache = snap.val() || {};
     rebuildBotOptions();
+    if (currentManagedBotId) {
+      subscribeToBotEditors(currentManagedBotId);
+    }
   });
 
   botSelect.addEventListener('change', (event) => {
