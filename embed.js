@@ -189,7 +189,7 @@
     let ready = false, got = false, currentPosition = 'right';
 
     const applyWidgetPosition = (position) => {
-      const normalized = (position || '').toString().toLowerCase();
+      const normalized = (position || '').toString().trim().toLowerCase();
       const valid = ['left', 'center', 'right'];
       const finalPos = valid.includes(normalized) ? normalized : 'right';
       currentPosition = finalPos;

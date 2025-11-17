@@ -1353,8 +1353,9 @@ function initEmbedIntegration() {
 
     const sendWidgetPosition = (pos) => {
       const valid = ["left", "center", "right"];
-      const normalized = valid.includes((pos || "").toLowerCase())
-        ? pos.toLowerCase()
+      const normalizedInput = (pos || "").toString().trim().toLowerCase();
+      const normalized = valid.includes(normalizedInput)
+        ? normalizedInput
         : "right";
 
       window.parent.postMessage(
