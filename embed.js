@@ -186,18 +186,23 @@
     document.body.append(btn, frame);
 
     // 🔄 Comunicación con el iframe
-    let ready = false, got = false, currentPosition = 'right';
+    let ready = false, got = false, currentPosition = null;
 
     const applyWidgetPosition = (position) => {
       const normalized = (position || '').toString().toLowerCase();
       const valid = ['left', 'center', 'right'];
-      const finalPos = valid.includes(normalized) ? normalized : 'right';
+      const finalPos = valid.includes(normalized) ? normalized : null;
       currentPosition = finalPos;
+
+      if (!finalPos) {
+        btn.removeAttribute("data-position");
+        frame.removeAttribute("data-position");
+        return;
+      }
+
       btn.dataset.position = finalPos;
       frame.dataset.position = finalPos;
     };
-
-    applyWidgetPosition(currentPosition);
 
     window.addEventListener("message", (e) => {
       if (!e.origin.includes("tomos.bot")) return;
