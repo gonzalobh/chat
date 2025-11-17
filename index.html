@@ -5364,6 +5364,16 @@ function initUserManagementTab() {
   const inviteEmailInput = $('userInviteEmail');
   const inviteSubmit = $('userInviteSubmit');
 
+  const getMainSelectedBotId = () => {
+    const mainSelector = $('botSelect');
+    const mainBotId = (mainSelector?.value || '').trim();
+    if (mainBotId) return mainBotId;
+    if (currentBot) return currentBot;
+    return BOT || '';
+  };
+
+  currentManagedBotId = getMainSelectedBotId();
+
   const showFeedback = (message = '', isError = false) => {
     if (!feedbackEl) return;
     feedbackEl.textContent = message;
