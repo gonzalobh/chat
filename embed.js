@@ -18,6 +18,30 @@
     return [];
   };
 
+  async function fetchWelcomeConfig(empresa, botId) {
+    const safeEmpresa = encodeURIComponent(empresa || "");
+    const safeBot = encodeURIComponent(botId || "default");
+    const candidatePaths = [
+      `empresas/${safeEmpresa}/config/bots/${safeBot}/config/chatWelcome`,
+      `empresas/${safeEmpresa}/bots/${safeBot}/config/chatWelcome`,
+      `${safeEmpresa}/bots/${safeBot}/config/chatWelcome`
+    ];
+
+    for (const path of candidatePaths) {
+      const url = `${FIREBASE_DB_URL}/${path}.json`;
+      try {
+        const res = await fetch(url);
+        if (!res.ok) continue;
+        const data = await res.json();
+        if (data && typeof data === "object") return data;
+      } catch (err) {
+        console.warn("No se pudo cargar el mensaje de bienvenida", err);
+      }
+    }
+
+    return null;
+  }
+
   async function fetchAllowedOrigins(empresa, botId) {
     const safeEmpresa = encodeURIComponent(empresa || "");
     const safeBot = encodeURIComponent(botId || "default");
@@ -71,6 +95,7 @@
       ""
     ).trim();
     const empresa = empresaAttr || "Boletum";
+    const botId = botAttr || "default";
     const params = new URLSearchParams({ empresa });
     if (botAttr) params.set("bot", botAttr);
     const iframeSrc = `https://tomos.bot/chat.html?${params.toString()}`;
@@ -130,6 +155,93 @@
     display: block;
     }
 
+#chatWidgetBubble {
+  position: fixed;
+  bottom: 96px;
+  left: auto;
+  right: 24px;
+  --widget-bubble-translate: 0;
+  background: #ffffff;
+  color: #1f2937;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+  padding: 12px 12px 12px 14px;
+  display: none;
+  gap: 10px;
+  align-items: flex-start;
+  cursor: pointer;
+  z-index: 99999;
+  max-width: 320px;
+  transform: translateX(var(--widget-bubble-translate));
+}
+
+#chatWidgetBubble[data-position="left"] {
+  left: 24px;
+  right: auto;
+  --widget-bubble-translate: 0;
+}
+
+#chatWidgetBubble[data-position="center"] {
+  left: 50%;
+  right: auto;
+  --widget-bubble-translate: -50%;
+}
+
+#chatWidgetBubble[data-position="right"] {
+  right: 24px;
+  left: auto;
+  --widget-bubble-translate: 0;
+}
+
+#chatWidgetBubble::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  right: 28px;
+  width: 14px;
+  height: 14px;
+  background: #ffffff;
+  transform: rotate(45deg);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+#chatWidgetBubble[data-position="left"]::after {
+  left: 28px;
+  right: auto;
+}
+
+#chatWidgetBubble[data-position="center"]::after {
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+#chatWidgetBubbleMessage {
+  font-size: 14px;
+  line-height: 1.4;
+  margin-right: 6px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+#chatWidgetBubbleClose {
+  background: #eef0f2;
+  border: none;
+  color: #6b7280;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
 #chatWidgetFrame {
   position: fixed;
   bottom: 90px;
@@ -180,14 +292,30 @@
     btn.id = "chatWidgetBtn";
     btn.innerHTML = "💬";
 
+    const bubble = document.createElement("div");
+    bubble.id = "chatWidgetBubble";
+    const bubbleMessage = document.createElement("div");
+    bubbleMessage.id = "chatWidgetBubbleMessage";
+    const bubbleClose = document.createElement("button");
+    bubbleClose.id = "chatWidgetBubbleClose";
+    bubbleClose.setAttribute("aria-label", "Cerrar mensaje");
+    bubbleClose.textContent = "×";
+    bubble.append(bubbleMessage, bubbleClose);
+
     const frame = document.createElement("iframe");
     frame.id = "chatWidgetFrame";
     frame.src = iframeSrc;
     frame.allow = "clipboard-write; clipboard-read";
-    document.body.append(btn, frame);
+    document.body.append(btn, bubble, frame);
 
     // 🔄 Comunicación con el iframe
-    let ready = false, got = false, currentPosition = 'right';
+    let ready = false, got = false, currentPosition = 'right', welcomeBubbleDismissed = false;
+    let welcomeText = "";
+
+    const hideBubble = (permanent = false) => {
+      bubble.style.display = "none";
+      if (permanent) welcomeBubbleDismissed = true;
+    };
 
     const applyWidgetPosition = (position) => {
       const normalized = (position || '').toString().trim().toLowerCase();
@@ -196,9 +324,54 @@
       currentPosition = finalPos;
       btn.dataset.position = finalPos;
       frame.dataset.position = finalPos;
+      bubble.dataset.position = finalPos;
+    };
+
+    const maybeShowBubble = () => {
+      if (!welcomeText || welcomeBubbleDismissed) return;
+      if (btn.style.display === "none") return;
+      bubbleMessage.textContent = welcomeText;
+      bubble.style.display = "flex";
+      bubble.dataset.position = currentPosition;
+    };
+
+    const openChat = () => {
+      hideBubble(true);
+      frame.style.display = "block";
+      const openFn = () => frame.contentWindow.postMessage({ action: "openChatWindow" }, "*");
+      if (ready) {
+        openFn();
+      } else {
+        const i = setInterval(() => {
+          if (ready) {
+            clearInterval(i);
+            openFn();
+          }
+        }, 50);
+      }
+    };
+
+    const closeChat = () => {
+      frame.style.display = "none";
     };
 
     applyWidgetPosition(currentPosition);
+
+    const welcomeConfig = await fetchWelcomeConfig(empresa, botId);
+    if (welcomeConfig?.enabled && welcomeConfig?.text) {
+      welcomeText = (welcomeConfig.text || "").toString().trim();
+      maybeShowBubble();
+    }
+
+    bubbleClose.addEventListener("click", (e) => {
+      e.stopPropagation();
+      hideBubble(true);
+    });
+
+    bubble.addEventListener("click", (e) => {
+      if (e.target.closest && e.target.closest('#chatWidgetBubbleClose')) return;
+      openChat();
+    });
 
     window.addEventListener("message", (e) => {
       if (!e.origin.includes("tomos.bot")) return;
@@ -254,7 +427,12 @@ if (d.imageUrl) {
         case "chatButtonStatus":
           got = true;
           btn.style.display = d.visible === false ? "none" : "flex";
-          if (d.visible === false) frame.style.display = "none";
+          if (d.visible === false) {
+            frame.style.display = "none";
+            hideBubble();
+          } else {
+            maybeShowBubble();
+          }
           break;
 
         case "updateChatButtonColor":
@@ -266,7 +444,7 @@ if (d.imageUrl) {
           break;
 
         case "closeChatWindow":
-          frame.style.display = "none";
+          closeChat();
           break;
       }
     });
@@ -274,20 +452,10 @@ if (d.imageUrl) {
     // 🖱️ Clic en el botón → abrir o cerrar el chat
     btn.onclick = () => {
       const open = frame.style.display === "block";
-      frame.style.display = open ? "none" : "block";
-      if (!open) {
-        const openFn = () =>
-          frame.contentWindow.postMessage({ action: "openChatWindow" }, "*");
-        ready
-          ? openFn()
-          : (() => {
-              const i = setInterval(() => {
-                if (ready) {
-                  clearInterval(i);
-                  openFn();
-                }
-              }, 50);
-            })();
+      if (open) {
+        closeChat();
+      } else {
+        openChat();
       }
     };
 
