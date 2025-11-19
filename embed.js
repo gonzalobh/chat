@@ -229,18 +229,24 @@
 #chatWidgetBubbleClose {
   background: #eef0f2;
   border: none;
-  color: #6b7280;
   border-radius: 50%;
   width: 22px;
   height: 22px;
-  display: inline-flex;
+  padding: 0;
+  display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 12px;
-  margin-top: 2px;
   flex-shrink: 0;
 }
+
+#chatWidgetBubbleClose svg {
+  width: 12px;
+  height: 12px;
+  stroke: #6b7280;
+  stroke-width: 2.5;
+}
+
 
 #chatWidgetFrame {
   position: fixed;
@@ -292,45 +298,6 @@
     btn.id = "chatWidgetBtn";
     btn.innerHTML = "💬";
 
-    const cloneIconNodes = (nodes) => Array.from(nodes || []).map((n) => n.cloneNode(true));
-    const applyIconNodes = (nodes) => {
-      btn.innerHTML = "";
-      nodes.forEach((n) => btn.appendChild(n.cloneNode(true)));
-    };
-
-    const createCloseIconNode = () => {
-      const close = document.createElement("span");
-      close.textContent = "×";
-      close.style.fontSize = "32px";
-      close.style.lineHeight = "1";
-      close.style.color = "#666";
-      return close;
-    };
-
-    let defaultIconNodes = cloneIconNodes(btn.childNodes);
-    let showingCloseIcon = false;
-
-    const setDefaultIconNodes = (nodes) => {
-      defaultIconNodes = cloneIconNodes(nodes);
-      if (!showingCloseIcon) {
-        applyIconNodes(defaultIconNodes);
-      }
-    };
-
-    const showCloseIcon = () => {
-      if (showingCloseIcon) return;
-      const currentIcon = cloneIconNodes(btn.childNodes);
-      if (currentIcon.length) defaultIconNodes = currentIcon;
-      applyIconNodes([createCloseIconNode()]);
-      showingCloseIcon = true;
-    };
-
-    const restoreDefaultIcon = () => {
-      if (!showingCloseIcon) return;
-      applyIconNodes(defaultIconNodes);
-      showingCloseIcon = false;
-    };
-
     const bubble = document.createElement("div");
     bubble.id = "chatWidgetBubble";
     const bubbleMessage = document.createElement("div");
@@ -338,7 +305,12 @@
     const bubbleClose = document.createElement("button");
     bubbleClose.id = "chatWidgetBubbleClose";
     bubbleClose.setAttribute("aria-label", "Cerrar mensaje");
-    bubbleClose.textContent = "×";
+bubbleClose.innerHTML = `
+  <svg viewBox="0 0 24 24" fill="none">
+    <line x1="6" y1="6" x2="18" y2="18" stroke-linecap="round"/>
+    <line x1="6" y1="18" x2="18" y2="6" stroke-linecap="round"/>
+  </svg>
+`;
     bubble.append(bubbleMessage, bubbleClose);
 
     const frame = document.createElement("iframe");
@@ -377,7 +349,6 @@
     const openChat = () => {
       hideBubble(true);
       frame.style.display = "block";
-      showCloseIcon();
       const openFn = () => frame.contentWindow.postMessage({ action: "openChatWindow" }, "*");
       if (ready) {
         openFn();
@@ -393,7 +364,6 @@
 
     const closeChat = () => {
       frame.style.display = "none";
-      restoreDefaultIcon();
     };
 
     applyWidgetPosition(currentPosition);
@@ -427,7 +397,8 @@
 
           break;
 
-        case "chatButtonIcon": {
+        case "chatButtonIcon":
+          btn.innerHTML = ""; // limpiar contenido previo
           btn.setAttribute("data-loaded", d.imageUrl || "");
 
           // 🟣 Aplicar border-radius dinámico al botón principal
@@ -435,48 +406,40 @@
             btn.style.borderRadius = d.radius + "%";
           }
 
-          const iconNodes = [];
+          // 🔹 Si llega una imagen personalizada desde el chat
+// 🔹 Si llega una imagen personalizada desde el chat
+if (d.imageUrl) {
+  const img = document.createElement("img");
+  img.src = d.imageUrl;
+  img.alt = "chat icon";
+  img.style.width = "28px";
+  img.style.height = "28px";
+  img.style.objectFit = "contain";
 
-          // 🔹 Si llega un SVG personalizado
-          if (d.svg?.includes("<svg")) {
+  // ❌ No aplicamos border-radius a la imagen, solo al botón
+  btn.appendChild(img);
+}
+
+          // 🔹 Si llega un SVG de fallback
+          else if (d.svg?.includes("<svg")) {
             const svg = new DOMParser()
               .parseFromString(d.svg, "image/svg+xml")
               .querySelector("svg");
             if (svg) {
               svg.setAttribute("width", "28");
               svg.setAttribute("height", "28");
-              iconNodes.push(svg);
+              btn.appendChild(svg);
             }
           }
 
-          // 🔹 Si llega una imagen personalizada desde el chat
-          if (!iconNodes.length && d.imageUrl) {
-            const img = document.createElement("img");
-            img.src = d.imageUrl;
-            img.alt = "chat icon";
-            img.style.width = "28px";
-            img.style.height = "28px";
-            img.style.objectFit = "contain";
-            iconNodes.push(img);
-          }
-
-          // 🔸 Fallback al ícono por defecto si no viene nada
-          if (!iconNodes.length) {
-            const span = document.createElement("span");
-            span.textContent = "💬";
-            iconNodes.push(span);
-          }
-
-          setDefaultIconNodes(iconNodes);
+          // Mostrar el botón
           break;
-        }
 
         case "chatButtonStatus":
           got = true;
           btn.style.display = d.visible === false ? "none" : "flex";
           if (d.visible === false) {
             frame.style.display = "none";
-            restoreDefaultIcon();
             hideBubble();
           } else {
             maybeShowBubble();
