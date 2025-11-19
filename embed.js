@@ -437,19 +437,8 @@
 
           const iconNodes = [];
 
-          // 🔹 Si llega una imagen personalizada desde el chat
-          if (d.imageUrl) {
-            const img = document.createElement("img");
-            img.src = d.imageUrl;
-            img.alt = "chat icon";
-            img.style.width = "28px";
-            img.style.height = "28px";
-            img.style.objectFit = "contain";
-            iconNodes.push(img);
-          }
-
-          // 🔹 Si llega un SVG de fallback
-          else if (d.svg?.includes("<svg")) {
+          // 🔹 Si llega un SVG personalizado
+          if (d.svg?.includes("<svg")) {
             const svg = new DOMParser()
               .parseFromString(d.svg, "image/svg+xml")
               .querySelector("svg");
@@ -458,6 +447,17 @@
               svg.setAttribute("height", "28");
               iconNodes.push(svg);
             }
+          }
+
+          // 🔹 Si llega una imagen personalizada desde el chat
+          if (!iconNodes.length && d.imageUrl) {
+            const img = document.createElement("img");
+            img.src = d.imageUrl;
+            img.alt = "chat icon";
+            img.style.width = "28px";
+            img.style.height = "28px";
+            img.style.objectFit = "contain";
+            iconNodes.push(img);
           }
 
           // 🔸 Fallback al ícono por defecto si no viene nada
