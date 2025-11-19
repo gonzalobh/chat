@@ -399,7 +399,7 @@ bubbleClose.innerHTML = `
 
         case "chatButtonIcon":
           btn.innerHTML = ""; // limpiar contenido previo
-          btn.setAttribute("data-loaded", d.imageUrl || "");
+          btn.setAttribute("data-loaded", d.imageUrl || d.svg || "");
 
           // 🟣 Aplicar border-radius dinámico al botón principal
           if (typeof d.radius !== "undefined") {
