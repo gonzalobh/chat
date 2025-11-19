@@ -1281,6 +1281,7 @@
     document.title = getTranslation(currentLanguage, 'Tomos Bot');
     const select = document.getElementById('languageSelect');
     if (select && select.value !== currentLanguage) select.value = currentLanguage;
+    window.dispatchEvent(new CustomEvent('languageChanged', { detail: { language: currentLanguage } }));
   }
   window.translationManager = {
     init() { applyLanguage(currentLanguage); },
