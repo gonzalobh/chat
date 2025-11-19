@@ -1516,7 +1516,7 @@ body.login-view #appContainer {
 
     </div>
 
-    <div id="headerSummaryCard" class="border border-gray-200 bg-white rounded-2xl p-4 flex items-center gap-4 shadow-sm">
+    <div class="border border-gray-200 bg-white rounded-2xl p-4 flex items-center gap-4 shadow-sm">
       <div class="w-14 h-14 rounded-xl bg-gray-100 flex items-center justify-center text-gray-500 relative overflow-hidden">
         <img id="headerSummaryImage" class="absolute inset-0 w-full h-full rounded-xl object-cover hidden" alt="Header logo preview" />
         <i data-lucide="message-square-text" class="w-5 h-5" id="headerSummaryIcon"></i>
@@ -7798,71 +7798,31 @@ function initSettingsTab(){
     toast(t('✔ Lead capture updated'));
   }));
 
-  function updateToggleBlock({ toggleId, badgeId, cardId }) {
-    const toggle = $(toggleId);
-    const badge = $(badgeId);
-    const card = $(cardId);
-    const isEnabled = !!toggle?.checked;
-    const translationKey = isEnabled ? 'Enabled' : 'Disabled';
-    const label = typeof t === 'function' ? t(translationKey) : translationKey;
-
-    if (badge) {
-      badge.textContent = label;
-      registerTranslationTarget(badge, translationKey);
-      badge.classList.toggle('bg-emerald-100', isEnabled);
-      badge.classList.toggle('text-emerald-700', isEnabled);
-      badge.classList.toggle('bg-gray-200', !isEnabled);
-      badge.classList.toggle('text-gray-600', !isEnabled);
-    }
-
-    if (card) {
-      card.classList.toggle('opacity-60', !isEnabled);
-      card.classList.toggle('pointer-events-none', !isEnabled);
-    }
-
-    return isEnabled;
-  }
-
-  function updateHeaderUI() {
-    return updateToggleBlock({
-      toggleId: 'tgChatHeaderVisible',
-      badgeId: 'chatHeaderToggleStatus',
-      cardId: 'headerSummaryCard'
-    });
-  }
-
-  function updateWelcomeUI() {
-    return updateToggleBlock({
-      toggleId: 'welcomeEnabled',
-      badgeId: 'welcomeSummaryBadge',
-      cardId: 'welcomeSummaryCard'
-    });
-  }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    updateHeaderUI();
-    updateWelcomeUI();
-  });
-
-  window.addEventListener('languageChanged', () => {
-    updateHeaderUI();
-    updateWelcomeUI();
-  });
-
   // Chat header visibility toggle
   const chatHeaderVisibleRef = eref('config/chatHeaderVisible');
   const chatHeaderToggle = $('tgChatHeaderVisible');
+  const chatHeaderStatus = $('chatHeaderToggleStatus');
+
+  const updateChatHeaderStatus = (isVisible) => {
+    if (!chatHeaderStatus) return;
+    chatHeaderStatus.textContent = isVisible ? 'Activado' : 'Oculto';
+    chatHeaderStatus.classList.toggle('bg-emerald-100', isVisible);
+    chatHeaderStatus.classList.toggle('text-emerald-700', isVisible);
+    chatHeaderStatus.classList.toggle('bg-gray-200', !isVisible);
+    chatHeaderStatus.classList.toggle('text-gray-600', !isVisible);
+  };
 
   chatHeaderVisibleRef.once('value', (s) => {
     const value = s.val();
     const enabled = value === false ? false : true;
     if (chatHeaderToggle) chatHeaderToggle.checked = enabled;
-    updateHeaderUI();
+    updateChatHeaderStatus(enabled);
     applyPreview();
   });
 
   chatHeaderToggle?.addEventListener('change', () => {
-    const enabled = updateHeaderUI();
+    const enabled = !!chatHeaderToggle.checked;
+    updateChatHeaderStatus(enabled);
     applyPreview();
     canWrite(async () => {
       await chatHeaderVisibleRef.set(enabled);
@@ -10380,6 +10340,8 @@ function initWelcome() {
   const file = $("welcomeImageFile");
   const preview = $("welcomePreview");
   const removeImageBtn = $("removeWelcomeImage");
+  const summaryCard = $("welcomeSummaryCard");
+  const summaryBadge = $("welcomeSummaryBadge");
   const summaryText = $("welcomeSummaryText");
   const summaryImage = $("welcomeSummaryImage");
   const summaryIcon = $("welcomeSummaryIcon");
@@ -10502,7 +10464,16 @@ function initWelcome() {
   };
 
   const updateSummary = () => {
-    const isEnabled = updateWelcomeUI();
+    const isEnabled = !!state.enabled;
+    if (summaryBadge) {
+      const badgeKey = isEnabled ? 'Enabled' : 'Disabled';
+      summaryBadge.textContent = t(badgeKey);
+      registerTranslationTarget(summaryBadge, badgeKey);
+      summaryBadge.classList.toggle('bg-emerald-100', isEnabled);
+      summaryBadge.classList.toggle('text-emerald-700', isEnabled);
+      summaryBadge.classList.toggle('bg-gray-200', !isEnabled);
+      summaryBadge.classList.toggle('text-gray-600', !isEnabled);
+    }
     if (summaryText) {
       const message = (state.text || "").trim();
       const fallback = t(defaultSummaryKey);
@@ -10522,6 +10493,9 @@ function initWelcome() {
         summaryImage.removeAttribute('src');
         if (summaryIcon) summaryIcon.classList.remove('hidden');
       }
+    }
+    if (summaryCard) {
+      summaryCard.classList.toggle('opacity-60', !isEnabled);
     }
   };
 
