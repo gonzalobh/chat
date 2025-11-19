@@ -1330,7 +1330,7 @@ body.login-view #appContainer {
             </div>
           </div>
 
-          <div id="widgetExampleClone" class="widget-mockup shadow-lg absolute right-0 bottom-[-86px] z-10">
+          <div id="widgetExampleClone" class="widget-mockup shadow-lg absolute bottom-[-86px] z-10" style="right: 0;">
             <img id="widgetExampleIconClone" src="widgets/1.png" alt="Widget preview icon" />
           </div>
         </div>
@@ -6885,6 +6885,7 @@ const widgetIconOptions = $$('.widget-icon-option');
 const widgetIconRef = eref('config/widgetIcon');
 const widgetPositionButtons = Array.from($$('.widget-position-btn'));
 const widgetPositionRef = eref('config/widgetPosition');
+const widgetMockupPreview = $('widgetExampleClone');
 
 const updateWidgetPreview = () => {
   const color = $('chatButtonColor')?.value || '#111111';
@@ -6980,6 +6981,29 @@ const normalizeWidgetPosition = (value) => {
   return valid.includes(normalized) ? normalized : 'right';
 };
 
+const applyWidgetPositionToMockup = (value) => {
+  const target = normalizeWidgetPosition(value);
+  if (!widgetMockupPreview) return target;
+
+  widgetMockupPreview.style.left = '';
+  widgetMockupPreview.style.right = '';
+  widgetMockupPreview.style.transform = '';
+  widgetMockupPreview.style.bottom = '-86px';
+
+  if (target === 'center') {
+    widgetMockupPreview.style.left = '50%';
+    widgetMockupPreview.style.transform = 'translateX(-50%)';
+  } else if (target === 'left') {
+    widgetMockupPreview.style.left = '0';
+    widgetMockupPreview.style.transform = 'none';
+  } else {
+    widgetMockupPreview.style.right = '0';
+    widgetMockupPreview.style.transform = 'none';
+  }
+
+  return target;
+};
+
 const setWidgetPositionUI = (value) => {
   const target = normalizeWidgetPosition(value);
   widgetPositionButtons.forEach(btn => {
@@ -6989,6 +7013,7 @@ const setWidgetPositionUI = (value) => {
     btn.classList.toggle('text-gray-900', active);
     btn.classList.toggle('shadow-inner', active);
   });
+  applyWidgetPositionToMockup(target);
   return target;
 };
 
