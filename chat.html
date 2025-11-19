@@ -1123,6 +1123,18 @@ eref('config/chatHeaderColor').on('value', s => {
   if (chatHeader) chatHeader.style.background = h;
 });
 
+// 🆕 Header visibility toggle
+const applyChatHeaderVisibility = (value) => {
+  const chatHeaderEl = document.getElementById('chatHeader');
+  if (!chatHeaderEl) return;
+  const isVisible = value === false ? false : true;
+  chatHeaderEl.style.display = isVisible ? '' : 'none';
+};
+
+eref('config/chatHeaderVisible').on('value', (s) => {
+  applyChatHeaderVisibility(s.val());
+});
+
 // 🟦 Header Text Color
 eref('config/chatHeaderTextColor').on('value', s => {
   const c = s.val() || '#1f2937';
