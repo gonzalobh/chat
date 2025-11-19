@@ -292,6 +292,45 @@
     btn.id = "chatWidgetBtn";
     btn.innerHTML = "💬";
 
+    const cloneIconNodes = (nodes) => Array.from(nodes || []).map((n) => n.cloneNode(true));
+    const applyIconNodes = (nodes) => {
+      btn.innerHTML = "";
+      nodes.forEach((n) => btn.appendChild(n.cloneNode(true)));
+    };
+
+    const createCloseIconNode = () => {
+      const close = document.createElement("span");
+      close.textContent = "×";
+      close.style.fontSize = "32px";
+      close.style.lineHeight = "1";
+      close.style.color = "#666";
+      return close;
+    };
+
+    let defaultIconNodes = cloneIconNodes(btn.childNodes);
+    let showingCloseIcon = false;
+
+    const setDefaultIconNodes = (nodes) => {
+      defaultIconNodes = cloneIconNodes(nodes);
+      if (!showingCloseIcon) {
+        applyIconNodes(defaultIconNodes);
+      }
+    };
+
+    const showCloseIcon = () => {
+      if (showingCloseIcon) return;
+      const currentIcon = cloneIconNodes(btn.childNodes);
+      if (currentIcon.length) defaultIconNodes = currentIcon;
+      applyIconNodes([createCloseIconNode()]);
+      showingCloseIcon = true;
+    };
+
+    const restoreDefaultIcon = () => {
+      if (!showingCloseIcon) return;
+      applyIconNodes(defaultIconNodes);
+      showingCloseIcon = false;
+    };
+
     const bubble = document.createElement("div");
     bubble.id = "chatWidgetBubble";
     const bubbleMessage = document.createElement("div");
@@ -338,6 +377,7 @@
     const openChat = () => {
       hideBubble(true);
       frame.style.display = "block";
+      showCloseIcon();
       const openFn = () => frame.contentWindow.postMessage({ action: "openChatWindow" }, "*");
       if (ready) {
         openFn();
@@ -353,6 +393,7 @@
 
     const closeChat = () => {
       frame.style.display = "none";
+      restoreDefaultIcon();
     };
 
     applyWidgetPosition(currentPosition);
@@ -386,8 +427,7 @@
 
           break;
 
-        case "chatButtonIcon":
-          btn.innerHTML = ""; // limpiar contenido previo
+        case "chatButtonIcon": {
           btn.setAttribute("data-loaded", d.imageUrl || "");
 
           // 🟣 Aplicar border-radius dinámico al botón principal
@@ -395,19 +435,18 @@
             btn.style.borderRadius = d.radius + "%";
           }
 
-          // 🔹 Si llega una imagen personalizada desde el chat
-// 🔹 Si llega una imagen personalizada desde el chat
-if (d.imageUrl) {
-  const img = document.createElement("img");
-  img.src = d.imageUrl;
-  img.alt = "chat icon";
-  img.style.width = "28px";
-  img.style.height = "28px";
-  img.style.objectFit = "contain";
+          const iconNodes = [];
 
-  // ❌ No aplicamos border-radius a la imagen, solo al botón
-  btn.appendChild(img);
-}
+          // 🔹 Si llega una imagen personalizada desde el chat
+          if (d.imageUrl) {
+            const img = document.createElement("img");
+            img.src = d.imageUrl;
+            img.alt = "chat icon";
+            img.style.width = "28px";
+            img.style.height = "28px";
+            img.style.objectFit = "contain";
+            iconNodes.push(img);
+          }
 
           // 🔹 Si llega un SVG de fallback
           else if (d.svg?.includes("<svg")) {
@@ -417,18 +456,27 @@ if (d.imageUrl) {
             if (svg) {
               svg.setAttribute("width", "28");
               svg.setAttribute("height", "28");
-              btn.appendChild(svg);
+              iconNodes.push(svg);
             }
           }
 
-          // Mostrar el botón
+          // 🔸 Fallback al ícono por defecto si no viene nada
+          if (!iconNodes.length) {
+            const span = document.createElement("span");
+            span.textContent = "💬";
+            iconNodes.push(span);
+          }
+
+          setDefaultIconNodes(iconNodes);
           break;
+        }
 
         case "chatButtonStatus":
           got = true;
           btn.style.display = d.visible === false ? "none" : "flex";
           if (d.visible === false) {
             frame.style.display = "none";
+            restoreDefaultIcon();
             hideBubble();
           } else {
             maybeShowBubble();
