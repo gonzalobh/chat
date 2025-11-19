@@ -67,14 +67,17 @@
     .sidebar-btn.active{background:#111;color:#fff}
     textarea{resize:none;overflow:hidden;min-height:400px;}
     .widget-mockup{width:72px;height:72px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,.12);transition:all .2s ease;border-radius:20px;background:#111}
-    .widget-mockup img{width:28px;height:28px;object-fit:contain;filter:drop-shadow(0 2px 4px rgba(0,0,0,.25));}
+    .widget-mockup .widget-icon-inline svg{filter:drop-shadow(0 2px 4px rgba(0,0,0,.25));}
     .widget-icon-trigger{width:60px;height:60px;border-radius:14px;border:1px solid #e5e7eb;display:flex;align-items:center;justify-content:center;background:#fff;transition:all .2s ease;box-shadow:0 4px 12px rgba(15,23,42,.08)}
     .widget-icon-trigger:hover{border-color:#2563eb;box-shadow:0 8px 18px rgba(37,99,235,.18)}
-    .widget-icon-trigger img{width:36px;height:36px;object-fit:contain}
+    .widget-icon-trigger .widget-icon-inline{width:36px;height:36px}
+    .widget-icon-trigger svg{width:100%;height:100%}
     #botAvatarButton{width:80px;height:80px;display:flex;align-items:center;justify-content:center}
     #botAvatarButton img{width:56px;height:56px}
     .widget-icon-option{border:2px solid transparent;border-radius:16px;padding:16px;background:#f9fafb;display:flex;align-items:center;justify-content:center;transition:all .2s ease}
-    .widget-icon-option img{width:44px;height:44px;object-fit:contain}
+    .widget-icon-option .widget-icon-inline{width:44px;height:44px}
+    .widget-icon-option svg{width:100%;height:100%}
+    .widget-icon-inline{display:flex;align-items:center;justify-content:center}
     .widget-icon-option:hover{border-color:#93c5fd;background:#eff6ff}
     .widget-icon-option.active{border-color:#2563eb;background:#eff6ff;box-shadow:0 0 0 4px rgba(37,99,235,.12)}
     .chat-columns{align-items:stretch;}
@@ -1332,7 +1335,7 @@ body.login-view #appContainer {
           </div>
 
           <div id="widgetExampleClone" class="widget-mockup shadow-lg absolute bottom-[-86px] z-10" style="right: 0;">
-            <img id="widgetExampleIconClone" src="widgets/1.png" alt="Widget preview icon" />
+            <div id="widgetExampleIconClone" class="widget-icon-inline w-7 h-7"></div>
           </div>
         </div>
       </div>
@@ -1671,11 +1674,16 @@ body.login-view #appContainer {
             </div>
             <div class="space-y-4">
               <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Icon</p>
-<div class="flex justify-center">
-  <button type="button" id="widgetIconTrigger" class="widget-icon-trigger" title="Elegir icono">
-    <img id="widgetIconTriggerImg" src="widgets/1.png" alt="Icono del widget" />
-  </button>
-</div>
+              <div class="flex justify-center">
+                <button type="button" id="widgetIconTrigger" class="widget-icon-trigger" title="Elegir icono">
+                  <div id="widgetIconTriggerImg" class="widget-icon-inline"></div>
+                </button>
+              </div>
+
+              <div class="flex items-center gap-4">
+                <input id="widgetIconColor" type="color" value="#ffffff" class="color-circle rounded-full cursor-pointer border border-gray-300 shadow-sm" />
+                <span class="text-sm font-medium text-gray-600 select-none">Widget Icon Color</span>
+              </div>
 
               <div class="flex items-center gap-3">
                 <label class="flex items-center gap-2 text-sm text-gray-600 select-none">
@@ -2622,8 +2630,12 @@ function get(reference) {
   return reference.get();
 }
 
-const DEFAULT_WIDGET_ICON = 'widgets/1.png';
+const DEFAULT_WIDGET_ICON = 'wids/1.svg';
+const DEFAULT_WIDGET_ICON_COLOR = '#ffffff';
 let currentWidgetIcon = DEFAULT_WIDGET_ICON;
+let currentWidgetIconColor = DEFAULT_WIDGET_ICON_COLOR;
+let currentWidgetIconMarkup = '';
+const widgetIconSvgCache = new Map();
 
 // ====== Helpers ======
 const $ = (id) => document.getElementById(id);
@@ -6264,7 +6276,7 @@ function setWriteEnabled(enabled) {
   const ids = [
     'saveChatPrimaryColor','saveChatButtonColor','uploadLogo','deleteLogo',
     'uploadAvatar','deleteAvatar','fontSelect','tgChatVisible','tgLeadCapture','tgChatHeaderVisible','hotelName',
-    'timeZone','saveContext','contextText','widgetIconTrigger',
+    'timeZone','saveContext','contextText','widgetIconTrigger','widgetIconColor',
     'addKnowledgePage','knowledgeUrlInput','confirmAddKnowledge','personalitySelect','btnNewBot',
     'newBotNameInput','confirmNewBot','userInviteEmail','userInviteSubmit','confirmDashboardDelete'
   ];
@@ -6920,26 +6932,112 @@ const widgetIconTrigger = $('widgetIconTrigger');
 const closeWidgetIconModal = $('closeWidgetIconModal');
 const widgetIconOptions = $$('.widget-icon-option');
 const widgetIconRef = eref('config/widgetIcon');
+const widgetIconColorRef = eref('config/widgetIconColor');
+const widgetIconColorInput = $('widgetIconColor');
 const widgetPositionButtons = Array.from($$('.widget-position-btn'));
 const widgetPositionRef = eref('config/widgetPosition');
 const widgetMockupPreview = $('widgetExampleClone');
+
+const widgetIconTargets = [
+  { el: widgetExampleIcon, size: 28 },
+  { el: $('widgetExampleIconClone'), size: 28 },
+  { el: widgetIconTriggerImg, size: 36 }
+];
+
+const normalizeWidgetIconKey = (value = '') => (value || '').replace(/^\//, '');
+
+const resolveWidgetIconPath = (iconPath) => {
+  const normalized = normalizeWidgetIconKey(iconPath) || DEFAULT_WIDGET_ICON;
+  if (normalized.startsWith('http')) return normalized;
+  return `/${normalized}`;
+};
+
+const getWidgetIconMarkup = async (iconPath) => {
+  const targetPath = resolveWidgetIconPath(iconPath);
+  if (widgetIconSvgCache.has(targetPath)) return widgetIconSvgCache.get(targetPath);
+  try {
+    const res = await fetch(targetPath);
+    const text = await res.text();
+    widgetIconSvgCache.set(targetPath, text || '');
+    return text || '';
+  } catch (error) {
+    console.error('No se pudo cargar el SVG del widget', error);
+    return '';
+  }
+};
+
+const createColoredSvg = (markup, color, size = 32) => {
+  if (!markup) return null;
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(markup, 'image/svg+xml');
+  const svg = doc.querySelector('svg');
+  if (!svg) return null;
+
+  const finalColor = normalizeHexColor(color) || DEFAULT_WIDGET_ICON_COLOR;
+  svg.setAttribute('fill', finalColor);
+  svg.setAttribute('width', size);
+  svg.setAttribute('height', size);
+
+  svg.querySelectorAll('*').forEach(node => {
+    const tag = (node.tagName || '').toLowerCase();
+    if (tag === 'svg') return;
+    const nodeFill = node.getAttribute('fill');
+    if (!nodeFill || nodeFill === 'currentColor') {
+      node.setAttribute('fill', finalColor);
+    }
+    const nodeStroke = node.getAttribute('stroke');
+    if (nodeStroke && nodeStroke !== 'none') {
+      node.setAttribute('stroke', finalColor);
+    }
+  });
+
+  return svg;
+};
+
+const renderWidgetIconTargets = () => {
+  if (!currentWidgetIconMarkup) return;
+  const color = currentWidgetIconColor || DEFAULT_WIDGET_ICON_COLOR;
+
+  widgetIconTargets.forEach(({ el, size }) => {
+    if (!el) return;
+    el.innerHTML = '';
+    const svg = createColoredSvg(currentWidgetIconMarkup, color, size);
+    if (svg) el.appendChild(svg);
+  });
+};
+
+const renderWidgetIconOptions = async () => {
+  const color = currentWidgetIconColor || DEFAULT_WIDGET_ICON_COLOR;
+  await Promise.all(widgetIconOptions.map(async (btn) => {
+    const iconPath = btn.dataset.widgetIcon;
+    if (!iconPath) return;
+    const markup = await getWidgetIconMarkup(iconPath);
+    if (!markup) return;
+    const svg = createColoredSvg(markup, color, 44);
+    if (!svg) return;
+    btn.innerHTML = '';
+    btn.appendChild(svg);
+    btn.classList.toggle('active', normalizeWidgetIconKey(btn.dataset.widgetIcon) === normalizeWidgetIconKey(currentWidgetIcon));
+  }));
+};
+
+const refreshWidgetIconRender = async () => {
+  currentWidgetIconMarkup = await getWidgetIconMarkup(currentWidgetIcon);
+  renderWidgetIconTargets();
+  renderWidgetIconOptions();
+};
 
 const updateWidgetPreview = () => {
   const color = $('chatButtonColor')?.value || '#111111';
   const radiusVal = parseInt($('widgetRadius')?.value) || 20;
 
-  // Aplica a ambos mockups: el original y el clon
   [ $('widgetExample'), $('widgetExampleClone') ].forEach(el => {
     if (!el) return;
     el.style.background = color;
     el.style.borderRadius = radiusVal + 'px';
   });
 
-  // Actualiza iconos en ambos + en el botón selector
-  [ $('widgetExampleIcon'), $('widgetExampleIconClone'), $('widgetIconTriggerImg') ].forEach(img => {
-    if (!img) return;
-    img.src = currentWidgetIcon || DEFAULT_WIDGET_ICON;
-  });
+  renderWidgetIconTargets();
 };
 
 updateWidgetPreview();
@@ -6962,32 +7060,53 @@ widgetIconModal?.addEventListener('click', (e) => {
   if (e.target === widgetIconModal) closeWidgetModal();
 });
 
-const applyWidgetIcon = (iconPath) => {
-  const finalIcon = (iconPath || '').trim() || DEFAULT_WIDGET_ICON;
+const applyWidgetIcon = async (iconPath) => {
+  const finalIcon = normalizeWidgetIconKey(iconPath) || DEFAULT_WIDGET_ICON;
   currentWidgetIcon = finalIcon;
   widgetIconOptions.forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.widgetIcon === finalIcon);
+    btn.classList.toggle('active', normalizeWidgetIconKey(btn.dataset.widgetIcon) === finalIcon);
   });
+  await refreshWidgetIconRender();
   updateWidgetPreview();
 };
 
-widgetIconRef.once('value', snap => {
-  applyWidgetIcon(snap.val());
+Promise.all([
+  widgetIconRef.once('value'),
+  widgetIconColorRef.once('value')
+]).then(async ([iconSnap, colorSnap]) => {
+  currentWidgetIconColor = normalizeHexColor(colorSnap.val()) || DEFAULT_WIDGET_ICON_COLOR;
+  if (widgetIconColorInput) widgetIconColorInput.value = currentWidgetIconColor;
+  if (!colorSnap.exists()) widgetIconColorRef.set(currentWidgetIconColor);
+  await applyWidgetIcon(iconSnap.val());
+  if (!iconSnap.exists()) widgetIconRef.set(currentWidgetIcon);
   updateWidgetPreview();
 });
 
 widgetIconOptions.forEach(btn => {
-  btn.addEventListener('click', () => {
+  btn.addEventListener('click', async () => {
     const icon = btn.dataset.widgetIcon;
     if (!icon) return;
-    canWrite(async () => {
+    await canWrite(async () => {
       await widgetIconRef.set(icon);
-      applyWidgetIcon(icon);
+      await applyWidgetIcon(icon);
       closeWidgetModal();
       toast(t('✔ Widget icon updated'));
       applyPreview();
     });
   });
+});
+
+widgetIconColorInput?.addEventListener('input', (e) => {
+  const color = normalizeHexColor(e.target.value) || DEFAULT_WIDGET_ICON_COLOR;
+  currentWidgetIconColor = color;
+  e.target.value = color;
+  renderWidgetIconTargets();
+  renderWidgetIconOptions();
+  canWrite(async () => {
+    await widgetIconColorRef.set(color);
+    toast(t('✔ Widget icon color updated'));
+  });
+  applyPreview();
 });
 
 // === Widget Border Radius ===
@@ -7667,13 +7786,11 @@ function applyPreview() {
   }
 
   // 🔁 Actualizar íconos en ambos mockups y en el selector
-  const widgetExampleIcon = $('widgetExampleIcon');
-  const widgetExampleIconClone = $('widgetExampleIconClone');
-  const widgetIconTriggerImg = $('widgetIconTriggerImg');
-
-  [widgetExampleIcon, widgetExampleIconClone, widgetIconTriggerImg].forEach(img => {
-    if (img) img.src = currentWidgetIcon || DEFAULT_WIDGET_ICON;
-  });
+  if (currentWidgetIconMarkup) {
+    renderWidgetIconTargets();
+  } else {
+    refreshWidgetIconRender();
+  }
 
   // 🪄 Fondo y texto dentro del iframe del chat
   const iframe = document.getElementById('liveChatFrame');
@@ -10604,14 +10721,23 @@ function initWelcome() {
     </div>
     <p class="text-sm text-gray-500 mb-4">Select one of the available icons for your widget.</p>
     <div class="grid grid-cols-3 gap-4">
-      <button type="button" class="widget-icon-option" data-widget-icon="widgets/1.png">
-        <img src="widgets/1.png" alt="Icon 1" />
+      <button type="button" class="widget-icon-option" data-widget-icon="wids/1.svg">
+        <div class="widget-icon-inline"></div>
       </button>
-      <button type="button" class="widget-icon-option" data-widget-icon="widgets/2.png">
-        <img src="widgets/2.png" alt="Icon 2" />
+      <button type="button" class="widget-icon-option" data-widget-icon="wids/2.svg">
+        <div class="widget-icon-inline"></div>
       </button>
-      <button type="button" class="widget-icon-option" data-widget-icon="widgets/3.png">
-        <img src="widgets/3.png" alt="Icon 3" />
+      <button type="button" class="widget-icon-option" data-widget-icon="wids/3.svg">
+        <div class="widget-icon-inline"></div>
+      </button>
+      <button type="button" class="widget-icon-option" data-widget-icon="wids/B5.svg">
+        <div class="widget-icon-inline"></div>
+      </button>
+      <button type="button" class="widget-icon-option" data-widget-icon="wids/B6.svg">
+        <div class="widget-icon-inline"></div>
+      </button>
+      <button type="button" class="widget-icon-option" data-widget-icon="wids/C1.svg">
+        <div class="widget-icon-inline"></div>
       </button>
     </div>
   </div>
