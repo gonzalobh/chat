@@ -136,6 +136,18 @@
       transition: transform .25s ease, box-shadow .25s ease, border-radius .25s ease;
       transform: translateX(var(--widget-horizontal-translate));
     }
+    #chatWidgetBtn svg {
+      display: block;
+      opacity: 0;
+      transform: scale(0.92) rotate(-8deg);
+      transform-origin: center;
+      transition: opacity 0.28s ease, transform 0.28s ease;
+      animation: widgetIconSwap 0.28s ease;
+    }
+    @keyframes widgetIconSwap {
+      from { opacity: 0; transform: scale(0.88) rotate(-90deg); }
+      to { opacity: 1; transform: scale(1) rotate(0deg); }
+    }
     #chatWidgetBtn[data-position="left"] {
       left: 24px;
       right: auto;
@@ -266,7 +278,25 @@
   display: none;
   z-index: 99999;
   overflow: hidden;
-  transform: translateX(var(--widget-frame-translate));
+  opacity: 0;
+  transform: translateX(var(--widget-frame-translate)) translateY(14px) scale(0.97);
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.32s ease, transform 0.32s ease, visibility 0.32s ease;
+}
+
+#chatWidgetFrame.is-open {
+  opacity: 1;
+  transform: translateX(var(--widget-frame-translate)) translateY(0) scale(1);
+  visibility: visible;
+  pointer-events: auto;
+}
+
+#chatWidgetFrame.is-closing {
+  opacity: 0;
+  transform: translateX(var(--widget-frame-translate)) translateY(14px) scale(0.97);
+  visibility: visible;
+  pointer-events: none;
 }
 
 
@@ -306,6 +336,7 @@
     let originalIconElement = null;
     let originalIconColor = null;
     let isChatOpen = false;
+    let frameHideTimeout = null;
 
     const bubble = document.createElement("div");
     bubble.id = "chatWidgetBubble";
@@ -425,7 +456,15 @@
 
     const openChat = () => {
       hideBubble(true);
+      if (frameHideTimeout) {
+        clearTimeout(frameHideTimeout);
+        frameHideTimeout = null;
+      }
       frame.style.display = "block";
+      frame.classList.remove("is-closing");
+      requestAnimationFrame(() => {
+        frame.classList.add("is-open");
+      });
       showCloseIcon();
       const openFn = () => frame.contentWindow.postMessage({ action: "openChatWindow" }, "*");
       if (ready) {
@@ -441,7 +480,12 @@
     };
 
     const closeChat = () => {
-      frame.style.display = "none";
+      frame.classList.remove("is-open");
+      frame.classList.add("is-closing");
+      frameHideTimeout = setTimeout(() => {
+        frame.style.display = "none";
+        frame.classList.remove("is-closing");
+      }, 320);
       showOriginalIcon();
     };
 
