@@ -7029,9 +7029,9 @@ const refreshWidgetIconRender = async () => {
   renderWidgetIconOptions();
 };
 
-const updateWidgetPreview = () => {
-  const color = $('chatButtonColor')?.value || '#111111';
-  const radiusVal = parseInt($('widgetRadius')?.value) || 20;
+  const updateWidgetPreview = () => {
+    const color = $('chatButtonColor')?.value || '#111111';
+    const radiusVal = parseInt($('widgetRadius')?.value) || 20;
 
   [ $('widgetExample'), $('widgetExampleClone') ].forEach(el => {
     if (!el) return;
@@ -7043,6 +7043,11 @@ const updateWidgetPreview = () => {
     widgetIconTrigger.style.background = color;
     widgetIconTrigger.style.borderRadius = radiusVal + 'px';
   }
+
+  widgetIconOptions.forEach((btn) => {
+    btn.style.background = color;
+    btn.style.borderRadius = radiusVal + 'px';
+  });
 
   renderWidgetIconTargets();
 };
