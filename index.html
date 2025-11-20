@@ -7037,6 +7037,12 @@ const updateWidgetPreview = () => {
     el.style.borderRadius = radiusVal + 'px';
   });
 
+  if (widgetIconTrigger) {
+    widgetIconTrigger.style.background = color;
+    widgetIconTrigger.style.borderRadius = radiusVal + 'px';
+    widgetIconTrigger.style.borderColor = color;
+  }
+
   renderWidgetIconTargets();
 };
 
@@ -7769,21 +7775,7 @@ function applyPreview() {
   $('previewBubble').style.background = p;
   $('previewBubble').style.color = ct;
 
-  // 🎨 Widget principal
-  const widgetExample = $('widgetExample');
-  if (widgetExample) {
-    const radiusVal = parseInt($('widgetRadius')?.value) || 20;
-    widgetExample.style.background = b;
-    widgetExample.style.borderRadius = radiusVal + 'px';
-  }
-
-  // 🧩 Nuevo: aplicar cambios también al clon del widget debajo del mockup
-  const widgetExampleClone = $('widgetExampleClone');
-  if (widgetExampleClone) {
-    const radiusVal = parseInt($('widgetRadius')?.value) || 20;
-    widgetExampleClone.style.background = b;
-    widgetExampleClone.style.borderRadius = radiusVal + 'px';
-  }
+  updateWidgetPreview();
 
   // 🔁 Actualizar íconos en ambos mockups y en el selector
   if (currentWidgetIconMarkup) {
