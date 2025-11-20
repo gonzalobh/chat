@@ -252,22 +252,31 @@
 }
 
 
-#chatWidgetFrame {
-  position: fixed;
-  bottom: 90px;
-  left: auto;
-  right: auto;
-  width: 420px;
-  max-height: calc(100vh - 110px);
-  height: 90vh;
-  border: none;
-  border-radius: 18px;
-  box-shadow: 0 6px 24px rgba(0,0,0,0.2);
-  display: none;
-  z-index: 99999;
-  overflow: hidden;
-  transform: translateX(var(--widget-frame-translate));
-}
+    #chatWidgetFrame {
+      position: fixed;
+      bottom: 90px;
+      left: auto;
+      right: auto;
+      width: 420px;
+      max-height: calc(100vh - 110px);
+      height: 90vh;
+      border: none;
+      border-radius: 18px;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.2);
+      display: none;
+      z-index: 99999;
+      overflow: hidden;
+      transform: translateX(var(--widget-frame-translate)) translateY(20px);
+      opacity: 0;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      pointer-events: none;
+    }
+
+    #chatWidgetFrame.is-visible {
+      opacity: 1;
+      transform: translateX(var(--widget-frame-translate)) translateY(0);
+      pointer-events: auto;
+    }
 
 
     #chatWidgetFrame[data-position="left"] {
@@ -291,7 +300,13 @@
       #chatWidgetFrame[data-position="center"],
       #chatWidgetFrame[data-position="right"]{
         width:100%;height:100%;bottom:0;left:0;right:0;border-radius:0;
-        --widget-frame-translate:0;transform:none;
+        --widget-frame-translate:0;transform: translateY(20px);
+      }
+      #chatWidgetFrame.is-visible,
+      #chatWidgetFrame.is-visible[data-position="left"],
+      #chatWidgetFrame.is-visible[data-position="center"],
+      #chatWidgetFrame.is-visible[data-position="right"]{
+        transform: translateY(0);
       }
     }
   `;
@@ -426,6 +441,7 @@
     const openChat = () => {
       hideBubble(true);
       frame.style.display = "block";
+      requestAnimationFrame(() => frame.classList.add("is-visible"));
       showCloseIcon();
       const openFn = () => frame.contentWindow.postMessage({ action: "openChatWindow" }, "*");
       if (ready) {
@@ -441,7 +457,13 @@
     };
 
     const closeChat = () => {
-      frame.style.display = "none";
+      frame.classList.remove("is-visible");
+      const hideFrame = () => {
+        frame.style.display = "none";
+        frame.removeEventListener("transitionend", hideFrame);
+      };
+      frame.addEventListener("transitionend", hideFrame);
+      setTimeout(hideFrame, 300);
       showOriginalIcon();
     };
 
