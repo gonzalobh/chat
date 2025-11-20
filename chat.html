@@ -1293,7 +1293,7 @@ const resolveWidgetIconUrl = (iconPath) => {
   const normalized = (iconPath || '').trim() || DEFAULT_WIDGET_ICON_PATH;
   if (normalized.startsWith('http')) return normalized;
   const cleanPath = normalized.startsWith('/') ? normalized.slice(1) : normalized;
-  return `${window.location.origin}/${cleanPath}`;
+return `https://tomos.bot/${cleanPath}`;
 };
 
 const fetchWidgetIconMarkup = async (iconPath) => {
