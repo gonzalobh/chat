@@ -143,16 +143,7 @@
       box-shadow: 0 6px 14px rgba(0,0,0,0.3);
     }
         #chatWidgetBtn::after {
-    content: "";
-    position: absolute;
-    bottom: 0px;
-    right: -2px;
-    width: 13px;
-    height: 13px;
-    background: #2ecc71;
-    border-radius: 50%;
-    border: 2px solid #ffffff;
-    display: block;
+
     }
 
 #chatWidgetBubble {
@@ -421,16 +412,17 @@ if (d.imageUrl) {
 }
 
           // 🔹 Si llega un SVG de fallback
-          else if (d.svg?.includes("<svg")) {
-            const svg = new DOMParser()
-              .parseFromString(d.svg, "image/svg+xml")
-              .querySelector("svg");
-            if (svg) {
-              svg.setAttribute("width", "28");
-              svg.setAttribute("height", "28");
-              btn.appendChild(svg);
-            }
-          }
+else if (d.svg?.includes("<svg")) {
+    btn.innerHTML = "";   // ← limpia el emoji 💬
+    const svg = new DOMParser()
+      .parseFromString(d.svg, "image/svg+xml")
+      .querySelector("svg");
+    if (svg) {
+      svg.setAttribute("width", "28");
+      svg.setAttribute("height", "28");
+      btn.appendChild(svg);
+    }
+}
 
           // Mostrar el botón
           break;
