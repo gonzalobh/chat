@@ -74,7 +74,7 @@
     .widget-icon-trigger svg{width:100%;height:100%}
     #botAvatarButton{width:80px;height:80px;display:flex;align-items:center;justify-content:center}
     #botAvatarButton img{width:56px;height:56px}
-    .widget-icon-option{border:2px solid transparent;border-radius:16px;padding:16px;background:#f9fafb;display:flex;align-items:center;justify-content:center;transition:all .2s ease}
+    .widget-icon-option{border:2px solid transparent;border-radius:var(--widget-option-radius, 16px);padding:16px;background:var(--widget-option-bg, #f9fafb);display:flex;align-items:center;justify-content:center;transition:all .2s ease}
     .widget-icon-option .widget-icon-inline{width:44px;height:44px}
     .widget-icon-option svg{width:100%;height:100%}
     .widget-icon-inline{display:flex;align-items:center;justify-content:center}
@@ -7021,12 +7021,23 @@ const renderWidgetIconOptions = async () => {
     btn.appendChild(svg);
     btn.classList.toggle('active', normalizeWidgetIconKey(btn.dataset.widgetIcon) === normalizeWidgetIconKey(currentWidgetIcon));
   }));
+  updateWidgetIconOptionStyles();
 };
 
 const refreshWidgetIconRender = async () => {
   currentWidgetIconMarkup = await getWidgetIconMarkup(currentWidgetIcon);
   renderWidgetIconTargets();
   renderWidgetIconOptions();
+};
+
+const updateWidgetIconOptionStyles = () => {
+  const color = $('chatButtonColor')?.value || '#111111';
+  const radiusVal = parseInt($('widgetRadius')?.value) || 20;
+
+  widgetIconOptions.forEach(btn => {
+    btn.style.setProperty('--widget-option-bg', color);
+    btn.style.setProperty('--widget-option-radius', `${radiusVal}px`);
+  });
 };
 
 const updateWidgetPreview = () => {
@@ -7044,6 +7055,7 @@ const updateWidgetPreview = () => {
     widgetIconTrigger.style.borderRadius = radiusVal + 'px';
   }
 
+  updateWidgetIconOptionStyles();
   renderWidgetIconTargets();
 };
 
@@ -7797,6 +7809,8 @@ function applyPreview() {
     widgetIconTrigger.style.background = b;
     widgetIconTrigger.style.borderRadius = radiusVal + 'px';
   }
+
+  updateWidgetIconOptionStyles();
 
   // 🔁 Actualizar íconos en ambos mockups y en el selector
   if (currentWidgetIconMarkup) {
