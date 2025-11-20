@@ -6946,13 +6946,6 @@ const widgetIconTargets = [
   { el: widgetIconTriggerImg, size: 36 }
 ];
 
-const applyWidgetIconOptionStyles = (backgroundColor, radiusVal) => {
-  widgetIconOptions.forEach(btn => {
-    btn.style.background = backgroundColor;
-    btn.style.borderRadius = radiusVal + 'px';
-  });
-};
-
 const normalizeWidgetIconKey = (value = '') => (value || '').replace(/^\//, '');
 
 const resolveWidgetIconPath = (iconPath) => {
@@ -7039,8 +7032,6 @@ const refreshWidgetIconRender = async () => {
 const updateWidgetPreview = () => {
   const color = $('chatButtonColor')?.value || '#111111';
   const radiusVal = parseInt($('widgetRadius')?.value) || 20;
-
-  applyWidgetIconOptionStyles(color, radiusVal);
 
   [ $('widgetExample'), $('widgetExampleClone') ].forEach(el => {
     if (!el) return;
@@ -7779,7 +7770,6 @@ function applyPreview() {
   const hb = $('chatHeaderColor')?.value || '#ffffff';
   const ht = $('chatHeaderTextColor')?.value || '#1f2937';
   const chatHeaderVisible = $('tgChatHeaderVisible') ? !!$('tgChatHeaderVisible').checked : true;
-  const radiusVal = parseInt($('widgetRadius')?.value) || 20;
 
   // 🎨 Vista previa del chat dentro del mockup
   $('previewBtn').style.background = b;
@@ -7789,6 +7779,7 @@ function applyPreview() {
   // 🎨 Widget principal
   const widgetExample = $('widgetExample');
   if (widgetExample) {
+    const radiusVal = parseInt($('widgetRadius')?.value) || 20;
     widgetExample.style.background = b;
     widgetExample.style.borderRadius = radiusVal + 'px';
   }
@@ -7796,13 +7787,13 @@ function applyPreview() {
   // 🧩 Nuevo: aplicar cambios también al clon del widget debajo del mockup
   const widgetExampleClone = $('widgetExampleClone');
   if (widgetExampleClone) {
+    const radiusVal = parseInt($('widgetRadius')?.value) || 20;
     widgetExampleClone.style.background = b;
     widgetExampleClone.style.borderRadius = radiusVal + 'px';
   }
 
-  applyWidgetIconOptionStyles(b, radiusVal);
-
   if (widgetIconTrigger) {
+    const radiusVal = parseInt($('widgetRadius')?.value) || 20;
     widgetIconTrigger.style.background = b;
     widgetIconTrigger.style.borderRadius = radiusVal + 'px';
   }
