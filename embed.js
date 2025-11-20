@@ -109,7 +109,13 @@
       }
     }
 
-    // 💅 Estilos del widget
+    // 🔹 Crear host + Shadow DOM para aislar estilos del sitio externo
+    const host = document.createElement("div");
+    host.id = "tomos-chat-widget-root";
+    document.body.appendChild(host);
+    const shadow = host.attachShadow({ mode: "open" });
+
+    // 💅 Estilos del widget (dentro del Shadow DOM)
     const style = document.createElement("style");
     style.textContent = `
     #chatWidgetBtn {
@@ -282,9 +288,10 @@
       }
     }
   `;
-    document.head.appendChild(style);
+    // 🔹 estilos dentro del shadow, no en <head>
+    shadow.appendChild(style);
 
-    // 🧩 Crear elementos
+    // 🧩 Crear elementos (dentro del Shadow DOM)
     const btn = document.createElement("button");
     btn.id = "chatWidgetBtn";
     btn.innerHTML = "💬";
@@ -296,7 +303,7 @@
     const bubbleClose = document.createElement("button");
     bubbleClose.id = "chatWidgetBubbleClose";
     bubbleClose.setAttribute("aria-label", "Cerrar mensaje");
-bubbleClose.innerHTML = `
+    bubbleClose.innerHTML = `
   <svg viewBox="0 0 24 24" fill="none">
     <line x1="6" y1="6" x2="18" y2="18" stroke-linecap="round"/>
     <line x1="6" y1="18" x2="18" y2="6" stroke-linecap="round"/>
@@ -308,7 +315,9 @@ bubbleClose.innerHTML = `
     frame.id = "chatWidgetFrame";
     frame.src = iframeSrc;
     frame.allow = "clipboard-write; clipboard-read";
-    document.body.append(btn, bubble, frame);
+
+    // 🔹 Todo vive dentro del shadow
+    shadow.append(btn, bubble, frame);
 
     // 🔄 Comunicación con el iframe
     let ready = false, got = false, currentPosition = 'right', welcomeBubbleDismissed = false;
@@ -384,8 +393,7 @@ bubbleClose.innerHTML = `
         case "chatReady":
           ready = true;
           frame.contentWindow.postMessage({ action: "getChatButtonIcon" }, "*");
-            frame.contentWindow.postMessage({ action: "getChatButtonStatus" }, "*"); // ← añadir esta línea
-
+          frame.contentWindow.postMessage({ action: "getChatButtonStatus" }, "*");
           break;
 
         case "chatButtonIcon":
@@ -397,34 +405,29 @@ bubbleClose.innerHTML = `
             btn.style.borderRadius = d.radius + "%";
           }
 
-          // 🔹 Si llega una imagen personalizada desde el chat
-// 🔹 Si llega una imagen personalizada desde el chat
-if (d.imageUrl) {
-  const img = document.createElement("img");
-  img.src = d.imageUrl;
-  img.alt = "chat icon";
-  img.style.width = "28px";
-  img.style.height = "28px";
-  img.style.objectFit = "contain";
+          // 🔹 Imagen personalizada
+          if (d.imageUrl) {
+            const img = document.createElement("img");
+            img.src = d.imageUrl;
+            img.alt = "chat icon";
+            img.style.width = "28px";
+            img.style.height = "28px";
+            img.style.objectFit = "contain";
+            btn.appendChild(img);
+          }
+          // 🔹 SVG inline (estrella, etc.)
+          else if (d.svg?.includes("<svg")) {
+            btn.innerHTML = "";
+            const svg = new DOMParser()
+              .parseFromString(d.svg, "image/svg+xml")
+              .querySelector("svg");
+            if (svg) {
+              svg.setAttribute("width", "28");
+              svg.setAttribute("height", "28");
+              btn.appendChild(svg);
+            }
+          }
 
-  // ❌ No aplicamos border-radius a la imagen, solo al botón
-  btn.appendChild(img);
-}
-
-          // 🔹 Si llega un SVG de fallback
-else if (d.svg?.includes("<svg")) {
-    btn.innerHTML = "";   // ← limpia el emoji 💬
-    const svg = new DOMParser()
-      .parseFromString(d.svg, "image/svg+xml")
-      .querySelector("svg");
-    if (svg) {
-      svg.setAttribute("width", "28");
-      svg.setAttribute("height", "28");
-      btn.appendChild(svg);
-    }
-}
-
-          // Mostrar el botón
           break;
 
         case "chatButtonStatus":
