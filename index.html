@@ -7037,6 +7037,11 @@ const updateWidgetPreview = () => {
     el.style.borderRadius = radiusVal + 'px';
   });
 
+  if (widgetIconTrigger) {
+    widgetIconTrigger.style.background = color;
+    widgetIconTrigger.style.borderRadius = radiusVal + 'px';
+  }
+
   renderWidgetIconTargets();
 };
 
@@ -7783,6 +7788,12 @@ function applyPreview() {
     const radiusVal = parseInt($('widgetRadius')?.value) || 20;
     widgetExampleClone.style.background = b;
     widgetExampleClone.style.borderRadius = radiusVal + 'px';
+  }
+
+  if (widgetIconTrigger) {
+    const radiusVal = parseInt($('widgetRadius')?.value) || 20;
+    widgetIconTrigger.style.background = b;
+    widgetIconTrigger.style.borderRadius = radiusVal + 'px';
   }
 
   // 🔁 Actualizar íconos en ambos mockups y en el selector
