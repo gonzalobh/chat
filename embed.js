@@ -1,4 +1,11 @@
 (() => {
+
+  // 🚫 Evitar que embed.js se ejecute dentro del panel admin o dentro del iframe de preview
+  if (window.location.hostname === "tomos.bot") {
+    console.warn("Embed.js deshabilitado dentro del panel admin");
+    return;
+  }
+
   const FIREBASE_DB_URL = "https://timbre-c9547-default-rtdb.europe-west1.firebasedatabase.app";
 
   const normalizeOrigin = (value) => {

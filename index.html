@@ -7824,6 +7824,60 @@ function applyPreview() {
   updateActiveTemplateIndicator();
 }
 
+async function refreshWidgetIconRender(iconName, color) {
+  try {
+    if (!iconName) return;
+
+    const iconURL = `/wids/${iconName}.svg`;
+
+    // --- 1. Descargar el SVG desde la carpeta wids ---
+    const svgText = await fetch(iconURL).then(r => r.text());
+
+    // --- 2. Convertir el SVG en inline y teñirlo ---
+    const tintedSVG = tintSVG(svgText, color);
+
+    // --- 3. Insertar en todos los lugares del DOM ---
+    const targets = [
+      document.getElementById("widgetExampleIcon"),
+      document.getElementById("widgetExampleIconClone"),
+      document.getElementById("widgetPreviewIcon"),
+      document.getElementById("widgetPreviewIcon2"),
+      document.getElementById("widgetIconInSettings"),
+    ].filter(Boolean);
+
+    targets.forEach(el => {
+      el.innerHTML = tintedSVG;
+    });
+
+    // --- 4. Guardar para que el script de integración lo reciba ---
+    window.currentWidgetIcon = {
+      name: iconName,
+      svg: tintedSVG
+    };
+
+    console.log("Widget icon updated:", iconName, color);
+
+  } catch (err) {
+    console.error("Error refreshing widget icon:", err);
+  }
+}
+function tintSVG(svgText, color) {
+  if (!color) return svgText;
+
+  let tinted = svgText;
+
+  // Forzar que el SVG tenga fill en todas las rutas
+  tinted = tinted.replace(/fill="[^"]*"/g, `fill="${color}"`);
+
+  // Si no tiene fill, lo agregamos
+  tinted = tinted.replace(/<path /g, `<path fill="${color}" `);
+  tinted = tinted.replace(/<circle /g, `<circle fill="${color}" `);
+  tinted = tinted.replace(/<rect /g, `<rect fill="${color}" `);
+
+  return tinted;
+}
+
+
 // ====== Settings Tab ======
 function initSettingsTab(){
   initChatTemplatesUI();
@@ -10730,13 +10784,13 @@ function initWelcome() {
       <button type="button" class="widget-icon-option" data-widget-icon="wids/3.svg">
         <div class="widget-icon-inline"></div>
       </button>
-      <button type="button" class="widget-icon-option" data-widget-icon="wids/B5.svg">
+      <button type="button" class="widget-icon-option" data-widget-icon="wids/4.svg">
         <div class="widget-icon-inline"></div>
       </button>
-      <button type="button" class="widget-icon-option" data-widget-icon="wids/B6.svg">
+      <button type="button" class="widget-icon-option" data-widget-icon="wids/5.svg">
         <div class="widget-icon-inline"></div>
       </button>
-      <button type="button" class="widget-icon-option" data-widget-icon="wids/C1.svg">
+      <button type="button" class="widget-icon-option" data-widget-icon="wids/6.svg">
         <div class="widget-icon-inline"></div>
       </button>
     </div>
