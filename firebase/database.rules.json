@@ -1,0 +1,90 @@
+{
+  "rules": {
+    ".read": true,
+    ".write": false,
+
+    "globalAdmins": {
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('globalAdmins/' + auth.uid).val() === true"
+    },
+
+    "empresas": {
+      "$empresa": {
+        ".read": true,
+        ".write": false,
+
+        "config": {
+          ".read": true,
+          ".write": "
+            auth != null && (
+              root.child('empresas/' + $empresa + '/config/adminEmail').val() === auth.token.email ||
+              root.child('globalAdmins/' + auth.uid).val() === true
+            )
+          "
+        },
+
+        "bots": {
+          ".read": true,
+          ".write": "
+            auth != null && (
+              root.child('empresas/' + $empresa + '/config/adminEmail').val() === auth.token.email ||
+              root.child('globalAdmins/' + auth.uid).val() === true
+            )
+          ",
+
+          "$bot": {
+            ".read": true,
+            ".write": "
+              auth != null && (
+                root.child('empresas/' + $empresa + '/config/adminEmail').val() === auth.token.email ||
+                root.child('globalAdmins/' + auth.uid).val() === true ||
+                root.child('empresas/' + $empresa + '/bots/' + $bot + '/allowedEditors/' + auth.token.email.replace('.', ',')).val() === true
+              )
+            ",
+
+            "config": {
+              ".read": true,
+              ".write": "
+                auth != null && (
+                  root.child('empresas/' + $empresa + '/config/adminEmail').val() === auth.token.email ||
+                  root.child('globalAdmins/' + auth.uid).val() === true ||
+                  root.child('empresas/' + $empresa + '/bots/' + $bot + '/allowedEditors/' + auth.token.email.replace('.', ',')).val() === true
+                )
+              "
+            },
+
+            "conversaciones": {
+              ".read": true,
+              ".write": true
+            },
+
+            "leads": {
+              ".read": false,
+              ".write": true
+            }
+          }
+        },
+
+        "hotelInfo": {
+          ".read": true,
+          ".write": "
+            auth != null && (
+              root.child('empresas/' + $empresa + '/config/adminEmail').val() === auth.token.email ||
+              root.child('globalAdmins/' + auth.uid).val() === true
+            )
+          "
+        },
+
+        "mensajes": {
+          ".read": "
+            auth != null && (
+              root.child('empresas/' + $empresa + '/config/adminEmail').val() === auth.token.email ||
+              root.child('globalAdmins/' + auth.uid).val() === true
+            )
+          ",
+          ".write": true
+        }
+      }
+    }
+  }
+}
