@@ -303,6 +303,10 @@
     btn.id = "chatWidgetBtn";
     btn.innerHTML = "💬";
 
+    let originalIconElement = null;
+    let originalIconColor = null;
+    let isChatOpen = false;
+
     const bubble = document.createElement("div");
     bubble.id = "chatWidgetBubble";
     const bubbleMessage = document.createElement("div");
@@ -335,6 +339,72 @@
       if (permanent) welcomeBubbleDismissed = true;
     };
 
+    const deriveIconColor = (element) => {
+      const target = element?.querySelector ? (element.querySelector("svg") || element) : element;
+      if (target?.tagName?.toLowerCase() === "svg") {
+        const fill = target.getAttribute("fill") || target.style?.fill;
+        if (fill && fill !== "none") return fill;
+        const colorAttr = target.getAttribute("color") || target.style?.color;
+        if (colorAttr && colorAttr !== "none") return colorAttr;
+        const computed = getComputedStyle(target);
+        if (computed?.fill && computed.fill !== "none") return computed.fill;
+        if (computed?.color && computed.color !== "none") return computed.color;
+      }
+      const buttonColor = getComputedStyle(btn).color;
+      return buttonColor || "currentColor";
+    };
+
+    const setButtonIcon = (node) => {
+      btn.innerHTML = "";
+      if (node) btn.appendChild(node);
+    };
+
+    const renderCloseIcon = () => {
+      const color = originalIconColor || deriveIconColor(btn);
+      const svgNS = "http://www.w3.org/2000/svg";
+      const svg = document.createElementNS(svgNS, "svg");
+      svg.setAttribute("viewBox", "0 0 24 24");
+      svg.setAttribute("width", "28");
+      svg.setAttribute("height", "28");
+      svg.setAttribute("fill", "none");
+      svg.setAttribute("stroke", color);
+      svg.setAttribute("stroke-width", "2.5");
+      svg.setAttribute("stroke-linecap", "round");
+
+      const line1 = document.createElementNS(svgNS, "line");
+      line1.setAttribute("x1", "6");
+      line1.setAttribute("y1", "6");
+      line1.setAttribute("x2", "18");
+      line1.setAttribute("y2", "18");
+
+      const line2 = document.createElementNS(svgNS, "line");
+      line2.setAttribute("x1", "6");
+      line2.setAttribute("y1", "18");
+      line2.setAttribute("x2", "18");
+      line2.setAttribute("y2", "6");
+
+      svg.append(line1, line2);
+      setButtonIcon(svg);
+    };
+
+    const restoreOriginalIcon = () => {
+      if (originalIconElement) {
+        setButtonIcon(originalIconElement.cloneNode(true));
+      } else {
+        btn.innerHTML = "💬";
+      }
+    };
+
+    const showCloseIcon = () => {
+      renderCloseIcon();
+      isChatOpen = true;
+    };
+
+    const showOriginalIcon = () => {
+      restoreOriginalIcon();
+      isChatOpen = false;
+    };
+
     const applyWidgetPosition = (position) => {
       const normalized = (position || '').toString().trim().toLowerCase();
       const valid = ['left', 'center', 'right'];
@@ -356,6 +426,7 @@
     const openChat = () => {
       hideBubble(true);
       frame.style.display = "block";
+      showCloseIcon();
       const openFn = () => frame.contentWindow.postMessage({ action: "openChatWindow" }, "*");
       if (ready) {
         openFn();
@@ -371,6 +442,7 @@
 
     const closeChat = () => {
       frame.style.display = "none";
+      showOriginalIcon();
     };
 
     applyWidgetPosition(currentPosition);
@@ -433,6 +505,12 @@
               svg.setAttribute("height", "28");
               btn.appendChild(svg);
             }
+          }
+
+          originalIconElement = btn.firstElementChild ? btn.firstElementChild.cloneNode(true) : null;
+          originalIconColor = deriveIconColor(originalIconElement || btn);
+          if (isChatOpen) {
+            showCloseIcon();
           }
 
           break;
