@@ -1680,10 +1680,18 @@ body.login-view #appContainer {
                 </button>
               </div>
 
-              <div class="flex items-center gap-4">
+            <div class="space-y-4">
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Colors</p>
+                           <div class="flex items-center gap-4">
                 <input id="widgetIconColor" type="color" value="#ffffff" class="color-circle rounded-full cursor-pointer border border-gray-300 shadow-sm" />
                 <span class="text-sm font-medium text-gray-600 select-none">Widget Icon Color</span>
               </div>
+              <div class="flex items-center gap-4">
+                <input id="chatButtonColor" type="color" class="color-circle rounded-full cursor-pointer border border-gray-300 shadow-sm" />
+                <span class="text-sm font-medium text-gray-600 select-none">Widget Background</span>
+              </div>
+            </div>
+ 
 
               <div class="flex items-center gap-3">
                 <label class="flex items-center gap-2 text-sm text-gray-600 select-none">
@@ -1694,13 +1702,7 @@ body.login-view #appContainer {
                 <span id="widgetRadiusVal" class="text-sm text-gray-600 inline-block text-right min-w-[2ch]">20</span>
               </div>
             </div>
-            <div class="space-y-4">
-              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Colors</p>
-              <div class="flex items-center gap-4">
-                <input id="chatButtonColor" type="color" class="color-circle rounded-full cursor-pointer border border-gray-300 shadow-sm" />
-                <span class="text-sm font-medium text-gray-600 select-none">Widget Background</span>
-              </div>
-            </div>
+
             <div class="space-y-3">
               <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Position</p>
 <div class="flex items-center justify-center gap-2 border border-gray-200 rounded-2xl px-3 py-2 bg-gray-50 shadow-sm">
