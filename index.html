@@ -2413,6 +2413,38 @@ const registerTranslationTarget = (node, key, target = 'text', options = {}) => 
 };
 
 if (window.translationManager) {
+  const colorsTabLabel = document.querySelector('[data-chat-panel-tab="colors"] span');
+  registerTranslationTarget(colorsTabLabel, 'Colores');
+
+  const colorsPanel = document.querySelector('[data-chat-panel="colors"]');
+  if (colorsPanel) {
+    const colorsTitle = colorsPanel.querySelector('.flex.items-center.gap-2.font-semibold.text-gray-800');
+    registerTranslationTarget(colorsTitle, 'Colores');
+
+    const headingNodes = colorsPanel.querySelectorAll('p.text-xs.font-semibold.text-gray-500.uppercase.tracking-wide');
+    const headingKeys = ['Colores', 'Encabezado', 'Chat', 'Cliente'];
+    headingNodes.forEach((node, idx) => registerTranslationTarget(node, headingKeys[idx]));
+
+    const templateLabel = colorsPanel.querySelector('#toggleTemplatePanel span');
+    registerTranslationTarget(templateLabel, 'Modelos');
+
+    const templateDescription = colorsPanel.querySelector('.space-y-3 > p.text-xs.text-gray-500');
+    registerTranslationTarget(templateDescription, 'Selecciona un estilo predefinido en la ventana emergente. Puedes ajustar los colores luego.');
+
+    const optionLabels = colorsPanel.querySelectorAll('span.text-sm.font-medium.text-gray-600.select-none');
+    const optionKeys = [
+      'Fondo del encabezado',
+      'Texto del encabezado',
+      'Fondo del chat',
+      'Color del texto',
+      'Fondo del cliente',
+      'Texto del cliente',
+    ];
+    optionLabels.forEach((node, idx) => registerTranslationTarget(node, optionKeys[idx]));
+  }
+}
+
+if (window.translationManager) {
   const dash2TitleTranslations = [
     ['dash2TotalConvTitle', 'Total Conversations'],
     ['dash2KnowledgeTitle', 'Limit Knowledge'],

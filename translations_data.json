@@ -400,12 +400,76 @@
     "pt": "Cores"
   },
   {
+    "key": "Colores",
+    "en": "Colors",
+    "fr": "Couleurs",
+    "es": "Colores",
+    "de": "Farben",
+    "pt": "Cores"
+  },
+  {
+    "key": "Modelos",
+    "en": "Templates",
+    "fr": "Modèles",
+    "es": "Modelos",
+    "de": "Vorlagen",
+    "pt": "Modelos"
+  },
+  {
+    "key": "Selecciona un estilo predefinido en la ventana emergente. Puedes ajustar los colores luego.",
+    "en": "Select a preset style in the pop-up. You can adjust the colors later.",
+    "fr": "Sélectionnez un style prédéfini dans la fenêtre pop-up. Vous pourrez ajuster les couleurs ensuite.",
+    "es": "Selecciona un estilo predefinido en la ventana emergente. Puedes ajustar los colores luego.",
+    "de": "Wähle einen voreingestellten Stil im Popup aus. Du kannst die Farben später anpassen.",
+    "pt": "Selecione um estilo predefinido na janela pop-up. Você pode ajustar as cores depois."
+  },
+  {
+    "key": "Encabezado",
+    "en": "Header",
+    "fr": "En-tête",
+    "es": "Encabezado",
+    "de": "Kopfzeile",
+    "pt": "Cabeçalho"
+  },
+  {
+    "key": "Fondo del encabezado",
+    "en": "Header background",
+    "fr": "Arrière-plan de l'en-tête",
+    "es": "Fondo del encabezado",
+    "de": "Hintergrund der Kopfzeile",
+    "pt": "Fundo do cabeçalho"
+  },
+  {
+    "key": "Texto del encabezado",
+    "en": "Header text",
+    "fr": "Texte de l'en-tête",
+    "es": "Texto del encabezado",
+    "de": "Text der Kopfzeile",
+    "pt": "Texto do cabeçalho"
+  },
+  {
     "key": "Chat Background",
     "en": "Chat Background",
     "fr": "Arrière-plan du chat",
     "es": "Fondo del chat",
     "de": "Chat-Hintergrund",
     "pt": "Fundo do chat"
+  },
+  {
+    "key": "Fondo del chat",
+    "en": "Chat background",
+    "fr": "Arrière-plan du chat",
+    "es": "Fondo del chat",
+    "de": "Chat-Hintergrund",
+    "pt": "Fundo do chat"
+  },
+  {
+    "key": "Color del texto",
+    "en": "Text color",
+    "fr": "Couleur du texte",
+    "es": "Color del texto",
+    "de": "Textfarbe",
+    "pt": "Cor do texto"
   },
   {
     "key": "Text",
@@ -416,8 +480,24 @@
     "pt": "Texto"
   },
   {
+    "key": "Cliente",
+    "en": "Client",
+    "fr": "Client",
+    "es": "Cliente",
+    "de": "Kunde",
+    "pt": "Cliente"
+  },
+  {
     "key": "Client Background",
     "en": "Client Background",
+    "fr": "Arrière-plan du client",
+    "es": "Fondo del cliente",
+    "de": "Hintergrund des Kunden",
+    "pt": "Fundo do cliente"
+  },
+  {
+    "key": "Fondo del cliente",
+    "en": "Client background",
     "fr": "Arrière-plan du client",
     "es": "Fondo del cliente",
     "de": "Hintergrund des Kunden",
@@ -429,6 +509,14 @@
     "fr": "Texte du client",
     "es": "Texto del cliente",
     "de": "Kundentext",
+    "pt": "Texto do cliente"
+  },
+  {
+    "key": "Texto del cliente",
+    "en": "Client text",
+    "fr": "Texte du client",
+    "es": "Texto del cliente",
+    "de": "Text des Kunden",
     "pt": "Texto do cliente"
   },
   {
