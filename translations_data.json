@@ -496,14 +496,6 @@
     "pt": "Script de integração"
   },
   {
-    "key": "Sitios permitidos",
-    "en": "Allowed sites",
-    "fr": "Sites autorisés",
-    "es": "Sitios permitidos",
-    "de": "Zugelassene Websites",
-    "pt": "Sites permitidos"
-  },
-  {
     "key": "Copy and paste this code into your website just before the",
     "en": "Copy and paste this code into your website just before the",
     "fr": "Copiez et collez ce code sur votre site juste avant la",
@@ -526,46 +518,6 @@
     "es": "El chat aparecerá automáticamente con la configuración de tu hotel.",
     "de": "Der Chat erscheint automatisch mit der Konfiguration Ihres Hotels.",
     "pt": "O chat aparecerá automaticamente com a configuração do seu hotel."
-  },
-  {
-    "key": "Define los dominios autorizados donde se puede mostrar el bot. El widget no se mostrará si el script se inserta en un sitio no permitido.",
-    "en": "Define the authorized domains where the bot can be displayed. The widget will not be shown if the script is embedded on a non-allowed site.",
-    "fr": "Définissez les domaines autorisés où le bot peut être affiché. Le widget ne s'affichera pas si le script est inséré sur un site non autorisé.",
-    "es": "Define los dominios autorizados donde se puede mostrar el bot. El widget no se mostrará si el script se inserta en un sitio no permitido.",
-    "de": "Definiere die zulässigen Domains, auf denen der Bot angezeigt werden darf. Das Widget wird nicht angezeigt, wenn das Skript auf einer nicht erlaubten Seite eingebunden wird.",
-    "pt": "Defina os domínios autorizados onde o bot pode ser exibido. O widget não será mostrado se o script for inserido em um site não permitido."
-  },
-  {
-    "key": "No hay sitios autorizados todavía.",
-    "en": "No allowed sites yet.",
-    "fr": "Aucun site autorisé pour l'instant.",
-    "es": "No hay sitios autorizados todavía.",
-    "de": "Noch keine zulässigen Websites.",
-    "pt": "Ainda não há sites autorizados."
-  },
-  {
-    "key": "Este sitio ya está permitido",
-    "en": "This site is already allowed",
-    "fr": "Ce site est déjà autorisé",
-    "es": "Este sitio ya está permitido",
-    "de": "Diese Website ist bereits zulässig",
-    "pt": "Este site já está permitido"
-  },
-  {
-    "key": "https://www.ejemplo.com",
-    "en": "https://www.example.com",
-    "fr": "https://www.exemple.com",
-    "es": "https://www.ejemplo.com",
-    "de": "https://www.beispiel.com",
-    "pt": "https://www.exemplo.com"
-  },
-  {
-    "key": "Agregar sitio",
-    "en": "Add site",
-    "fr": "Ajouter un site",
-    "es": "Agregar sitio",
-    "de": "Website hinzufügen",
-    "pt": "Adicionar site"
   },
   {
     "key": "Copy",

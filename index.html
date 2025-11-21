@@ -819,7 +819,7 @@ body.login-view #appContainer {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 0.5rem;
   padding: 1.75rem;
   padding-bottom: 3.75rem;
   padding-right: 3.25rem;
@@ -958,8 +958,7 @@ body.login-view #appContainer {
 }
 
 .dashboard-bot-edit-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 16px 30px rgba(17, 24, 39, 0.12);
+        background: #d8d8d857;
 }
 
 .dashboard-bot-edit-btn i {
@@ -971,7 +970,7 @@ body.login-view #appContainer {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  width: 100%;
+  width: 150%;
 }
 
 @media (min-width: 1024px) {
@@ -1005,7 +1004,7 @@ body.login-view #appContainer {
 .dashboard-bot-card-charts {
   display: flex;
   flex-wrap: wrap;
-  gap: 1.5rem;
+  gap: 2.5rem;
 }
 
 .dashboard-bot-chart-block {
@@ -1741,12 +1740,14 @@ body.login-view #appContainer {
           <div class="card p-5 space-y-4">
             <div class="font-semibold flex items-center gap-2 mb-1">
               <i data-lucide="shield-check" class="w-5 h-5"></i>
-              <span id="allowedSitesTitle"></span>
+              Sitios permitidos
             </div>
-            <p id="allowedSitesDescription" class="text-sm text-gray-500"></p>
+            <p class="text-sm text-gray-500">
+              Define los dominios autorizados donde se puede mostrar el bot. El widget no se mostrará si el script se inserta en un sitio no permitido.
+            </p>
             <div class="flex flex-col sm:flex-row gap-3">
-              <input id="allowedUrlInput" type="url" class="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black" />
-              <button id="addAllowedUrl" class="px-4 py-2 bg-black text-white text-sm rounded-lg whitespace-nowrap"></button>
+              <input id="allowedUrlInput" type="url" placeholder="https://www.ejemplo.com" class="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black" />
+              <button id="addAllowedUrl" class="px-4 py-2 bg-black text-white text-sm rounded-lg whitespace-nowrap">Agregar sitio</button>
             </div>
             <div id="allowedUrlsList" class="space-y-2"></div>
           </div>
@@ -3431,12 +3432,6 @@ function renderDashboardBotsTable() {
       const answersUsedRaw = Number(analysis?.aiMessagesThisMonth || 0);
       const answersUsed = Number.isFinite(answersUsedRaw) ? Math.max(answersUsedRaw, 0) : 0;
       const answersPercent = answersLimit > 0 ? Math.min((answersUsed / answersLimit) * 100, 100) : 0;
-      const planLabel = getDashboardBotPlanLabel(botId);
-      const planDisplay = planLabel ? planLabel.toUpperCase() : '';
-      const subtitleParts = [];
-      if (planDisplay) subtitleParts.push(planDisplay);
-      subtitleParts.push(botId);
-
       const card = document.createElement('article');
       card.className = 'dashboard-bot-card';
 
@@ -3457,13 +3452,6 @@ function renderDashboardBotsTable() {
       const titleEl = document.createElement('div');
       titleEl.className = 'dashboard-bot-title';
       titleEl.textContent = getDashboardBotName(botId);
-      const subtitleEl = document.createElement('div');
-      subtitleEl.className = 'dashboard-bot-subtitle';
-      subtitleEl.textContent = subtitleParts.filter(Boolean).join(' • ');
-      titles.append(titleEl, subtitleEl);
-
-      identity.append(iconWrapper, titles);
-
       const actions = document.createElement('div');
       actions.className = 'dashboard-bot-card-actions';
       const editBtn = document.createElement('button');
@@ -3478,8 +3466,11 @@ function renderDashboardBotsTable() {
       editLabel.textContent = 'Edit';
       editBtn.append(editIcon, editLabel);
       actions.appendChild(editBtn);
+      titles.append(titleEl, actions);
 
-      header.append(identity, actions);
+      identity.append(iconWrapper, titles);
+
+      header.append(identity);
 
       const body = document.createElement('div');
       body.className = 'dashboard-bot-card-body';
@@ -7801,12 +7792,11 @@ function applyPreview() {
     widgetIconTrigger.style.borderRadius = radiusVal + 'px';
   }
 
-  // 🔁 Actualizar íconos en ambos mockups y en el selector
-  if (currentWidgetIconMarkup) {
-    renderWidgetIconTargets();
-  } else {
-    refreshWidgetIconRender();
-  }
+// 🔁 Actualizar íconos del widget si corresponde
+if (typeof refreshWidgetIconRender === 'function') {
+  refreshWidgetIconRender();
+}
+
 
   // 🪄 Fondo y texto dentro del iframe del chat
   const iframe = document.getElementById('liveChatFrame');
@@ -9644,31 +9634,6 @@ function initIntegration(){
   const allowedUrlsRef = eref('config/allowedUrls');
   let allowedUrls = [];
 
-  if (window.translationManager) {
-    const allowedSitesTitle = $('allowedSitesTitle');
-    const allowedSitesDescription = $('allowedSitesDescription');
-
-    registerTranslationTarget(allowedSitesTitle, 'Sitios permitidos');
-    registerTranslationTarget(allowedSitesDescription, 'Define los dominios autorizados donde se puede mostrar el bot. El widget no se mostrará si el script se inserta en un sitio no permitido.');
-    registerTranslationTarget(allowedUrlInput, 'https://www.ejemplo.com', 'placeholder');
-    registerTranslationTarget(addAllowedUrlBtn, 'Agregar sitio');
-  }
-
-  if (allowedUrlInput) {
-    allowedUrlInput.placeholder = t('https://www.ejemplo.com');
-  }
-  const allowedSitesTitleEl = $('allowedSitesTitle');
-  if (allowedSitesTitleEl) {
-    allowedSitesTitleEl.textContent = t('Sitios permitidos');
-  }
-  const allowedSitesDescriptionEl = $('allowedSitesDescription');
-  if (allowedSitesDescriptionEl) {
-    allowedSitesDescriptionEl.textContent = t('Define los dominios autorizados donde se puede mostrar el bot. El widget no se mostrará si el script se inserta en un sitio no permitido.');
-  }
-  if (addAllowedUrlBtn) {
-    addAllowedUrlBtn.textContent = t('Agregar sitio');
-  }
-
   const parseAllowedUrls = (val) => {
     if (Array.isArray(val)) return val.filter(Boolean);
     if (val && typeof val === 'object') return Object.values(val).filter(Boolean);
@@ -9692,8 +9657,7 @@ function initIntegration(){
     if (!allowedUrls.length) {
       const empty = document.createElement('p');
       empty.className = 'text-sm text-gray-500';
-      empty.textContent = t('No hay sitios autorizados todavía.');
-      registerTranslationTarget(empty, 'No hay sitios autorizados todavía.');
+      empty.textContent = 'No hay sitios autorizados todavía.';
       allowedUrlsListEl.appendChild(empty);
       return;
     }
@@ -9735,11 +9699,11 @@ function initIntegration(){
     if (!allowedUrlsRef || !allowedUrlInput) return;
     const value = normalizeOrigin(allowedUrlInput.value.trim());
     if (!value) {
-      toast(t('Please provide a valid URL.'));
+      toast('Ingresa una URL válida');
       return;
     }
     if (allowedUrls.includes(value)) {
-      toast(t('Este sitio ya está permitido'));
+      toast('Este sitio ya está permitido');
       return;
     }
 
