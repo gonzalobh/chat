@@ -2150,7 +2150,7 @@ body.login-view #appContainer {
 <section id="tab-usuarios" class="hidden space-y-6 max-w-4xl mx-auto">
   <div class="card p-5 space-y-4">
     <div class="flex items-center justify-between">
-      <h3 id="userAccessTitle" class="text-lg font-semibold text-gray-800">Usuarios con acceso</h3>
+      <h3 class="text-lg font-semibold text-gray-800">Usuarios con acceso</h3>
       <span id="userAccessSummary" class="text-sm text-gray-500">—</span>
     </div>
     <p id="userBotSelectStatus" class="text-sm text-gray-500">Se mostrarán los usuarios del bot seleccionado en la barra superior.</p>
@@ -2158,10 +2158,10 @@ body.login-view #appContainer {
       <table class="min-w-full divide-y divide-gray-200 text-sm">
         <thead class="bg-gray-50 text-xs font-semibold uppercase tracking-wide text-gray-500">
           <tr>
-            <th id="userHeaderEmail" scope="col" class="px-4 py-2 text-left">E-mail</th>
-            <th id="userHeaderRole" scope="col" class="px-4 py-2 text-left">Rol</th>
-            <th id="userHeaderLastAccess" scope="col" class="px-4 py-2 text-left">Último acceso</th>
-            <th id="userHeaderActions" scope="col" class="px-4 py-2 text-right">Acciones</th>
+            <th scope="col" class="px-4 py-2 text-left">Email</th>
+            <th scope="col" class="px-4 py-2 text-left">Rol</th>
+            <th scope="col" class="px-4 py-2 text-left">Último acceso</th>
+            <th scope="col" class="px-4 py-2 text-right">Acciones</th>
           </tr>
         </thead>
         <tbody id="userAccessTableBody" class="bg-white divide-y divide-gray-100">
@@ -2174,7 +2174,7 @@ body.login-view #appContainer {
   </div>
 
   <div class="card p-5 space-y-4">
-    <h3 id="userInviteTitle" class="text-lg font-semibold text-gray-800">Invitar usuario</h3>
+    <h3 class="text-lg font-semibold text-gray-800">Invitar usuario</h3>
     <form id="userInviteForm" class="flex flex-col sm:flex-row gap-3">
       <input id="userInviteEmail" type="email" class="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/70" placeholder="usuario@empresa.com" required>
       <button id="userInviteSubmit" type="submit" class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-black text-white text-sm disabled:opacity-60 disabled:cursor-not-allowed">
@@ -2412,30 +2412,6 @@ const registerTranslationTarget = (node, key, target = 'text', options = {}) => 
   translationManager.register(node, key, target, options);
 };
 
-function registerUserTabTranslations() {
-  if (!window.translationManager) return;
-  const targets = [
-    ['userAccessTitle', 'Usuarios con acceso'],
-    ['userBotSelectStatus', 'Se mostrarán los usuarios del bot seleccionado en la barra superior.'],
-    ['userHeaderEmail', 'E-mail'],
-    ['userHeaderRole', 'Rol'],
-    ['userHeaderLastAccess', 'Último acceso'],
-    ['userHeaderActions', 'Acciones'],
-    ['userInviteTitle', 'Invitar usuario'],
-    ['userInviteSubmit', 'Invitar'],
-  ];
-
-  targets.forEach(([id, key]) => {
-    const el = document.getElementById(id);
-    if (el) registerTranslationTarget(el, key);
-  });
-
-  const inviteEmailInput = document.getElementById('userInviteEmail');
-  if (inviteEmailInput) {
-    registerTranslationTarget(inviteEmailInput, 'usuario@empresa.com', 'placeholder');
-  }
-}
-
 if (window.translationManager) {
   const dash2TitleTranslations = [
     ['dash2TotalConvTitle', 'Total Conversations'],
@@ -2457,8 +2433,6 @@ if (window.translationManager) {
   registerTranslationTarget(promptDescriptionEl, 'Aquí puedes escribir el texto base del asistente. Este texto se usará como prompt del sistema para este bot.');
   registerTranslationTarget(promptTextareaEl, 'Escribe aquí el prompt del sistema...', 'placeholder');
   registerTranslationTarget(promptSaveBtnEl, 'Guardar cambios');
-
-  registerUserTabTranslations();
 }
 
 function handleLeadDelete(lead, triggerButton) {
@@ -5442,16 +5416,12 @@ function initUserManagementTab() {
   const inviteEmailInput = $('userInviteEmail');
   const inviteSubmit = $('userInviteSubmit');
 
-  const showFeedback = (messageKey = '', isError = false, vars) => {
+  const showFeedback = (message = '', isError = false) => {
     if (!feedbackEl) return;
-    const translated = messageKey ? t(messageKey, vars) : '';
-    feedbackEl.textContent = translated;
-    feedbackEl.classList.toggle('hidden', !messageKey);
-    feedbackEl.classList.toggle('text-red-600', !!messageKey && isError);
+    feedbackEl.textContent = message;
+    feedbackEl.classList.toggle('hidden', !message);
+    feedbackEl.classList.toggle('text-red-600', !!message && isError);
     feedbackEl.classList.toggle('text-gray-500', !isError);
-    if (messageKey) {
-      registerTranslationTarget(feedbackEl, messageKey, 'text', { vars });
-    }
   };
 
   // Usa el nombre del header (botText) o, en su defecto, el id del bot
@@ -5461,23 +5431,16 @@ function initUserManagementTab() {
     return botId || '';
   };
 
-  const renderEmptyState = (messageKey, vars) => {
+  const renderEmptyState = (message) => {
     tableBody.innerHTML = '';
     const row = document.createElement('tr');
     const cell = document.createElement('td');
     cell.colSpan = 4;
     cell.className = 'px-4 py-6 text-center text-gray-400 text-sm';
-    const translated = messageKey ? t(messageKey, vars) : '';
-    cell.textContent = translated;
-    if (messageKey) {
-      registerTranslationTarget(cell, messageKey, 'text', { vars });
-    }
+    cell.textContent = message;
     row.appendChild(cell);
     tableBody.appendChild(row);
-    if (summaryEl) {
-      summaryEl.textContent = '—';
-      registerTranslationTarget(summaryEl, '—');
-    }
+    if (summaryEl) summaryEl.textContent = '—';
   };
 
   const updateInviteState = () => {
@@ -5490,13 +5453,9 @@ function initUserManagementTab() {
       inviteSubmit.classList.toggle('cursor-not-allowed', !hasBot);
     }
     if (statusEl) {
-      if (hasBot) {
-        registerTranslationTarget(statusEl, 'Gestionando bot', 'text', {
-          formatter: (text) => `${text} "${displayName}"`,
-        });
-      } else {
-        registerTranslationTarget(statusEl, 'No hay un bot seleccionado.');
-      }
+      statusEl.textContent = hasBot
+        ? `Gestionando bot "${displayName}"`
+        : 'No hay un bot seleccionado.';
     }
     showFeedback('');
   };
@@ -5517,13 +5476,11 @@ function initUserManagementTab() {
       const adminRow = document.createElement('tr');
       adminRow.innerHTML = `
         <td class="px-4 py-3 text-sm text-gray-700">${adminEmail}</td>
-        <td class="px-4 py-3 text-sm text-emerald-600 font-medium">${t('Admin principal')}</td>
+        <td class="px-4 py-3 text-sm text-emerald-600 font-medium">Admin principal</td>
         <td class="px-4 py-3 text-sm text-gray-500">—</td>
         <td class="px-4 py-3 text-right text-sm text-gray-400">—</td>
       `;
       tableBody.appendChild(adminRow);
-      const roleCell = adminRow.children[1];
-      if (roleCell) registerTranslationTarget(roleCell, 'Admin principal');
     }
 
     if (!entries.length) {
@@ -5531,11 +5488,10 @@ function initUserManagementTab() {
       const cell = document.createElement('td');
       cell.colSpan = 4;
       cell.className = 'px-4 py-6 text-center text-gray-400 text-sm';
-      cell.textContent = t('No hay usuarios invitados para este bot.');
-      registerTranslationTarget(cell, 'No hay usuarios invitados para este bot.');
+      cell.textContent = 'No hay usuarios invitados para este bot.';
       emptyRow.appendChild(cell);
       tableBody.appendChild(emptyRow);
-      if (summaryEl) registerTranslationTarget(summaryEl, 'Sin editores invitados');
+      if (summaryEl) summaryEl.textContent = 'Sin editores invitados';
       return;
     }
 
@@ -5543,24 +5499,18 @@ function initUserManagementTab() {
       const row = document.createElement('tr');
       row.innerHTML = `
         <td class="px-4 py-3 text-sm text-gray-700">${entry.email}</td>
-        <td class="px-4 py-3 text-sm text-gray-600">${t('Editor')}</td>
+        <td class="px-4 py-3 text-sm text-gray-600">Editor</td>
         <td class="px-4 py-3 text-sm text-gray-500">${formatLastAccess(entry.lastAccess)}</td>
         <td class="px-4 py-3 text-right">
           <button type="button" class="text-sm text-red-600 hover:text-red-700" data-remove-editor data-email="${entry.email}" data-email-key="${entry.key}">❌</button>
         </td>
       `;
       tableBody.appendChild(row);
-      const roleCell = row.children[1];
-      if (roleCell) registerTranslationTarget(roleCell, 'Editor');
     });
 
     if (summaryEl) {
       const count = entries.length;
-      if (count === 1) {
-        registerTranslationTarget(summaryEl, '1 editor invitado');
-      } else {
-        registerTranslationTarget(summaryEl, '{count} editores invitados', 'text', { vars: { count } });
-      }
+      summaryEl.textContent = count === 1 ? '1 editor invitado' : `${count} editores invitados`;
     }
   };
 
@@ -5613,9 +5563,9 @@ function initUserManagementTab() {
       const key = encodeEmailKey(normalizedEmail);
       await db.ref(`${getBotBasePath(currentManagedBotId)}/allowedEditors/${key}`).set(true);
       if (inviteEmailInput) inviteEmailInput.value = '';
-      showFeedback('✅ Acceso otorgado a {email} para este bot.', false, { email: normalizedEmail });
+      showFeedback(`✅ Acceso otorgado a ${normalizedEmail} para este bot.`);
       if (typeof toast === 'function') {
-        toast(t('✅ Acceso otorgado a {email} para este bot.', { email: normalizedEmail }));
+        toast(`✅ Acceso otorgado a ${normalizedEmail} para este bot.`);
       }
 
       try {
@@ -5639,7 +5589,7 @@ function initUserManagementTab() {
     try {
       await db.ref(`${getBotBasePath(currentManagedBotId)}/allowedEditors/${emailKey}`).set(null);
       if (typeof toast === 'function') {
-        toast(t('Acceso revocado para {email}', { email: emailValue }));
+        toast(`Acceso revocado para ${emailValue}`);
       }
     } catch (err) {
       console.error('No se pudo revocar el acceso', err);

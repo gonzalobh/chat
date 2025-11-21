@@ -52,6 +52,8 @@
       'Playfair Display': 'Playfair Display',
       'Merriweather': 'Merriweather',
       'Colors': 'Colors',
+      'Template': 'Template',
+      'Selecciona un estilo predefinido. Puedes ajustar los colores luego.': 'Select a preset style. You can adjust the colors later.',
       'Chat Background': 'Chat Background',
       'Text': 'Text',
       'Client Background': 'Client Background',
@@ -188,6 +190,42 @@
       'this page': 'this page',
       '{count} / {limit} characters': '{count} / {limit} characters',
       'Delay: {seconds}s': 'Delay: {seconds}s',
+      'Cerrar': 'Close',
+      'Crear un nuevo bot': 'Create a new bot',
+      'Elige si quieres empezar desde cero o duplicar el bot actual antes de nombrarlo.': 'Choose whether to start from scratch or duplicate the current bot before naming it.',
+      'Crear desde cero': 'Start from scratch',
+      'Genera un bot vacío con la configuración básica para empezar rápidamente.': 'Create an empty bot with the basic configuration to get started quickly.',
+      'Duplicar bot actual': 'Duplicate current bot',
+      'Copia el contenido del bot activo y continúa personalizándolo.': 'Copy the active bot\'s content and keep customizing it.',
+      'Nombre del bot': 'Bot name',
+      'Ej. Bot conserjería': 'E.g. Concierge bot',
+      'Cancelar': 'Cancel',
+      'Por favor, escribe un nombre para el bot.': 'Please enter a name for the bot.',
+      'El nombre debe incluir caracteres alfanuméricos.': 'The name must include alphanumeric characters.',
+      'No se pudo crear el bot. Inténtalo de nuevo.': 'The bot could not be created. Please try again.',
+      'Plantillas del chat': 'Chat templates',
+      'Selecciona una plantilla para aplicar rápidamente una combinación de colores. Luego podrás personalizar los detalles.': 'Choose a template to quickly apply a color combination. You can customize the details afterward.',
+      'Mensajes': 'Messages',
+      'Buscar conversaciones': 'Search conversations',
+      'Eliminar conversaciones antiguas': 'Delete old conversations',
+      'No hay conversaciones': 'No conversations',
+      'No hay mensajes': 'No messages',
+      'Sin mensajes': 'No messages',
+      'Cargando mensajes...': 'Loading messages...',
+      'No hay mensajes en este periodo.': 'No messages in this period.',
+      'Selecciona una conversación para ver los mensajes.': 'Select a conversation to view the messages.',
+      'No hay templates disponibles aún.': 'No templates available yet.',
+      'Oscuro con matices grafito y gris humo.': 'Dark with graphite and smokey gray tones.',
+      'Limpio y suave con tonos gris-azulados.': 'Clean and soft with bluish-gray tones.',
+      'Cálido pero discreto, en tonos arena y cobre.': 'Warm yet subtle, in sandy and copper tones.',
+      'Verde musgo con acentos naturales.': 'Moss green with natural accents.',
+      'Grises suaves y negros tenues.': 'Soft grays and muted blacks.',
+      'Elegante, con toques malva y gris lavanda.': 'Elegant, with touches of mauve and lavender gray.',
+      'Total Conversations': 'Total Conversations',
+      'Limit Knowledge': 'Limit Knowledge',
+      'Limit Answers': 'Limit Answers',
+      'Conversations': 'Conversations',
+      '⚠ No se pudo aplicar el template': '⚠ Failed to apply the template',
       'language.english': 'EN',
       'language.french': 'FR',
       'language.spanish': 'ES',
@@ -195,36 +233,9 @@
       'language.portuguese': 'PT',
       'Enabled': 'Enabled',
       'System Prompt': 'System Prompt',
-      'Aquí puedes escribir el texto base del asistente. Este texto se usará como prompt del sistema para este bot.': 'Here you can write the assistant\'s base text. This text will be used as the system prompt for this bot.',
+      'Aquí puedes escribir el texto base del asistente. Este texto se usará como prompt del sistema para este bot.': "Here you can write the assistant's base text. This text will be used as the system prompt for this bot.",
       'Guardar cambios': 'Save changes',
       'Escribe aquí el prompt del sistema...': 'Write the system prompt here...',
-      'Usuarios con acceso': 'Users with access',
-      'Gestionando bot': 'Managing bot',
-      'Sin editores invitados': 'No invited editors',
-      'E-mail': 'E-mail',
-      'Rol': 'Role',
-      'Último acceso': 'Last access',
-      'Acciones': 'Actions',
-      'No hay usuarios invitados para este bot.': 'There are no invited users for this bot.',
-      'Invitar usuario': 'Invite user',
-      'usuario@empresa.com': 'user@company.com',
-      'Invitar': 'Invite',
-      'Se mostrarán los usuarios del bot seleccionado en la barra superior.': 'Users for the bot selected in the top bar will be shown.',
-      'Selecciona un bot para ver los usuarios con acceso.': 'Select a bot to see the users with access.',
-      'No hay un bot seleccionado.': 'No bot is selected.',
-      'No hay un bot seleccionado para ver los usuarios con acceso.': 'There is no selected bot to view the users with access.',
-      'Admin principal': 'Primary admin',
-      'Editor': 'Editor',
-      '1 editor invitado': '1 invited editor',
-      '{count} editores invitados': '{count} invited editors',
-      'Cargando usuarios...': 'Loading users...',
-      'Introduce un correo válido.': 'Enter a valid email.',
-      'El admin principal ya tiene acceso a todos los bots.': 'The primary admin already has access to all bots.',
-      'Este usuario ya tiene acceso a este bot.': 'This user already has access to this bot.',
-      '✅ Acceso otorgado a {email} para este bot.': '✅ Access granted to {email} for this bot.',
-      'No se pudo otorgar acceso. Inténtalo de nuevo.': 'Could not grant access. Please try again.',
-      'Acceso revocado para {email}': 'Access revoked for {email}',
-      'No se pudo revocar el acceso. Inténtalo de nuevo.': 'Could not revoke the access. Please try again.',
     },
     'fr': {
       'Tomos Bot': 'Tomos Bot',
@@ -277,6 +288,8 @@
       'Playfair Display': 'Playfair Display',
       'Merriweather': 'Merriweather',
       'Colors': 'Couleurs',
+      'Template': 'Modèles',
+      'Selecciona un estilo predefinido. Puedes ajustar los colores luego.': 'Sélectionnez un style prédéfini. Vous pourrez ajuster les couleurs ensuite.',
       'Chat Background': 'Arrière-plan du chat',
       'Text': 'Texte',
       'Client Background': 'Arrière-plan du client',
@@ -413,6 +426,42 @@
       'this page': 'cette page',
       '{count} / {limit} characters': '{count} / {limit} caractères',
       'Delay: {seconds}s': 'Délai : {seconds}s',
+      'Cerrar': 'Fermer',
+      'Crear un nuevo bot': 'Créer un nouveau bot',
+      'Elige si quieres empezar desde cero o duplicar el bot actual antes de nombrarlo.': 'Choisissez de repartir de zéro ou de dupliquer le bot actuel avant de le nommer.',
+      'Crear desde cero': 'Commencer de zéro',
+      'Genera un bot vacío con la configuración básica para empezar rápidamente.': 'Créez un bot vide avec la configuration de base pour démarrer rapidement.',
+      'Duplicar bot actual': 'Dupliquer le bot actuel',
+      'Copia el contenido del bot activo y continúa personalizándolo.': 'Copiez le contenu du bot actif et continuez à le personnaliser.',
+      'Nombre del bot': 'Nom du bot',
+      'Ej. Bot conserjería': 'Ex. Bot conciergerie',
+      'Cancelar': 'Annuler',
+      'Por favor, escribe un nombre para el bot.': 'Veuillez saisir un nom pour le bot.',
+      'El nombre debe incluir caracteres alfanuméricos.': 'Le nom doit contenir des caractères alphanumériques.',
+      'No se pudo crear el bot. Inténtalo de nuevo.': 'Impossible de créer le bot. Veuillez réessayer.',
+      'Plantillas del chat': 'Modèles de chat',
+      'Selecciona una plantilla para aplicar rápidamente una combinación de colores. Luego podrás personalizar los detalles.': 'Sélectionnez un modèle pour appliquer rapidement une palette de couleurs. Vous pourrez ensuite personnaliser les détails.',
+      'Mensajes': 'Messages',
+      'Buscar conversaciones': 'Rechercher des conversations',
+      'Eliminar conversaciones antiguas': 'Supprimer les anciennes conversations',
+      'No hay conversaciones': 'Aucune conversation',
+      'No hay mensajes': 'Aucun message',
+      'Sin mensajes': 'Aucun message',
+      'Cargando mensajes...': 'Chargement des messages...',
+      'No hay mensajes en este periodo.': 'Aucun message sur cette période.',
+      'Selecciona una conversación para ver los mensajes.': 'Sélectionnez une conversation pour voir les messages.',
+      'No hay templates disponibles aún.': 'Aucun modèle disponible pour le moment.',
+      'Oscuro con matices grafito y gris humo.': 'Sombre avec des nuances de graphite et de gris fumé.',
+      'Limpio y suave con tonos gris-azulados.': 'Épuré et doux avec des tons gris bleuté.',
+      'Cálido pero discreto, en tonos arena y cobre.': 'Chaleureux mais discret, dans des tons sable et cuivre.',
+      'Verde musgo con acentos naturales.': 'Vert mousse avec des accents naturels.',
+      'Grises suaves y negros tenues.': 'Gris doux et noirs atténués.',
+      'Elegante, con toques malva y gris lavanda.': 'Élégant, avec des touches de mauve et de gris lavande.',
+      'Total Conversations': 'Conversations totales',
+      'Limit Knowledge': 'Limite de connaissances',
+      'Limit Answers': 'Limite de réponses',
+      'Conversations': 'Conversations',
+      '⚠ No se pudo aplicar el template': '⚠ Impossible d\'appliquer le modèle',
       'language.english': 'EN',
       'language.french': 'FR',
       'language.spanish': 'ES',
@@ -420,36 +469,9 @@
       'language.portuguese': 'PT',
       'Enabled': 'Activé',
       'System Prompt': 'Prompt système',
-      'Aquí puedes escribir el texto base del asistente. Este texto se usará como prompt del sistema para este bot.': 'Ici, vous pouvez écrire le texte de base de l\'assistant. Ce texte sera utilisé comme prompt système pour ce bot.',
+      'Aquí puedes escribir el texto base del asistente. Este texto se usará como prompt del sistema para este bot.': "Ici, vous pouvez écrire le texte de base de l'assistant. Ce texte sera utilisé comme prompt système pour ce bot.",
       'Guardar cambios': 'Enregistrer les modifications',
       'Escribe aquí el prompt del sistema...': 'Écrivez ici le prompt système...',
-      'Usuarios con acceso': 'Utilisateurs avec accès',
-      'Gestionando bot': 'Gestion du bot',
-      'Sin editores invitados': 'Aucun éditeur invité',
-      'E-mail': 'E-mail',
-      'Rol': 'Rôle',
-      'Último acceso': 'Dernier accès',
-      'Acciones': 'Actions',
-      'No hay usuarios invitados para este bot.': 'Aucun utilisateur invité pour ce bot.',
-      'Invitar usuario': 'Inviter un utilisateur',
-      'usuario@empresa.com': 'utilisateur@entreprise.com',
-      'Invitar': 'Inviter',
-      'Se mostrarán los usuarios del bot seleccionado en la barra superior.': 'Les utilisateurs du bot sélectionné dans la barre supérieure seront affichés.',
-      'Selecciona un bot para ver los usuarios con acceso.': 'Sélectionnez un bot pour voir les utilisateurs ayant accès.',
-      'No hay un bot seleccionado.': 'Aucun bot n\'est sélectionné.',
-      'No hay un bot seleccionado para ver los usuarios con acceso.': 'Aucun bot sélectionné pour afficher les utilisateurs disposant de l\'accès.',
-      'Admin principal': 'Administrateur principal',
-      'Editor': 'Éditeur',
-      '1 editor invitado': '1 éditeur invité',
-      '{count} editores invitados': '{count} éditeurs invités',
-      'Cargando usuarios...': 'Chargement des utilisateurs...',
-      'Introduce un correo válido.': 'Saisissez un e-mail valide.',
-      'El admin principal ya tiene acceso a todos los bots.': 'L\'administrateur principal a déjà accès à tous les bots.',
-      'Este usuario ya tiene acceso a este bot.': 'Cet utilisateur a déjà accès à ce bot.',
-      '✅ Acceso otorgado a {email} para este bot.': '✅ Accès accordé à {email} pour ce bot.',
-      'No se pudo otorgar acceso. Inténtalo de nuevo.': 'Impossible d\'accorder l\'accès. Réessayez.',
-      'Acceso revocado para {email}': 'Accès révoqué pour {email}',
-      'No se pudo revocar el acceso. Inténtalo de nuevo.': 'Impossible de révoquer l\'accès. Réessayez.',
     },
     'es': {
       'Tomos Bot': 'Tomos Bot',
@@ -502,6 +524,8 @@
       'Playfair Display': 'Playfair Display',
       'Merriweather': 'Merriweather',
       'Colors': 'Colores',
+      'Template': 'Plantillas',
+      'Selecciona un estilo predefinido. Puedes ajustar los colores luego.': 'Selecciona un estilo predefinido. Puedes ajustar los colores luego.',
       'Chat Background': 'Fondo del chat',
       'Text': 'Texto',
       'Client Background': 'Fondo del cliente',
@@ -638,6 +662,42 @@
       'this page': 'esta página',
       '{count} / {limit} characters': '{count} / {limit} caracteres',
       'Delay: {seconds}s': 'Demora: {seconds}s',
+      'Cerrar': 'Cerrar',
+      'Crear un nuevo bot': 'Crear un nuevo bot',
+      'Elige si quieres empezar desde cero o duplicar el bot actual antes de nombrarlo.': 'Elige si quieres empezar desde cero o duplicar el bot actual antes de nombrarlo.',
+      'Crear desde cero': 'Crear desde cero',
+      'Genera un bot vacío con la configuración básica para empezar rápidamente.': 'Genera un bot vacío con la configuración básica para empezar rápidamente.',
+      'Duplicar bot actual': 'Duplicar bot actual',
+      'Copia el contenido del bot activo y continúa personalizándolo.': 'Copia el contenido del bot activo y continúa personalizándolo.',
+      'Nombre del bot': 'Nombre del bot',
+      'Ej. Bot conserjería': 'Ej. Bot conserjería',
+      'Cancelar': 'Cancelar',
+      'Por favor, escribe un nombre para el bot.': 'Por favor, escribe un nombre para el bot.',
+      'El nombre debe incluir caracteres alfanuméricos.': 'El nombre debe incluir caracteres alfanuméricos.',
+      'No se pudo crear el bot. Inténtalo de nuevo.': 'No se pudo crear el bot. Inténtalo de nuevo.',
+      'Plantillas del chat': 'Plantillas del chat',
+      'Selecciona una plantilla para aplicar rápidamente una combinación de colores. Luego podrás personalizar los detalles.': 'Selecciona una plantilla para aplicar rápidamente una combinación de colores. Luego podrás personalizar los detalles.',
+      'Mensajes': 'Mensajes',
+      'Buscar conversaciones': 'Buscar conversaciones',
+      'Eliminar conversaciones antiguas': 'Eliminar conversaciones antiguas',
+      'No hay conversaciones': 'No hay conversaciones',
+      'No hay mensajes': 'No hay mensajes',
+      'Sin mensajes': 'Sin mensajes',
+      'Cargando mensajes...': 'Cargando mensajes...',
+      'No hay mensajes en este periodo.': 'No hay mensajes en este periodo.',
+      'Selecciona una conversación para ver los mensajes.': 'Selecciona una conversación para ver los mensajes.',
+      'No hay templates disponibles aún.': 'No hay templates disponibles aún.',
+      'Oscuro con matices grafito y gris humo.': 'Oscuro con matices grafito y gris humo.',
+      'Limpio y suave con tonos gris-azulados.': 'Limpio y suave con tonos gris-azulados.',
+      'Cálido pero discreto, en tonos arena y cobre.': 'Cálido pero discreto, en tonos arena y cobre.',
+      'Verde musgo con acentos naturales.': 'Verde musgo con acentos naturales.',
+      'Grises suaves y negros tenues.': 'Grises suaves y negros tenues.',
+      'Elegante, con toques malva y gris lavanda.': 'Elegante, con toques malva y gris lavanda.',
+      'Total Conversations': 'Conversaciones totales',
+      'Limit Knowledge': 'Límite de conocimiento',
+      'Limit Answers': 'Límite de respuestas',
+      'Conversations': 'Conversaciones',
+      '⚠ No se pudo aplicar el template': '⚠ No se pudo aplicar el template',
       'language.english': 'EN',
       'language.french': 'FR',
       'language.spanish': 'ES',
@@ -648,33 +708,6 @@
       'Aquí puedes escribir el texto base del asistente. Este texto se usará como prompt del sistema para este bot.': 'Aquí puedes escribir el texto base del asistente. Este texto se usará como prompt del sistema para este bot.',
       'Guardar cambios': 'Guardar cambios',
       'Escribe aquí el prompt del sistema...': 'Escribe aquí el prompt del sistema...',
-      'Usuarios con acceso': 'Usuarios con acceso',
-      'Gestionando bot': 'Gestionando bot',
-      'Sin editores invitados': 'Sin editores invitados',
-      'E-mail': 'E-mail',
-      'Rol': 'Rol',
-      'Último acceso': 'Último acceso',
-      'Acciones': 'Acciones',
-      'No hay usuarios invitados para este bot.': 'No hay usuarios invitados para este bot.',
-      'Invitar usuario': 'Invitar usuario',
-      'usuario@empresa.com': 'usuario@empresa.com',
-      'Invitar': 'Invitar',
-      'Se mostrarán los usuarios del bot seleccionado en la barra superior.': 'Se mostrarán los usuarios del bot seleccionado en la barra superior.',
-      'Selecciona un bot para ver los usuarios con acceso.': 'Selecciona un bot para ver los usuarios con acceso.',
-      'No hay un bot seleccionado.': 'No hay un bot seleccionado.',
-      'No hay un bot seleccionado para ver los usuarios con acceso.': 'No hay un bot seleccionado para ver los usuarios con acceso.',
-      'Admin principal': 'Admin principal',
-      'Editor': 'Editor',
-      '1 editor invitado': '1 editor invitado',
-      '{count} editores invitados': '{count} editores invitados',
-      'Cargando usuarios...': 'Cargando usuarios...',
-      'Introduce un correo válido.': 'Introduce un correo válido.',
-      'El admin principal ya tiene acceso a todos los bots.': 'El admin principal ya tiene acceso a todos los bots.',
-      'Este usuario ya tiene acceso a este bot.': 'Este usuario ya tiene acceso a este bot.',
-      '✅ Acceso otorgado a {email} para este bot.': '✅ Acceso otorgado a {email} para este bot.',
-      'No se pudo otorgar acceso. Inténtalo de nuevo.': 'No se pudo otorgar acceso. Inténtalo de nuevo.',
-      'Acceso revocado para {email}': 'Acceso revocado para {email}',
-      'No se pudo revocar el acceso. Inténtalo de nuevo.': 'No se pudo revocar el acceso. Inténtalo de nuevo.',
     },
     'de': {
       'Tomos Bot': 'Tomos Bot',
@@ -727,6 +760,8 @@
       'Playfair Display': 'Playfair Display',
       'Merriweather': 'Merriweather',
       'Colors': 'Farben',
+      'Template': 'Vorlagen',
+      'Selecciona un estilo predefinido. Puedes ajustar los colores luego.': 'Wählen Sie einen vordefinierten Stil. Sie können die Farben später anpassen.',
       'Chat Background': 'Chat-Hintergrund',
       'Text': 'Text',
       'Client Background': 'Hintergrund des Kunden',
@@ -863,6 +898,42 @@
       'this page': 'diese Seite',
       '{count} / {limit} characters': '{count} / {limit} Zeichen',
       'Delay: {seconds}s': 'Verzögerung: {seconds}s',
+      'Cerrar': 'Schließen',
+      'Crear un nuevo bot': 'Neuen Bot erstellen',
+      'Elige si quieres empezar desde cero o duplicar el bot actual antes de nombrarlo.': 'Wähle, ob du von Grund auf neu beginnen oder den aktuellen Bot duplizieren möchtest, bevor du ihn benennst.',
+      'Crear desde cero': 'Von Grund auf neu',
+      'Genera un bot vacío con la configuración básica para empezar rápidamente.': 'Erstelle einen leeren Bot mit der Basiskonfiguration, um schnell loszulegen.',
+      'Duplicar bot actual': 'Aktuellen Bot duplizieren',
+      'Copia el contenido del bot activo y continúa personalizándolo.': 'Kopiere den Inhalt des aktiven Bots und passe ihn weiter an.',
+      'Nombre del bot': 'Bot-Name',
+      'Ej. Bot conserjería': 'Z. B. Concierge-Bot',
+      'Cancelar': 'Abbrechen',
+      'Por favor, escribe un nombre para el bot.': 'Bitte gib einen Namen für den Bot ein.',
+      'El nombre debe incluir caracteres alfanuméricos.': 'Der Name muss alphanumerische Zeichen enthalten.',
+      'No se pudo crear el bot. Inténtalo de nuevo.': 'Der Bot konnte nicht erstellt werden. Bitte versuche es erneut.',
+      'Plantillas del chat': 'Chat-Vorlagen',
+      'Selecciona una plantilla para aplicar rápidamente una combinación de colores. Luego podrás personalizar los detalles.': 'Wähle eine Vorlage, um schnell eine Farbkombination anzuwenden. Anschließend kannst du die Details anpassen.',
+      'Mensajes': 'Nachrichten',
+      'Buscar conversaciones': 'Unterhaltungen suchen',
+      'Eliminar conversaciones antiguas': 'Alte Unterhaltungen löschen',
+      'No hay conversaciones': 'Keine Unterhaltungen',
+      'No hay mensajes': 'Keine Nachrichten',
+      'Sin mensajes': 'Keine Nachrichten',
+      'Cargando mensajes...': 'Nachrichten werden geladen...',
+      'No hay mensajes en este periodo.': 'In diesem Zeitraum gibt es keine Nachrichten.',
+      'Selecciona una conversación para ver los mensajes.': 'Wähle eine Unterhaltung aus, um die Nachrichten anzuzeigen.',
+      'No hay templates disponibles aún.': 'Noch keine Vorlagen verfügbar.',
+      'Oscuro con matices grafito y gris humo.': 'Dunkel mit Graphit- und Rauchgrau-Nuancen.',
+      'Limpio y suave con tonos gris-azulados.': 'Klar und sanft mit blaugrauen Tönen.',
+      'Cálido pero discreto, en tonos arena y cobre.': 'Warm, aber dezent, in Sand- und Kupfertönen.',
+      'Verde musgo con acentos naturales.': 'Moosgrün mit natürlichen Akzenten.',
+      'Grises suaves y negros tenues.': 'Sanfte Grautöne und gedämpftes Schwarz.',
+      'Elegante, con toques malva y gris lavanda.': 'Elegant, mit Akzenten in Mauve und Lavendelgrau.',
+      'Total Conversations': 'Gesamtgespräche',
+      'Limit Knowledge': 'Wissenslimit',
+      'Limit Answers': 'Antwortlimit',
+      'Conversations': 'Konversationen',
+      '⚠ No se pudo aplicar el template': '⚠ Vorlage konnte nicht angewendet werden',
       'language.english': 'EN',
       'language.french': 'FR',
       'language.spanish': 'ES',
@@ -873,33 +944,6 @@
       'Aquí puedes escribir el texto base del asistente. Este texto se usará como prompt del sistema para este bot.': 'Hier kannst du den Grundtext des Assistenten schreiben. Dieser Text wird als System-Prompt für diesen Bot verwendet.',
       'Guardar cambios': 'Änderungen speichern',
       'Escribe aquí el prompt del sistema...': 'Schreibe hier den System-Prompt...',
-      'Usuarios con acceso': 'Benutzer mit Zugriff',
-      'Gestionando bot': 'Bot verwalten',
-      'Sin editores invitados': 'Keine eingeladenen Bearbeiter',
-      'E-mail': 'E-Mail',
-      'Rol': 'Rolle',
-      'Último acceso': 'Letzter Zugriff',
-      'Acciones': 'Aktionen',
-      'No hay usuarios invitados para este bot.': 'Keine eingeladenen Benutzer für diesen Bot.',
-      'Invitar usuario': 'Benutzer einladen',
-      'usuario@empresa.com': 'benutzer@unternehmen.com',
-      'Invitar': 'Einladen',
-      'Se mostrarán los usuarios del bot seleccionado en la barra superior.': 'Es werden die Benutzer des in der oberen Leiste ausgewählten Bots angezeigt.',
-      'Selecciona un bot para ver los usuarios con acceso.': 'Wähle einen Bot aus, um die Benutzer mit Zugriff zu sehen.',
-      'No hay un bot seleccionado.': 'Kein Bot ausgewählt.',
-      'No hay un bot seleccionado para ver los usuarios con acceso.': 'Es ist kein Bot ausgewählt, um die Benutzer mit Zugriff anzuzeigen.',
-      'Admin principal': 'Hauptadministrator',
-      'Editor': 'Editor',
-      '1 editor invitado': '1 eingeladener Editor',
-      '{count} editores invitados': '{count} eingeladene Editoren',
-      'Cargando usuarios...': 'Benutzer werden geladen...',
-      'Introduce un correo válido.': 'Gib eine gültige E-Mail ein.',
-      'El admin principal ya tiene acceso a todos los bots.': 'Der Hauptadministrator hat bereits Zugriff auf alle Bots.',
-      'Este usuario ya tiene acceso a este bot.': 'Dieser Benutzer hat bereits Zugriff auf diesen Bot.',
-      '✅ Acceso otorgado a {email} para este bot.': '✅ Zugriff für {email} für diesen Bot gewährt.',
-      'No se pudo otorgar acceso. Inténtalo de nuevo.': 'Zugriff konnte nicht gewährt werden. Bitte versuche es erneut.',
-      'Acceso revocado para {email}': 'Zugriff für {email} widerrufen',
-      'No se pudo revocar el acceso. Inténtalo de nuevo.': 'Zugriff konnte nicht entzogen werden. Bitte versuche es erneut.',
     },
     'pt': {
       'Tomos Bot': 'Tomos Bot',
@@ -952,6 +996,8 @@
       'Playfair Display': 'Playfair Display',
       'Merriweather': 'Merriweather',
       'Colors': 'Cores',
+      'Template': 'Modelos',
+      'Selecciona un estilo predefinido. Puedes ajustar los colores luego.': 'Selecione um estilo predefinido. Você pode ajustar as cores depois.',
       'Chat Background': 'Fundo do chat',
       'Text': 'Texto',
       'Client Background': 'Fundo do cliente',
@@ -1088,6 +1134,42 @@
       'this page': 'esta página',
       '{count} / {limit} characters': '{count} / {limit} caracteres',
       'Delay: {seconds}s': 'Atraso: {seconds}s',
+      'Cerrar': 'Fechar',
+      'Crear un nuevo bot': 'Criar um novo bot',
+      'Elige si quieres empezar desde cero o duplicar el bot actual antes de nombrarlo.': 'Escolha se deseja começar do zero ou duplicar o bot atual antes de nomeá-lo.',
+      'Crear desde cero': 'Começar do zero',
+      'Genera un bot vacío con la configuración básica para empezar rápidamente.': 'Crie um bot vazio com a configuração básica para começar rapidamente.',
+      'Duplicar bot actual': 'Duplicar bot atual',
+      'Copia el contenido del bot activo y continúa personalizándolo.': 'Copie o conteúdo do bot ativo e continue personalizando-o.',
+      'Nombre del bot': 'Nome do bot',
+      'Ej. Bot conserjería': 'Ex.: Bot concierge',
+      'Cancelar': 'Cancelar',
+      'Por favor, escribe un nombre para el bot.': 'Insira um nome para o bot.',
+      'El nombre debe incluir caracteres alfanuméricos.': 'O nome deve incluir caracteres alfanuméricos.',
+      'No se pudo crear el bot. Inténtalo de nuevo.': 'Não foi possível criar o bot. Tente novamente.',
+      'Plantillas del chat': 'Modelos de chat',
+      'Selecciona una plantilla para aplicar rápidamente una combinación de colores. Luego podrás personalizar los detalles.': 'Selecione um modelo para aplicar rapidamente uma combinação de cores. Depois você poderá personalizar os detalhes.',
+      'Mensajes': 'Mensagens',
+      'Buscar conversaciones': 'Buscar conversas',
+      'Eliminar conversaciones antiguas': 'Excluir conversas antigas',
+      'No hay conversaciones': 'Não há conversas',
+      'No hay mensajes': 'Não há mensagens',
+      'Sin mensajes': 'Sem mensagens',
+      'Cargando mensajes...': 'Carregando mensagens...',
+      'No hay mensajes en este periodo.': 'Não há mensagens neste período.',
+      'Selecciona una conversación para ver los mensajes.': 'Selecione uma conversa para ver as mensagens.',
+      'No hay templates disponibles aún.': 'Nenhum template disponível ainda.',
+      'Oscuro con matices grafito y gris humo.': 'Escuro, com nuances grafite e cinza fumê.',
+      'Limpio y suave con tonos gris-azulados.': 'Limpo e suave, com tons cinza-azulados.',
+      'Cálido pero discreto, en tonos arena y cobre.': 'Quente porém discreto, em tons de areia e cobre.',
+      'Verde musgo con acentos naturales.': 'Verde musgo com acentos naturais.',
+      'Grises suaves y negros tenues.': 'Cinzas suaves e pretos discretos.',
+      'Elegante, con toques malva y gris lavanda.': 'Elegante, com toques de malva e cinza lavanda.',
+      'Total Conversations': 'Conversas totais',
+      'Limit Knowledge': 'Limite de conhecimento',
+      'Limit Answers': 'Limite de respostas',
+      'Conversations': 'Conversas',
+      '⚠ No se pudo aplicar el template': '⚠ Não foi possível aplicar o template',
       'language.english': 'EN',
       'language.french': 'FR',
       'language.spanish': 'ES',
@@ -1098,40 +1180,13 @@
       'Aquí puedes escribir el texto base del asistente. Este texto se usará como prompt del sistema para este bot.': 'Aqui você pode escrever o texto base do assistente. Este texto será usado como prompt do sistema para este bot.',
       'Guardar cambios': 'Salvar alterações',
       'Escribe aquí el prompt del sistema...': 'Escreva aqui o prompt do sistema...',
-      'Usuarios con acceso': 'Usuários com acesso',
-      'Gestionando bot': 'Gerenciando bot',
-      'Sin editores invitados': 'Nenhum editor convidado',
-      'E-mail': 'E-mail',
-      'Rol': 'Função',
-      'Último acceso': 'Último acesso',
-      'Acciones': 'Ações',
-      'No hay usuarios invitados para este bot.': 'Não há usuários convidados para este bot.',
-      'Invitar usuario': 'Convidar usuário',
-      'usuario@empresa.com': 'usuario@empresa.com',
-      'Invitar': 'Convidar',
-      'Se mostrarán los usuarios del bot seleccionado en la barra superior.': 'Serão exibidos os usuários do bot selecionado na barra superior.',
-      'Selecciona un bot para ver los usuarios con acceso.': 'Selecione um bot para ver os usuários com acesso.',
-      'No hay un bot seleccionado.': 'Nenhum bot selecionado.',
-      'No hay un bot seleccionado para ver los usuarios con acceso.': 'Não há um bot selecionado para ver os usuários com acesso.',
-      'Admin principal': 'Administrador principal',
-      'Editor': 'Editor',
-      '1 editor invitado': '1 editor convidado',
-      '{count} editores invitados': '{count} editores convidados',
-      'Cargando usuarios...': 'Carregando usuários...',
-      'Introduce un correo válido.': 'Insira um e-mail válido.',
-      'El admin principal ya tiene acceso a todos los bots.': 'O administrador principal já tem acesso a todos os bots.',
-      'Este usuario ya tiene acceso a este bot.': 'Este usuário já tem acesso a este bot.',
-      '✅ Acceso otorgado a {email} para este bot.': '✅ Acesso concedido a {email} para este bot.',
-      'No se pudo otorgar acceso. Inténtalo de nuevo.': 'Não foi possível conceder acesso. Tente novamente.',
-      'Acceso revocado para {email}': 'Acesso revogado para {email}',
-      'No se pudo revocar el acceso. Inténtalo de nuevo.': 'Não foi possível revogar o acesso. Tente novamente.',
     },
   };
   const TRANSLATION_KEYS = new Set(Object.keys(TRANSLATIONS.en));
-  const textNodes = [];
-  const attrNodes = [];
-  let manualTextTargets = [];
-  let manualAttrTargets = [];
+  const TEXT_KEY_SYMBOL = Symbol('translationTextKey');
+  const ATTR_KEYS_SYMBOL = Symbol('translationAttrKeys');
+  const textNodes = new Map();
+  const attrNodes = new Map();
   let currentLanguage = localStorage.getItem('preferredLanguage') || DEFAULT_LANGUAGE;
   const normalize = (value) => (value || '').replace(/\s+/g, ' ').trim();
   function getTranslation(lang, key) {
@@ -1150,19 +1205,72 @@
     }
     return text;
   }
+  function getStoredTextKey(node) {
+    return node ? node[TEXT_KEY_SYMBOL] : undefined;
+  }
+  function setStoredTextKey(node, key) {
+    if (!node) return;
+    node[TEXT_KEY_SYMBOL] = key;
+  }
+  function getStoredAttrKey(el, attr) {
+    if (!el) return undefined;
+    const store = el[ATTR_KEYS_SYMBOL];
+    return store ? store[attr] : undefined;
+  }
+  function setStoredAttrKey(el, attr, key) {
+    if (!el) return;
+    if (!el[ATTR_KEYS_SYMBOL]) el[ATTR_KEYS_SYMBOL] = {};
+    el[ATTR_KEYS_SYMBOL][attr] = key;
+  }
+  function addTextNode(node, key, options = {}) {
+    if (!node || !key) return;
+    const entry = textNodes.get(node) || { node };
+    entry.key = key;
+    entry.formatter = options.formatter || null;
+    entry.vars = options.vars;
+    entry.manual = options.manual || false;
+    textNodes.set(node, entry);
+    setStoredTextKey(node, key);
+  }
+  function addAttrNode(el, attr, key, options = {}) {
+    if (!el || !attr || !key) return;
+    let attrMap = attrNodes.get(el);
+    if (!attrMap) {
+      attrMap = new Map();
+      attrNodes.set(el, attrMap);
+    }
+    const entry = attrMap.get(attr) || { el, attr };
+    entry.key = key;
+    entry.formatter = options.formatter || null;
+    entry.vars = options.vars;
+    entry.manual = options.manual || false;
+    attrMap.set(attr, entry);
+    setStoredAttrKey(el, attr, key);
+  }
   function scanTargets(root = document.body) {
+    if (!root) return;
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
     let node;
     while ((node = walker.nextNode())) {
-      const key = normalize(node.textContent);
-      if (!key || !TRANSLATION_KEYS.has(key)) continue;
-      textNodes.push({ node, key });
+      const storedKey = getStoredTextKey(node);
+      let key = storedKey;
+      if (!key) {
+        const normalized = normalize(node.textContent);
+        if (!normalized || !TRANSLATION_KEYS.has(normalized)) continue;
+        key = normalized;
+      }
+      addTextNode(node, key);
     }
     ['placeholder', 'title', 'aria-label', 'alt'].forEach(attr => {
       root.querySelectorAll(`[${attr}]`).forEach(el => {
-        const value = normalize(el.getAttribute(attr));
-        if (!value || !TRANSLATION_KEYS.has(value)) return;
-        attrNodes.push({ el, attr, key: value });
+        const storedKey = getStoredAttrKey(el, attr);
+        let key = storedKey;
+        if (!key) {
+          const value = normalize(el.getAttribute(attr));
+          if (!value || !TRANSLATION_KEYS.has(value)) return;
+          key = value;
+        }
+        addAttrNode(el, attr, key);
       });
     });
   }
@@ -1172,49 +1280,49 @@
     return !!(document.body && document.body.contains(node));
   }
 
-  function cleanupManualTargets() {
-    manualTextTargets = manualTextTargets.filter(({ node }) => isNodeConnected(node));
-    manualAttrTargets = manualAttrTargets.filter(({ el }) => isNodeConnected(el));
+  function cleanupTargets() {
+    textNodes.forEach((entry, node) => {
+      if (!isNodeConnected(node)) {
+        textNodes.delete(node);
+        return;
+      }
+    });
+    attrNodes.forEach((attrMap, el) => {
+      if (!isNodeConnected(el)) {
+        attrNodes.delete(el);
+        return;
+      }
+      attrMap.forEach((entry, attr) => {
+        if (!el.hasAttribute(attr) || !isNodeConnected(entry.el)) {
+          attrMap.delete(attr);
+        }
+      });
+      if (attrMap.size === 0) attrNodes.delete(el);
+    });
   }
 
   function refreshTargets(root = document.body) {
-    textNodes.length = 0;
-    attrNodes.length = 0;
+    cleanupTargets();
     scanTargets(root);
-    cleanupManualTargets();
-    manualTextTargets.forEach(target => { textNodes.push(target); });
-    manualAttrTargets.forEach(target => { attrNodes.push(target); });
   }
 
-  function applyManualTargets() {
-    cleanupManualTargets();
-    manualTextTargets.forEach(({ node, key, formatter, vars }) => {
-      if (!node) return;
-      const translated = translate(key, vars);
-      node.textContent = formatter ? formatter(translated) : translated;
-    });
-    manualAttrTargets.forEach(({ el, attr, key, formatter, vars }) => {
-      if (!el) return;
-      const translated = translate(key, vars);
-      el.setAttribute(attr, formatter ? formatter(translated) : translated);
-    });
-  }
   function applyLanguage(lang) {
     currentLanguage = lang || DEFAULT_LANGUAGE;
     localStorage.setItem('preferredLanguage', currentLanguage);
     document.documentElement.lang = currentLanguage;
     refreshTargets();
     textNodes.forEach(({ node, key, formatter, vars }) => {
-      if (!node) return;
+      if (!node || !key) return;
       const translated = translate(key, vars);
       node.textContent = formatter ? formatter(translated) : translated;
     });
-    attrNodes.forEach(({ el, attr, key, formatter, vars }) => {
-      if (!el) return;
-      const translated = translate(key, vars);
-      el.setAttribute(attr, formatter ? formatter(translated) : translated);
+    attrNodes.forEach(attrMap => {
+      attrMap.forEach(({ el, attr, key, formatter, vars }) => {
+        if (!el || !attr || !key) return;
+        const translated = translate(key, vars);
+        el.setAttribute(attr, formatter ? formatter(translated) : translated);
+      });
     });
-    applyManualTargets();
     document.title = getTranslation(currentLanguage, 'Tomos Bot');
     const select = document.getElementById('languageSelect');
     if (select && select.value !== currentLanguage) select.value = currentLanguage;
@@ -1240,30 +1348,15 @@
       const formatter = typeof opts.formatter === 'function' ? opts.formatter : null;
       const vars = opts.vars || undefined;
       if (targetType === 'text' || targetType === 'textContent') {
-        const existing = manualTextTargets.find(entry => entry.node === node);
-        if (existing) {
-          existing.key = normalizedKey;
-          existing.formatter = formatter;
-          existing.vars = vars;
-        } else {
-          manualTextTargets.push({ node, key: normalizedKey, formatter, vars });
-        }
+        addTextNode(node, normalizedKey, { formatter, vars, manual: true });
         const translated = translate(normalizedKey, vars);
         node.textContent = formatter ? formatter(translated) : translated;
       } else {
         const attr = targetType;
-        const existing = manualAttrTargets.find(entry => entry.el === node && entry.attr === attr);
-        if (existing) {
-          existing.key = normalizedKey;
-          existing.formatter = formatter;
-          existing.vars = vars;
-        } else {
-          manualAttrTargets.push({ el: node, attr, key: normalizedKey, formatter, vars });
-        }
+        addAttrNode(node, attr, normalizedKey, { formatter, vars, manual: true });
         const translated = translate(normalizedKey, vars);
         node.setAttribute(attr, formatter ? formatter(translated) : translated);
       }
-    },
-    applyManualTargets
+    }
   };
 })();
