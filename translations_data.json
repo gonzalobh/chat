@@ -48,6 +48,14 @@
     "pt": "Respostas automáticas"
   },
   {
+    "key": "Usuarios",
+    "en": "Users",
+    "fr": "Utilisateurs",
+    "es": "Usuarios",
+    "de": "Benutzer",
+    "pt": "Usuários"
+  },
+  {
     "key": "Empresa:",
     "en": "Company:",
     "fr": "Entreprise :",
