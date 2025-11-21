@@ -1498,9 +1498,7 @@ body.login-view #appContainer {
     <div class="flex flex-wrap items-center justify-between gap-3">
 
       <!-- IZQUIERDA -->
-      <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide select-none">
-        Encabezado
-      </span>
+      <span id="chatHeaderSectionTitle" class="text-xs font-semibold text-gray-500 uppercase tracking-wide select-none"></span>
 
       <!-- DERECHA: toggle + badge + botón -->
       <div class="flex items-center gap-2">
@@ -1525,7 +1523,7 @@ body.login-view #appContainer {
       </div>
       <div class="flex-1 min-w-0">
         <p id="headerSummaryTitle" class="text-sm font-medium text-gray-800 truncate">Tomos Bot</p>
-        <p class="text-xs text-gray-500">Edita el título y la identidad visual del encabezado.</p>
+        <p id="headerSummaryDescription" class="text-xs text-gray-500"></p>
       </div>
     </div>
 
@@ -1537,17 +1535,13 @@ body.login-view #appContainer {
   <div class="flex flex-wrap items-center justify-between gap-3">
 
     <!-- IZQUIERDA -->
-    <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide select-none">
-      Mensaje de bienvenida
-    </span>
+    <span id="welcomeSectionTitle" class="text-xs font-semibold text-gray-500 uppercase tracking-wide select-none"></span>
 
     <!-- DERECHA: toggle + badge + botón -->
     <div class="flex items-center gap-2">
       <input type="checkbox" id="welcomeEnabled" class="toggle toggle-sm" />
 
-      <span id="welcomeSummaryBadge" class="px-2.5 py-1 rounded-full text-xs font-medium bg-gray-200 text-gray-600">
-        Disabled
-      </span>
+      <span id="welcomeSummaryBadge" class="px-2.5 py-1 rounded-full text-xs font-medium bg-gray-200 text-gray-600"></span>
 
       <button id="openWelcomePanel" type="button"
         class="p-2 rounded-full border border-gray-200 text-gray-500 hover:text-gray-700 hover:border-gray-300 transition">
@@ -1567,9 +1561,7 @@ body.login-view #appContainer {
     </div>
     <div class="flex-1 space-y-2 text-sm">
       <div class="rounded-xl bg-gray-50 px-3 py-2 text-gray-700 leading-relaxed">
-        <p id="welcomeSummaryText" class="leading-relaxed text-gray-700">
-          Add a welcome message to greet your guests.
-        </p>
+        <p id="welcomeSummaryText" class="leading-relaxed text-gray-700"></p>
       </div>
     </div>
   </div>
@@ -2437,6 +2429,38 @@ if (window.translationManager) {
       'Texto del cliente',
     ];
     optionLabels.forEach((node, idx) => registerTranslationTarget(node, optionKeys[idx]));
+  }
+}
+
+if (window.translationManager) {
+  const chatHeaderSectionTitle = document.getElementById('chatHeaderSectionTitle');
+  if (chatHeaderSectionTitle) {
+    chatHeaderSectionTitle.textContent = t('Encabezado');
+    registerTranslationTarget(chatHeaderSectionTitle, 'Encabezado');
+  }
+
+  const headerSummaryDescription = document.getElementById('headerSummaryDescription');
+  if (headerSummaryDescription) {
+    headerSummaryDescription.textContent = t('Edita el título y la identidad visual del encabezado.');
+    registerTranslationTarget(headerSummaryDescription, 'Edita el título y la identidad visual del encabezado.');
+  }
+
+  const welcomeSectionTitle = document.getElementById('welcomeSectionTitle');
+  if (welcomeSectionTitle) {
+    welcomeSectionTitle.textContent = t('Mensaje de bienvenida');
+    registerTranslationTarget(welcomeSectionTitle, 'Mensaje de bienvenida');
+  }
+
+  const welcomeSummaryBadge = document.getElementById('welcomeSummaryBadge');
+  if (welcomeSummaryBadge) {
+    welcomeSummaryBadge.textContent = t('Desactivado');
+    registerTranslationTarget(welcomeSummaryBadge, 'Desactivado');
+  }
+
+  const welcomeSummaryText = document.getElementById('welcomeSummaryText');
+  if (welcomeSummaryText) {
+    welcomeSummaryText.textContent = t('Agregar un mensaje de bienvenida para saludar a tus visitantes.');
+    registerTranslationTarget(welcomeSummaryText, 'Agregar un mensaje de bienvenida para saludar a tus visitantes.');
   }
 }
 
@@ -8043,7 +8067,9 @@ function initSettingsTab(){
 
   const updateChatHeaderStatus = (isVisible) => {
     if (!chatHeaderStatus) return;
-    chatHeaderStatus.textContent = isVisible ? 'Activado' : 'Oculto';
+    const statusKey = isVisible ? 'Activado' : 'Desactivado';
+    chatHeaderStatus.textContent = t(statusKey);
+    registerTranslationTarget(chatHeaderStatus, statusKey);
     chatHeaderStatus.classList.toggle('bg-emerald-100', isVisible);
     chatHeaderStatus.classList.toggle('text-emerald-700', isVisible);
     chatHeaderStatus.classList.toggle('bg-gray-200', !isVisible);
@@ -10608,7 +10634,7 @@ function initWelcome() {
   const summaryImage = $("welcomeSummaryImage");
   const summaryIcon = $("welcomeSummaryIcon");
 
-  const defaultSummaryKey = 'Add a welcome message to greet your guests.';
+  const defaultSummaryKey = 'Agregar un mensaje de bienvenida para saludar a tus visitantes.';
   const state = {
     enabled: false,
     text: "",
@@ -10728,7 +10754,7 @@ function initWelcome() {
   const updateSummary = () => {
     const isEnabled = !!state.enabled;
     if (summaryBadge) {
-      const badgeKey = isEnabled ? 'Enabled' : 'Disabled';
+      const badgeKey = isEnabled ? 'Activado' : 'Desactivado';
       summaryBadge.textContent = t(badgeKey);
       registerTranslationTarget(summaryBadge, badgeKey);
       summaryBadge.classList.toggle('bg-emerald-100', isEnabled);
