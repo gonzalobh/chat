@@ -1654,5 +1654,213 @@
     "es": "Escribe aquí el prompt del sistema...",
     "de": "Schreibe hier den System-Prompt...",
     "pt": "Escreva aqui o prompt do sistema..."
+  },
+  {
+    "key": "Usuarios con acceso",
+    "en": "Users with access",
+    "fr": "Utilisateurs avec accès",
+    "es": "Usuarios con acceso",
+    "de": "Benutzer mit Zugriff",
+    "pt": "Usuários com acesso"
+  },
+  {
+    "key": "Se mostrarán los usuarios del bot seleccionado en la barra superior.",
+    "en": "Users of the bot selected in the top bar will be displayed.",
+    "fr": "Les utilisateurs du bot sélectionné dans la barre supérieure s’afficheront.",
+    "es": "Se mostrarán los usuarios del bot seleccionado en la barra superior.",
+    "de": "Die Benutzer des in der oberen Leiste ausgewählten Bots werden angezeigt.",
+    "pt": "Serão exibidos os usuários do bot selecionado na barra superior."
+  },
+  {
+    "key": "E-mail",
+    "en": "E-mail",
+    "fr": "E-mail",
+    "es": "E-mail",
+    "de": "E-Mail",
+    "pt": "E-mail"
+  },
+  {
+    "key": "Rol",
+    "en": "Role",
+    "fr": "Rôle",
+    "es": "Rol",
+    "de": "Rolle",
+    "pt": "Função"
+  },
+  {
+    "key": "Último acceso",
+    "en": "Last access",
+    "fr": "Dernier accès",
+    "es": "Último acceso",
+    "de": "Letzter Zugriff",
+    "pt": "Último acesso"
+  },
+  {
+    "key": "Acciones",
+    "en": "Actions",
+    "fr": "Actions",
+    "es": "Acciones",
+    "de": "Aktionen",
+    "pt": "Ações"
+  },
+  {
+    "key": "Invitar usuario",
+    "en": "Invite user",
+    "fr": "Inviter un utilisateur",
+    "es": "Invitar usuario",
+    "de": "Benutzer einladen",
+    "pt": "Convidar usuário"
+  },
+  {
+    "key": "usuario@empresa.com",
+    "en": "user@company.com",
+    "fr": "utilisateur@entreprise.com",
+    "es": "usuario@empresa.com",
+    "de": "benutzer@firma.com",
+    "pt": "usuario@empresa.com"
+  },
+  {
+    "key": "Invitar",
+    "en": "Invite",
+    "fr": "Inviter",
+    "es": "Invitar",
+    "de": "Einladen",
+    "pt": "Convidar"
+  },
+  {
+    "key": "Gestionando bot",
+    "en": "Managing bot \"{bot}\"",
+    "fr": "Gestion du bot \"{bot}\"",
+    "es": "Gestionando bot \"{bot}\"",
+    "de": "Bot \"{bot}\" verwalten",
+    "pt": "Gerenciando bot \"{bot}\""
+  },
+  {
+    "key": "No hay un bot seleccionado.",
+    "en": "No bot selected.",
+    "fr": "Aucun bot sélectionné.",
+    "es": "No hay un bot seleccionado.",
+    "de": "Kein Bot ausgewählt.",
+    "pt": "Nenhum bot selecionado."
+  },
+  {
+    "key": "No hay usuarios invitados para este bot.",
+    "en": "There are no invited users for this bot.",
+    "fr": "Aucun utilisateur invité pour ce bot.",
+    "es": "No hay usuarios invitados para este bot.",
+    "de": "Für diesen Bot gibt es keine eingeladenen Benutzer.",
+    "pt": "Não há usuários convidados para este bot."
+  },
+  {
+    "key": "Sin editores invitados",
+    "en": "No guest editors",
+    "fr": "Aucun éditeur invité",
+    "es": "Sin editores invitados",
+    "de": "Keine eingeladenen Editoren",
+    "pt": "Sem editores convidados"
+  },
+  {
+    "key": "Editor",
+    "en": "Editor",
+    "fr": "Éditeur",
+    "es": "Editor",
+    "de": "Editor",
+    "pt": "Editor"
+  },
+  {
+    "key": "1 editor invitado",
+    "en": "1 invited editor",
+    "fr": "1 éditeur invité",
+    "es": "1 editor invitado",
+    "de": "1 eingeladener Editor",
+    "pt": "1 editor convidado"
+  },
+  {
+    "key": "{count} editores invitados",
+    "en": "{count} invited editors",
+    "fr": "{count} éditeurs invités",
+    "es": "{count} editores invitados",
+    "de": "{count} eingeladene Editoren",
+    "pt": "{count} editores convidados"
+  },
+  {
+    "key": "No hay un bot seleccionado para ver los usuarios con acceso.",
+    "en": "No bot selected to view users with access.",
+    "fr": "Aucun bot sélectionné pour afficher les utilisateurs autorisés.",
+    "es": "No hay un bot seleccionado para ver los usuarios con acceso.",
+    "de": "Es ist kein Bot ausgewählt, um die Benutzer mit Zugriff anzuzeigen.",
+    "pt": "Nenhum bot selecionado para ver os usuários com acesso."
+  },
+  {
+    "key": "Selecciona un bot para ver los usuarios con acceso.",
+    "en": "Select a bot to view users with access.",
+    "fr": "Sélectionnez un bot pour voir les utilisateurs autorisés.",
+    "es": "Selecciona un bot para ver los usuarios con acceso.",
+    "de": "Wähle einen Bot, um die Benutzer mit Zugriff zu sehen.",
+    "pt": "Selecione um bot para ver os usuários com acesso."
+  },
+  {
+    "key": "Introduce un correo válido.",
+    "en": "Enter a valid email address.",
+    "fr": "Saisissez une adresse e-mail valide.",
+    "es": "Introduce un correo válido.",
+    "de": "Gib eine gültige E-Mail-Adresse ein.",
+    "pt": "Insira um e-mail válido."
+  },
+  {
+    "key": "El admin principal ya tiene acceso a todos los bots.",
+    "en": "The primary admin already has access to all bots.",
+    "fr": "L'administrateur principal a déjà accès à tous les bots.",
+    "es": "El admin principal ya tiene acceso a todos los bots.",
+    "de": "Der Hauptadministrator hat bereits Zugriff auf alle Bots.",
+    "pt": "O administrador principal já tem acesso a todos os bots."
+  },
+  {
+    "key": "Este usuario ya tiene acceso a este bot.",
+    "en": "This user already has access to this bot.",
+    "fr": "Cet utilisateur a déjà accès à ce bot.",
+    "es": "Este usuario ya tiene acceso a este bot.",
+    "de": "Dieser Benutzer hat bereits Zugriff auf diesen Bot.",
+    "pt": "Este usuário já tem acesso a este bot."
+  },
+  {
+    "key": "✅ Acceso otorgado a {email} para este bot.",
+    "en": "✅ Access granted to {email} for this bot.",
+    "fr": "✅ Accès accordé à {email} pour ce bot.",
+    "es": "✅ Acceso otorgado a {email} para este bot.",
+    "de": "✅ Zugriff für {email} auf diesen Bot gewährt.",
+    "pt": "✅ Acesso concedido a {email} para este bot."
+  },
+  {
+    "key": "No se pudo otorgar acceso. Inténtalo de nuevo.",
+    "en": "Could not grant access. Please try again.",
+    "fr": "Impossible d'accorder l'accès. Réessayez.",
+    "es": "No se pudo otorgar acceso. Inténtalo de nuevo.",
+    "de": "Zugriff konnte nicht gewährt werden. Bitte versuche es erneut.",
+    "pt": "Não foi possível conceder acesso. Tente novamente."
+  },
+  {
+    "key": "Acceso revocado para {email}",
+    "en": "Access revoked for {email}",
+    "fr": "Accès révoqué pour {email}",
+    "es": "Acceso revocado para {email}",
+    "de": "Zugriff für {email} widerrufen",
+    "pt": "Acesso revogado para {email}"
+  },
+  {
+    "key": "No se pudo revocar el acceso. Inténtalo de nuevo.",
+    "en": "Could not revoke access. Please try again.",
+    "fr": "Impossible de révoquer l'accès. Réessayez.",
+    "es": "No se pudo revocar el acceso. Inténtalo de nuevo.",
+    "de": "Zugriff konnte nicht widerrufen werden. Bitte versuche es erneut.",
+    "pt": "Não foi possível revogar o acesso. Tente novamente."
+  },
+  {
+    "key": "Admin principal",
+    "en": "Primary admin",
+    "fr": "Administrateur principal",
+    "es": "Admin principal",
+    "de": "Hauptadministrator",
+    "pt": "Administrador principal"
   }
 ]

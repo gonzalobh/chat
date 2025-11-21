@@ -2150,35 +2150,31 @@ body.login-view #appContainer {
 <section id="tab-usuarios" class="hidden space-y-6 max-w-4xl mx-auto">
   <div class="card p-5 space-y-4">
     <div class="flex items-center justify-between">
-      <h3 class="text-lg font-semibold text-gray-800">Usuarios con acceso</h3>
+      <h3 id="userAccessTitle" class="text-lg font-semibold text-gray-800"></h3>
       <span id="userAccessSummary" class="text-sm text-gray-500">—</span>
     </div>
-    <p id="userBotSelectStatus" class="text-sm text-gray-500">Se mostrarán los usuarios del bot seleccionado en la barra superior.</p>
+    <p id="userBotSelectStatus" class="text-sm text-gray-500"></p>
     <div class="overflow-x-auto">
       <table class="min-w-full divide-y divide-gray-200 text-sm">
         <thead class="bg-gray-50 text-xs font-semibold uppercase tracking-wide text-gray-500">
           <tr>
-            <th scope="col" class="px-4 py-2 text-left">Email</th>
-            <th scope="col" class="px-4 py-2 text-left">Rol</th>
-            <th scope="col" class="px-4 py-2 text-left">Último acceso</th>
-            <th scope="col" class="px-4 py-2 text-right">Acciones</th>
+            <th id="userTableEmailHeader" scope="col" class="px-4 py-2 text-left"></th>
+            <th id="userTableRoleHeader" scope="col" class="px-4 py-2 text-left"></th>
+            <th id="userTableLastAccessHeader" scope="col" class="px-4 py-2 text-left"></th>
+            <th id="userTableActionsHeader" scope="col" class="px-4 py-2 text-right"></th>
           </tr>
         </thead>
-        <tbody id="userAccessTableBody" class="bg-white divide-y divide-gray-100">
-          <tr>
-            <td colspan="4" class="px-4 py-6 text-center text-gray-400 text-sm">Selecciona un bot para ver los usuarios con acceso.</td>
-          </tr>
-        </tbody>
+        <tbody id="userAccessTableBody" class="bg-white divide-y divide-gray-100"></tbody>
       </table>
     </div>
   </div>
 
   <div class="card p-5 space-y-4">
-    <h3 class="text-lg font-semibold text-gray-800">Invitar usuario</h3>
+    <h3 id="userInviteTitle" class="text-lg font-semibold text-gray-800"></h3>
     <form id="userInviteForm" class="flex flex-col sm:flex-row gap-3">
-      <input id="userInviteEmail" type="email" class="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/70" placeholder="usuario@empresa.com" required>
+      <input id="userInviteEmail" type="email" class="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/70" placeholder="" required>
       <button id="userInviteSubmit" type="submit" class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-black text-white text-sm disabled:opacity-60 disabled:cursor-not-allowed">
-        Invitar
+        <span id="userInviteButtonLabel"></span>
       </button>
     </form>
     <p id="userInviteFeedback" class="text-sm text-gray-500 hidden"></p>
@@ -5444,9 +5440,26 @@ function initUserManagementTab() {
   const statusEl = $('userBotSelectStatus');
   const summaryEl = $('userAccessSummary');
   const feedbackEl = $('userInviteFeedback');
+  const titleEl = $('userAccessTitle');
+  const tableEmailHeader = $('userTableEmailHeader');
+  const tableRoleHeader = $('userTableRoleHeader');
+  const tableLastAccessHeader = $('userTableLastAccessHeader');
+  const tableActionsHeader = $('userTableActionsHeader');
+  const inviteTitle = $('userInviteTitle');
+  const inviteButtonLabel = $('userInviteButtonLabel');
   const inviteForm = $('userInviteForm');
   const inviteEmailInput = $('userInviteEmail');
   const inviteSubmit = $('userInviteSubmit');
+
+  registerTranslationTarget(titleEl, 'Usuarios con acceso');
+  registerTranslationTarget(statusEl, 'Se mostrarán los usuarios del bot seleccionado en la barra superior.');
+  registerTranslationTarget(tableEmailHeader, 'E-mail');
+  registerTranslationTarget(tableRoleHeader, 'Rol');
+  registerTranslationTarget(tableLastAccessHeader, 'Último acceso');
+  registerTranslationTarget(tableActionsHeader, 'Acciones');
+  registerTranslationTarget(inviteTitle, 'Invitar usuario');
+  registerTranslationTarget(inviteEmailInput, 'usuario@empresa.com', 'placeholder');
+  registerTranslationTarget(inviteButtonLabel, 'Invitar');
 
   const showFeedback = (message = '', isError = false) => {
     if (!feedbackEl) return;
@@ -5463,13 +5476,13 @@ function initUserManagementTab() {
     return botId || '';
   };
 
-  const renderEmptyState = (message) => {
+  const renderEmptyState = (key, options = {}) => {
     tableBody.innerHTML = '';
     const row = document.createElement('tr');
     const cell = document.createElement('td');
     cell.colSpan = 4;
     cell.className = 'px-4 py-6 text-center text-gray-400 text-sm';
-    cell.textContent = message;
+    registerTranslationTarget(cell, key, 'text', options);
     row.appendChild(cell);
     tableBody.appendChild(row);
     if (summaryEl) summaryEl.textContent = '—';
@@ -5485,9 +5498,11 @@ function initUserManagementTab() {
       inviteSubmit.classList.toggle('cursor-not-allowed', !hasBot);
     }
     if (statusEl) {
-      statusEl.textContent = hasBot
-        ? `Gestionando bot "${displayName}"`
-        : 'No hay un bot seleccionado.';
+      if (hasBot) {
+        registerTranslationTarget(statusEl, 'Gestionando bot', 'text', { vars: { bot: displayName } });
+      } else {
+        registerTranslationTarget(statusEl, 'No hay un bot seleccionado.');
+      }
     }
     showFeedback('');
   };
@@ -5508,10 +5523,11 @@ function initUserManagementTab() {
       const adminRow = document.createElement('tr');
       adminRow.innerHTML = `
         <td class="px-4 py-3 text-sm text-gray-700">${adminEmail}</td>
-        <td class="px-4 py-3 text-sm text-emerald-600 font-medium">Admin principal</td>
+        <td class="px-4 py-3 text-sm text-emerald-600 font-medium"></td>
         <td class="px-4 py-3 text-sm text-gray-500">—</td>
         <td class="px-4 py-3 text-right text-sm text-gray-400">—</td>
       `;
+      registerTranslationTarget(adminRow.children[1], 'Admin principal');
       tableBody.appendChild(adminRow);
     }
 
@@ -5520,10 +5536,10 @@ function initUserManagementTab() {
       const cell = document.createElement('td');
       cell.colSpan = 4;
       cell.className = 'px-4 py-6 text-center text-gray-400 text-sm';
-      cell.textContent = 'No hay usuarios invitados para este bot.';
+      registerTranslationTarget(cell, 'No hay usuarios invitados para este bot.');
       emptyRow.appendChild(cell);
       tableBody.appendChild(emptyRow);
-      if (summaryEl) summaryEl.textContent = 'Sin editores invitados';
+      if (summaryEl) registerTranslationTarget(summaryEl, 'Sin editores invitados');
       return;
     }
 
@@ -5531,18 +5547,21 @@ function initUserManagementTab() {
       const row = document.createElement('tr');
       row.innerHTML = `
         <td class="px-4 py-3 text-sm text-gray-700">${entry.email}</td>
-        <td class="px-4 py-3 text-sm text-gray-600">Editor</td>
+        <td class="px-4 py-3 text-sm text-gray-600"></td>
         <td class="px-4 py-3 text-sm text-gray-500">${formatLastAccess(entry.lastAccess)}</td>
         <td class="px-4 py-3 text-right">
           <button type="button" class="text-sm text-red-600 hover:text-red-700" data-remove-editor data-email="${entry.email}" data-email-key="${entry.key}">❌</button>
         </td>
       `;
+      registerTranslationTarget(row.children[1], 'Editor');
       tableBody.appendChild(row);
     });
 
     if (summaryEl) {
       const count = entries.length;
-      summaryEl.textContent = count === 1 ? '1 editor invitado' : `${count} editores invitados`;
+      const summaryKey = count === 1 ? '1 editor invitado' : '{count} editores invitados';
+      const summaryOptions = count === 1 ? {} : { vars: { count } };
+      registerTranslationTarget(summaryEl, summaryKey, 'text', summaryOptions);
     }
   };
 
@@ -5563,8 +5582,9 @@ function initUserManagementTab() {
 
   // Siempre usamos el bot actual de la URL / barra superior
   currentManagedBotId = BOT || '';
+
+  renderEmptyState('Selecciona un bot para ver los usuarios con acceso.');
   updateInviteState();
-  renderEmptyState('Cargando usuarios...');
   if (currentManagedBotId) {
     subscribeToBotEditors(currentManagedBotId);
   }
@@ -5576,18 +5596,18 @@ function initUserManagementTab() {
     const rawEmail = inviteEmailInput?.value || '';
     const normalizedEmail = normalizeEmail(rawEmail);
     if (!normalizedEmail || !rawEmail.includes('@')) {
-      showFeedback('Introduce un correo válido.', true);
+      showFeedback(t('Introduce un correo válido.'), true);
       return;
     }
 
     const adminEmailNormalized = normalizeEmail(currentBotAdminEmail || currentCompanyAdminEmail || '');
     if (normalizedEmail === adminEmailNormalized) {
-      showFeedback('El admin principal ya tiene acceso a todos los bots.', true);
+      showFeedback(t('El admin principal ya tiene acceso a todos los bots.'), true);
       return;
     }
 
     if (isEmailInAllowedEditors(currentBotAllowedEditors, normalizedEmail)) {
-      showFeedback('Este usuario ya tiene acceso a este bot.', true);
+      showFeedback(t('Este usuario ya tiene acceso a este bot.'), true);
       return;
     }
 
@@ -5595,9 +5615,10 @@ function initUserManagementTab() {
       const key = encodeEmailKey(normalizedEmail);
       await db.ref(`${getBotBasePath(currentManagedBotId)}/allowedEditors/${key}`).set(true);
       if (inviteEmailInput) inviteEmailInput.value = '';
-      showFeedback(`✅ Acceso otorgado a ${normalizedEmail} para este bot.`);
+      const successMessage = t('✅ Acceso otorgado a {email} para este bot.', { email: normalizedEmail });
+      showFeedback(successMessage);
       if (typeof toast === 'function') {
-        toast(`✅ Acceso otorgado a ${normalizedEmail} para este bot.`);
+        toast(successMessage);
       }
 
       try {
@@ -5607,7 +5628,7 @@ function initUserManagementTab() {
       }
     } catch (err) {
       console.error('No se pudo invitar al usuario', err);
-      showFeedback('No se pudo otorgar acceso. Inténtalo de nuevo.', true);
+      showFeedback(t('No se pudo otorgar acceso. Inténtalo de nuevo.'), true);
     }
   });
 
@@ -5621,11 +5642,11 @@ function initUserManagementTab() {
     try {
       await db.ref(`${getBotBasePath(currentManagedBotId)}/allowedEditors/${emailKey}`).set(null);
       if (typeof toast === 'function') {
-        toast(`Acceso revocado para ${emailValue}`);
+        toast(t('Acceso revocado para {email}', { email: emailValue }));
       }
     } catch (err) {
       console.error('No se pudo revocar el acceso', err);
-      showFeedback('No se pudo revocar el acceso. Inténtalo de nuevo.', true);
+      showFeedback(t('No se pudo revocar el acceso. Inténtalo de nuevo.'), true);
     }
   });
 }
