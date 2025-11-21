@@ -3605,7 +3605,10 @@ function renderDashboardBotsTable() {
       const editIcon = document.createElement('i');
       editIcon.setAttribute('data-lucide', 'pencil');
       const editLabel = document.createElement('span');
-      editLabel.textContent = 'Edit';
+      editLabel.textContent = window.translationManager
+        ? translationManager.translate('Edit')
+        : 'Edit';
+      registerTranslationTarget(editLabel, 'Edit');
       editBtn.append(editIcon, editLabel);
       actions.appendChild(editBtn);
       titles.append(titleEl, actions);

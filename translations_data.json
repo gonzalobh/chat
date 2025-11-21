@@ -120,6 +120,14 @@
     "pt": "Atividade"
   },
   {
+    "key": "Edit",
+    "en": "Edit",
+    "fr": "Modifier",
+    "es": "Editar",
+    "de": "Bearbeiten",
+    "pt": "Editar"
+  },
+  {
     "key": "Widget",
     "en": "Widget",
     "fr": "Widget",
