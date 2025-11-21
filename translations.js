@@ -232,6 +232,10 @@
       'language.german': 'DE',
       'language.portuguese': 'PT',
       'Enabled': 'Enabled',
+      'System Prompt': 'System Prompt',
+      'Aquí puedes escribir el texto base del asistente. Este texto se usará como prompt del sistema para este bot.': "Here you can write the assistant's base text. This text will be used as the system prompt for this bot.",
+      'Guardar cambios': 'Save changes',
+      'Escribe aquí el prompt del sistema...': 'Write the system prompt here...',
     },
     'fr': {
       'Tomos Bot': 'Tomos Bot',
@@ -464,6 +468,10 @@
       'language.german': 'DE',
       'language.portuguese': 'PT',
       'Enabled': 'Activé',
+      'System Prompt': 'Prompt système',
+      'Aquí puedes escribir el texto base del asistente. Este texto se usará como prompt del sistema para este bot.': "Ici, vous pouvez écrire le texte de base de l'assistant. Ce texte sera utilisé comme prompt système pour ce bot.",
+      'Guardar cambios': 'Enregistrer les modifications',
+      'Escribe aquí el prompt del sistema...': 'Écrivez ici le prompt système...',
     },
     'es': {
       'Tomos Bot': 'Tomos Bot',
@@ -696,6 +704,10 @@
       'language.german': 'DE',
       'language.portuguese': 'PT',
       'Enabled': 'Activado',
+      'System Prompt': 'Prompt del sistema',
+      'Aquí puedes escribir el texto base del asistente. Este texto se usará como prompt del sistema para este bot.': 'Aquí puedes escribir el texto base del asistente. Este texto se usará como prompt del sistema para este bot.',
+      'Guardar cambios': 'Guardar cambios',
+      'Escribe aquí el prompt del sistema...': 'Escribe aquí el prompt del sistema...',
     },
     'de': {
       'Tomos Bot': 'Tomos Bot',
@@ -928,6 +940,10 @@
       'language.german': 'DE',
       'language.portuguese': 'PT',
       'Enabled': 'Aktiviert',
+      'System Prompt': 'System-Prompt',
+      'Aquí puedes escribir el texto base del asistente. Este texto se usará como prompt del sistema para este bot.': 'Hier kannst du den Grundtext des Assistenten schreiben. Dieser Text wird als System-Prompt für diesen Bot verwendet.',
+      'Guardar cambios': 'Änderungen speichern',
+      'Escribe aquí el prompt del sistema...': 'Schreibe hier den System-Prompt...',
     },
     'pt': {
       'Tomos Bot': 'Tomos Bot',
@@ -1160,6 +1176,10 @@
       'language.german': 'DE',
       'language.portuguese': 'PT',
       'Enabled': 'Ativado',
+      'System Prompt': 'Prompt do sistema',
+      'Aquí puedes escribir el texto base del asistente. Este texto se usará como prompt del sistema para este bot.': 'Aqui você pode escrever o texto base do assistente. Este texto será usado como prompt do sistema para este bot.',
+      'Guardar cambios': 'Salvar alterações',
+      'Escribe aquí el prompt del sistema...': 'Escreva aqui o prompt do sistema...',
     },
   };
   const TRANSLATION_KEYS = new Set(Object.keys(TRANSLATIONS.en));
