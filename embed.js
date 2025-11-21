@@ -252,31 +252,38 @@
 }
 
 
-    #chatWidgetFrame {
-      position: fixed;
-      bottom: 90px;
-      left: auto;
-      right: auto;
-      width: 420px;
-      max-height: calc(100vh - 110px);
-      height: 90vh;
-      border: none;
-      border-radius: 18px;
-      box-shadow: 0 6px 24px rgba(0,0,0,0.2);
-      display: none;
-      z-index: 99999;
-      overflow: hidden;
-      transform: translateX(var(--widget-frame-translate)) translateY(20px);
-      opacity: 0;
-      transition: opacity 0.25s ease, transform 0.25s ease;
-      pointer-events: none;
-    }
+#chatWidgetFrame {
+  position: fixed;
+  bottom: 90px;
+  left: auto;
+  right: auto;
+  width: 420px;
+  max-height: calc(100vh - 110px);
+  height: 90vh;
+  border: none;
+  border-radius: 18px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.2);
+  display: block;              /* importante: siempre presente para animar */
+  z-index: 99999;
+  overflow: hidden;
 
-    #chatWidgetFrame.is-visible {
-      opacity: 1;
-      transform: translateX(var(--widget-frame-translate)) translateY(0);
-      pointer-events: auto;
-    }
+  /* 🚀 ANIMACIÓN NUEVA */
+  opacity: 0;
+  transform: translateX(var(--widget-frame-translate)) scale(0);
+  transform-origin: center bottom; /* se expande desde el botón */
+  transition:
+    transform 0.28s cubic-bezier(0, 1.2, 1, 1),
+    opacity 0.18s ease-out;
+
+  pointer-events: none;
+}
+
+#chatWidgetFrame.is-visible {
+  opacity: 1;
+  transform: translateX(var(--widget-frame-translate)) scale(1);
+  pointer-events: auto;
+}
+
 
 
     #chatWidgetFrame[data-position="left"] {
