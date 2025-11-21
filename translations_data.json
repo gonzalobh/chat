@@ -304,6 +304,22 @@
     "pt": "Ativar"
   },
   {
+    "key": "Lead capture",
+    "en": "Lead capture",
+    "fr": "Capture de leads",
+    "es": "Captura de leads",
+    "de": "Lead-Erfassung",
+    "pt": "Captura de leads"
+  },
+  {
+    "key": "Enable or disable the lead capture prompts.",
+    "en": "Enable or disable the lead capture prompts.",
+    "fr": "Activer ou désactiver les invites de capture de leads.",
+    "es": "Activa o desactiva las preguntas para capturar leads.",
+    "de": "Aktivieren oder deaktivieren Sie die Lead-Erfassungsaufforderungen.",
+    "pt": "Ative ou desative as solicitações de captura de leads."
+  },
+  {
     "key": "Show the chat button on your site.",
     "en": "Show the chat button on your site.",
     "fr": "Afficher le bouton de chat sur votre site.",

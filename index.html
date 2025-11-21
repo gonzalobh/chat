@@ -1456,9 +1456,9 @@ body.login-view #appContainer {
                 <div>
                   <div class="flex items-center gap-2 font-semibold text-gray-800 text-sm">
                     <i data-lucide="users" class="w-4 h-4"></i>
-                    Lead capture
+                    <span id="leadCaptureTitle"></span>
                   </div>
-                  <p class="text-xs text-gray-500">Enable or disable the lead capture prompts.</p>
+                  <p id="leadCaptureDescription" class="text-xs text-gray-500"></p>
                 </div>
                 <input id="tgLeadCapture" type="checkbox" class="toggle" />
               </div>
@@ -2418,6 +2418,20 @@ if (window.translationManager) {
   if (usuariosTabLabel) {
     usuariosTabLabel.textContent = translationManager.translate('Usuarios');
     translationManager.register(usuariosTabLabel, 'Usuarios');
+  }
+}
+
+if (window.translationManager) {
+  const leadCaptureTitle = document.getElementById('leadCaptureTitle');
+  if (leadCaptureTitle) {
+    leadCaptureTitle.textContent = translationManager.translate('Lead capture');
+    registerTranslationTarget(leadCaptureTitle, 'Lead capture');
+  }
+
+  const leadCaptureDescription = document.getElementById('leadCaptureDescription');
+  if (leadCaptureDescription) {
+    leadCaptureDescription.textContent = translationManager.translate('Enable or disable the lead capture prompts.');
+    registerTranslationTarget(leadCaptureDescription, 'Enable or disable the lead capture prompts.');
   }
 }
 
