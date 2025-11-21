@@ -496,6 +496,46 @@
     "pt": "Script de integração"
   },
   {
+    "key": "Sitios permitidos",
+    "en": "Allowed sites",
+    "fr": "Sites autorisés",
+    "es": "Sitios permitidos",
+    "de": "Zugelassene Websites",
+    "pt": "Sites permitidos"
+  },
+  {
+    "key": "Define los dominios autorizados donde se puede mostrar el bot. El widget no se mostrará si el script se inserta en un sitio no permitido.",
+    "en": "Define the authorized domains where the bot can be displayed. The widget will not appear if the script is embedded on a non-allowed site.",
+    "fr": "Définissez les domaines autorisés où le bot peut s'afficher. Le widget ne s'affichera pas si le script est inséré sur un site non autorisé.",
+    "es": "Define los dominios autorizados donde se puede mostrar el bot. El widget no se mostrará si el script se inserta en un sitio no permitido.",
+    "de": "Legen Sie fest, auf welchen Domains der Bot angezeigt werden darf. Das Widget erscheint nicht, wenn das Skript auf einer nicht erlaubten Website eingebettet wird.",
+    "pt": "Defina os domínios autorizados onde o bot pode ser exibido. O widget não será mostrado se o script for inserido em um site não permitido."
+  },
+  {
+    "key": "No hay sitios autorizados todavía.",
+    "en": "There are no authorized sites yet.",
+    "fr": "Il n’y a pas encore de sites autorisés.",
+    "es": "No hay sitios autorizados todavía.",
+    "de": "Es sind noch keine zugelassenen Websites vorhanden.",
+    "pt": "Ainda não há sites autorizados."
+  },
+  {
+    "key": "https://www.ejemplo.com",
+    "en": "https://www.example.com",
+    "fr": "https://www.exemple.com",
+    "es": "https://www.ejemplo.com",
+    "de": "https://www.beispiel.de",
+    "pt": "https://www.exemplo.com"
+  },
+  {
+    "key": "Agregar sitio",
+    "en": "Add site",
+    "fr": "Ajouter un site",
+    "es": "Agregar sitio",
+    "de": "Website hinzufügen",
+    "pt": "Adicionar site"
+  },
+  {
     "key": "Copy and paste this code into your website just before the",
     "en": "Copy and paste this code into your website just before the",
     "fr": "Copiez et collez ce code sur votre site juste avant la",
