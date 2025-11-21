@@ -6284,9 +6284,7 @@ async function applyTemplateById(templateId) {
     if (pending.length) {
       await Promise.all(pending);
     }
-    const templateName = (tpl.name || 'Plantilla').trim();
-    const safeName = templateName.replace(/["`]/g, '');
-    toast(`✔ Plantilla "${safeName}" seleccionada`);
+    toast(translationManager.translate("saved"));
   } catch (err) {
     console.error('No se pudo aplicar el template', err);
     toast('⚠ No se pudo aplicar el template');
