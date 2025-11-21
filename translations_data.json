@@ -297,7 +297,7 @@
   },
   {
     "key": "Edita el título y la identidad visual del encabezado.",
-    "en": "Edit the header title and visual identity.",
+    "en": "Edit the title and visual identity of the header.",
     "fr": "Modifiez le titre et l'identité visuelle de l'en-tête.",
     "es": "Edita el título y la identidad visual del encabezado.",
     "de": "Bearbeiten Sie den Titel und die visuelle Identität der Kopfzeile.",
@@ -312,7 +312,31 @@
     "pt": "Mensagem de boas-vindas"
   },
   {
+    "key": "Mensaje de bienvenida",
+    "en": "Welcome message",
+    "fr": "Message de bienvenue",
+    "es": "Mensaje de bienvenida",
+    "de": "Begrüßungsnachricht",
+    "pt": "Mensagem de boas-vindas"
+  },
+  {
     "key": "Disabled",
+    "en": "Disabled",
+    "fr": "Désactivé",
+    "es": "Desactivado",
+    "de": "Deaktiviert",
+    "pt": "Desativado"
+  },
+  {
+    "key": "Activado",
+    "en": "Enabled",
+    "fr": "Activé",
+    "es": "Activado",
+    "de": "Aktiviert",
+    "pt": "Ativado"
+  },
+  {
+    "key": "Desactivado",
     "en": "Disabled",
     "fr": "Désactivé",
     "es": "Desactivado",
@@ -326,6 +350,14 @@
     "es": "Añade un mensaje de bienvenida para saludar a tus huéspedes.",
     "de": "Fügen Sie eine Begrüßungsnachricht hinzu, um Ihre Gäste zu begrüßen.",
     "pt": "Adicione uma mensagem de boas-vindas para saudar seus hóspedes."
+  },
+  {
+    "key": "Agregar un mensaje de bienvenida para saludar a tus visitantes.",
+    "en": "Add a welcome message to greet your visitors.",
+    "fr": "Ajoutez un message de bienvenue pour accueillir vos visiteurs.",
+    "es": "Agrega un mensaje de bienvenida para saludar a tus visitantes.",
+    "de": "Fügen Sie eine Begrüßungsnachricht hinzu, um Ihre Besucher zu begrüßen.",
+    "pt": "Adicione uma mensagem de boas-vindas para receber seus visitantes."
   },
   {
     "key": "Delay: 2s",
