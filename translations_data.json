@@ -600,6 +600,14 @@
     "pt": "Arredondado"
   },
   {
+    "key": "Position",
+    "en": "Position",
+    "fr": "Position",
+    "es": "Posición",
+    "de": "Position",
+    "pt": "Posição"
+  },
+  {
     "key": "Widget Background",
     "en": "Widget Background",
     "fr": "Arrière-plan du widget",
