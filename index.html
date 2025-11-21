@@ -7043,7 +7043,7 @@ $('chatPrimaryColor').addEventListener('input', (e) => {
   const promise = canWrite(async () => {
     await prRef.set(v);
     applyPreview();
-    if (!isApplyingTemplate) toast(t('✔ Primary color saved'));
+    if (!isApplyingTemplate) toast(translationManager.translate('saved'));
   });
   if (promise && typeof promise.then === 'function') {
     pendingColorSaves.chatPrimaryColor = promise
@@ -7069,7 +7069,7 @@ $('chatButtonColor').addEventListener('input', (e) => {
   const promise = canWrite(async () => {
     await btRef.set(v);
     applyPreview();
-    if (!isApplyingTemplate) toast(t('✔ Button color saved'));
+    if (!isApplyingTemplate) toast(translationManager.translate('saved'));
   });
   if (promise && typeof promise.then === 'function') {
     pendingColorSaves.chatButtonColor = promise
@@ -7271,7 +7271,7 @@ widgetIconColorInput?.addEventListener('input', (e) => {
   renderWidgetIconOptions();
   canWrite(async () => {
     await widgetIconColorRef.set(color);
-    toast(t('✔ Widget icon color updated'));
+    toast(translationManager.translate('saved'));
   });
   applyPreview();
 });
@@ -7374,7 +7374,7 @@ $('chatBackgroundColor').addEventListener('input', (e) => {
   const promise = canWrite(async () => {
     await bgRef.set(v);
     applyPreview();
-    if (!isApplyingTemplate) toast(t('✔ Background color saved'));
+    if (!isApplyingTemplate) toast(translationManager.translate('saved'));
   });
   if (promise && typeof promise.then === 'function') {
     pendingColorSaves.chatBackgroundColor = promise
@@ -7401,7 +7401,7 @@ $('chatAssistantTextColor').addEventListener('input', (e) => {
   const promise = canWrite(async () => {
     await atRef.set(v);
     applyPreview();
-    if (!isApplyingTemplate) toast(t('✔ Assistant text color saved'));
+    if (!isApplyingTemplate) toast(translationManager.translate('saved'));
   });
   if (promise && typeof promise.then === 'function') {
     pendingColorSaves.chatAssistantTextColor = promise
@@ -7429,7 +7429,7 @@ $('chatClientTextColor').addEventListener('input', (e) => {
   const promise = canWrite(async () => {
     await ctRef.set(v);
     applyPreview();
-    if (!isApplyingTemplate) toast(t('✔ Client text color saved'));
+    if (!isApplyingTemplate) toast(translationManager.translate('saved'));
   });
   if (promise && typeof promise.then === 'function') {
     pendingColorSaves.chatClientTextColor = promise
@@ -7457,7 +7457,7 @@ $('chatHeaderColor').addEventListener('input', (e) => {
   const promise = canWrite(async () => {
     await headerRef.set(v);
     applyPreview();
-    if (!isApplyingTemplate) toast(t('✔ Header color saved'));
+    if (!isApplyingTemplate) toast(translationManager.translate('saved'));
   });
   if (promise && typeof promise.then === 'function') {
     pendingColorSaves.chatHeaderColor = promise
@@ -7484,7 +7484,7 @@ $('chatHeaderTextColor').addEventListener('input', (e) => {
   const promise = canWrite(async () => {
     await headerTextRef.set(v);
     applyPreview();
-    if (!isApplyingTemplate) toast(t('✔ Header text color saved'));
+    if (!isApplyingTemplate) toast(translationManager.translate('saved'));
   });
   if (promise && typeof promise.then === 'function') {
     pendingColorSaves.chatHeaderTextColor = promise
