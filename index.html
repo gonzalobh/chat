@@ -3433,6 +3433,12 @@ function renderDashboardBotsTable() {
       const answersUsedRaw = Number(analysis?.aiMessagesThisMonth || 0);
       const answersUsed = Number.isFinite(answersUsedRaw) ? Math.max(answersUsedRaw, 0) : 0;
       const answersPercent = answersLimit > 0 ? Math.min((answersUsed / answersLimit) * 100, 100) : 0;
+      const planLabel = getDashboardBotPlanLabel(botId);
+      const planDisplay = planLabel ? planLabel.toUpperCase() : '';
+      const subtitleParts = [];
+      if (planDisplay) subtitleParts.push(planDisplay);
+      subtitleParts.push(botId);
+
       const card = document.createElement('article');
       card.className = 'dashboard-bot-card';
 
@@ -3453,6 +3459,13 @@ function renderDashboardBotsTable() {
       const titleEl = document.createElement('div');
       titleEl.className = 'dashboard-bot-title';
       titleEl.textContent = getDashboardBotName(botId);
+      const subtitleEl = document.createElement('div');
+      subtitleEl.className = 'dashboard-bot-subtitle';
+      subtitleEl.textContent = subtitleParts.filter(Boolean).join(' • ');
+      titles.append(titleEl, subtitleEl);
+
+      identity.append(iconWrapper, titles);
+
       const actions = document.createElement('div');
       actions.className = 'dashboard-bot-card-actions';
       const editBtn = document.createElement('button');
@@ -3467,11 +3480,8 @@ function renderDashboardBotsTable() {
       editLabel.textContent = 'Edit';
       editBtn.append(editIcon, editLabel);
       actions.appendChild(editBtn);
-      titles.append(titleEl, actions);
 
-      identity.append(iconWrapper, titles);
-
-      header.append(identity);
+      header.append(identity, actions);
 
       const body = document.createElement('div');
       body.className = 'dashboard-bot-card-body';
