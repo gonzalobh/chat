@@ -3557,6 +3557,7 @@ function renderDashboardBotsTable() {
     const emptyText = document.createElement('p');
     emptyText.className = 'dashboard-bot-card-empty';
     emptyText.textContent = 'No hay bots configurados';
+    registerTranslationTarget(emptyText, 'No hay bots configurados');
     emptyCard.appendChild(emptyText);
     container.appendChild(emptyCard);
     return;
@@ -3620,7 +3621,8 @@ function renderDashboardBotsTable() {
       statBlock.className = 'dashboard-bot-stat';
       const statLabel = document.createElement('span');
       statLabel.className = 'dashboard-bot-stat-label';
-      statLabel.textContent = 'Total Conversations';
+      statLabel.textContent = t('Total Conversations');
+      registerTranslationTarget(statLabel, 'Total Conversations');
       const statValue = document.createElement('span');
       statValue.className = 'dashboard-bot-stat-value';
       statValue.textContent = formatDashboardNumber(totalConversations);
@@ -3642,7 +3644,8 @@ function renderDashboardBotsTable() {
       knowledgeChartWrapper.append(knowledgeCanvas, knowledgeValue);
       const knowledgeLabel = document.createElement('span');
       knowledgeLabel.className = 'dashboard-bot-chart-label';
-      knowledgeLabel.textContent = 'Limit Knowledge';
+      knowledgeLabel.textContent = t('Limit Knowledge');
+      registerTranslationTarget(knowledgeLabel, 'Limit Knowledge');
       const knowledgeText = document.createElement('span');
       knowledgeText.className = 'dashboard-bot-chart-text';
       knowledgeText.textContent = `${formatDashboardNumber(knowledgeUsed)} / ${formatDashboardNumber(knowledgeLimit)}`;
@@ -3661,7 +3664,8 @@ function renderDashboardBotsTable() {
       answersChartWrapper.append(answersCanvas, answersValue);
       const answersLabel = document.createElement('span');
       answersLabel.className = 'dashboard-bot-chart-label';
-      answersLabel.textContent = 'Limit Answers';
+      answersLabel.textContent = t('Limit Answers');
+      registerTranslationTarget(answersLabel, 'Limit Answers');
       const answersText = document.createElement('span');
       answersText.className = 'dashboard-bot-chart-text';
       answersText.textContent = `${formatDashboardNumber(answersUsed)} / ${formatDashboardNumber(answersLimit)}`;
