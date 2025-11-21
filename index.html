@@ -2400,6 +2400,18 @@ const registerTranslationTarget = (node, key, target = 'text', options = {}) => 
   translationManager.register(node, key, target, options);
 };
 
+function applyStoredLanguagePreference() {
+  if (!window.translationManager) return;
+
+  const preferredLanguage = translationManager.getCurrentLanguage();
+  translationManager.applyLanguage(preferredLanguage);
+
+  const languageSelectEl = document.getElementById('languageSelect');
+  if (languageSelectEl && languageSelectEl.value !== preferredLanguage) {
+    languageSelectEl.value = preferredLanguage;
+  }
+}
+
 const PERSONALITY_TRANSLATION_ENTRIES = [
   { value: 'friendly', key: 'Friendly' },
   { value: 'professional', key: 'Professional' },
@@ -6873,6 +6885,7 @@ async function initAll(){
   lucide.createIcons();
   initBotSelector();
   initLanguageSelector(); // <-- 🔥 nuevo
+  applyStoredLanguagePreference();
   initTabs();
   initDashboard();
   applyPreview();
