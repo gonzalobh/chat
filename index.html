@@ -2367,7 +2367,7 @@ body.login-view #appContainer {
 </div>
 
 
-<script src="translations.js?v=36"></script>
+<script src="translations.js?v=41"></script>
 <script>
 if (window.translationManager) {
   translationManager.init();
@@ -2399,18 +2399,6 @@ const registerTranslationTarget = (node, key, target = 'text', options = {}) => 
   if (!node || !window.translationManager) return;
   translationManager.register(node, key, target, options);
 };
-
-function applyStoredLanguagePreference() {
-  if (!window.translationManager) return;
-
-  const preferredLanguage = translationManager.getCurrentLanguage();
-  translationManager.applyLanguage(preferredLanguage);
-
-  const languageSelectEl = document.getElementById('languageSelect');
-  if (languageSelectEl && languageSelectEl.value !== preferredLanguage) {
-    languageSelectEl.value = preferredLanguage;
-  }
-}
 
 const PERSONALITY_TRANSLATION_ENTRIES = [
   { value: 'friendly', key: 'Friendly' },
@@ -6885,7 +6873,6 @@ async function initAll(){
   lucide.createIcons();
   initBotSelector();
   initLanguageSelector(); // <-- 🔥 nuevo
-  applyStoredLanguagePreference();
   initTabs();
   initDashboard();
   applyPreview();
