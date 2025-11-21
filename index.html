@@ -7291,7 +7291,7 @@ $('widgetRadius').addEventListener('input', (e) => {
   $('widgetRadiusVal').textContent = val;
   canWrite(async () => {
     await widgetRadiusRef.set(val);
-    toast(t('✔ Widget border updated'));
+    toast(translationManager.translate('saved'));
   });
   updateWidgetPreview();
   applyPreview();
@@ -7353,7 +7353,7 @@ if (widgetPositionRef) {
       const selected = setWidgetPositionUI(btn.dataset.position);
       canWrite(async () => {
         await widgetPositionRef.set(selected);
-        toast(t('✔ Widget position updated'));
+        toast(translationManager.translate('saved'));
       });
     });
   });
@@ -8125,7 +8125,7 @@ function initSettingsTab(){
   });
   chatVisibleToggle?.addEventListener('change', ()=> canWrite(async ()=>{
     await visRef.set(!!chatVisibleToggle.checked);
-    toast(t('✔ Chat visibility updated'));
+    toast(translationManager.translate('saved'));
   }));
 
   // Lead capture toggle
@@ -8138,7 +8138,7 @@ function initSettingsTab(){
   });
   leadCaptureToggle?.addEventListener('change', () => canWrite(async () => {
     await leadCaptureRef.set(!!leadCaptureToggle.checked);
-    toast(t('✔ Lead capture updated'));
+    toast(translationManager.translate('saved'));
   }));
 
   // Chat header visibility toggle
@@ -8171,7 +8171,7 @@ function initSettingsTab(){
     applyPreview();
     canWrite(async () => {
       await chatHeaderVisibleRef.set(enabled);
-      toast(t('✔ Chat header visibility updated'));
+      toast(translationManager.translate('saved'));
     });
   });
 
@@ -8329,7 +8329,7 @@ function initSettingsTab(){
     if (!personalitySelect) return;
     applyPersonalitySelection(personalitySelect.value);
     await persRef.set(personalitySelect.value);
-    toast(t('✔ Personality updated'));
+    toast(translationManager.translate('saved'));
     closePersonalityMenu();
   }));
 
