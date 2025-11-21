@@ -1534,5 +1534,37 @@
     "es": "Activado",
     "de": "Aktiviert",
     "pt": "Ativado"
+  },
+  {
+    "key": "System Prompt",
+    "en": "System Prompt",
+    "fr": "Prompt système",
+    "es": "Prompt del sistema",
+    "de": "System-Prompt",
+    "pt": "Prompt do sistema"
+  },
+  {
+    "key": "Aquí puedes escribir el texto base del asistente. Este texto se usará como prompt del sistema para este bot.",
+    "en": "Here you can write the assistant's base text. This text will be used as the system prompt for this bot.",
+    "fr": "Ici, vous pouvez écrire le texte de base de l'assistant. Ce texte sera utilisé comme prompt système pour ce bot.",
+    "es": "Aquí puedes escribir el texto base del asistente. Este texto se usará como prompt del sistema para este bot.",
+    "de": "Hier kannst du den Grundtext des Assistenten schreiben. Dieser Text wird als System-Prompt für diesen Bot verwendet.",
+    "pt": "Aqui você pode escrever o texto base do assistente. Este texto será usado como prompt do sistema para este bot."
+  },
+  {
+    "key": "Guardar cambios",
+    "en": "Save changes",
+    "fr": "Enregistrer les modifications",
+    "es": "Guardar cambios",
+    "de": "Änderungen speichern",
+    "pt": "Salvar alterações"
+  },
+  {
+    "key": "Escribe aquí el prompt del sistema...",
+    "en": "Write the system prompt here...",
+    "fr": "Écrivez ici le prompt système...",
+    "es": "Escribe aquí el prompt del sistema...",
+    "de": "Schreibe hier den System-Prompt...",
+    "pt": "Escreva aqui o prompt do sistema..."
   }
 ]
