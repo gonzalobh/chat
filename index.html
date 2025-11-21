@@ -1741,14 +1741,12 @@ body.login-view #appContainer {
           <div class="card p-5 space-y-4">
             <div class="font-semibold flex items-center gap-2 mb-1">
               <i data-lucide="shield-check" class="w-5 h-5"></i>
-              Sitios permitidos
+              <span id="allowedSitesTitle"></span>
             </div>
-            <p class="text-sm text-gray-500">
-              Define los dominios autorizados donde se puede mostrar el bot. El widget no se mostrará si el script se inserta en un sitio no permitido.
-            </p>
+            <p id="allowedSitesDescription" class="text-sm text-gray-500"></p>
             <div class="flex flex-col sm:flex-row gap-3">
-              <input id="allowedUrlInput" type="url" placeholder="https://www.ejemplo.com" class="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black" />
-              <button id="addAllowedUrl" class="px-4 py-2 bg-black text-white text-sm rounded-lg whitespace-nowrap">Agregar sitio</button>
+              <input id="allowedUrlInput" type="url" class="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black" />
+              <button id="addAllowedUrl" class="px-4 py-2 bg-black text-white text-sm rounded-lg whitespace-nowrap"></button>
             </div>
             <div id="allowedUrlsList" class="space-y-2"></div>
           </div>
@@ -9646,6 +9644,31 @@ function initIntegration(){
   const allowedUrlsRef = eref('config/allowedUrls');
   let allowedUrls = [];
 
+  if (window.translationManager) {
+    const allowedSitesTitle = $('allowedSitesTitle');
+    const allowedSitesDescription = $('allowedSitesDescription');
+
+    registerTranslationTarget(allowedSitesTitle, 'Sitios permitidos');
+    registerTranslationTarget(allowedSitesDescription, 'Define los dominios autorizados donde se puede mostrar el bot. El widget no se mostrará si el script se inserta en un sitio no permitido.');
+    registerTranslationTarget(allowedUrlInput, 'https://www.ejemplo.com', 'placeholder');
+    registerTranslationTarget(addAllowedUrlBtn, 'Agregar sitio');
+  }
+
+  if (allowedUrlInput) {
+    allowedUrlInput.placeholder = t('https://www.ejemplo.com');
+  }
+  const allowedSitesTitleEl = $('allowedSitesTitle');
+  if (allowedSitesTitleEl) {
+    allowedSitesTitleEl.textContent = t('Sitios permitidos');
+  }
+  const allowedSitesDescriptionEl = $('allowedSitesDescription');
+  if (allowedSitesDescriptionEl) {
+    allowedSitesDescriptionEl.textContent = t('Define los dominios autorizados donde se puede mostrar el bot. El widget no se mostrará si el script se inserta en un sitio no permitido.');
+  }
+  if (addAllowedUrlBtn) {
+    addAllowedUrlBtn.textContent = t('Agregar sitio');
+  }
+
   const parseAllowedUrls = (val) => {
     if (Array.isArray(val)) return val.filter(Boolean);
     if (val && typeof val === 'object') return Object.values(val).filter(Boolean);
@@ -9669,7 +9692,8 @@ function initIntegration(){
     if (!allowedUrls.length) {
       const empty = document.createElement('p');
       empty.className = 'text-sm text-gray-500';
-      empty.textContent = 'No hay sitios autorizados todavía.';
+      empty.textContent = t('No hay sitios autorizados todavía.');
+      registerTranslationTarget(empty, 'No hay sitios autorizados todavía.');
       allowedUrlsListEl.appendChild(empty);
       return;
     }
@@ -9711,11 +9735,11 @@ function initIntegration(){
     if (!allowedUrlsRef || !allowedUrlInput) return;
     const value = normalizeOrigin(allowedUrlInput.value.trim());
     if (!value) {
-      toast('Ingresa una URL válida');
+      toast(t('Please provide a valid URL.'));
       return;
     }
     if (allowedUrls.includes(value)) {
-      toast('Este sitio ya está permitido');
+      toast(t('Este sitio ya está permitido'));
       return;
     }
 
