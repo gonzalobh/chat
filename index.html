@@ -2957,7 +2957,7 @@ function initPromptTab() {
         await ref.set(value);
         lastPromptLoadedKey = `${EMPRESA || ''}::${BOT || ''}`;
         if (typeof toast === 'function') {
-          toast(translationManager.translate("saved"));
+          toast('Prompt guardado correctamente');
         } else {
           alert('Prompt guardado correctamente');
         }
@@ -7043,7 +7043,7 @@ $('chatPrimaryColor').addEventListener('input', (e) => {
   const promise = canWrite(async () => {
     await prRef.set(v);
     applyPreview();
-    if (!isApplyingTemplate) toast(translationManager.translate("saved"));
+    if (!isApplyingTemplate) toast(t('✔ Primary color saved'));
   });
   if (promise && typeof promise.then === 'function') {
     pendingColorSaves.chatPrimaryColor = promise
@@ -7069,7 +7069,7 @@ $('chatButtonColor').addEventListener('input', (e) => {
   const promise = canWrite(async () => {
     await btRef.set(v);
     applyPreview();
-    if (!isApplyingTemplate) toast(translationManager.translate("saved"));
+    if (!isApplyingTemplate) toast(t('✔ Button color saved'));
   });
   if (promise && typeof promise.then === 'function') {
     pendingColorSaves.chatButtonColor = promise
@@ -7374,7 +7374,7 @@ $('chatBackgroundColor').addEventListener('input', (e) => {
   const promise = canWrite(async () => {
     await bgRef.set(v);
     applyPreview();
-    if (!isApplyingTemplate) toast(translationManager.translate("saved"));
+    if (!isApplyingTemplate) toast(t('✔ Background color saved'));
   });
   if (promise && typeof promise.then === 'function') {
     pendingColorSaves.chatBackgroundColor = promise
@@ -7401,7 +7401,7 @@ $('chatAssistantTextColor').addEventListener('input', (e) => {
   const promise = canWrite(async () => {
     await atRef.set(v);
     applyPreview();
-    if (!isApplyingTemplate) toast(translationManager.translate("saved"));
+    if (!isApplyingTemplate) toast(t('✔ Assistant text color saved'));
   });
   if (promise && typeof promise.then === 'function') {
     pendingColorSaves.chatAssistantTextColor = promise
@@ -7429,7 +7429,7 @@ $('chatClientTextColor').addEventListener('input', (e) => {
   const promise = canWrite(async () => {
     await ctRef.set(v);
     applyPreview();
-    if (!isApplyingTemplate) toast(translationManager.translate("saved"));
+    if (!isApplyingTemplate) toast(t('✔ Client text color saved'));
   });
   if (promise && typeof promise.then === 'function') {
     pendingColorSaves.chatClientTextColor = promise
@@ -7457,7 +7457,7 @@ $('chatHeaderColor').addEventListener('input', (e) => {
   const promise = canWrite(async () => {
     await headerRef.set(v);
     applyPreview();
-    if (!isApplyingTemplate) toast(translationManager.translate("saved"));
+    if (!isApplyingTemplate) toast(t('✔ Header color saved'));
   });
   if (promise && typeof promise.then === 'function') {
     pendingColorSaves.chatHeaderColor = promise
@@ -7484,7 +7484,7 @@ $('chatHeaderTextColor').addEventListener('input', (e) => {
   const promise = canWrite(async () => {
     await headerTextRef.set(v);
     applyPreview();
-    if (!isApplyingTemplate) toast(translationManager.translate("saved"));
+    if (!isApplyingTemplate) toast(t('✔ Header text color saved'));
   });
   if (promise && typeof promise.then === 'function') {
     pendingColorSaves.chatHeaderTextColor = promise
@@ -7699,7 +7699,7 @@ if (select) {
         await fontRef.set(font);
         $('previewBubble').style.fontFamily = `'${font}', system-ui, sans-serif`;
         $('previewBtn').style.fontFamily = `'${font}', system-ui, sans-serif`;
-        toast(translationManager.translate("saved"));
+        toast(t('✔ Font saved'));
 
         // 🔄 Refrescar mockup
 // ✨ Actualizar fuente sin recargar el iframe
@@ -8209,7 +8209,7 @@ function initSettingsTab(){
       currentHotelName = newName;
       hotelNameInput.value = newName;
       updateBotNameDisplay();
-      toast(translationManager.translate("saved"));
+      toast(t('✔ Saved'));
     });
   });
 
@@ -8234,7 +8234,7 @@ function initSettingsTab(){
     canWrite(async () => {
       await tzRef.set(newTimeZone);
       currentTimeZone = newTimeZone;
-      toast(translationManager.translate("saved"));
+      toast(t('✔ Saved'));
     });
   });
 
@@ -8915,7 +8915,7 @@ function initSchedule() {
     try {
       await canWrite(async () => {
         await ref.set(out);
-        toast(translationManager.translate("saved"));
+        toast(t('✔ Changes saved'));
       });
     } finally {
       isSaving = false;
@@ -9875,7 +9875,7 @@ function initIntegration(){
         await canWrite(async () => {
           await allowedUrlsRef.set(allowedUrls);
           renderAllowedUrls();
-          toast(translationManager.translate("saved"));
+          toast(t('✔ Changes saved'));
         });
       });
 
@@ -9908,7 +9908,7 @@ function initIntegration(){
     await canWrite(async () => {
       await allowedUrlsRef.set(allowedUrls);
       renderAllowedUrls();
-      toast(translationManager.translate("saved"));
+      toast(t('✔ Changes saved'));
     });
   };
 
@@ -10789,7 +10789,7 @@ function initWelcome() {
         updateSummary();
       });
 
-      toast(translationManager.translate("saved"));
+      toast(t('✔ Welcome message saved'));
     } catch (error) {
       console.error('Failed to save welcome message settings', error);
       toast(t('⚠ Could not save welcome message'));
