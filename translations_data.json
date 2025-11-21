@@ -208,6 +208,54 @@
     "pt": "Personalidade"
   },
   {
+    "key": "Personalidad",
+    "en": "Personality",
+    "fr": "Personnalité",
+    "es": "Personalidad",
+    "de": "Persönlichkeit",
+    "pt": "Personalidade"
+  },
+  {
+    "key": "Friendly",
+    "en": "Friendly",
+    "fr": "Amical",
+    "es": "Amigable",
+    "de": "Freundlich",
+    "pt": "Amigável"
+  },
+  {
+    "key": "Professional",
+    "en": "Professional",
+    "fr": "Professionnel",
+    "es": "Profesional",
+    "de": "Professionell",
+    "pt": "Profissional"
+  },
+  {
+    "key": "Informal",
+    "en": "Informal",
+    "fr": "Informel",
+    "es": "Informal",
+    "de": "Informell",
+    "pt": "Informal"
+  },
+  {
+    "key": "Informative",
+    "en": "Informative",
+    "fr": "Informatif",
+    "es": "Informativo",
+    "de": "Informativ",
+    "pt": "Informativo"
+  },
+  {
+    "key": "Empathetic",
+    "en": "Empathetic",
+    "fr": "Empathique",
+    "es": "Empático",
+    "de": "Empathisch",
+    "pt": "Empático"
+  },
+  {
     "key": "🧑‍💼 Formal & Polite",
     "en": "🧑‍💼 Formal & Polite",
     "fr": "🧑‍💼 Formel & Poli",

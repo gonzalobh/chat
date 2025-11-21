@@ -1391,14 +1391,14 @@ body.login-view #appContainer {
                 </div>
               </div>
               <div class="space-y-3">
-                <label for="personalitySelect" class="block text-xs font-semibold text-gray-600 uppercase tracking-wide">Personality</label>
+                <label for="personalitySelect" class="block text-xs font-semibold text-gray-600 uppercase tracking-wide"></label>
                 <div class="mt-2 relative">
                   <select id="personalitySelect" class="hidden">
-                    <option value="friendly">Friendly</option>
-                    <option value="professional">Professional</option>
-                    <option value="informal">Informal</option>
-                    <option value="informative">Informative</option>
-                    <option value="empathetic">Empathetic</option>
+                    <option value="friendly"></option>
+                    <option value="professional"></option>
+                    <option value="informal"></option>
+                    <option value="informative"></option>
+                    <option value="empathetic"></option>
                   </select>
                   <div id="personalityDropdown" class="relative">
                     <button type="button" id="personalityDropdownButton" class="personality-dropdown-button" aria-haspopup="listbox" aria-expanded="false">
@@ -1406,34 +1406,34 @@ body.login-view #appContainer {
                         <span id="personalityDropdownIcon" class="personality-option-icon">
                           <i data-lucide="smile" class="w-4 h-4"></i>
                         </span>
-                        <span id="personalityDropdownLabel" class="truncate">Friendly</span>
+                        <span id="personalityDropdownLabel" class="truncate"></span>
                       </span>
                       <i id="personalityDropdownChevron" data-lucide="chevron-down" class="w-4 h-4 text-gray-400"></i>
                     </button>
                     <div id="personalityDropdownMenu" class="personality-dropdown-menu hidden" role="listbox">
                       <button type="button" class="personality-option" data-personality-option="friendly" aria-pressed="false" role="option">
                         <span class="personality-option-icon"><i data-lucide="smile" class="w-5 h-5"></i></span>
-                        <span class="personality-option-label">Friendly</span>
+                        <span class="personality-option-label"></span>
                         <i data-lucide="check" class="personality-option-check w-4 h-4"></i>
                       </button>
                       <button type="button" class="personality-option" data-personality-option="professional" aria-pressed="false" role="option">
                         <span class="personality-option-icon"><i data-lucide="briefcase" class="w-5 h-5"></i></span>
-                        <span class="personality-option-label">Professional</span>
+                        <span class="personality-option-label"></span>
                         <i data-lucide="check" class="personality-option-check w-4 h-4"></i>
                       </button>
                       <button type="button" class="personality-option" data-personality-option="informal" aria-pressed="false" role="option">
                         <span class="personality-option-icon"><i data-lucide="shirt" class="w-5 h-5"></i></span>
-                        <span class="personality-option-label">Informal</span>
+                        <span class="personality-option-label"></span>
                         <i data-lucide="check" class="personality-option-check w-4 h-4"></i>
                       </button>
                       <button type="button" class="personality-option" data-personality-option="informative" aria-pressed="false" role="option">
                         <span class="personality-option-icon"><i data-lucide="info" class="w-5 h-5"></i></span>
-                        <span class="personality-option-label">Informative</span>
+                        <span class="personality-option-label"></span>
                         <i data-lucide="check" class="personality-option-check w-4 h-4"></i>
                       </button>
                       <button type="button" class="personality-option" data-personality-option="empathetic" aria-pressed="false" role="option">
                         <span class="personality-option-icon"><i data-lucide="heart" class="w-5 h-5"></i></span>
-                        <span class="personality-option-label">Empathetic</span>
+                        <span class="personality-option-label"></span>
                         <i data-lucide="check" class="personality-option-check w-4 h-4"></i>
                       </button>
                     </div>
@@ -2400,6 +2400,19 @@ const registerTranslationTarget = (node, key, target = 'text', options = {}) => 
   translationManager.register(node, key, target, options);
 };
 
+const PERSONALITY_TRANSLATION_ENTRIES = [
+  { value: 'friendly', key: 'Friendly' },
+  { value: 'professional', key: 'Professional' },
+  { value: 'informal', key: 'Informal' },
+  { value: 'informative', key: 'Informative' },
+  { value: 'empathetic', key: 'Empathetic' },
+];
+
+const PERSONALITY_KEY_BY_VALUE = PERSONALITY_TRANSLATION_ENTRIES.reduce((acc, entry) => {
+  acc[entry.value] = entry.key;
+  return acc;
+}, {});
+
 if (window.translationManager) {
   const usuariosTabLabel = document.getElementById('usuariosTabLabel');
   if (usuariosTabLabel) {
@@ -2445,6 +2458,44 @@ if (window.translationManager) {
   if (widgetPositionLabel) {
     widgetPositionLabel.textContent = translationManager.translate('Position');
     registerTranslationTarget(widgetPositionLabel, 'Position');
+  }
+}
+
+if (window.translationManager) {
+  const personalityLabel = document.querySelector('label[for="personalitySelect"]');
+  const personalitySelectEl = document.getElementById('personalitySelect');
+  const personalityDropdownLabel = document.getElementById('personalityDropdownLabel');
+  const dropdownOptions = Array.from(document.querySelectorAll('#personalityDropdownMenu [data-personality-option]'));
+
+  if (personalityLabel) {
+    personalityLabel.textContent = translationManager.translate('Personalidad');
+    registerTranslationTarget(personalityLabel, 'Personalidad');
+  }
+
+  if (personalitySelectEl) {
+    Array.from(personalitySelectEl.options).forEach(option => {
+      const key = PERSONALITY_KEY_BY_VALUE[option.value];
+      if (!key) return;
+      option.textContent = translationManager.translate(key);
+      registerTranslationTarget(option, key);
+    });
+  }
+
+  dropdownOptions.forEach(optionButton => {
+    const optionValue = optionButton.getAttribute('data-personality-option');
+    const optionLabel = optionButton.querySelector('.personality-option-label');
+    const key = optionValue ? PERSONALITY_KEY_BY_VALUE[optionValue] : '';
+    if (!key || !optionLabel) return;
+    optionLabel.textContent = translationManager.translate(key);
+    registerTranslationTarget(optionLabel, key);
+  });
+
+  if (personalityDropdownLabel && personalitySelectEl) {
+    const selectedKey = PERSONALITY_KEY_BY_VALUE[personalitySelectEl.value] || PERSONALITY_TRANSLATION_ENTRIES[0]?.key;
+    if (selectedKey) {
+      personalityDropdownLabel.textContent = translationManager.translate(selectedKey);
+      registerTranslationTarget(personalityDropdownLabel, selectedKey);
+    }
   }
 }
 
@@ -8214,9 +8265,13 @@ function initSettingsTab(){
   const updatePersonalityDropdownDisplay = (value) => {
     if (!personalityDropdownMenu) return;
     const activeBtn = personalityDropdownMenu.querySelector(`[data-personality-option="${value}"]`);
-    const labelText = activeBtn?.querySelector('.personality-option-label')?.textContent?.trim() || value;
+    const labelKey = PERSONALITY_KEY_BY_VALUE[value];
+    const labelText = labelKey && window.translationManager
+      ? translationManager.translate(labelKey)
+      : activeBtn?.querySelector('.personality-option-label')?.textContent?.trim() || value;
     if (personalityDropdownLabel) {
       personalityDropdownLabel.textContent = labelText;
+      if (labelKey) registerTranslationTarget(personalityDropdownLabel, labelKey);
     }
     if (personalityDropdownIcon) {
       personalityDropdownIcon.innerHTML = '';
